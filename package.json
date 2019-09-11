@@ -1,7 +1,7 @@
 {
   "name": "@bnaya/objectbuffer",
   "description": "Object like api, backed by an array buffer",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "main": "dist/index.js",
   "author": "Bnaya Peretz <me@bnaya.net>",
   "license": "MIT",
