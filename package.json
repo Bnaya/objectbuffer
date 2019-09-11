@@ -1,5 +1,5 @@
 {
-  "name": "objectbuffer",
+  "name": "@bnaya/objectbuffer",
   "description": "Object like api, backed by an array buffer",
   "version": "0.1.0",
   "main": "dist/index.js",
@@ -12,7 +12,8 @@
     "build-declarations": "tsc -p tsconfig.build.json --isolatedModules false --declaration true --declarationMap true --noEmit false --emitDeclarationOnly true",
     "babel-build": "yarn babel src -d dist --extensions '.ts' --ignore '**/*.test.ts'",
     "cleanup": "rimraf dist",
-    "build": "yarn cleanup; yarn babel-build; yarn build-declarations;"
+    "build": "yarn cleanup; yarn babel-build; yarn build-declarations; echo `git rev-parse HEAD` > COMMIT",
+    "prepack": "yarn build"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",
@@ -42,6 +43,7 @@
   "files": [
     "dist",
     "src",
-    "README"
+    "README",
+    "COMMIT"
   ]
 }
