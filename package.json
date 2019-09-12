@@ -13,7 +13,7 @@
     "build-declarations": "tsc -p tsconfig.build.json --isolatedModules false --declaration true --declarationMap true --noEmit false --emitDeclarationOnly true",
     "babel-build": "yarn babel src -d dist --extensions '.ts' --ignore '**/*.test.ts'",
     "cleanup": "rimraf dist",
-    "build": "yarn cleanup; yarn babel-build; yarn build-declarations; rollup -c; echo `git rev-parse HEAD` > COMMIT",
+    "build": "yarn cleanup; yarn babel-build; yarn build-declarations; rollup -c; cp dist/index.d.ts dist/objectbuffer.cjs.d.ts ;echo `git rev-parse HEAD` > COMMIT",
     "prepack": "yarn build"
   },
   "devDependencies": {
