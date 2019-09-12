@@ -177,7 +177,9 @@ export function readEntry(
       cursor += Uint16Array.BYTES_PER_ELEMENT;
 
       entry.value = textDecoder.decode(
-        dataView.buffer.slice(cursor, cursor + stringLength)
+        // this wrapping is needed until:
+        // https://github.com/whatwg/encoding/issues/172
+        new Uint8Array(dataView.buffer.slice(cursor, cursor + stringLength))
       );
 
       cursor += stringLength;
@@ -207,7 +209,11 @@ export function readEntry(
       // eslint-disable-next-line no-case-declarations
       const objectPropsValue: ObjectPropEntry["value"] = {
         key: textDecoder.decode(
-          dataView.buffer.slice(cursor, cursor + keyStringLength)
+          // this wrapping is needed until:
+          // https://github.com/whatwg/encoding/issues/172
+          new Uint8Array(
+            dataView.buffer.slice(cursor, cursor + keyStringLength)
+          )
         ),
         value: dataView.getUint32(cursor + keyStringLength),
         next: dataView.getUint32(
