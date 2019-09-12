@@ -35,3 +35,7 @@ We still don't have [ArrayBuffer.prototype.transfer](https://developer.mozilla.o
 ## Contribution / Collaboration
 There's a huge place for optimizations, code hygiene, and features!  
 Feel free to open issues and maybe implementing missing parts
+
+
+## Play with it:
+[![Edit objectbuffer demo](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/objectbuffer-demo-uyov5?fontsize=14&module=%2Fsrc%2Findex.test.ts)
