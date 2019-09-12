@@ -5,9 +5,9 @@ For Modern browsers and node. Zero direct dependencies.
 https://docs.google.com/document/d/1-UlUyH3HgOrN58avyScZlfjQtfJxgVwK_yE35mQHpYw/edit?usp=sharing
 
 ## Why?
-Personal interest, Maybe will be useful as shared memory primitive, and communicating with wasm.
+Personal interest, Maybe will be useful as shared memory primitive([Not working yet with SAB](https://github.com/whatwg/encoding/issues/172)), and communicating with wasm.
 
-At the current state, it's working! but very optimized (based only on linked lists), only append data (no logic to reuse unreachable memory)
+At the current state, it's working! but very unoptimized (based only on linked lists), only append data (no logic to reuse unreachable memory)
 and its not extending the backing `arraybuffer` size by itself.
 if you pass the limit, an exception will be thrown.  
 We still don't have [ArrayBuffer.prototype.transfer](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer/transfer) So we can't do that efficiently.  
