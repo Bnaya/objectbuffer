@@ -2,7 +2,8 @@
   "name": "@bnaya/objectbuffer",
   "description": "Object like api, backed by an array buffer",
   "version": "0.1.1",
-  "main": "dist/index.js",
+  "main": "dist/objectbuffer.cjs.js",
+  "module": "dist/index.js",
   "author": "Bnaya Peretz <me@bnaya.net>",
   "license": "MIT",
   "scripts": {
@@ -12,7 +13,7 @@
     "build-declarations": "tsc -p tsconfig.build.json --isolatedModules false --declaration true --declarationMap true --noEmit false --emitDeclarationOnly true",
     "babel-build": "yarn babel src -d dist --extensions '.ts' --ignore '**/*.test.ts'",
     "cleanup": "rimraf dist",
-    "build": "yarn cleanup; yarn babel-build; yarn build-declarations; echo `git rev-parse HEAD` > COMMIT",
+    "build": "yarn cleanup; yarn babel-build; yarn build-declarations; rollup -c; echo `git rev-parse HEAD` > COMMIT",
     "prepack": "yarn build"
   },
   "devDependencies": {
@@ -32,6 +33,9 @@
     "prettier": "^1.18.2",
     "prettier-eslint": "^9.0.0",
     "rimraf": "^3.0.0",
+    "rollup": "^1.21.2",
+    "rollup-plugin-babel": "^4.3.3",
+    "rollup-plugin-node-resolve": "^5.2.0",
     "typescript": "^3.6.2",
     "yarn-deduplicate": "^1.1.1"
   },

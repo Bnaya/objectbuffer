@@ -28,9 +28,13 @@ export function getUnderlyingArrayBuffer(objectBuffer: any): ArrayBuffer {
 export function createObjectBufferFromArrayBuffer<T = any>(
   textDecoder: any,
   textEncoder: any,
-  arrayBuffer: ArrayBuffer
-): any {
-  const dataView = new DataView(arrayBuffer);
+  arrayBuffer: ArrayBuffer,
+  // set to true if the give array buffer is not one from `getUnderlyingArrayBuffer`
+  shouldInitializeArrayBuffer = false
+): T {
+  const dataView = shouldInitializeArrayBuffer
+    ? initializeArrayBuffer(arrayBuffer)
+    : new DataView(arrayBuffer);
 
   return createObjectWrapper(
     dataView,

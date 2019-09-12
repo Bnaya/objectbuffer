@@ -1,7 +1,7 @@
 # WIP - object like api backed by a single array buffer.
-For Modern browsers and node.
+For Modern browsers and node. Zero direct dependencies.
 
-"design" doc: ()
+"design" doc:
 https://docs.google.com/document/d/1-UlUyH3HgOrN58avyScZlfjQtfJxgVwK_yE35mQHpYw/edit?usp=sharing
 
 ## Why?
