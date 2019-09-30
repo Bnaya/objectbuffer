@@ -1,26 +1,50 @@
 /* eslint-disable no-undef */
-import * as objectbuffer from "../src";
+import * as objectbufferModule from "../src";
 
 const textDecoder = new TextDecoder();
 const textEncoder = new TextEncoder();
 
 addEventListener("message", ev => {
+  let lastValueToFollow = "IM NOT INTERESTING";
+
   if (ev.data instanceof SharedArrayBuffer) {
-    const o = objectbuffer.createObjectBufferFromArrayBuffer(
+    const o = objectbufferModule.createObjectBufferFromArrayBuffer(
       textDecoder,
       textEncoder,
       ev.data,
       false
     );
 
-    let lastValueToFollow = o.some.nested[0].thing;
+    const lockStatus = objectbufferModule.locks.waitForLock(2, ev.data, 1000);
 
-    console.log("got SAB, first value is:", lastValueToFollow);
+    if (lockStatus === "have-lock") {
+      lastValueToFollow = o.some.nested[0].thing;
+
+      console.log("got SAB, first value is:", lastValueToFollow);
+      if (!objectbufferModule.locks.releaseLock(2, ev.data)) {
+        console.warn("failed releasing lock ??");
+      }
+    } else {
+      console.warn("failed acquiring lock: " + lockStatus);
+    }
 
     setInterval(() => {
-      if (lastValueToFollow !== o.some.nested[0].thing) {
-        lastValueToFollow = o.some.nested[0].thing;
-        console.log(lastValueToFollow);
+      const lockStatusInner = objectbufferModule.locks.waitForLock(
+        2,
+        ev.data,
+        1000
+      );
+
+      if (lockStatusInner === "have-lock") {
+        if (lastValueToFollow !== o.some.nested[0].thing) {
+          lastValueToFollow = o.some.nested[0].thing;
+          console.log(lastValueToFollow);
+        }
+        if (!objectbufferModule.locks.releaseLock(2, ev.data)) {
+          console.warn("failed releasing lock ??");
+        }
+      } else {
+        console.warn("failed acquiring lock: " + lockStatusInner);
       }
     }, 500);
   }

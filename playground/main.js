@@ -1,12 +1,12 @@
 /* eslint-disable no-undef */
-import * as objectbuffer from "../src";
+import * as objectbufferModules from "../src";
 
 import Worker from "worker-loader!./Worker.js";
 
 const textDecoder = new TextDecoder();
 const textEncoder = new TextEncoder();
 
-const o = objectbuffer.createObjectBuffer(
+const o = objectbufferModules.createObjectBuffer(
   textDecoder,
   textEncoder,
   512,
@@ -26,7 +26,7 @@ const o = objectbuffer.createObjectBuffer(
 
 // console.log(JSON.stringify(o, null, 2));
 
-const ab = objectbuffer.getUnderlyingArrayBuffer(o);
+const ab = objectbufferModules.getUnderlyingArrayBuffer(o);
 
 const worker = new Worker();
 
@@ -44,5 +44,13 @@ document.body.appendChild(input);
 document.body.appendChild(button);
 
 button.addEventListener("click", () => {
-  o.some.nested[0].thing = input.value;
+  if (objectbufferModules.locks.getLock(1, ab)) {
+    o.some.nested[0].thing = input.value;
+
+    if (!objectbufferModules.locks.releaseLock(1, ab)) {
+      console.warn("releaseLock failed ??");
+    }
+  } else {
+    console.warn("where is my lock ??");
+  }
 });

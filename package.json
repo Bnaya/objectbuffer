@@ -15,7 +15,7 @@
     "cleanup": "rimraf dist",
     "build": "yarn cleanup; yarn babel-build; yarn build-declarations; rollup -c; cp dist/index.d.ts dist/objectbuffer.cjs.d.ts ;echo `git rev-parse HEAD` > COMMIT",
     "prepack": "yarn build",
-    "browser-playground": "webpack-dev-server --config playground/webpack.config.js playground/main.js --open"
+    "browser-playground": "webpack-dev-server --mode=development --config playground/webpack.config.js playground/main.js --open"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",
