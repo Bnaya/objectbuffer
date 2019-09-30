@@ -70,7 +70,7 @@ export function getFinalValueAtArrayIndex(
     textEncoder,
     arrayAdditionalAllocation,
     entry[0],
-    entry[1]
+    pointers.pointer
   );
 }
 

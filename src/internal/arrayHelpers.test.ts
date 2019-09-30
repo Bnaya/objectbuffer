@@ -29,7 +29,7 @@ describe("arrayHelpers tests", () => {
         "allocatedLength": 2,
         "length": 2,
         "type": 9,
-        "value": 16,
+        "value": 24,
       }
     `);
   });
@@ -103,7 +103,7 @@ describe("arrayHelpers tests", () => {
   });
 
   test("setValueAtArrayIndex basic", () => {
-    const arrayBuffer = new ArrayBuffer(80);
+    const arrayBuffer = new ArrayBuffer(84);
 
     const dataView = new DataView(arrayBuffer);
     initializeArrayBuffer(arrayBuffer);

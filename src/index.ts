@@ -10,11 +10,17 @@ export function createObjectBuffer<T = any>(
   textEncoder: any,
   size: number,
   initialValue: T,
-  { arrayAdditionalAllocation }: { arrayAdditionalAllocation?: number } = {
-    arrayAdditionalAllocation: 0
+  {
+    arrayAdditionalAllocation,
+    useSharedArrayBuffer
+  }: { arrayAdditionalAllocation?: number; useSharedArrayBuffer?: boolean } = {
+    arrayAdditionalAllocation: 0,
+    useSharedArrayBuffer: false
   }
 ): T {
-  const arrayBuffer = new ArrayBuffer(size);
+  const arrayBuffer = new (useSharedArrayBuffer
+    ? SharedArrayBuffer
+    : ArrayBuffer)(size);
   const dataView = initializeArrayBuffer(arrayBuffer);
 
   const { start } = objectSaver(
@@ -24,19 +30,21 @@ export function createObjectBuffer<T = any>(
     initialValue
   );
 
-  dataView.setUint32(8, start);
+  dataView.setUint32(16, start);
 
   return createObjectWrapper(dataView, start, textDecoder, textEncoder, true);
 }
 
-export function getUnderlyingArrayBuffer(objectBuffer: any): ArrayBuffer {
+export function getUnderlyingArrayBuffer(
+  objectBuffer: any
+): ArrayBuffer | SharedArrayBuffer {
   return objectBuffer[GET_UNDERLYING_ARRAY_BUFFER_SYMBOL];
 }
 
 export function createObjectBufferFromArrayBuffer<T = any>(
   textDecoder: any,
   textEncoder: any,
-  arrayBuffer: ArrayBuffer,
+  arrayBuffer: ArrayBuffer | SharedArrayBuffer,
   // set to true if the give array buffer is not one from `getUnderlyingArrayBuffer`
   shouldInitializeArrayBuffer = false
 ): T {
@@ -46,7 +54,7 @@ export function createObjectBufferFromArrayBuffer<T = any>(
 
   return createObjectWrapper(
     dataView,
-    dataView.getUint32(8),
+    dataView.getUint32(16),
     textDecoder,
     textEncoder
   );

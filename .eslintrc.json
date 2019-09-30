@@ -26,6 +26,7 @@
     "es6": true
   },
   "globals": {
+    "SharedArrayBuffer": true,
     "BigInt": true,
     "BigInt64Array": true,
     "BigUint64Array": true

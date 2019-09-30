@@ -30,7 +30,7 @@ describe("objectSaver tests", () => {
       expect(saverOutput).toMatchInlineSnapshot(`
         Object {
           "length": 159,
-          "start": 170,
+          "start": 178,
         }
       `);
 

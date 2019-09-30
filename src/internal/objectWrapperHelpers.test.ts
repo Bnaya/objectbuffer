@@ -37,13 +37,13 @@ describe("objectWrapperHelpers tests", () => {
 
       expect(foundEntry).toMatchInlineSnapshot(`
         Array [
-          71,
+          79,
           Object {
             "type": 8,
             "value": Object {
               "key": "a",
-              "next": 42,
-              "value": 62,
+              "next": 50,
+              "value": 70,
             },
           },
         ]
@@ -90,32 +90,32 @@ describe("objectWrapperHelpers tests", () => {
             "type": 8,
             "value": Object {
               "key": "5",
-              "next": 129,
-              "value": 141,
+              "next": 137,
+              "value": 149,
             },
           },
           Object {
             "type": 8,
             "value": Object {
               "key": "a",
-              "next": 100,
-              "value": 120,
+              "next": 108,
+              "value": 128,
             },
           },
           Object {
             "type": 8,
             "value": Object {
               "key": "kawabanga",
-              "next": 87,
-              "value": 99,
+              "next": 95,
+              "value": 107,
             },
           },
           Object {
             "type": 8,
             "value": Object {
               "key": "b",
-              "next": 51,
-              "value": 74,
+              "next": 59,
+              "value": 82,
             },
           },
           Object {
@@ -123,7 +123,7 @@ describe("objectWrapperHelpers tests", () => {
             "value": Object {
               "key": "nestedObject",
               "next": 0,
-              "value": 46,
+              "value": 54,
             },
           },
         ]
@@ -165,16 +165,16 @@ describe("objectWrapperHelpers tests", () => {
             "type": 8,
             "value": Object {
               "key": "b",
-              "next": 30,
-              "value": 42,
+              "next": 38,
+              "value": 50,
             },
           },
           Object {
             "type": 8,
             "value": Object {
               "key": "c",
-              "next": 17,
-              "value": 29,
+              "next": 25,
+              "value": 37,
             },
           },
           Object {
@@ -182,7 +182,7 @@ describe("objectWrapperHelpers tests", () => {
             "value": Object {
               "key": "d",
               "next": 0,
-              "value": 16,
+              "value": 24,
             },
           },
         ]
@@ -221,16 +221,16 @@ describe("objectWrapperHelpers tests", () => {
             "type": 8,
             "value": Object {
               "key": "a",
-              "next": 55,
-              "value": 67,
+              "next": 63,
+              "value": 75,
             },
           },
           Object {
             "type": 8,
             "value": Object {
               "key": "b",
-              "next": 30,
-              "value": 42,
+              "next": 38,
+              "value": 50,
             },
           },
           Object {
@@ -238,7 +238,7 @@ describe("objectWrapperHelpers tests", () => {
             "value": Object {
               "key": "c",
               "next": 0,
-              "value": 29,
+              "value": 37,
             },
           },
         ]
@@ -278,24 +278,24 @@ describe("objectWrapperHelpers tests", () => {
             "type": 8,
             "value": Object {
               "key": "a",
-              "next": 76,
-              "value": 88,
+              "next": 84,
+              "value": 96,
             },
           },
           Object {
             "type": 8,
             "value": Object {
               "key": "b",
-              "next": 38,
-              "value": 63,
+              "next": 46,
+              "value": 71,
             },
           },
           Object {
             "type": 8,
             "value": Object {
               "key": "d",
-              "next": 25,
-              "value": 37,
+              "next": 33,
+              "value": 45,
             },
           },
           Object {
@@ -303,7 +303,7 @@ describe("objectWrapperHelpers tests", () => {
             "value": Object {
               "key": "e",
               "next": 0,
-              "value": 16,
+              "value": 24,
             },
           },
         ]
@@ -333,13 +333,13 @@ describe("objectWrapperHelpers tests", () => {
 
       expect(found).toMatchInlineSnapshot(`
         Array [
-          17,
+          25,
           Object {
             "type": 8,
             "value": Object {
               "key": "c",
               "next": 0,
-              "value": 16,
+              "value": 24,
             },
           },
         ]
@@ -354,16 +354,16 @@ describe("objectWrapperHelpers tests", () => {
             "type": 8,
             "value": Object {
               "key": "a",
-              "next": 42,
-              "value": 54,
+              "next": 50,
+              "value": 62,
             },
           },
           Object {
             "type": 8,
             "value": Object {
               "key": "b",
-              "next": 17,
-              "value": 29,
+              "next": 25,
+              "value": 37,
             },
           },
           Object {
@@ -371,7 +371,7 @@ describe("objectWrapperHelpers tests", () => {
             "value": Object {
               "key": "c",
               "next": 0,
-              "value": 16,
+              "value": 24,
             },
           },
         ]
@@ -397,7 +397,7 @@ describe("objectWrapperHelpers tests", () => {
 
       expect(found).toMatchInlineSnapshot(`
         Array [
-          16,
+          24,
           Object {
             "type": 7,
             "value": 0,

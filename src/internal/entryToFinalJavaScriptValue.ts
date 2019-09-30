@@ -28,7 +28,9 @@ export function entryToFinalJavaScriptValue(
       dataView,
       pointerToEntry,
       textDecoder,
-      textEncoder
+      textEncoder,
+      false,
+      arrayAdditionalAllocation
     );
   }
 

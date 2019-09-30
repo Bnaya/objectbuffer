@@ -21,7 +21,7 @@ describe("arraySaver tests", () => {
       expect(saverOutput).toMatchInlineSnapshot(`
         Object {
           "length": 52,
-          "start": 55,
+          "start": 63,
         }
       `);
 

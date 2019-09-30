@@ -252,7 +252,7 @@ export function createObjectWrapper<T = any>(
   arrayAdditionalAllocation = 50
 ): T {
   return new Proxy(
-    { bla: 1 },
+    { objectBufferWrapper: "objectBufferWrapper" },
     new ObjectWrapper(
       dataView,
       entryPointer,

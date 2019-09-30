@@ -5,7 +5,7 @@ For Modern browsers and node. Zero direct dependencies.
 https://docs.google.com/document/d/1-UlUyH3HgOrN58avyScZlfjQtfJxgVwK_yE35mQHpYw/edit?usp=sharing
 
 ## Why?
-Personal interest, Maybe will be useful as shared memory primitive([Not working yet with SAB](https://github.com/whatwg/encoding/issues/172)), and communicating with wasm.
+Personal interest, Maybe will be useful as shared memory primitive, and communicating with WASM.
 
 At the current state, it's working! but very unoptimized (based only on linked lists), only append data (no logic to reuse unreachable memory)
 and its not extending the backing `arraybuffer` size by itself.
@@ -19,10 +19,9 @@ We still don't have [ArrayBuffer.prototype.transfer](https://developer.mozilla.o
  * `Set` On primitive values
 
 ### What's working:
-  * Kinda what ever that can do into `JSON.stringify`
-  * objects!
+  * Kinda what ever that can go into `JSON.stringify`
+  * objects
   * arrays
-  * other
 
 ### What's not working yet, but can be:
  * `bigint` bigger than 64 bit

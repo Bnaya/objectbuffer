@@ -1,5 +1,6 @@
 import { ENTRY_TYPE } from "./entry-types";
 import { Entry, ObjectPropEntry } from "./interfaces";
+import { arrayBufferCopyTo } from "./utils";
 const DEFAULT_ARRAY_BUFFER_SIZE = 10 ^ 6;
 
 export class Store {
@@ -18,11 +19,14 @@ export class Store {
 export function initializeArrayBuffer(arrayBuffer: ArrayBuffer) {
   const dataView = new DataView(arrayBuffer);
 
-  // End of data pointer
-  dataView.setUint32(0, 16);
+  // global lock
+  dataView.setInt32(0, 0);
+
+  // End of data pointer / first free byte
+  dataView.setUint32(8, 24);
 
   // first entry pointer
-  dataView.setUint32(8, 16);
+  dataView.setUint32(16, 24);
 
   return dataView;
 }
@@ -134,10 +138,10 @@ export function appendEntry(
   textEncoder: any
 ) {
   // End of data pointer
-  const firstFreeByte = dataView.getUint32(0);
+  const firstFreeByte = dataView.getUint32(8);
 
   const written = writeEntry(dataView, firstFreeByte, entry, textEncoder);
-  dataView.setUint32(0, firstFreeByte + written);
+  dataView.setUint32(8, firstFreeByte + written);
 
   return {
     start: firstFreeByte,
@@ -187,11 +191,13 @@ export function readEntry(
       const stringLength = dataView.getUint16(cursor);
       cursor += Uint16Array.BYTES_PER_ELEMENT;
 
-      entry.value = textDecoder.decode(
-        // this wrapping is needed until:
-        // https://github.com/whatwg/encoding/issues/172
-        new Uint8Array(dataView.buffer.slice(cursor, cursor + stringLength))
-      );
+      // this wrapping is needed until:
+      // https://github.com/whatwg/encoding/issues/172
+      // eslint-disable-next-line no-case-declarations
+      const tempAB = new ArrayBuffer(stringLength);
+      arrayBufferCopyTo(dataView.buffer, cursor, stringLength, tempAB, 0);
+
+      entry.value = textDecoder.decode(tempAB);
 
       cursor += stringLength;
 
@@ -217,15 +223,15 @@ export function readEntry(
       const keyStringLength = dataView.getUint16(cursor);
       cursor += Uint16Array.BYTES_PER_ELEMENT;
 
+      // this wrapping is needed until:
+      // https://github.com/whatwg/encoding/issues/172
+      // eslint-disable-next-line no-case-declarations
+      const tempAB2 = new ArrayBuffer(keyStringLength);
+      arrayBufferCopyTo(dataView.buffer, cursor, keyStringLength, tempAB2, 0);
+
       // eslint-disable-next-line no-case-declarations
       const objectPropsValue: ObjectPropEntry["value"] = {
-        key: textDecoder.decode(
-          // this wrapping is needed until:
-          // https://github.com/whatwg/encoding/issues/172
-          new Uint8Array(
-            dataView.buffer.slice(cursor, cursor + keyStringLength)
-          )
-        ),
+        key: textDecoder.decode(tempAB2),
         value: dataView.getUint32(cursor + keyStringLength),
         next: dataView.getUint32(
           cursor + keyStringLength + Uint32Array.BYTES_PER_ELEMENT
@@ -257,9 +263,9 @@ export function readEntry(
 }
 
 export function reserveMemory(dataView: DataView, length: number) {
-  const firstFreeByte = dataView.getUint32(0);
+  const firstFreeByte = dataView.getUint32(8);
 
-  dataView.setUint32(0, firstFreeByte + length);
+  dataView.setUint32(8, firstFreeByte + length);
 
   return firstFreeByte;
 }
