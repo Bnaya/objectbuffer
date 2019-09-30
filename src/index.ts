@@ -9,12 +9,20 @@ export function createObjectBuffer<T = any>(
   textDecoder: any,
   textEncoder: any,
   size: number,
-  initialValue: T
+  initialValue: T,
+  { arrayAdditionalAllocation }: { arrayAdditionalAllocation?: number } = {
+    arrayAdditionalAllocation: 0
+  }
 ): T {
   const arrayBuffer = new ArrayBuffer(size);
   const dataView = initializeArrayBuffer(arrayBuffer);
 
-  const { start } = objectSaver(textEncoder, dataView, initialValue);
+  const { start } = objectSaver(
+    textEncoder,
+    dataView,
+    arrayAdditionalAllocation || 0,
+    initialValue
+  );
 
   dataView.setUint32(8, start);
 

@@ -26,7 +26,7 @@ describe("objectWrapperHelpers tests", () => {
         5: undefined
       };
 
-      const saverOutput = objectSaver(textEncoder, dataView, objectToSave);
+      const saverOutput = objectSaver(textEncoder, dataView, 0, objectToSave);
 
       let foundEntry = findObjectPropertyEntry(
         dataView,
@@ -76,7 +76,7 @@ describe("objectWrapperHelpers tests", () => {
         }
       };
 
-      const saverOutput = objectSaver(textEncoder, dataView, objectToSave);
+      const saverOutput = objectSaver(textEncoder, dataView, 0, objectToSave);
 
       const gotEntries = getObjectPropertiesEntries(
         dataView,
@@ -143,7 +143,7 @@ describe("objectWrapperHelpers tests", () => {
         d: null
       };
 
-      const saverOutput = objectSaver(textEncoder, dataView, objectToSave);
+      const saverOutput = objectSaver(textEncoder, dataView, 0, objectToSave);
 
       deleteObjectPropertyEntryByKey(
         dataView,
@@ -203,7 +203,7 @@ describe("objectWrapperHelpers tests", () => {
         d: null
       };
 
-      const saverOutput = objectSaver(textEncoder, dataView, objectToSave);
+      const saverOutput = objectSaver(textEncoder, dataView, 0, objectToSave);
 
       deleteObjectPropertyEntryByKey(
         dataView,
@@ -260,7 +260,7 @@ describe("objectWrapperHelpers tests", () => {
         e: 66
       };
 
-      const saverOutput = objectSaver(textEncoder, dataView, objectToSave);
+      const saverOutput = objectSaver(textEncoder, dataView, 0, objectToSave);
 
       deleteObjectPropertyEntryByKey(
         dataView,
@@ -323,7 +323,7 @@ describe("objectWrapperHelpers tests", () => {
         c: undefined
       };
 
-      const saverOutput = objectSaver(textEncoder, dataView, objectToSave);
+      const saverOutput = objectSaver(textEncoder, dataView, 0, objectToSave);
 
       const found = findLastObjectPropertyEntry(
         dataView,
@@ -387,7 +387,7 @@ describe("objectWrapperHelpers tests", () => {
 
       const objectToSave = {};
 
-      const saverOutput = objectSaver(textEncoder, dataView, objectToSave);
+      const saverOutput = objectSaver(textEncoder, dataView, 0, objectToSave);
 
       const found = findLastObjectPropertyEntry(
         dataView,

@@ -107,7 +107,18 @@ export function writeEntry(
       cursor += Uint32Array.BYTES_PER_ELEMENT;
       break;
 
+    case ENTRY_TYPE.ARRAY:
+      dataView.setUint32(cursor, entry.value);
+      cursor += Uint32Array.BYTES_PER_ELEMENT;
+      dataView.setUint32(cursor, entry.length);
+      cursor += Uint32Array.BYTES_PER_ELEMENT;
+      dataView.setUint32(cursor, entry.allocatedLength);
+      cursor += Uint32Array.BYTES_PER_ELEMENT;
+      break;
+
     default:
+      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+      // @ts-ignore
       throw new Error(ENTRY_TYPE[entry.type] + " Not implemented yet");
   }
 
@@ -229,9 +240,26 @@ export function readEntry(
       entry.value = objectPropsValue;
       break;
 
+    case ENTRY_TYPE.ARRAY:
+      entry.value = dataView.getUint32(cursor);
+      cursor += Uint32Array.BYTES_PER_ELEMENT;
+      entry.length = dataView.getUint32(cursor);
+      cursor += Uint32Array.BYTES_PER_ELEMENT;
+      entry.allocatedLength = dataView.getUint32(cursor);
+      cursor += Uint32Array.BYTES_PER_ELEMENT;
+      break;
+
     default:
       throw new Error(ENTRY_TYPE[entryType] + " Not implemented yet");
   }
 
   return [entry, cursor - startingCursor];
+}
+
+export function reserveMemory(dataView: DataView, length: number) {
+  const firstFreeByte = dataView.getUint32(0);
+
+  dataView.setUint32(0, firstFreeByte + length);
+
+  return firstFreeByte;
 }

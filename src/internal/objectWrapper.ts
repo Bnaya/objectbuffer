@@ -1,6 +1,6 @@
 import { ObjectEntry } from "./interfaces";
 import { readEntry, writeEntry, appendEntry } from "./store";
-import { ENTRY_TYPE, isPrimitiveEntryType } from "./entry-types";
+import { ENTRY_TYPE } from "./entry-types";
 import {
   findObjectPropertyEntry,
   getObjectPropertiesEntries,
@@ -8,6 +8,8 @@ import {
   findLastObjectPropertyEntry
 } from "./objectWrapperHelpers";
 import { saveValue } from "./saveValue";
+
+import { entryToFinalJavaScriptValue } from "./entryToFinalJavaScriptValue";
 
 export const GET_UNDERLYING_ARRAY_BUFFER_SYMBOL = Symbol(
   "GET_UNDERLYING_ARRAY_BUFFER_SYMBOL"
@@ -19,7 +21,8 @@ export class ObjectWrapper implements ProxyHandler<{}> {
     private entryPointer: number,
     private textDecoder: any,
     private textEncoder: any,
-    private isTopLevel: boolean
+    private isTopLevel: boolean,
+    private arrayAdditionalAllocation: number
   ) {}
 
   public getUnderlyingArrayBuffer() {
@@ -60,28 +63,14 @@ export class ObjectWrapper implements ProxyHandler<{}> {
       this.textDecoder
     );
 
-    if (valueEntry.type === ENTRY_TYPE.NULL) {
-      return null;
-    }
-
-    if (valueEntry.type === ENTRY_TYPE.UNDEFINED) {
-      return undefined;
-    }
-
-    if (isPrimitiveEntryType(valueEntry.type)) {
-      return valueEntry.value;
-    }
-
-    if (valueEntry.type === ENTRY_TYPE.OBJECT) {
-      return createObjectWrapper(
-        this.dataView,
-        foundEntry[1].value.value,
-        this.textDecoder,
-        this.textEncoder
-      );
-    }
-
-    throw new Error("unsupported yet");
+    return entryToFinalJavaScriptValue(
+      this.dataView,
+      this.textDecoder,
+      this.textEncoder,
+      this.arrayAdditionalAllocation,
+      valueEntry,
+      foundEntry[1].value.value
+    );
   }
 
   public deleteProperty(target: {}, p: PropertyKey): boolean {
@@ -141,6 +130,7 @@ export class ObjectWrapper implements ProxyHandler<{}> {
     const { start: newValueEntryPointer } = saveValue(
       this.textEncoder,
       this.dataView,
+      this.arrayAdditionalAllocation,
       value
     );
 
@@ -258,7 +248,8 @@ export function createObjectWrapper<T = any>(
   entryPointer: number,
   textDecoder: any,
   textEncoder: any,
-  isTopLevel = false
+  isTopLevel = false,
+  arrayAdditionalAllocation = 50
 ): T {
   return new Proxy(
     { bla: 1 },
@@ -267,7 +258,8 @@ export function createObjectWrapper<T = any>(
       entryPointer,
       textDecoder,
       textEncoder,
-      isTopLevel
+      isTopLevel,
+      arrayAdditionalAllocation
     )
   ) as any;
 }

@@ -24,7 +24,7 @@ describe("objectWrapper tests", () => {
         }
       };
 
-      const saverOutput = objectSaver(textEncoder, dataView, objectToSave);
+      const saverOutput = objectSaver(textEncoder, dataView, 0, objectToSave);
 
       const objectWrapper: any = createObjectWrapper(
         dataView,
@@ -67,7 +67,7 @@ describe("objectWrapper tests", () => {
         }
       };
 
-      const saverOutput = objectSaver(textEncoder, dataView, objectToSave);
+      const saverOutput = objectSaver(textEncoder, dataView, 0, objectToSave);
 
       const objectWrapper: any = createObjectWrapper(
         dataView,
@@ -97,7 +97,7 @@ describe("objectWrapper tests", () => {
         }
       };
 
-      const saverOutput = objectSaver(textEncoder, dataView, objectToSave);
+      const saverOutput = objectSaver(textEncoder, dataView, 0, objectToSave);
 
       const objectWrapper = createObjectWrapper(
         dataView,
@@ -138,7 +138,7 @@ describe("objectWrapper tests", () => {
         }
       };
 
-      const saverOutput = objectSaver(textEncoder, dataView, objectToSave);
+      const saverOutput = objectSaver(textEncoder, dataView, 0, objectToSave);
 
       const objectWrapper = createObjectWrapper(
         dataView,
@@ -180,7 +180,7 @@ describe("objectWrapper tests", () => {
         }
       };
 
-      const saverOutput = objectSaver(textEncoder, dataView, objectToSave);
+      const saverOutput = objectSaver(textEncoder, dataView, 0, objectToSave);
 
       const objectWrapper = createObjectWrapper(
         dataView,

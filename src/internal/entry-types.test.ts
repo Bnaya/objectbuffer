@@ -6,8 +6,8 @@ describe("Test Entry types", () => {
   test("Freeze Entry types", () => {
     expect(ENTRY_TYPE).toMatchInlineSnapshot(`
       Object {
-        "0": "NULL",
-        "1": "UNDEFINED",
+        "0": "UNDEFINED",
+        "1": "NULL",
         "10": "ARRAY_ITEM",
         "11": "MAP",
         "12": "SET",
@@ -26,14 +26,14 @@ describe("Test Entry types", () => {
         "BOOLEAN": 6,
         "DATE": 13,
         "MAP": 11,
-        "NULL": 0,
+        "NULL": 1,
         "NUMBER": 2,
         "OBJECT": 7,
         "OBJECT_PROP": 8,
         "SET": 12,
         "STRING": 5,
         "UBIGINT": 4,
-        "UNDEFINED": 1,
+        "UNDEFINED": 0,
       }
     `);
   });

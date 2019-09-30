@@ -13,7 +13,7 @@ if you pass the limit, an exception will be thrown.
 We still don't have [ArrayBuffer.prototype.transfer](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer/transfer) So we can't do that efficiently.  
 
 ### Missing parts
- * `array` (Not sure yet if to make just make them as objects, or something smarter)
+ * `array` methods
  * `Date`
  * `Map` On primitive key/value
  * `Set` On primitive values
@@ -21,6 +21,7 @@ We still don't have [ArrayBuffer.prototype.transfer](https://developer.mozilla.o
 ### What's working:
   * Kinda what ever that can do into `JSON.stringify`
   * objects!
+  * arrays
   * other
 
 ### What's not working yet, but can be:

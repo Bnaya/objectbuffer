@@ -1,8 +1,8 @@
 import { createKnownTypeGuard } from "./utils";
 
 export enum ENTRY_TYPE {
-  NULL,
   UNDEFINED,
+  NULL,
   NUMBER,
   BIGINT,
   UBIGINT,
