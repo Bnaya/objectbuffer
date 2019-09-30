@@ -6,7 +6,7 @@
         "targets": {
           "node": "8"
         },
-        "modules": false
+        "modules": "cjs"
       }
     ],
     "@babel/preset-typescript"
