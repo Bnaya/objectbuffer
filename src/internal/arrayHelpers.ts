@@ -2,7 +2,6 @@ import { readEntry, reserveMemory, writeEntry } from "./store";
 import { ArrayEntry } from "./interfaces";
 import { entryToFinalJavaScriptValue } from "./entryToFinalJavaScriptValue";
 import { saveValue } from "./saveValue";
-import { TextEncoder } from "util";
 import { ENTRY_TYPE } from "./entry-types";
 import { assertNonNull } from "./assertNonNull";
 
@@ -78,6 +77,7 @@ export function getFinalValueAtArrayIndex(
 export function setValuePointerAtArrayIndex(
   dataView: DataView,
   textDecoder: any,
+  textEncoder: any,
   arrayAdditionalAllocation: number,
   pointerToArrayEntry: number,
   indexToSet: number,
@@ -91,6 +91,7 @@ export function setValuePointerAtArrayIndex(
       reallocateArray(
         dataView,
         textDecoder,
+        textEncoder,
         pointerToArrayEntry,
         indexToSet + 1 + arrayAdditionalAllocation,
         indexToSet + 1
@@ -106,7 +107,7 @@ export function setValuePointerAtArrayIndex(
           allocatedLength: metadata.allocatedLength,
           length: indexToSet + 1
         },
-        TextEncoder
+        textEncoder
       );
     }
   }
@@ -142,6 +143,7 @@ export function setValueAtArrayIndex(
   setValuePointerAtArrayIndex(
     dataView,
     textDecoder,
+    textEncoder,
     arrayAdditionalAllocation,
     pointerToArrayEntry,
     indexToSet,
@@ -152,6 +154,7 @@ export function setValueAtArrayIndex(
 function reallocateArray(
   dataView: DataView,
   textDecoder: any,
+  textEncoder: any,
   pointerToArrayEntry: number,
   newAllocatedLength: number,
   newLength: number
@@ -185,6 +188,6 @@ function reallocateArray(
       allocatedLength: newAllocatedLength,
       length: newLength
     },
-    TextEncoder
+    textEncoder
   );
 }
