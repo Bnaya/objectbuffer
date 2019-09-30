@@ -12,8 +12,7 @@ export type Entry =
   | UBigIntEntry
   | ObjectEntry
   | ObjectPropEntry
-  | ArrayEntry
-  | ArrayItemEntry;
+  | ArrayEntry;
 
 export interface NullEntry {
   type: ENTRY_TYPE.NULL;
@@ -78,14 +77,6 @@ export interface ArrayEntry {
   type: ENTRY_TYPE.ARRAY;
   // pointer to the first array item
   value: number;
-}
-
-export interface ArrayItemEntry {
-  type: ENTRY_TYPE.ARRAY_ITEM;
-  value: {
-    // pointer to value entry
-    value: number;
-    // pointer to next prop
-    next: number;
-  };
+  length: number;
+  allocatedLength: number;
 }

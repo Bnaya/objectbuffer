@@ -1,8 +1,14 @@
 import { primitiveValueToEntry, isPrimitive } from "./utils";
 import { appendEntry } from "./store";
 import { objectSaver } from "./objectSaver";
+import { arraySaver } from "./arraySaver";
 
-export function saveValue(textEncoder: any, dataView: DataView, value: any) {
+export function saveValue(
+  textEncoder: any,
+  dataView: DataView,
+  arrayAdditionalAllocation: number,
+  value: any
+) {
   let totalWrittenBytes = 0;
   let valuePointer = 0;
 
@@ -12,8 +18,22 @@ export function saveValue(textEncoder: any, dataView: DataView, value: any) {
 
     valuePointer = start;
     totalWrittenBytes += length;
+  } else if (Array.isArray(value)) {
+    const { start, length } = arraySaver(
+      textEncoder,
+      dataView,
+      arrayAdditionalAllocation,
+      value
+    );
+    valuePointer = start;
+    totalWrittenBytes += length;
   } else if (typeof value === "object") {
-    const { start, length } = objectSaver(textEncoder, dataView, value);
+    const { start, length } = objectSaver(
+      textEncoder,
+      dataView,
+      arrayAdditionalAllocation,
+      value
+    );
     valuePointer = start;
     totalWrittenBytes += length;
   } else {

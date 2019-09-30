@@ -8,6 +8,7 @@ import { saveValue } from "./saveValue";
 export function objectSaver(
   textEncoder: any,
   dataView: DataView,
+  arrayAdditionalAllocation: number,
   objectToSave: any
 ) {
   let totalWrittenBytes = 0;
@@ -18,7 +19,12 @@ export function objectSaver(
   let nextObjectEntryPointer = 0;
 
   for (const [key, value] of objectEntries) {
-    const rOfValue = saveValue(textEncoder, dataView, value);
+    const rOfValue = saveValue(
+      textEncoder,
+      dataView,
+      arrayAdditionalAllocation,
+      value
+    );
 
     const objectPropEntry: ObjectPropEntry = {
       type: ENTRY_TYPE.OBJECT_PROP,

@@ -25,12 +25,12 @@ describe("objectSaver tests", () => {
         }
       };
 
-      const saverOutput = objectSaver(textEncoder, dataView, objectToSave);
+      const saverOutput = objectSaver(textEncoder, dataView, 0, objectToSave);
 
       expect(saverOutput).toMatchInlineSnapshot(`
         Object {
           "length": 159,
-          "start": 170,
+          "start": 178,
         }
       `);
 

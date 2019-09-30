@@ -15,7 +15,7 @@
     "cleanup": "rimraf dist",
     "build": "yarn cleanup; yarn babel-build; yarn build-declarations; rollup -c; cp dist/index.d.ts dist/objectbuffer.cjs.d.ts ;echo `git rev-parse HEAD` > COMMIT",
     "prepack": "yarn build",
-    "browser-playground": "webpack-dev-server --config playground/webpack.config.js playground/main.js --open"
+    "browser-playground": "webpack-dev-server --mode=development --config playground/webpack.config.js playground/main.js --open"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",
@@ -39,10 +39,11 @@
     "rollup": "^1.21.2",
     "rollup-plugin-babel": "^4.3.3",
     "rollup-plugin-node-resolve": "^5.2.0",
-    "typescript": "^3.6.2",
+    "typescript": "^3.7.0-dev.20190927",
     "webpack": "^4.39.3",
     "webpack-cli": "^3.3.8",
     "webpack-dev-server": "^3.8.0",
+    "worker-loader": "^2.0.0",
     "yarn-deduplicate": "^1.1.1"
   },
   "husky": {

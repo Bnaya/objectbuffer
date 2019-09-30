@@ -13,7 +13,7 @@ import { ObjectEntry, ObjectPropEntry } from "./interfaces";
 
 describe("Store tests - Misc", () => {
   test("initializeArrayBuffer", () => {
-    const arrayBuffer = new ArrayBuffer(16);
+    const arrayBuffer = new ArrayBuffer(20);
 
     initializeArrayBuffer(arrayBuffer);
     expect(arrayBuffer2HexArray(arrayBuffer, true)).toMatchInlineSnapshot(`
@@ -21,7 +21,7 @@ describe("Store tests - Misc", () => {
         "0:0x00",
         "1:0x00",
         "2:0x00",
-        "3:0x10",
+        "3:0x00",
         "4:0x00",
         "5:0x00",
         "6:0x00",
@@ -29,11 +29,15 @@ describe("Store tests - Misc", () => {
         "8:0x00",
         "9:0x00",
         "10:0x00",
-        "11:0x10",
+        "11:0x18",
         "12:0x00",
         "13:0x00",
         "14:0x00",
         "15:0x00",
+        "16:0x00",
+        "17:0x00",
+        "18:0x00",
+        "19:0x18",
       ]
     `);
   });
@@ -361,7 +365,7 @@ describe("Store tests readEntry", () => {
 
   describe("appendEntry - general", () => {
     test("appendEntry", () => {
-      const arrayBuffer = new ArrayBuffer(32);
+      const arrayBuffer = new ArrayBuffer(40);
       const textEncoder = new utils.TextEncoder();
       const dataView = new DataView(arrayBuffer);
       initializeArrayBuffer(arrayBuffer);
@@ -378,7 +382,7 @@ describe("Store tests readEntry", () => {
       expect(r1).toMatchInlineSnapshot(`
         Object {
           "length": 14,
-          "start": 16,
+          "start": 24,
         }
       `);
 
@@ -387,7 +391,7 @@ describe("Store tests readEntry", () => {
           "0:0x00",
           "1:0x00",
           "2:0x00",
-          "3:0x1e",
+          "3:0x00",
           "4:0x00",
           "5:0x00",
           "6:0x00",
@@ -395,27 +399,35 @@ describe("Store tests readEntry", () => {
           "8:0x00",
           "9:0x00",
           "10:0x00",
-          "11:0x10",
+          "11:0x26",
           "12:0x00",
           "13:0x00",
           "14:0x00",
           "15:0x00",
-          "16:0x05",
+          "16:0x00",
           "17:0x00",
-          "18:0x0b",
-          "19:0x69",
-          "20:0x6d",
-          "21:0x20",
-          "22:0x61",
-          "23:0x20",
-          "24:0x73",
-          "25:0x74",
-          "26:0x72",
+          "18:0x00",
+          "19:0x18",
+          "20:0x00",
+          "21:0x00",
+          "22:0x00",
+          "23:0x00",
+          "24:0x05",
+          "25:0x00",
+          "26:0x0b",
           "27:0x69",
-          "28:0x6e",
-          "29:0x67",
-          "30:0x00",
-          "31:0x00",
+          "28:0x6d",
+          "29:0x20",
+          "30:0x61",
+          "31:0x20",
+          "32:0x73",
+          "33:0x74",
+          "34:0x72",
+          "35:0x69",
+          "36:0x6e",
+          "37:0x67",
+          "38:0x00",
+          "39:0x00",
         ]
       `);
 
@@ -431,7 +443,7 @@ describe("Store tests readEntry", () => {
       expect(r2).toMatchInlineSnapshot(`
         Object {
           "length": 2,
-          "start": 30,
+          "start": 38,
         }
       `);
       expect(arrayBuffer2HexArray(arrayBuffer, true)).toMatchInlineSnapshot(`
@@ -439,7 +451,7 @@ describe("Store tests readEntry", () => {
           "0:0x00",
           "1:0x00",
           "2:0x00",
-          "3:0x20",
+          "3:0x00",
           "4:0x00",
           "5:0x00",
           "6:0x00",
@@ -447,27 +459,35 @@ describe("Store tests readEntry", () => {
           "8:0x00",
           "9:0x00",
           "10:0x00",
-          "11:0x10",
+          "11:0x28",
           "12:0x00",
           "13:0x00",
           "14:0x00",
           "15:0x00",
-          "16:0x05",
+          "16:0x00",
           "17:0x00",
-          "18:0x0b",
-          "19:0x69",
-          "20:0x6d",
-          "21:0x20",
-          "22:0x61",
-          "23:0x20",
-          "24:0x73",
-          "25:0x74",
-          "26:0x72",
+          "18:0x00",
+          "19:0x18",
+          "20:0x00",
+          "21:0x00",
+          "22:0x00",
+          "23:0x00",
+          "24:0x05",
+          "25:0x00",
+          "26:0x0b",
           "27:0x69",
-          "28:0x6e",
-          "29:0x67",
-          "30:0x06",
-          "31:0x01",
+          "28:0x6d",
+          "29:0x20",
+          "30:0x61",
+          "31:0x20",
+          "32:0x73",
+          "33:0x74",
+          "34:0x72",
+          "35:0x69",
+          "36:0x6e",
+          "37:0x67",
+          "38:0x06",
+          "39:0x01",
         ]
       `);
     });

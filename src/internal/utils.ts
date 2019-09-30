@@ -76,3 +76,18 @@ export function invariant(condition: boolean, message: string) {
     throw new Error(message);
   }
 }
+
+export function arrayBufferCopyTo(
+  origin: ArrayBuffer,
+  startByte: number,
+  length: number,
+  target: ArrayBuffer,
+  toTargetByte: number
+) {
+  const copyFrom = new Uint8Array(origin);
+  const copyTo = new Uint8Array(target);
+
+  for (let i = 0; i < length; i += 1) {
+    copyTo[toTargetByte + i] = copyFrom[startByte + i];
+  }
+}
