@@ -5,9 +5,10 @@ The library offers you an api that have the look & feel of a regular javascript 
 The library is still not complete, and will never offer full compatibility with plain js objects due, to the nature of the language and the problems space.
 
 ## Play with it:
-[![Edit objectbuffer demo](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/objectbuffer-demo-uyov5?fontsize=14&module=%2Fsrc%2Findex.test.ts)
 
-See [main.js](playground/main.js) for shared memory example.
+[![Edit objectbuffer demo - SharedArrayBuffer](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/objectbuffer-demo-sharedarraybuffer-tf3il?fontsize=14&module=%2Fsrc%2Findex.ts)
+
+See also [main.js](playground/main.js) for shared memory example.
 to run it: clone the repo, `yarn install` and `yarn browser-playground`
 
 
