@@ -224,4 +224,90 @@ describe("arrayWrapper tests", () => {
       `);
     });
   });
+
+  test("arrayWrapper sort - no comparator", () => {
+    const arrayBuffer = new ArrayBuffer(128);
+    const dataView = new DataView(arrayBuffer);
+    initializeArrayBuffer(arrayBuffer);
+
+    const arrayToSave = [2, 1, null, 3, 10, undefined, 6, 77];
+
+    const saverOutput = arraySaver(textEncoder, dataView, 0, arrayToSave);
+
+    const arrayWrapper = createArrayWrapper(
+      dataView,
+      3,
+      saverOutput.start,
+      textDecoder,
+      textEncoder
+    );
+
+    arrayWrapper.sort();
+
+    expect(arrayWrapper).toMatchInlineSnapshot(`
+      Array [
+        1,
+        10,
+        2,
+        3,
+        6,
+        77,
+        null,
+        undefined,
+      ]
+    `);
+  });
+
+  test("arrayWrapper sort - with comparator", () => {
+    const arrayBuffer = new ArrayBuffer(256);
+    const dataView = new DataView(arrayBuffer);
+    initializeArrayBuffer(arrayBuffer);
+
+    const arrayToSave = [2, 1, 3, 10, 6, 77].map(value => ({
+      value
+    }));
+
+    const saverOutput = arraySaver(textEncoder, dataView, 0, arrayToSave);
+
+    const arrayWrapper = createArrayWrapper(
+      dataView,
+      3,
+      saverOutput.start,
+      textDecoder,
+      textEncoder
+    );
+
+    arrayWrapper.sort((a, b) => {
+      if (a.value > b.value) {
+        return 1;
+      } else if (b.value > a.value) {
+        return -1;
+      } else {
+        return 0;
+      }
+    });
+
+    expect(arrayWrapper).toMatchInlineSnapshot(`
+      Array [
+        Object {
+          "value": 1,
+        },
+        Object {
+          "value": 2,
+        },
+        Object {
+          "value": 3,
+        },
+        Object {
+          "value": 6,
+        },
+        Object {
+          "value": 10,
+        },
+        Object {
+          "value": 77,
+        },
+      ]
+    `);
+  });
 });

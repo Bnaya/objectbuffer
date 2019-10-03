@@ -4,6 +4,7 @@ import { entryToFinalJavaScriptValue } from "./entryToFinalJavaScriptValue";
 import { saveValue } from "./saveValue";
 import { ENTRY_TYPE } from "./entry-types";
 import { assertNonNull } from "./assertNonNull";
+import { TextDecoder } from "util";
 
 export function arrayGetMetadata(
   dataView: DataView,
@@ -83,34 +84,14 @@ export function setValuePointerAtArrayIndex(
   indexToSet: number,
   pointerToEntry: number
 ) {
-  const metadata = arrayGetMetadata(dataView, textDecoder, pointerToArrayEntry);
-
-  if (indexToSet >= metadata.length) {
-    // we need to re-allocate the array in a new and bigger place
-    if (indexToSet >= metadata.allocatedLength) {
-      reallocateArray(
-        dataView,
-        textDecoder,
-        textEncoder,
-        pointerToArrayEntry,
-        indexToSet + 1 + arrayAdditionalAllocation,
-        indexToSet + 1
-      );
-    } else {
-      // no need to re-allocated, just push the length forward
-      writeEntry(
-        dataView,
-        pointerToArrayEntry,
-        {
-          type: ENTRY_TYPE.ARRAY,
-          value: metadata.value,
-          allocatedLength: metadata.allocatedLength,
-          length: indexToSet + 1
-        },
-        textEncoder
-      );
-    }
-  }
+  extendArrayIfNeeded(
+    dataView,
+    textDecoder,
+    textEncoder,
+    pointerToArrayEntry,
+    arrayAdditionalAllocation,
+    indexToSet + 1
+  );
 
   const pointers = arrayGetPointersToValue(
     dataView,
@@ -148,6 +129,71 @@ export function setValueAtArrayIndex(
     pointerToArrayEntry,
     indexToSet,
     saveValueResult.start
+  );
+}
+
+/**
+ * Will not shrink the array!
+ */
+export function extendArrayIfNeeded(
+  dataView: DataView,
+  textDecoder: any,
+  textEncoder: any,
+  pointerToArrayEntry: number,
+  arrayAdditionalAllocation: number,
+  wishedLength: number
+) {
+  const metadata = arrayGetMetadata(dataView, textDecoder, pointerToArrayEntry);
+
+  if (wishedLength > metadata.length) {
+    if (wishedLength > metadata.allocatedLength) {
+      reallocateArray(
+        dataView,
+        textDecoder,
+        textEncoder,
+        pointerToArrayEntry,
+        wishedLength + arrayAdditionalAllocation,
+        wishedLength
+      );
+    } else {
+      // no need to re-allocated, just push the length forward
+      writeEntry(
+        dataView,
+        pointerToArrayEntry,
+        {
+          type: ENTRY_TYPE.ARRAY,
+          value: metadata.value,
+          allocatedLength: metadata.allocatedLength,
+          length: wishedLength
+        },
+        textEncoder
+      );
+    }
+  }
+}
+
+/**
+ * Will not empty memory or relocate the array!
+ */
+export function shrinkArray(
+  dataView: DataView,
+  textDecoder: any,
+  textEncoder: any,
+  pointerToArrayEntry: number,
+  wishedLength: number
+) {
+  const metadata = arrayGetMetadata(dataView, textDecoder, pointerToArrayEntry);
+
+  writeEntry(
+    dataView,
+    pointerToArrayEntry,
+    {
+      type: ENTRY_TYPE.ARRAY,
+      value: metadata.value,
+      allocatedLength: metadata.allocatedLength,
+      length: wishedLength
+    },
+    textEncoder
   );
 }
 
@@ -190,4 +236,82 @@ function reallocateArray(
     },
     textEncoder
   );
+}
+
+export function arraySort(
+  dataView: DataView,
+  textDecoder: any,
+  textEncoder: any,
+  arrayAdditionalAllocation: number,
+  pointerToArrayEntry: number,
+  sortComparator: (a: any, b: any) => 1 | -1 | 0 = defaultCompareFunction
+) {
+  const metadata = arrayGetMetadata(dataView, textDecoder, pointerToArrayEntry);
+  const pointersToValues = [...new Array(metadata.length).keys()]
+    .map(index => metadata.value + index * Uint32Array.BYTES_PER_ELEMENT)
+    .map(pointerToPointer => dataView.getUint32(pointerToPointer));
+
+  const sortMe = pointersToValues.map(pointer => {
+    const entry = readEntry(dataView, pointer, textDecoder);
+
+    return [
+      pointer,
+      entryToFinalJavaScriptValue(
+        dataView,
+        textDecoder,
+        textEncoder,
+        arrayAdditionalAllocation,
+        entry[0],
+        pointer
+      )
+    ] as const;
+  });
+
+  sortMe.sort((a, b) => {
+    return sortComparator(a[1], b[1]);
+  });
+
+  for (let i = 0; i < sortMe.length; i += 1) {
+    dataView.setUint32(
+      metadata.value + i * Uint32Array.BYTES_PER_ELEMENT,
+      sortMe[i][0]
+    );
+  }
+}
+
+// https://stackoverflow.com/a/47349064/711152
+function defaultCompareFunction(x: any, y: any) {
+  //INFO: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort
+  //ECMA specification: http://www.ecma-international.org/ecma-262/6.0/#sec-sortcompare
+
+  if (x === undefined && y === undefined) return 0;
+
+  if (x === undefined) return 1;
+
+  if (y === undefined) return -1;
+
+  const xString = toString(x);
+  const yString = toString(y);
+
+  if (xString < yString) return -1;
+
+  if (xString > yString) return 1;
+
+  return 0;
+}
+
+function toString(obj: any) {
+  //ECMA specification: http://www.ecma-international.org/ecma-262/6.0/#sec-tostring
+
+  if (obj === null) return "null";
+
+  if (typeof obj === "boolean" || typeof obj === "number")
+    return obj.toString();
+
+  if (typeof obj === "string") return obj;
+
+  if (typeof obj === "symbol") throw new TypeError();
+
+  //we know we have an object. perhaps return JSON.stringify?
+  return obj.toString();
 }
