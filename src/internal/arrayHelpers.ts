@@ -4,6 +4,7 @@ import { entryToFinalJavaScriptValue } from "./entryToFinalJavaScriptValue";
 import { saveValue } from "./saveValue";
 import { ENTRY_TYPE } from "./entry-types";
 import { assertNonNull } from "./assertNonNull";
+import { TextDecoder } from "util";
 
 export function arrayGetMetadata(
   dataView: DataView,
@@ -83,34 +84,14 @@ export function setValuePointerAtArrayIndex(
   indexToSet: number,
   pointerToEntry: number
 ) {
-  const metadata = arrayGetMetadata(dataView, textDecoder, pointerToArrayEntry);
-
-  if (indexToSet >= metadata.length) {
-    // we need to re-allocate the array in a new and bigger place
-    if (indexToSet >= metadata.allocatedLength) {
-      reallocateArray(
-        dataView,
-        textDecoder,
-        textEncoder,
-        pointerToArrayEntry,
-        indexToSet + 1 + arrayAdditionalAllocation,
-        indexToSet + 1
-      );
-    } else {
-      // no need to re-allocated, just push the length forward
-      writeEntry(
-        dataView,
-        pointerToArrayEntry,
-        {
-          type: ENTRY_TYPE.ARRAY,
-          value: metadata.value,
-          allocatedLength: metadata.allocatedLength,
-          length: indexToSet + 1
-        },
-        textEncoder
-      );
-    }
-  }
+  extendArrayIfNeeded(
+    dataView,
+    textDecoder,
+    textEncoder,
+    pointerToArrayEntry,
+    arrayAdditionalAllocation,
+    indexToSet + 1
+  );
 
   const pointers = arrayGetPointersToValue(
     dataView,
@@ -148,6 +129,71 @@ export function setValueAtArrayIndex(
     pointerToArrayEntry,
     indexToSet,
     saveValueResult.start
+  );
+}
+
+/**
+ * Will not shrink the array!
+ */
+export function extendArrayIfNeeded(
+  dataView: DataView,
+  textDecoder: any,
+  textEncoder: any,
+  pointerToArrayEntry: number,
+  arrayAdditionalAllocation: number,
+  wishedLength: number
+) {
+  const metadata = arrayGetMetadata(dataView, textDecoder, pointerToArrayEntry);
+
+  if (wishedLength > metadata.length) {
+    if (wishedLength > metadata.allocatedLength) {
+      reallocateArray(
+        dataView,
+        textDecoder,
+        textEncoder,
+        pointerToArrayEntry,
+        wishedLength + arrayAdditionalAllocation,
+        wishedLength
+      );
+    } else {
+      // no need to re-allocated, just push the length forward
+      writeEntry(
+        dataView,
+        pointerToArrayEntry,
+        {
+          type: ENTRY_TYPE.ARRAY,
+          value: metadata.value,
+          allocatedLength: metadata.allocatedLength,
+          length: wishedLength
+        },
+        textEncoder
+      );
+    }
+  }
+}
+
+/**
+ * Will not empty memory or relocate the array!
+ */
+export function shrinkArray(
+  dataView: DataView,
+  textDecoder: any,
+  textEncoder: any,
+  pointerToArrayEntry: number,
+  wishedLength: number
+) {
+  const metadata = arrayGetMetadata(dataView, textDecoder, pointerToArrayEntry);
+
+  writeEntry(
+    dataView,
+    pointerToArrayEntry,
+    {
+      type: ENTRY_TYPE.ARRAY,
+      value: metadata.value,
+      allocatedLength: metadata.allocatedLength,
+      length: wishedLength
+    },
+    textEncoder
   );
 }
 

@@ -4,6 +4,8 @@ import {
   setValueAtArrayIndex,
   arraySort
 } from "./arrayHelpers";
+import { GET_UNDERLYING_POINTER_SYMBOL } from "./symbols";
+import { arraySplice } from "./arraySplice";
 
 export class ArrayWrapper implements ProxyHandler<{}> {
   constructor(
@@ -15,6 +17,10 @@ export class ArrayWrapper implements ProxyHandler<{}> {
   ) {}
 
   public get(target: {}, p: PropertyKey): any {
+    if (p === GET_UNDERLYING_POINTER_SYMBOL) {
+      return this.entryPointer;
+    }
+
     if (p in this && p !== "constructor") {
       // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
       // @ts-ignore
@@ -198,8 +204,17 @@ export class ArrayWrapper implements ProxyHandler<{}> {
     );
   }
 
-  private splice() {
-    throw new Error("unsupported");
+  public splice(start: number, deleteCount?: number, ...items: any[]) {
+    return arraySplice(
+      this.dataView,
+      this.textDecoder,
+      this.textEncoder,
+      this.arrayAdditionalAllocation,
+      this.entryPointer,
+      start,
+      deleteCount,
+      ...items
+    );
   }
 
   // // copy methods

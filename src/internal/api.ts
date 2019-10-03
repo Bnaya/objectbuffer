@@ -1,9 +1,7 @@
 import { initializeArrayBuffer } from "./store";
 import { objectSaver } from "./objectSaver";
-import {
-  createObjectWrapper,
-  GET_UNDERLYING_ARRAY_BUFFER_SYMBOL
-} from "./objectWrapper";
+import { createObjectWrapper } from "./objectWrapper";
+import { GET_UNDERLYING_ARRAY_BUFFER_SYMBOL } from "./symbols";
 
 export function createObjectBuffer<T = any>(
   textDecoder: any,

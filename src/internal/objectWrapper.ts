@@ -10,10 +10,10 @@ import {
 import { saveValue } from "./saveValue";
 
 import { entryToFinalJavaScriptValue } from "./entryToFinalJavaScriptValue";
-
-export const GET_UNDERLYING_ARRAY_BUFFER_SYMBOL = Symbol(
-  "GET_UNDERLYING_ARRAY_BUFFER_SYMBOL"
-);
+import {
+  GET_UNDERLYING_ARRAY_BUFFER_SYMBOL,
+  GET_UNDERLYING_POINTER_SYMBOL
+} from "./symbols";
 
 export class ObjectWrapper implements ProxyHandler<{}> {
   constructor(
@@ -36,6 +36,10 @@ export class ObjectWrapper implements ProxyHandler<{}> {
   public get(target: {}, p: PropertyKey): any {
     if (p === GET_UNDERLYING_ARRAY_BUFFER_SYMBOL) {
       return this.getUnderlyingArrayBuffer();
+    }
+
+    if (p === GET_UNDERLYING_POINTER_SYMBOL) {
+      return this.entryPointer;
     }
 
     /// empty object
