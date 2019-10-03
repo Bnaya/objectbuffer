@@ -1,7 +1,8 @@
 import {
   getFinalValueAtArrayIndex,
   arrayGetMetadata,
-  setValueAtArrayIndex
+  setValueAtArrayIndex,
+  arraySort
 } from "./arrayHelpers";
 
 export class ArrayWrapper implements ProxyHandler<{}> {
@@ -100,7 +101,7 @@ export class ArrayWrapper implements ProxyHandler<{}> {
     throw new Error("unsupported");
   }
 
-  private *entries(): Iterable<[number, any]> {
+  public *entries(): Iterable<[number, any]> {
     let index = 0;
     let length = 0;
 
@@ -127,7 +128,7 @@ export class ArrayWrapper implements ProxyHandler<{}> {
     } while (index < length);
   }
 
-  private *keys(): Iterable<number> {
+  public *keys(): Iterable<number> {
     let index = 0;
     let length = 0;
 
@@ -144,7 +145,7 @@ export class ArrayWrapper implements ProxyHandler<{}> {
     } while (index < length);
   }
 
-  private *values(): Iterable<any> {
+  public *values(): Iterable<any> {
     let index = 0;
     let length = 0;
 
@@ -185,9 +186,18 @@ export class ArrayWrapper implements ProxyHandler<{}> {
   private push() {
     throw new Error("unsupported");
   }
-  private sort() {
-    throw new Error("unsupported");
+
+  public sort(comparator?: (a: any, b: any) => 1 | -1 | 0) {
+    arraySort(
+      this.dataView,
+      this.textDecoder,
+      this.textEncoder,
+      this.arrayAdditionalAllocation,
+      this.entryPointer,
+      comparator
+    );
   }
+
   private splice() {
     throw new Error("unsupported");
   }
