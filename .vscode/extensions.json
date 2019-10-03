@@ -2,6 +2,7 @@
   "recommendations": [
     "orta.vscode-jest",
     "editorconfig.editorconfig",
-    "dbaeumer.vscode-eslint"
+    "dbaeumer.vscode-eslint",
+    "davidanson.vscode-markdownlint"
   ]
 }
