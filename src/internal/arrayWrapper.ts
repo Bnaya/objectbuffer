@@ -56,11 +56,13 @@ export class ArrayWrapper implements ProxyHandler<{}> {
   }
 
   public deleteProperty(target: {}, p: PropertyKey): boolean {
-    throw new Error("unsupported");
+    const index = typeof p === "number" ? p : Number.parseInt(p as string, 10);
+
+    return this.splice(index, 1).length === 1;
   }
 
   public enumerate(): PropertyKey[] {
-    throw new Error("unsupported");
+    throw new Error("unsupported enumerate");
   }
 
   public ownKeys(): PropertyKey[] {
@@ -78,6 +80,18 @@ export class ArrayWrapper implements ProxyHandler<{}> {
   }
 
   public has(target: {}, p: PropertyKey): boolean {
+    const length = arrayGetMetadata(
+      this.dataView,
+      this.textDecoder,
+      this.entryPointer
+    ).length;
+
+    if (typeof p === "number") {
+      return length - 1 >= p;
+    } else if (typeof p === "string") {
+      return length - 1 >= Number.parseInt(p, 10);
+    }
+
     throw new Error("unsupported");
   }
 
@@ -177,20 +191,6 @@ export class ArrayWrapper implements ProxyHandler<{}> {
 
   get [Symbol.iterator]() {
     return this.values;
-  }
-
-  // in-place methods
-  private shift() {
-    throw new Error("unsupported");
-  }
-  private unshift() {
-    throw new Error("unsupported");
-  }
-  private pop() {
-    throw new Error("unsupported");
-  }
-  private push() {
-    throw new Error("unsupported");
   }
 
   public sort(comparator?: (a: any, b: any) => 1 | -1 | 0) {
