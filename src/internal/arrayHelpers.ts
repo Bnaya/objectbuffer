@@ -77,7 +77,6 @@ export function getFinalValueAtArrayIndex(
 export function setValuePointerAtArrayIndex(
   dataView: DataView,
   textDecoder: any,
-  textEncoder: any,
   pointerToArrayEntry: number,
   indexToSet: number,
   pointerToEntry: number
@@ -113,7 +112,6 @@ export function setValueAtArrayIndex(
   setValuePointerAtArrayIndex(
     dataView,
     textDecoder,
-    textEncoder,
     pointerToArrayEntry,
     indexToSet,
     saveValueResult.start
@@ -302,4 +300,48 @@ function toString(obj: any) {
 
   //we know we have an object. perhaps return JSON.stringify?
   return obj.toString();
+}
+
+export function arrayReverse(
+  dataView: DataView,
+  textDecoder: any,
+  pointerToArrayEntry: number
+) {
+  const metadata = arrayGetMetadata(dataView, textDecoder, pointerToArrayEntry);
+
+  for (let i = 0; i < Math.floor(metadata.length / 2); i += 1) {
+    const theOtherIndex = metadata.length - i - 1;
+
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const a = arrayGetPointersToValueInIndex(
+      dataView,
+      textDecoder,
+      pointerToArrayEntry,
+      i
+    )!;
+
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const b = arrayGetPointersToValueInIndex(
+      dataView,
+      textDecoder,
+      pointerToArrayEntry,
+      theOtherIndex
+    )!;
+
+    setValuePointerAtArrayIndex(
+      dataView,
+      textDecoder,
+      pointerToArrayEntry,
+      i,
+      b.pointer
+    );
+
+    setValuePointerAtArrayIndex(
+      dataView,
+      textDecoder,
+      pointerToArrayEntry,
+      theOtherIndex,
+      a.pointer
+    );
+  }
 }

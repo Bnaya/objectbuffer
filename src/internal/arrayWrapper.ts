@@ -3,7 +3,8 @@ import {
   arrayGetMetadata,
   setValueAtArrayIndex,
   arraySort,
-  extendArrayIfNeeded
+  extendArrayIfNeeded,
+  arrayReverse
 } from "./arrayHelpers";
 import { GET_UNDERLYING_POINTER_SYMBOL } from "./symbols";
 import { arraySplice } from "./arraySplice";
@@ -227,19 +228,27 @@ export class ArrayWrapper implements ProxyHandler<{}> {
     );
   }
 
-  // // copy methods
-  // private concat() {
-  //   throw new Error("unsupported");
+  public reverse() {
+    arrayReverse(this.dataView, this.textDecoder, this.entryPointer);
+    return this;
+  }
+
+  // no copy inside array is needed, so we can live with the built-in impl
+  // public push() {
   // }
-  // private slice() {
-  //   throw new Error("unsupported");
-  // }
-  // private map() {
-  //   throw new Error("unsupported");
-  // }
-  // private reduce() {
-  //   throw new Error("unsupported");
-  // }
+
+  // public pop() {}
+
+  public shift() {
+    return this.splice(0, 1)[0];
+  }
+
+  public unshift(...elements: any) {
+    this.splice(0, 0, ...elements);
+
+    return arrayGetMetadata(this.dataView, this.textDecoder, this.entryPointer)
+      .length;
+  }
 }
 
 export function createArrayWrapper(

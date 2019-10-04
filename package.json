@@ -1,11 +1,26 @@
 {
   "name": "@bnaya/objectbuffer",
-  "description": "Object like api, backed by an array buffer",
-  "version": "0.3.0",
+  "description": "Object-like api, backed by an array buffer",
+  "version": "0.5.1",
   "main": "dist/objectbuffer.cjs.js",
   "module": "dist/index.js",
   "author": "Bnaya Peretz <me@bnaya.net>",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:Bnaya/objectbuffer.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Bnaya/objectbuffer/issues"
+  },
+  "keywords": [
+    "sharedarraybuffer",
+    "arraybuffer",
+    "shared memory",
+    "webworker",
+    "objectbuffer",
+    "object-buffer"
+  ],
   "scripts": {
     "yarn-deduplicate": "yarn-deduplicate -s fewer yarn.lock",
     "lint": "eslint src --ext .js,.jsx,.ts,.tsx",
@@ -55,6 +70,7 @@
     "dist",
     "src",
     "README",
-    "COMMIT"
+    "COMMIT",
+    "LICENSE"
   ]
 }

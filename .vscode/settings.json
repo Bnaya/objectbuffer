@@ -55,5 +55,10 @@
     "pass",
     "skip"
   ],
-  "jest.enableSnapshotUpdateMessages": true
+  "jest.enableSnapshotUpdateMessages": true,
+  "editor.rulers": [
+    80,
+    120,
+    140
+  ]
 }
