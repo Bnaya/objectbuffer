@@ -2,7 +2,7 @@
 
 import { initializeArrayBuffer } from "./store";
 import * as utils from "util";
-import { arrayBuffer2HexArray, getFirstFreeByte } from "./testUtils";
+import { arrayBuffer2HexArray } from "./testUtils";
 import { arraySaver } from "./arraySaver";
 
 describe("arraySaver tests", () => {
