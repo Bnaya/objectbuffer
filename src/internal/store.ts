@@ -1,20 +1,6 @@
 import { ENTRY_TYPE } from "./entry-types";
 import { Entry, ObjectPropEntry } from "./interfaces";
 import { arrayBufferCopyTo } from "./utils";
-const DEFAULT_ARRAY_BUFFER_SIZE = 10 ^ 6;
-
-export class Store {
-  private arrayBuffer: ArrayBuffer;
-  private dataView: DataView;
-
-  constructor(arrayBuffer?: ArrayBuffer) {
-    this.arrayBuffer = arrayBuffer
-      ? arrayBuffer
-      : new ArrayBuffer(DEFAULT_ARRAY_BUFFER_SIZE);
-
-    this.dataView = new DataView(this.arrayBuffer);
-  }
-}
 
 export function initializeArrayBuffer(arrayBuffer: ArrayBuffer) {
   const dataView = new DataView(arrayBuffer);
