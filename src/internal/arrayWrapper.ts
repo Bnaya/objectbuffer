@@ -233,14 +233,22 @@ export class ArrayWrapper implements ProxyHandler<{}> {
     return this;
   }
 
+  // no copy inside array is needed, so we can live with the built-in impl
   // public push() {
   // }
 
   // public pop() {}
 
-  // public shift() {}
+  public shift() {
+    return this.splice(0, 1)[0];
+  }
 
-  // public unshift() {}
+  public unshift(...elements: any) {
+    this.splice(0, 0, ...elements);
+
+    return arrayGetMetadata(this.dataView, this.textDecoder, this.entryPointer)
+      .length;
+  }
 }
 
 export function createArrayWrapper(
