@@ -3,8 +3,11 @@ import {
   getFinalValueAtArrayIndex,
   setValueAtArrayIndex,
   shrinkArray,
-  extendArrayIfNeeded
+  extendArrayIfNeeded,
+  arrayGetPointersToValueInIndex,
+  setValuePointerAtArrayIndex
 } from "./arrayHelpers";
+import { assertNonNull } from "./assertNonNull";
 
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/splice#Syntax
 export function arraySplice(
@@ -71,23 +74,22 @@ export function arraySplice(
       writeValueToIndex >= calcedStart + itemCountChange;
       writeValueToIndex -= 1
     ) {
-      const valueToCopy = getFinalValueAtArrayIndex(
+      const valueToCopyPointers = arrayGetPointersToValueInIndex(
         dataView,
         textDecoder,
-        textEncoder,
-        arrayAdditionalAllocation,
         pointerToArrayEntry,
         writeValueToIndex - itemCountChange
       );
 
-      setValueAtArrayIndex(
+      assertNonNull(valueToCopyPointers);
+
+      setValuePointerAtArrayIndex(
         dataView,
         textDecoder,
         textEncoder,
-        arrayAdditionalAllocation,
         pointerToArrayEntry,
         writeValueToIndex,
-        valueToCopy
+        valueToCopyPointers.pointer
       );
     }
   }
@@ -100,38 +102,40 @@ export function arraySplice(
   else if (itemCountChange < 0) {
     for (
       let writeValueToIndex = calcedStart + itemsToAddArg.length;
-      writeValueToIndex <= metadata.length;
+      writeValueToIndex < metadata.length + itemCountChange;
       writeValueToIndex += 1
     ) {
-      const valueToCopy = getFinalValueAtArrayIndex(
+      const valueToCopyPointers = arrayGetPointersToValueInIndex(
         dataView,
         textDecoder,
-        textEncoder,
-        arrayAdditionalAllocation,
         pointerToArrayEntry,
         writeValueToIndex - itemCountChange
       );
 
-      setValueAtArrayIndex(
+      assertNonNull(valueToCopyPointers);
+
+      setValuePointerAtArrayIndex(
         dataView,
         textDecoder,
         textEncoder,
-        arrayAdditionalAllocation,
         pointerToArrayEntry,
         writeValueToIndex,
-        valueToCopy
+        valueToCopyPointers.pointer
       );
 
       // empty old array index, its still allocated!
-      setValueAtArrayIndex(
-        dataView,
-        textDecoder,
-        textEncoder,
-        arrayAdditionalAllocation,
-        pointerToArrayEntry,
-        writeValueToIndex + calcedDeleteCount,
-        undefined
-      );
+      dataView.setUint32(valueToCopyPointers.pointerToThePointer, 0);
+
+      // using that is wastefull
+      // setValueAtArrayIndex(
+      //   dataView,
+      //   textDecoder,
+      //   textEncoder,
+      //   arrayAdditionalAllocation,
+      //   pointerToArrayEntry,
+      //   writeValueToIndex + calcedDeleteCount,
+      //   undefined
+      // );
     }
   }
 

@@ -4,6 +4,7 @@ import { initializeArrayBuffer } from "./store";
 import * as utils from "util";
 import { createArrayWrapper } from "./arrayWrapper";
 import { arraySaver } from "./arraySaver";
+import { getFirstFreeByte } from "./testUtils";
 
 describe("arraySplice tests", () => {
   const textEncoder = new utils.TextEncoder();
@@ -75,6 +76,8 @@ describe("arraySplice tests", () => {
     `);
 
     expect(removedFromPlain).toEqual([...removed]);
+
+    expect(getFirstFreeByte(arrayBuffer)).toMatchInlineSnapshot(`179`);
   });
 
   test("arrayWrapper splice - Just delete items from the middle", () => {
@@ -121,6 +124,8 @@ describe("arraySplice tests", () => {
     `);
 
     expect(plainJSArray).toEqual([...arrayWrapper]);
+
+    expect(getFirstFreeByte(arrayBuffer)).toMatchInlineSnapshot(`167`);
   });
 
   test("arrayWrapper splice - Just add items in the middle", () => {
@@ -177,6 +182,7 @@ describe("arraySplice tests", () => {
     `);
 
     expect(plainJSArray).toEqual([...arrayWrapper]);
+    expect(getFirstFreeByte(arrayBuffer)).toMatchInlineSnapshot(`235`);
   });
 
   test("arrayWrapper splice - add + delete - array will get longer", () => {
@@ -250,6 +256,8 @@ describe("arraySplice tests", () => {
     `);
 
     expect(removedFromPlain).toEqual([...removed]);
+
+    expect(getFirstFreeByte(arrayBuffer)).toMatchInlineSnapshot(`243`);
   });
 
   test("arrayWrapper splice - add + delete - array will get shorter", () => {
@@ -324,6 +332,8 @@ describe("arraySplice tests", () => {
     `);
 
     expect(removedFromPlain).toEqual([...removed]);
+
+    expect(getFirstFreeByte(arrayBuffer)).toMatchInlineSnapshot(`183`);
   });
 
   test("arrayWrapper splice - start bigger than array", () => {
@@ -388,6 +398,8 @@ describe("arraySplice tests", () => {
     expect(removedFromPlain).toMatchInlineSnapshot(`Array []`);
 
     expect(removedFromPlain).toEqual([...removed]);
+
+    expect(getFirstFreeByte(arrayBuffer)).toMatchInlineSnapshot(`235`);
   });
 
   test("arrayWrapper splice - delete bigger than array", () => {
@@ -458,6 +470,8 @@ describe("arraySplice tests", () => {
     `);
 
     expect(removedFromPlain).toEqual([...removed]);
+
+    expect(getFirstFreeByte(arrayBuffer)).toMatchInlineSnapshot(`175`);
   });
 
   test("arrayWrapper splice - negative start", () => {
@@ -528,6 +542,8 @@ describe("arraySplice tests", () => {
     `);
 
     expect(removedFromPlain).toEqual([...removed]);
+
+    expect(getFirstFreeByte(arrayBuffer)).toMatchInlineSnapshot(`231`);
   });
 
   test("arrayWrapper splice - negative delete", () => {
@@ -592,5 +608,7 @@ describe("arraySplice tests", () => {
     expect(removedFromPlain).toMatchInlineSnapshot(`Array []`);
 
     expect(removedFromPlain).toEqual([...removed]);
+
+    expect(getFirstFreeByte(arrayBuffer)).toMatchInlineSnapshot(`235`);
   });
 });

@@ -12,3 +12,7 @@ export function arrayBuffer2HexArray(
     x.toString(16).padStart(4, "0x")
   );
 }
+
+export function getFirstFreeByte(arrayBuffer: ArrayBuffer) {
+  return new DataView(arrayBuffer).getUint32(8);
+}

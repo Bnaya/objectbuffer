@@ -8,6 +8,7 @@ import {
   getFinalValueAtArrayIndex,
   setValueAtArrayIndex
 } from "./arrayHelpers";
+import { getFirstFreeByte } from "./testUtils";
 
 const textEncoder = new utils.TextEncoder();
 const textDecoder = new utils.TextDecoder();
@@ -32,6 +33,8 @@ describe("arrayHelpers tests", () => {
         "value": 24,
       }
     `);
+
+    expect(getFirstFreeByte(arrayBuffer)).toMatchInlineSnapshot(`63`);
   });
 
   describe("getFinalValueAtArrayIndex", () => {
@@ -55,6 +58,7 @@ describe("arrayHelpers tests", () => {
       );
 
       expect(finalValue).toMatchInlineSnapshot(`1`);
+      expect(getFirstFreeByte(arrayBuffer)).toMatchInlineSnapshot(`63`);
     });
 
     test("out of bound index", () => {
@@ -77,6 +81,7 @@ describe("arrayHelpers tests", () => {
       );
 
       expect(finalValue).toMatchInlineSnapshot(`undefined`);
+      expect(getFirstFreeByte(arrayBuffer)).toMatchInlineSnapshot(`63`);
     });
 
     test("array of strings", () => {
@@ -99,6 +104,7 @@ describe("arrayHelpers tests", () => {
       );
 
       expect(finalValue).toMatchInlineSnapshot(`"b"`);
+      expect(getFirstFreeByte(arrayBuffer)).toMatchInlineSnapshot(`53`);
     });
   });
 
@@ -132,5 +138,6 @@ describe("arrayHelpers tests", () => {
     );
 
     expect(finalValue).toMatchInlineSnapshot(`"im the new value"`);
+    expect(getFirstFreeByte(arrayBuffer)).toMatchInlineSnapshot(`82`);
   });
 });

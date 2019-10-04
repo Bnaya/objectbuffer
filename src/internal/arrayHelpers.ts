@@ -4,7 +4,6 @@ import { entryToFinalJavaScriptValue } from "./entryToFinalJavaScriptValue";
 import { saveValue } from "./saveValue";
 import { ENTRY_TYPE } from "./entry-types";
 import { assertNonNull } from "./assertNonNull";
-import { TextDecoder } from "util";
 
 export function arrayGetMetadata(
   dataView: DataView,
@@ -20,7 +19,7 @@ export function arrayGetMetadata(
   return arrayEntry;
 }
 
-export function arrayGetPointersToValue(
+export function arrayGetPointersToValueInIndex(
   dataView: DataView,
   textDecoder: any,
   pointerToArrayEntry: number,
@@ -52,7 +51,7 @@ export function getFinalValueAtArrayIndex(
   pointerToArrayEntry: number,
   indexToGet: number
 ) {
-  const pointers = arrayGetPointersToValue(
+  const pointers = arrayGetPointersToValueInIndex(
     dataView,
     textDecoder,
     pointerToArrayEntry,
@@ -79,21 +78,11 @@ export function setValuePointerAtArrayIndex(
   dataView: DataView,
   textDecoder: any,
   textEncoder: any,
-  arrayAdditionalAllocation: number,
   pointerToArrayEntry: number,
   indexToSet: number,
   pointerToEntry: number
 ) {
-  extendArrayIfNeeded(
-    dataView,
-    textDecoder,
-    textEncoder,
-    pointerToArrayEntry,
-    arrayAdditionalAllocation,
-    indexToSet + 1
-  );
-
-  const pointers = arrayGetPointersToValue(
+  const pointers = arrayGetPointersToValueInIndex(
     dataView,
     textDecoder,
     pointerToArrayEntry,
@@ -125,7 +114,6 @@ export function setValueAtArrayIndex(
     dataView,
     textDecoder,
     textEncoder,
-    arrayAdditionalAllocation,
     pointerToArrayEntry,
     indexToSet,
     saveValueResult.start

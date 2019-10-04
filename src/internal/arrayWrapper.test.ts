@@ -4,6 +4,7 @@ import { initializeArrayBuffer } from "./store";
 import * as utils from "util";
 import { createArrayWrapper } from "./arrayWrapper";
 import { arraySaver } from "./arraySaver";
+import { getFirstFreeByte } from "./testUtils";
 
 describe("arrayWrapper tests", () => {
   const textEncoder = new utils.TextEncoder();
@@ -34,6 +35,8 @@ describe("arrayWrapper tests", () => {
           1,
         ]
       `);
+
+      expect(getFirstFreeByte(arrayBuffer)).toMatchInlineSnapshot(`66`);
     });
 
     test("arrayWrapper array.keys()", () => {
@@ -54,6 +57,8 @@ describe("arrayWrapper tests", () => {
       );
 
       expect([...arrayWrapper.keys()]).toEqual([0, 1, 2]);
+
+      expect(getFirstFreeByte(arrayBuffer)).toMatchInlineSnapshot(`66`);
     });
 
     test("arrayWrapper array.entries()", () => {
@@ -89,6 +94,8 @@ describe("arrayWrapper tests", () => {
           ],
         ]
       `);
+
+      expect(getFirstFreeByte(arrayBuffer)).toMatchInlineSnapshot(`66`);
     });
 
     test("arrayWrapper array.values() & iterator", () => {
@@ -122,6 +129,8 @@ describe("arrayWrapper tests", () => {
           1,
         ]
       `);
+
+      expect(getFirstFreeByte(arrayBuffer)).toMatchInlineSnapshot(`66`);
     });
 
     test("arrayWrapper set value in bound", () => {
@@ -189,7 +198,7 @@ describe("arrayWrapper tests", () => {
     });
 
     test("arrayWrapper set value out of bound, but outside allocated space", () => {
-      const arrayBuffer = new ArrayBuffer(128);
+      const arrayBuffer = new ArrayBuffer(134);
       const dataView = new DataView(arrayBuffer);
       initializeArrayBuffer(arrayBuffer);
 
@@ -222,6 +231,7 @@ describe("arrayWrapper tests", () => {
           "new value",
         ]
       `);
+      expect(getFirstFreeByte(arrayBuffer)).toMatchInlineSnapshot(`134`);
     });
   });
 
@@ -256,6 +266,8 @@ describe("arrayWrapper tests", () => {
         undefined,
       ]
     `);
+
+    expect(getFirstFreeByte(arrayBuffer)).toMatchInlineSnapshot(`125`);
   });
 
   test("arrayWrapper sort - with comparator", () => {
@@ -309,5 +321,7 @@ describe("arrayWrapper tests", () => {
         },
       ]
     `);
+
+    expect(getFirstFreeByte(arrayBuffer)).toMatchInlineSnapshot(`241`);
   });
 });

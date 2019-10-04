@@ -4,6 +4,7 @@ import { initializeArrayBuffer } from "./store";
 import * as utils from "util";
 import { objectSaver } from "./objectSaver";
 import { createObjectWrapper } from "./objectWrapper";
+import { getFirstFreeByte } from "./testUtils";
 
 describe("objectWrapper tests", () => {
   describe("objectWrapper - general", () => {
@@ -48,6 +49,8 @@ describe("objectWrapper tests", () => {
           "nestedProp",
         ]
       `);
+
+      expect(getFirstFreeByte(arrayBuffer)).toMatchInlineSnapshot(`167`);
     });
 
     test("ObjectWrapper class 2", () => {
@@ -78,6 +81,8 @@ describe("objectWrapper tests", () => {
 
       expect(objectWrapper.noneExistsProp).toMatchInlineSnapshot(`undefined`);
       expect(objectWrapper.a).toMatchInlineSnapshot(`6`);
+
+      expect(getFirstFreeByte(arrayBuffer)).toMatchInlineSnapshot(`167`);
     });
 
     test("ObjectWrapper class set override value", () => {
@@ -119,6 +124,8 @@ describe("objectWrapper tests", () => {
           },
         }
       `);
+
+      expect(getFirstFreeByte(arrayBuffer)).toMatchInlineSnapshot(`179`);
     });
 
     test("ObjectWrapper class set new prop value", () => {
@@ -161,6 +168,8 @@ describe("objectWrapper tests", () => {
           "newprop": "valueOnNewProp",
         }
       `);
+
+      expect(getFirstFreeByte(arrayBuffer)).toMatchInlineSnapshot(`202`);
     });
 
     test("ObjectWrapper class delete", () => {
@@ -201,6 +210,8 @@ describe("objectWrapper tests", () => {
           },
         }
       `);
+
+      expect(getFirstFreeByte(arrayBuffer)).toMatchInlineSnapshot(`167`);
     });
   });
 });
