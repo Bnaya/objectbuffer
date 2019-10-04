@@ -16,7 +16,7 @@ describe("SharedArrayBuffer tests", () => {
       textEncoder,
       1024,
       { arr: [{ a: 1 }] },
-      { arrayAdditionalAllocation: 0, useSharedArrayBuffer: false }
+      { arrayAdditionalAllocation: 0, useSharedArrayBuffer: true }
     );
 
     objectBuffer.arr = [{ bar: 666 }];
