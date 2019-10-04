@@ -2,7 +2,7 @@
 
 For Modern browsers and node. Zero direct dependencies.
 
-The library offers you an API that have the look & feel of a regular javascript object, but the data is saved to an `ArrayBuffer` that can be shared or transferred to a `WebWorker`.  
+The library offers you an API that have the look & feel of a regular javascript object, while the data is saved to an `ArrayBuffer` that can be shared or transferred to a `WebWorker`.  
 The library is still not complete, and will never offer full compatibility with plain js objects due, to the nature of the language and the problems space.
 
 ## Play with it
@@ -41,22 +41,17 @@ if you exceed the sb size, an exception will be thrown.
 ### Missing parts
 
 * `Date`
-* `Map` On primitive key/value
-* `Set` On primitive values
+* `Map`
+* `Set`
 
 ### What's not working yet, but can be
 
 * `bigint` bigger than 64 bit
 
-### What's probably never going to work (convince me otherwise in an issue)
+### What's probably never going to work (convince me otherwise )
 
 * Anything that cannot go into `JSON.stringify`
 * `Symbol`
-* Circularities
-
-### "design" doc
-
-[Design DOC](https://docs.google.com/document/d/1-UlUyH3HgOrN58avyScZlfjQtfJxgVwK_yE35mQHpYw/edit?usp=sharing)
 
 ## Contribution / Collaboration
 
