@@ -1,7 +1,7 @@
 {
   "name": "@bnaya/objectbuffer",
   "description": "Object-like api, backed by an array buffer",
-  "version": "0.5.1",
+  "version": "0.6.0",
   "main": "dist/objectbuffer.cjs.js",
   "module": "dist/index.js",
   "author": "Bnaya Peretz <me@bnaya.net>",
