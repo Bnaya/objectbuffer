@@ -2,7 +2,8 @@ import {
   getFinalValueAtArrayIndex,
   arrayGetMetadata,
   setValueAtArrayIndex,
-  arraySort
+  arraySort,
+  extendArrayIfNeeded
 } from "./arrayHelpers";
 import { GET_UNDERLYING_POINTER_SYMBOL } from "./symbols";
 import { arraySplice } from "./arraySplice";
@@ -96,6 +97,15 @@ export class ArrayWrapper implements ProxyHandler<{}> {
   }
 
   public set(target: {}, p: PropertyKey, value: any): boolean {
+    extendArrayIfNeeded(
+      this.dataView,
+      this.textDecoder,
+      this.textEncoder,
+      this.entryPointer,
+      this.arrayAdditionalAllocation,
+      Number.parseInt(p as string, 10) + 1
+    );
+
     setValueAtArrayIndex(
       this.dataView,
       this.textDecoder,

@@ -4,6 +4,7 @@ import { initializeArrayBuffer } from "./store";
 import * as utils from "util";
 import { createArrayWrapper } from "./arrayWrapper";
 import { arraySaver } from "./arraySaver";
+import { getFirstFreeByte } from "./testUtils";
 
 describe("arrayWrapper tests", () => {
   const textEncoder = new utils.TextEncoder();
@@ -189,7 +190,7 @@ describe("arrayWrapper tests", () => {
     });
 
     test("arrayWrapper set value out of bound, but outside allocated space", () => {
-      const arrayBuffer = new ArrayBuffer(128);
+      const arrayBuffer = new ArrayBuffer(134);
       const dataView = new DataView(arrayBuffer);
       initializeArrayBuffer(arrayBuffer);
 
@@ -222,6 +223,7 @@ describe("arrayWrapper tests", () => {
           "new value",
         ]
       `);
+      expect(getFirstFreeByte(arrayBuffer)).toMatchInlineSnapshot(`134`);
     });
   });
 
