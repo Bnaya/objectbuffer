@@ -86,7 +86,6 @@ export function arraySplice(
       setValuePointerAtArrayIndex(
         dataView,
         textDecoder,
-        textEncoder,
         pointerToArrayEntry,
         writeValueToIndex,
         valueToCopyPointers.pointer
@@ -117,7 +116,6 @@ export function arraySplice(
       setValuePointerAtArrayIndex(
         dataView,
         textDecoder,
-        textEncoder,
         pointerToArrayEntry,
         writeValueToIndex,
         valueToCopyPointers.pointer

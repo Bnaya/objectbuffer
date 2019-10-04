@@ -324,4 +324,40 @@ describe("arrayWrapper tests", () => {
 
     expect(getFirstFreeByte(arrayBuffer)).toMatchInlineSnapshot(`241`);
   });
+
+  test("arrayWrapper  - reverse", () => {
+    const arrayBuffer = new ArrayBuffer(128);
+    const dataView = new DataView(arrayBuffer);
+    initializeArrayBuffer(arrayBuffer);
+
+    const arrayToSave = [1, 2, 3, 4, 5, 6, 7];
+
+    const saverOutput = arraySaver(textEncoder, dataView, 0, arrayToSave);
+
+    const arrayWrapper = createArrayWrapper(
+      dataView,
+      3,
+      saverOutput.start,
+      textDecoder,
+      textEncoder
+    );
+
+    arrayWrapper.reverse();
+    arrayWrapper.reverse();
+    arrayWrapper.reverse();
+
+    expect(arrayWrapper).toMatchInlineSnapshot(`
+      Array [
+        7,
+        6,
+        5,
+        4,
+        3,
+        2,
+        1,
+      ]
+    `);
+
+    expect(getFirstFreeByte(arrayBuffer)).toMatchInlineSnapshot(`128`);
+  });
 });
