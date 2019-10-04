@@ -9,6 +9,7 @@ import {
   deleteObjectPropertyEntryByKey,
   findLastObjectPropertyEntry
 } from "./objectWrapperHelpers";
+import { getFirstFreeByte } from "./testUtils";
 
 describe("objectWrapperHelpers tests", () => {
   describe("objectWrapperHelpers - general", () => {
@@ -243,6 +244,8 @@ describe("objectWrapperHelpers tests", () => {
           },
         ]
       `);
+
+      expect(getFirstFreeByte(arrayBuffer)).toMatchInlineSnapshot(`101`);
     });
 
     test("deleteObjectPropertyEntryByKey - delete in the middle", () => {
@@ -308,6 +311,8 @@ describe("objectWrapperHelpers tests", () => {
           },
         ]
       `);
+
+      expect(getFirstFreeByte(arrayBuffer)).toMatchInlineSnapshot(`122`);
     });
 
     test("findLastObjectPropertyEntry - None Empty Object", () => {
@@ -376,6 +381,8 @@ describe("objectWrapperHelpers tests", () => {
           },
         ]
       `);
+
+      expect(getFirstFreeByte(arrayBuffer)).toMatchInlineSnapshot(`88`);
     });
 
     test("findLastObjectPropertyEntryPointer - Empty Object", () => {
@@ -404,6 +411,8 @@ describe("objectWrapperHelpers tests", () => {
           },
         ]
       `);
+
+      expect(getFirstFreeByte(arrayBuffer)).toMatchInlineSnapshot(`29`);
     });
   });
 });

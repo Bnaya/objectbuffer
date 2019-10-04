@@ -2,7 +2,7 @@
 
 import { initializeArrayBuffer } from "./store";
 import * as utils from "util";
-import { arrayBuffer2HexArray } from "./testUtils";
+import { arrayBuffer2HexArray, getFirstFreeByte } from "./testUtils";
 import { objectSaver } from "./objectSaver";
 
 describe("objectSaver tests", () => {
@@ -35,6 +35,7 @@ describe("objectSaver tests", () => {
       `);
 
       expect(arrayBuffer2HexArray(arrayBuffer, true)).toMatchSnapshot();
+      expect(getFirstFreeByte(arrayBuffer)).toMatchInlineSnapshot(`183`);
     });
   });
 });

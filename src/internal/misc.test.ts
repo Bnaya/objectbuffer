@@ -4,6 +4,7 @@ import { initializeArrayBuffer } from "./store";
 import * as utils from "util";
 import { createArrayWrapper } from "./arrayWrapper";
 import { arraySaver } from "./arraySaver";
+import { getFirstFreeByte } from "./testUtils";
 
 describe("pop it all", () => {
   const textEncoder = new utils.TextEncoder();
@@ -52,5 +53,7 @@ describe("pop it all", () => {
     } while (arrayWrapper.length !== 0);
 
     expect(arrayWrapper).toMatchInlineSnapshot(`Array []`);
+
+    expect(getFirstFreeByte(arrayBuffer)).toMatchInlineSnapshot(`703`);
   });
 });

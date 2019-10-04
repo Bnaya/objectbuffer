@@ -35,6 +35,8 @@ describe("arrayWrapper tests", () => {
           1,
         ]
       `);
+
+      expect(getFirstFreeByte(arrayBuffer)).toMatchInlineSnapshot(`66`);
     });
 
     test("arrayWrapper array.keys()", () => {
@@ -55,6 +57,8 @@ describe("arrayWrapper tests", () => {
       );
 
       expect([...arrayWrapper.keys()]).toEqual([0, 1, 2]);
+
+      expect(getFirstFreeByte(arrayBuffer)).toMatchInlineSnapshot(`66`);
     });
 
     test("arrayWrapper array.entries()", () => {
@@ -90,6 +94,8 @@ describe("arrayWrapper tests", () => {
           ],
         ]
       `);
+
+      expect(getFirstFreeByte(arrayBuffer)).toMatchInlineSnapshot(`66`);
     });
 
     test("arrayWrapper array.values() & iterator", () => {
@@ -123,6 +129,8 @@ describe("arrayWrapper tests", () => {
           1,
         ]
       `);
+
+      expect(getFirstFreeByte(arrayBuffer)).toMatchInlineSnapshot(`66`);
     });
 
     test("arrayWrapper set value in bound", () => {
@@ -258,6 +266,8 @@ describe("arrayWrapper tests", () => {
         undefined,
       ]
     `);
+
+    expect(getFirstFreeByte(arrayBuffer)).toMatchInlineSnapshot(`125`);
   });
 
   test("arrayWrapper sort - with comparator", () => {
@@ -311,5 +321,7 @@ describe("arrayWrapper tests", () => {
         },
       ]
     `);
+
+    expect(getFirstFreeByte(arrayBuffer)).toMatchInlineSnapshot(`241`);
   });
 });

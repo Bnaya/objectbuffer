@@ -2,7 +2,8 @@
 
 import * as util from "util";
 
-import { createObjectBuffer } from "../";
+import { createObjectBuffer, getUnderlyingArrayBuffer } from "../";
+import { getFirstFreeByte } from "../internal/testUtils";
 
 // actually not very good, as the browser's TextEncoder won't work with SAB, but node will.
 describe("SharedArrayBuffer tests", () => {
@@ -29,5 +30,9 @@ describe("SharedArrayBuffer tests", () => {
         ],
       }
     `);
+
+    expect(
+      getFirstFreeByte(getUnderlyingArrayBuffer(objectBuffer))
+    ).toMatchInlineSnapshot(`331`);
   });
 });
