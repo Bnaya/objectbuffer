@@ -1,14 +1,20 @@
 /* eslint-env jest */
 
 import { initializeArrayBuffer } from "./store";
-import * as utils from "util";
+import * as util from "util";
 import { createArrayWrapper } from "./arrayWrapper";
 import { arraySaver } from "./arraySaver";
 import { getFirstFreeByte } from "./testUtils";
+import { ExternalArgs } from "./interfaces";
 
 describe("pop it all", () => {
-  const textEncoder = new utils.TextEncoder();
-  const textDecoder = new utils.TextDecoder();
+  const externalArgs: ExternalArgs = {
+    textEncoder: new util.TextEncoder(),
+    textDecoder: new util.TextDecoder(),
+    arrayAdditionalAllocation: 0,
+    minimumStringAllocation: 0
+  };
+
   test("lets 1", () => {
     const arrayBuffer = new ArrayBuffer(1024);
     const dataView = new DataView(arrayBuffer);
@@ -16,14 +22,12 @@ describe("pop it all", () => {
 
     const arrayToSave = ["a", "b", 1];
 
-    const saverOutput = arraySaver(textEncoder, dataView, 0, arrayToSave);
+    const saverOutput = arraySaver(externalArgs, dataView, arrayToSave);
 
     const arrayWrapper: any = createArrayWrapper(
+      externalArgs,
       dataView,
-      0,
-      saverOutput.start,
-      textDecoder,
-      textEncoder
+      saverOutput.start
     );
 
     for (let i = 0; i < 10; i++) {

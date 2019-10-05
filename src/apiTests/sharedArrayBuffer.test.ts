@@ -2,21 +2,28 @@
 
 import * as util from "util";
 
-import { createObjectBuffer, getUnderlyingArrayBuffer } from "../";
+import {
+  createObjectBuffer,
+  getUnderlyingArrayBuffer,
+  ExternalArgs
+} from "../";
 import { getFirstFreeByte } from "../internal/testUtils";
 
 // actually not very good, as the browser's TextEncoder won't work with SAB, but node will.
 describe("SharedArrayBuffer tests", () => {
-  const textEncoder = new util.TextEncoder();
-  const textDecoder = new util.TextDecoder();
+  const externalArgs: ExternalArgs = {
+    textEncoder: new util.TextEncoder(),
+    textDecoder: new util.TextDecoder(),
+    arrayAdditionalAllocation: 0,
+    minimumStringAllocation: 0
+  };
 
   test("basic", () => {
     const objectBuffer = createObjectBuffer<any>(
-      textDecoder,
-      textEncoder,
+      externalArgs,
       1024,
       { arr: [{ a: 1 }] },
-      { arrayAdditionalAllocation: 0, useSharedArrayBuffer: true }
+      { useSharedArrayBuffer: true }
     );
 
     objectBuffer.arr = [{ bar: 666 }];
@@ -33,6 +40,6 @@ describe("SharedArrayBuffer tests", () => {
 
     expect(
       getFirstFreeByte(getUnderlyingArrayBuffer(objectBuffer))
-    ).toMatchInlineSnapshot(`331`);
+    ).toMatchInlineSnapshot(`131`);
   });
 });

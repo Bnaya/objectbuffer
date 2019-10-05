@@ -1,7 +1,7 @@
 /* eslint-env jest */
 
 import { initializeArrayBuffer } from "./store";
-import * as utils from "util";
+import * as util from "util";
 import { arraySaver } from "./arraySaver";
 import {
   arrayGetMetadata,
@@ -9,9 +9,14 @@ import {
   setValueAtArrayIndex
 } from "./arrayHelpers";
 import { getFirstFreeByte } from "./testUtils";
+import { ExternalArgs } from "./interfaces";
 
-const textEncoder = new utils.TextEncoder();
-const textDecoder = new utils.TextDecoder();
+const externalArgs: ExternalArgs = {
+  textEncoder: new util.TextEncoder(),
+  textDecoder: new util.TextDecoder(),
+  arrayAdditionalAllocation: 0,
+  minimumStringAllocation: 0
+};
 
 describe("arrayHelpers tests", () => {
   test("arrayGetMetadata", () => {
@@ -21,9 +26,13 @@ describe("arrayHelpers tests", () => {
 
     const arrayToSave = [1, 2];
 
-    const saverOutput = arraySaver(textEncoder, dataView, 0, arrayToSave);
+    const saverOutput = arraySaver(externalArgs, dataView, arrayToSave);
 
-    const metadata = arrayGetMetadata(dataView, textDecoder, saverOutput.start);
+    const metadata = arrayGetMetadata(
+      externalArgs,
+      dataView,
+      saverOutput.start
+    );
 
     expect(metadata).toMatchInlineSnapshot(`
       Object {
@@ -46,13 +55,11 @@ describe("arrayHelpers tests", () => {
 
       const arrayToSave = [1, 2];
 
-      const saverOutput = arraySaver(textEncoder, dataView, 0, arrayToSave);
+      const saverOutput = arraySaver(externalArgs, dataView, arrayToSave);
 
       const finalValue = getFinalValueAtArrayIndex(
+        externalArgs,
         dataView,
-        textDecoder,
-        textEncoder,
-        0,
         saverOutput.start,
         0
       );
@@ -69,13 +76,11 @@ describe("arrayHelpers tests", () => {
 
       const arrayToSave = [1, 2];
 
-      const saverOutput = arraySaver(textEncoder, dataView, 0, arrayToSave);
+      const saverOutput = arraySaver(externalArgs, dataView, arrayToSave);
 
       const finalValue = getFinalValueAtArrayIndex(
+        externalArgs,
         dataView,
-        textDecoder,
-        textEncoder,
-        0,
         saverOutput.start,
         10
       );
@@ -92,13 +97,11 @@ describe("arrayHelpers tests", () => {
 
       const arrayToSave = ["a", "b"];
 
-      const saverOutput = arraySaver(textEncoder, dataView, 0, arrayToSave);
+      const saverOutput = arraySaver(externalArgs, dataView, arrayToSave);
 
       const finalValue = getFinalValueAtArrayIndex(
+        externalArgs,
         dataView,
-        textDecoder,
-        textEncoder,
-        0,
         saverOutput.start,
         1
       );
@@ -116,23 +119,19 @@ describe("arrayHelpers tests", () => {
 
     const arrayToSave = [1, 2];
 
-    const saverOutput = arraySaver(textEncoder, dataView, 0, arrayToSave);
+    const saverOutput = arraySaver(externalArgs, dataView, arrayToSave);
 
     setValueAtArrayIndex(
+      externalArgs,
       dataView,
-      textDecoder,
-      textEncoder,
-      0,
       saverOutput.start,
       1,
       "im the new value"
     );
 
     const finalValue = getFinalValueAtArrayIndex(
+      externalArgs,
       dataView,
-      textDecoder,
-      textEncoder,
-      0,
       saverOutput.start,
       1
     );

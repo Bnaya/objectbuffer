@@ -1,14 +1,20 @@
 /* eslint-env jest */
 
 import { initializeArrayBuffer } from "./store";
-import * as utils from "util";
+import * as util from "util";
 import { createArrayWrapper } from "./arrayWrapper";
 import { arraySaver } from "./arraySaver";
 import { getFirstFreeByte } from "./testUtils";
+import { ExternalArgs } from "./interfaces";
 
 describe("arraySplice tests", () => {
-  const textEncoder = new utils.TextEncoder();
-  const textDecoder = new utils.TextDecoder();
+  const externalArgs: ExternalArgs = {
+    textEncoder: new util.TextEncoder(),
+    textDecoder: new util.TextDecoder(),
+    arrayAdditionalAllocation: 0,
+    minimumStringAllocation: 0
+  };
+
   test("arrayWrapper splice - add + delete - array stay in same length", () => {
     const arrayBuffer = new ArrayBuffer(256);
     const dataView = new DataView(arrayBuffer);
@@ -16,14 +22,12 @@ describe("arraySplice tests", () => {
 
     const plainJSArray: any[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
-    const saverOutput = arraySaver(textEncoder, dataView, 0, plainJSArray);
+    const saverOutput = arraySaver(externalArgs, dataView, plainJSArray);
 
     const arrayWrapper = createArrayWrapper(
+      { ...externalArgs, arrayAdditionalAllocation: 3 },
       dataView,
-      3,
-      saverOutput.start,
-      textDecoder,
-      textEncoder
+      saverOutput.start
     );
 
     const removed = arrayWrapper.splice(2, 3, "a", "b", "c");
@@ -87,14 +91,12 @@ describe("arraySplice tests", () => {
 
     const plainJSArray: any[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
-    const saverOutput = arraySaver(textEncoder, dataView, 0, plainJSArray);
+    const saverOutput = arraySaver(externalArgs, dataView, plainJSArray);
 
     const arrayWrapper = createArrayWrapper(
+      { ...externalArgs, arrayAdditionalAllocation: 3 },
       dataView,
-      3,
-      saverOutput.start,
-      textDecoder,
-      textEncoder
+      saverOutput.start
     );
 
     arrayWrapper.splice(2, 3);
@@ -135,14 +137,12 @@ describe("arraySplice tests", () => {
 
     const plainJSArray: any[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
-    const saverOutput = arraySaver(textEncoder, dataView, 0, plainJSArray);
+    const saverOutput = arraySaver(externalArgs, dataView, plainJSArray);
 
     const arrayWrapper = createArrayWrapper(
+      { ...externalArgs, arrayAdditionalAllocation: 3 },
       dataView,
-      3,
-      saverOutput.start,
-      textDecoder,
-      textEncoder
+      saverOutput.start
     );
 
     arrayWrapper.splice(4, 0, "a", "b");
@@ -192,14 +192,12 @@ describe("arraySplice tests", () => {
 
     const plainJSArray: any[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
-    const saverOutput = arraySaver(textEncoder, dataView, 0, plainJSArray);
+    const saverOutput = arraySaver(externalArgs, dataView, plainJSArray);
 
     const arrayWrapper = createArrayWrapper(
+      { ...externalArgs, arrayAdditionalAllocation: 3 },
       dataView,
-      3,
-      saverOutput.start,
-      textDecoder,
-      textEncoder
+      saverOutput.start
     );
 
     const removed = arrayWrapper.splice(2, 2, "a", "b", "c", "d");
@@ -267,14 +265,12 @@ describe("arraySplice tests", () => {
 
     const plainJSArray: any[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
-    const saverOutput = arraySaver(textEncoder, dataView, 0, plainJSArray);
+    const saverOutput = arraySaver(externalArgs, dataView, plainJSArray);
 
     const arrayWrapper = createArrayWrapper(
+      { ...externalArgs, arrayAdditionalAllocation: 3 },
       dataView,
-      3,
-      saverOutput.start,
-      textDecoder,
-      textEncoder
+      saverOutput.start
     );
 
     const removed = arrayWrapper.splice(2, 6, "a", "b", "c", "d");
@@ -343,14 +339,12 @@ describe("arraySplice tests", () => {
 
     const plainJSArray: any[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
-    const saverOutput = arraySaver(textEncoder, dataView, 0, plainJSArray);
+    const saverOutput = arraySaver(externalArgs, dataView, plainJSArray);
 
     const arrayWrapper = createArrayWrapper(
+      { ...externalArgs, arrayAdditionalAllocation: 3 },
       dataView,
-      3,
-      saverOutput.start,
-      textDecoder,
-      textEncoder
+      saverOutput.start
     );
 
     const removed = arrayWrapper.splice(12, 3, "a", "b");
@@ -409,14 +403,12 @@ describe("arraySplice tests", () => {
 
     const plainJSArray: any[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
-    const saverOutput = arraySaver(textEncoder, dataView, 0, plainJSArray);
+    const saverOutput = arraySaver(externalArgs, dataView, plainJSArray);
 
     const arrayWrapper = createArrayWrapper(
+      { ...externalArgs, arrayAdditionalAllocation: 3 },
       dataView,
-      3,
-      saverOutput.start,
-      textDecoder,
-      textEncoder
+      saverOutput.start
     );
 
     const removed = arrayWrapper.splice(2, 20, "a", "b");
@@ -481,14 +473,12 @@ describe("arraySplice tests", () => {
 
     const plainJSArray: any[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
-    const saverOutput = arraySaver(textEncoder, dataView, 0, plainJSArray);
+    const saverOutput = arraySaver(externalArgs, dataView, plainJSArray);
 
     const arrayWrapper = createArrayWrapper(
+      { ...externalArgs, arrayAdditionalAllocation: 3 },
       dataView,
-      3,
-      saverOutput.start,
-      textDecoder,
-      textEncoder
+      saverOutput.start
     );
 
     const removed = arrayWrapper.splice(-4, 1, "a", "b");
@@ -553,14 +543,12 @@ describe("arraySplice tests", () => {
 
     const plainJSArray: any[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
-    const saverOutput = arraySaver(textEncoder, dataView, 0, plainJSArray);
+    const saverOutput = arraySaver(externalArgs, dataView, plainJSArray);
 
     const arrayWrapper = createArrayWrapper(
+      { ...externalArgs, arrayAdditionalAllocation: 3 },
       dataView,
-      3,
-      saverOutput.start,
-      textDecoder,
-      textEncoder
+      saverOutput.start
     );
 
     const removed = arrayWrapper.splice(4, -1, "a", "b");

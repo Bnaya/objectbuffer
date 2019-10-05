@@ -1,14 +1,12 @@
 // import { isPrimitive, primitiveValueToEntry } from "./utils";
 import { appendEntry } from "./store";
 import { ENTRY_TYPE } from "./entry-types";
-import { ObjectPropEntry, ObjectEntry } from "./interfaces";
+import { ObjectPropEntry, ObjectEntry, ExternalArgs } from "./interfaces";
 import { saveValue } from "./saveValue";
 
-// DETECT circularities using set ??
 export function objectSaver(
-  textEncoder: any,
+  externalArgs: ExternalArgs,
   dataView: DataView,
-  arrayAdditionalAllocation: number,
   objectToSave: any
 ) {
   let totalWrittenBytes = 0;
@@ -19,12 +17,7 @@ export function objectSaver(
   let nextObjectEntryPointer = 0;
 
   for (const [key, value] of objectEntries) {
-    const rOfValue = saveValue(
-      textEncoder,
-      dataView,
-      arrayAdditionalAllocation,
-      value
-    );
+    const rOfValue = saveValue(externalArgs, dataView, value);
 
     const objectPropEntry: ObjectPropEntry = {
       type: ENTRY_TYPE.OBJECT_PROP,
@@ -35,7 +28,7 @@ export function objectSaver(
       }
     };
 
-    const rOfPropEntry = appendEntry(dataView, objectPropEntry, textEncoder);
+    const rOfPropEntry = appendEntry(externalArgs, dataView, objectPropEntry);
 
     totalWrittenBytes += rOfPropEntry.length + rOfValue.length;
     nextObjectEntryPointer = rOfPropEntry.start;
@@ -47,9 +40,9 @@ export function objectSaver(
   };
 
   const objectEntryAppendResult = appendEntry(
+    externalArgs,
     dataView,
-    objectStartEntry,
-    textEncoder
+    objectStartEntry
   );
 
   totalWrittenBytes += objectEntryAppendResult.length;

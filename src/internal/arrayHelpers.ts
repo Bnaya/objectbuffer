@@ -1,31 +1,35 @@
 import { readEntry, reserveMemory, writeEntry } from "./store";
-import { ArrayEntry } from "./interfaces";
+import { ArrayEntry, ExternalArgs } from "./interfaces";
 import { entryToFinalJavaScriptValue } from "./entryToFinalJavaScriptValue";
 import { saveValue } from "./saveValue";
 import { ENTRY_TYPE } from "./entry-types";
 import { assertNonNull } from "./assertNonNull";
 
 export function arrayGetMetadata(
+  externalArgs: ExternalArgs,
   dataView: DataView,
-  textDecoder: any,
   pointerToArrayEntry: number
 ) {
   const [arrayEntry] = readEntry(
+    externalArgs,
     dataView,
-    pointerToArrayEntry,
-    textDecoder
+    pointerToArrayEntry
   ) as [ArrayEntry, number];
 
   return arrayEntry;
 }
 
 export function arrayGetPointersToValueInIndex(
+  externalArgs: ExternalArgs,
   dataView: DataView,
-  textDecoder: any,
   pointerToArrayEntry: number,
   indexToGet: number
 ) {
-  const metadata = arrayGetMetadata(dataView, textDecoder, pointerToArrayEntry);
+  const metadata = arrayGetMetadata(
+    externalArgs,
+    dataView,
+    pointerToArrayEntry
+  );
 
   // out of bound
   if (indexToGet >= metadata.length) {
@@ -44,16 +48,14 @@ export function arrayGetPointersToValueInIndex(
 }
 
 export function getFinalValueAtArrayIndex(
+  externalArgs: ExternalArgs,
   dataView: DataView,
-  textDecoder: any,
-  textEncoder: any,
-  arrayAdditionalAllocation: number,
   pointerToArrayEntry: number,
   indexToGet: number
 ) {
   const pointers = arrayGetPointersToValueInIndex(
+    externalArgs,
     dataView,
-    textDecoder,
     pointerToArrayEntry,
     indexToGet
   );
@@ -62,28 +64,26 @@ export function getFinalValueAtArrayIndex(
     return undefined;
   }
 
-  const entry = readEntry(dataView, pointers.pointer, textDecoder);
+  const entry = readEntry(externalArgs, dataView, pointers.pointer);
 
   return entryToFinalJavaScriptValue(
+    externalArgs,
     dataView,
-    textDecoder,
-    textEncoder,
-    arrayAdditionalAllocation,
     entry[0],
     pointers.pointer
   );
 }
 
 export function setValuePointerAtArrayIndex(
+  externalArgs: ExternalArgs,
   dataView: DataView,
-  textDecoder: any,
   pointerToArrayEntry: number,
   indexToSet: number,
   pointerToEntry: number
 ) {
   const pointers = arrayGetPointersToValueInIndex(
+    externalArgs,
     dataView,
-    textDecoder,
     pointerToArrayEntry,
     indexToSet
   );
@@ -94,24 +94,17 @@ export function setValuePointerAtArrayIndex(
 }
 
 export function setValueAtArrayIndex(
+  externalArgs: ExternalArgs,
   dataView: DataView,
-  textDecoder: any,
-  textEncoder: any,
-  arrayAdditionalAllocation: number,
   pointerToArrayEntry: number,
   indexToSet: number,
   value: any
 ) {
-  const saveValueResult = saveValue(
-    textEncoder,
-    dataView,
-    arrayAdditionalAllocation,
-    value
-  );
+  const saveValueResult = saveValue(externalArgs, dataView, value);
 
   setValuePointerAtArrayIndex(
+    externalArgs,
     dataView,
-    textDecoder,
     pointerToArrayEntry,
     indexToSet,
     saveValueResult.start
@@ -122,38 +115,34 @@ export function setValueAtArrayIndex(
  * Will not shrink the array!
  */
 export function extendArrayIfNeeded(
+  externalArgs: ExternalArgs,
   dataView: DataView,
-  textDecoder: any,
-  textEncoder: any,
   pointerToArrayEntry: number,
-  arrayAdditionalAllocation: number,
   wishedLength: number
 ) {
-  const metadata = arrayGetMetadata(dataView, textDecoder, pointerToArrayEntry);
+  const metadata = arrayGetMetadata(
+    externalArgs,
+    dataView,
+    pointerToArrayEntry
+  );
 
   if (wishedLength > metadata.length) {
     if (wishedLength > metadata.allocatedLength) {
       reallocateArray(
+        externalArgs,
         dataView,
-        textDecoder,
-        textEncoder,
         pointerToArrayEntry,
-        wishedLength + arrayAdditionalAllocation,
+        wishedLength + externalArgs.arrayAdditionalAllocation,
         wishedLength
       );
     } else {
       // no need to re-allocated, just push the length forward
-      writeEntry(
-        dataView,
-        pointerToArrayEntry,
-        {
-          type: ENTRY_TYPE.ARRAY,
-          value: metadata.value,
-          allocatedLength: metadata.allocatedLength,
-          length: wishedLength
-        },
-        textEncoder
-      );
+      writeEntry(externalArgs, dataView, pointerToArrayEntry, {
+        type: ENTRY_TYPE.ARRAY,
+        value: metadata.value,
+        allocatedLength: metadata.allocatedLength,
+        length: wishedLength
+      });
     }
   }
 }
@@ -162,36 +151,37 @@ export function extendArrayIfNeeded(
  * Will not empty memory or relocate the array!
  */
 export function shrinkArray(
+  externalArgs: ExternalArgs,
   dataView: DataView,
-  textDecoder: any,
-  textEncoder: any,
   pointerToArrayEntry: number,
   wishedLength: number
 ) {
-  const metadata = arrayGetMetadata(dataView, textDecoder, pointerToArrayEntry);
-
-  writeEntry(
+  const metadata = arrayGetMetadata(
+    externalArgs,
     dataView,
-    pointerToArrayEntry,
-    {
-      type: ENTRY_TYPE.ARRAY,
-      value: metadata.value,
-      allocatedLength: metadata.allocatedLength,
-      length: wishedLength
-    },
-    textEncoder
+    pointerToArrayEntry
   );
+
+  writeEntry(externalArgs, dataView, pointerToArrayEntry, {
+    type: ENTRY_TYPE.ARRAY,
+    value: metadata.value,
+    allocatedLength: metadata.allocatedLength,
+    length: wishedLength
+  });
 }
 
 function reallocateArray(
+  externalArgs: ExternalArgs,
   dataView: DataView,
-  textDecoder: any,
-  textEncoder: any,
   pointerToArrayEntry: number,
   newAllocatedLength: number,
   newLength: number
 ) {
-  const metadata = arrayGetMetadata(dataView, textDecoder, pointerToArrayEntry);
+  const metadata = arrayGetMetadata(
+    externalArgs,
+    dataView,
+    pointerToArrayEntry
+  );
 
   const newArrayValueLocation = reserveMemory(
     dataView,
@@ -211,45 +201,35 @@ function reallocateArray(
     );
   }
 
-  writeEntry(
-    dataView,
-    pointerToArrayEntry,
-    {
-      type: ENTRY_TYPE.ARRAY,
-      value: newArrayValueLocation,
-      allocatedLength: newAllocatedLength,
-      length: newLength
-    },
-    textEncoder
-  );
+  writeEntry(externalArgs, dataView, pointerToArrayEntry, {
+    type: ENTRY_TYPE.ARRAY,
+    value: newArrayValueLocation,
+    allocatedLength: newAllocatedLength,
+    length: newLength
+  });
 }
 
 export function arraySort(
+  externalArgs: ExternalArgs,
   dataView: DataView,
-  textDecoder: any,
-  textEncoder: any,
-  arrayAdditionalAllocation: number,
   pointerToArrayEntry: number,
   sortComparator: (a: any, b: any) => 1 | -1 | 0 = defaultCompareFunction
 ) {
-  const metadata = arrayGetMetadata(dataView, textDecoder, pointerToArrayEntry);
+  const metadata = arrayGetMetadata(
+    externalArgs,
+    dataView,
+    pointerToArrayEntry
+  );
   const pointersToValues = [...new Array(metadata.length).keys()]
     .map(index => metadata.value + index * Uint32Array.BYTES_PER_ELEMENT)
     .map(pointerToPointer => dataView.getUint32(pointerToPointer));
 
   const sortMe = pointersToValues.map(pointer => {
-    const entry = readEntry(dataView, pointer, textDecoder);
+    const entry = readEntry(externalArgs, dataView, pointer);
 
     return [
       pointer,
-      entryToFinalJavaScriptValue(
-        dataView,
-        textDecoder,
-        textEncoder,
-        arrayAdditionalAllocation,
-        entry[0],
-        pointer
-      )
+      entryToFinalJavaScriptValue(externalArgs, dataView, entry[0], pointer)
     ] as const;
   });
 
@@ -303,42 +283,46 @@ function toString(obj: any) {
 }
 
 export function arrayReverse(
+  externalArgs: ExternalArgs,
   dataView: DataView,
-  textDecoder: any,
   pointerToArrayEntry: number
 ) {
-  const metadata = arrayGetMetadata(dataView, textDecoder, pointerToArrayEntry);
+  const metadata = arrayGetMetadata(
+    externalArgs,
+    dataView,
+    pointerToArrayEntry
+  );
 
   for (let i = 0; i < Math.floor(metadata.length / 2); i += 1) {
     const theOtherIndex = metadata.length - i - 1;
 
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const a = arrayGetPointersToValueInIndex(
+      externalArgs,
       dataView,
-      textDecoder,
       pointerToArrayEntry,
       i
     )!;
 
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const b = arrayGetPointersToValueInIndex(
+      externalArgs,
       dataView,
-      textDecoder,
       pointerToArrayEntry,
       theOtherIndex
     )!;
 
     setValuePointerAtArrayIndex(
+      externalArgs,
       dataView,
-      textDecoder,
       pointerToArrayEntry,
       i,
       b.pointer
     );
 
     setValuePointerAtArrayIndex(
+      externalArgs,
       dataView,
-      textDecoder,
       pointerToArrayEntry,
       theOtherIndex,
       a.pointer

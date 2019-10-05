@@ -1,4 +1,4 @@
-import { ObjectEntry } from "./interfaces";
+import { ObjectEntry, ExternalArgs } from "./interfaces";
 import { readEntry, writeEntry, appendEntry } from "./store";
 import { ENTRY_TYPE } from "./entry-types";
 import {
@@ -17,12 +17,10 @@ import {
 
 export class ObjectWrapper implements ProxyHandler<{}> {
   constructor(
+    private externalArgs: ExternalArgs,
     private dataView: DataView,
     private entryPointer: number,
-    private textDecoder: any,
-    private textEncoder: any,
-    private isTopLevel: boolean,
-    private arrayAdditionalAllocation: number
+    private isTopLevel: boolean
   ) {}
 
   public getUnderlyingArrayBuffer() {
@@ -48,13 +46,13 @@ export class ObjectWrapper implements ProxyHandler<{}> {
     }
 
     const foundEntry = findObjectPropertyEntry(
+      this.externalArgs,
       this.dataView,
       this.entryPointer,
       // Add validation ?
       // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
       // @ts-ignore
-      p,
-      this.textDecoder
+      p
     );
 
     if (foundEntry === undefined) {
@@ -62,16 +60,14 @@ export class ObjectWrapper implements ProxyHandler<{}> {
     }
 
     const [valueEntry] = readEntry(
+      this.externalArgs,
       this.dataView,
-      foundEntry[1].value.value,
-      this.textDecoder
+      foundEntry[1].value.value
     );
 
     return entryToFinalJavaScriptValue(
+      this.externalArgs,
       this.dataView,
-      this.textDecoder,
-      this.textEncoder,
-      this.arrayAdditionalAllocation,
       valueEntry,
       foundEntry[1].value.value
     );
@@ -79,9 +75,8 @@ export class ObjectWrapper implements ProxyHandler<{}> {
 
   public deleteProperty(target: {}, p: PropertyKey): boolean {
     return deleteObjectPropertyEntryByKey(
+      this.externalArgs,
       this.dataView,
-      this.textDecoder,
-      this.textEncoder,
       this.entryPointer,
       p as any
     );
@@ -89,9 +84,9 @@ export class ObjectWrapper implements ProxyHandler<{}> {
 
   public enumerate(): PropertyKey[] {
     const gotEntries = getObjectPropertiesEntries(
+      this.externalArgs,
       this.dataView,
-      this.entryPointer,
-      this.textDecoder
+      this.entryPointer
     );
 
     return gotEntries.map(e => e.value.key);
@@ -99,9 +94,9 @@ export class ObjectWrapper implements ProxyHandler<{}> {
 
   public ownKeys(): PropertyKey[] {
     const gotEntries = getObjectPropertiesEntries(
+      this.externalArgs,
       this.dataView,
-      this.entryPointer,
-      this.textDecoder
+      this.entryPointer
     );
 
     return gotEntries.map(e => e.value.key);
@@ -118,13 +113,13 @@ export class ObjectWrapper implements ProxyHandler<{}> {
     }
 
     const foundEntry = findObjectPropertyEntry(
+      this.externalArgs,
       this.dataView,
       this.entry.value,
       // Add validation ?
       // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
       // @ts-ignore
-      p,
-      this.textDecoder
+      p
     );
 
     return foundEntry !== undefined;
@@ -132,22 +127,22 @@ export class ObjectWrapper implements ProxyHandler<{}> {
 
   public set(target: {}, p: PropertyKey, value: any): boolean {
     const { start: newValueEntryPointer } = saveValue(
-      this.textEncoder,
+      this.externalArgs,
       this.dataView,
-      this.arrayAdditionalAllocation,
       value
     );
 
     const foundPropEntry = findObjectPropertyEntry(
+      this.externalArgs,
       this.dataView,
       this.entryPointer,
-      p as string,
-      this.textDecoder
+      p as string
     );
 
     // new prop
     if (foundPropEntry === undefined) {
       const { start: newPropEntryPointer } = appendEntry(
+        this.externalArgs,
         this.dataView,
         {
           type: ENTRY_TYPE.OBJECT_PROP,
@@ -156,56 +151,40 @@ export class ObjectWrapper implements ProxyHandler<{}> {
             value: newValueEntryPointer,
             key: p as string
           }
-        },
-        this.textEncoder
+        }
       );
 
       const [lastItemPointer, lastItemEntry] = findLastObjectPropertyEntry(
+        this.externalArgs,
         this.dataView,
-        this.entryPointer,
-        this.textDecoder
+        this.entryPointer
       );
 
       if (lastItemEntry.type === ENTRY_TYPE.OBJECT) {
-        writeEntry(
-          this.dataView,
-          lastItemPointer,
-          {
-            type: ENTRY_TYPE.OBJECT,
-            value: newPropEntryPointer
-          },
-          this.textEncoder
-        );
+        writeEntry(this.externalArgs, this.dataView, lastItemPointer, {
+          type: ENTRY_TYPE.OBJECT,
+          value: newPropEntryPointer
+        });
       } else {
-        writeEntry(
-          this.dataView,
-          lastItemPointer,
-          {
-            type: ENTRY_TYPE.OBJECT_PROP,
-            value: {
-              next: newPropEntryPointer,
-              value: lastItemEntry.value.value,
-              key: lastItemEntry.value.key
-            }
-          },
-          this.textEncoder
-        );
+        writeEntry(this.externalArgs, this.dataView, lastItemPointer, {
+          type: ENTRY_TYPE.OBJECT_PROP,
+          value: {
+            next: newPropEntryPointer,
+            value: lastItemEntry.value.value,
+            key: lastItemEntry.value.key
+          }
+        });
       }
     } else {
       // overwrite value
-      writeEntry(
-        this.dataView,
-        foundPropEntry[0],
-        {
-          type: ENTRY_TYPE.OBJECT_PROP,
-          value: {
-            key: foundPropEntry[1].value.key,
-            next: foundPropEntry[1].value.next,
-            value: newValueEntryPointer
-          }
-        },
-        this.textEncoder
-      );
+      writeEntry(this.externalArgs, this.dataView, foundPropEntry[0], {
+        type: ENTRY_TYPE.OBJECT_PROP,
+        value: {
+          key: foundPropEntry[1].value.key,
+          next: foundPropEntry[1].value.next,
+          value: newValueEntryPointer
+        }
+      });
     }
 
     return true;
@@ -240,30 +219,21 @@ export class ObjectWrapper implements ProxyHandler<{}> {
 
   private get entry(): ObjectEntry {
     return readEntry(
+      this.externalArgs,
       this.dataView,
-      this.entryPointer,
-      this.textDecoder
+      this.entryPointer
     )[0] as ObjectEntry;
   }
 }
 
 export function createObjectWrapper<T = any>(
+  externalArgs: ExternalArgs,
   dataView: DataView,
   entryPointer: number,
-  textDecoder: any,
-  textEncoder: any,
-  isTopLevel = false,
-  arrayAdditionalAllocation = 50
+  isTopLevel = false
 ): T {
   return new Proxy(
     { objectBufferWrapper: "objectBufferWrapper" },
-    new ObjectWrapper(
-      dataView,
-      entryPointer,
-      textDecoder,
-      textEncoder,
-      isTopLevel,
-      arrayAdditionalAllocation
-    )
+    new ObjectWrapper(externalArgs, dataView, entryPointer, isTopLevel)
   ) as any;
 }

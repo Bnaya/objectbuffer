@@ -1,16 +1,22 @@
 /* eslint-disable no-undef */
 import * as objectbufferModule from "../src";
 
-const textDecoder = new TextDecoder();
-const textEncoder = new TextEncoder();
+/**
+ * @type {objectbufferModules.ExternalArgs}
+ */
+const externalArgs = {
+  textDecoder: new TextDecoder(),
+  textEncoder: new TextEncoder(),
+  arrayAdditionalAllocation: 0,
+  minimumStringAllocation: 0
+};
 
 addEventListener("message", ev => {
   let lastValueToFollow = "IM NOT INTERESTING";
 
   if (ev.data instanceof SharedArrayBuffer) {
     const o = objectbufferModule.createObjectBufferFromArrayBuffer(
-      textDecoder,
-      textEncoder,
+      externalArgs,
       ev.data,
       false
     );

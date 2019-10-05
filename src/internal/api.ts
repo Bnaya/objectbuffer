@@ -2,17 +2,13 @@ import { initializeArrayBuffer } from "./store";
 import { objectSaver } from "./objectSaver";
 import { createObjectWrapper } from "./objectWrapper";
 import { GET_UNDERLYING_ARRAY_BUFFER_SYMBOL } from "./symbols";
+import { ExternalArgs } from "./interfaces";
 
 export function createObjectBuffer<T = any>(
-  textDecoder: any,
-  textEncoder: any,
+  externalArgs: ExternalArgsApi,
   size: number,
   initialValue: T,
-  {
-    arrayAdditionalAllocation,
-    useSharedArrayBuffer
-  }: { arrayAdditionalAllocation?: number; useSharedArrayBuffer?: boolean } = {
-    arrayAdditionalAllocation: 0,
+  { useSharedArrayBuffer }: { useSharedArrayBuffer?: boolean } = {
     useSharedArrayBuffer: false
   }
 ): T {
@@ -22,15 +18,19 @@ export function createObjectBuffer<T = any>(
   const dataView = initializeArrayBuffer(arrayBuffer);
 
   const { start } = objectSaver(
-    textEncoder,
+    externalArgsApiToExternalArgsApi(externalArgs),
     dataView,
-    arrayAdditionalAllocation || 0,
     initialValue
   );
 
   dataView.setUint32(16, start);
 
-  return createObjectWrapper(dataView, start, textDecoder, textEncoder, true);
+  return createObjectWrapper(
+    externalArgsApiToExternalArgsApi(externalArgs),
+    dataView,
+    start,
+    true
+  );
 }
 
 export function getUnderlyingArrayBuffer(
@@ -40,25 +40,38 @@ export function getUnderlyingArrayBuffer(
 }
 
 export function createObjectBufferFromArrayBuffer<T = any>(
-  textDecoder: any,
-  textEncoder: any,
+  externalArgs: ExternalArgsApi,
   arrayBuffer: ArrayBuffer | SharedArrayBuffer,
   // set to true if the give array buffer is not one from `getUnderlyingArrayBuffer`
-  shouldInitializeArrayBuffer = false,
-  { arrayAdditionalAllocation }: { arrayAdditionalAllocation?: number } = {
-    arrayAdditionalAllocation: 0
-  }
+  shouldInitializeArrayBuffer = false
 ): T {
   const dataView = shouldInitializeArrayBuffer
     ? initializeArrayBuffer(arrayBuffer)
     : new DataView(arrayBuffer);
 
   return createObjectWrapper(
+    externalArgsApiToExternalArgsApi(externalArgs),
     dataView,
     dataView.getUint32(16),
-    textDecoder,
-    textEncoder,
-    true,
-    arrayAdditionalAllocation
+    true
   );
+}
+
+export type ExternalArgsApi = Readonly<{
+  arrayAdditionalAllocation?: number;
+  minimumStringAllocation?: number;
+  textDecoder: any;
+  textEncoder: any;
+}>;
+
+function externalArgsApiToExternalArgsApi(p: ExternalArgsApi): ExternalArgs {
+  return {
+    ...p,
+    arrayAdditionalAllocation: p.arrayAdditionalAllocation
+      ? p.arrayAdditionalAllocation
+      : 0,
+    minimumStringAllocation: p.minimumStringAllocation
+      ? p.minimumStringAllocation
+      : 0
+  };
 }

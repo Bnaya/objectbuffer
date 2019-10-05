@@ -1,16 +1,22 @@
 /* eslint-env jest */
 
 import { initializeArrayBuffer } from "./store";
-import * as utils from "util";
+import * as util from "util";
 import { arrayBuffer2HexArray, getFirstFreeByte } from "./testUtils";
 import { objectSaver } from "./objectSaver";
+import { ExternalArgs } from "./interfaces";
 
 describe("objectSaver tests", () => {
+  const externalArgs: ExternalArgs = {
+    textEncoder: new util.TextEncoder(),
+    textDecoder: new util.TextDecoder(),
+    arrayAdditionalAllocation: 0,
+    minimumStringAllocation: 0
+  };
+
   describe("objectSaver - general", () => {
     test("objectSaver", () => {
       const arrayBuffer = new ArrayBuffer(256);
-      const textEncoder = new utils.TextEncoder();
-      // const textDecoder = new utils.TextDecoder();
       const dataView = new DataView(arrayBuffer);
       initializeArrayBuffer(arrayBuffer);
 
@@ -25,7 +31,7 @@ describe("objectSaver tests", () => {
         }
       };
 
-      const saverOutput = objectSaver(textEncoder, dataView, 0, objectToSave);
+      const saverOutput = objectSaver(externalArgs, dataView, objectToSave);
 
       expect(saverOutput).toMatchInlineSnapshot(`
         Object {

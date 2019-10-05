@@ -1,17 +1,23 @@
 /* eslint-env jest */
 
 import { initializeArrayBuffer } from "./store";
-import * as utils from "util";
+import * as util from "util";
 import { objectSaver } from "./objectSaver";
 import { createObjectWrapper } from "./objectWrapper";
 import { getFirstFreeByte } from "./testUtils";
+import { ExternalArgs } from "./interfaces";
 
 describe("objectWrapper tests", () => {
+  const externalArgs: ExternalArgs = {
+    textEncoder: new util.TextEncoder(),
+    textDecoder: new util.TextDecoder(),
+    arrayAdditionalAllocation: 0,
+    minimumStringAllocation: 0
+  };
+
   describe("objectWrapper - general", () => {
     test("ObjectWrapper class 1", () => {
       const arrayBuffer = new ArrayBuffer(256);
-      const textEncoder = new utils.TextEncoder();
-      const textDecoder = new utils.TextDecoder();
       const dataView = new DataView(arrayBuffer);
       initializeArrayBuffer(arrayBuffer);
 
@@ -25,13 +31,12 @@ describe("objectWrapper tests", () => {
         }
       };
 
-      const saverOutput = objectSaver(textEncoder, dataView, 0, objectToSave);
+      const saverOutput = objectSaver(externalArgs, dataView, objectToSave);
 
       const objectWrapper: any = createObjectWrapper(
+        externalArgs,
         dataView,
-        saverOutput.start,
-        textDecoder,
-        textEncoder
+        saverOutput.start
       );
 
       expect(Object.keys(objectWrapper)).toMatchInlineSnapshot(`
@@ -55,8 +60,6 @@ describe("objectWrapper tests", () => {
 
     test("ObjectWrapper class 2", () => {
       const arrayBuffer = new ArrayBuffer(256);
-      const textEncoder = new utils.TextEncoder();
-      const textDecoder = new utils.TextDecoder();
       const dataView = new DataView(arrayBuffer);
       initializeArrayBuffer(arrayBuffer);
 
@@ -70,13 +73,12 @@ describe("objectWrapper tests", () => {
         }
       };
 
-      const saverOutput = objectSaver(textEncoder, dataView, 0, objectToSave);
+      const saverOutput = objectSaver(externalArgs, dataView, objectToSave);
 
       const objectWrapper: any = createObjectWrapper(
+        externalArgs,
         dataView,
-        saverOutput.start,
-        textDecoder,
-        textEncoder
+        saverOutput.start
       );
 
       expect(objectWrapper.noneExistsProp).toMatchInlineSnapshot(`undefined`);
@@ -87,8 +89,6 @@ describe("objectWrapper tests", () => {
 
     test("ObjectWrapper class set override value", () => {
       const arrayBuffer = new ArrayBuffer(256);
-      const textEncoder = new utils.TextEncoder();
-      const textDecoder = new utils.TextDecoder();
       const dataView = new DataView(arrayBuffer);
       initializeArrayBuffer(arrayBuffer);
 
@@ -102,13 +102,12 @@ describe("objectWrapper tests", () => {
         }
       };
 
-      const saverOutput = objectSaver(textEncoder, dataView, 0, objectToSave);
+      const saverOutput = objectSaver(externalArgs, dataView, objectToSave);
 
       const objectWrapper = createObjectWrapper(
+        externalArgs,
         dataView,
-        saverOutput.start,
-        textDecoder,
-        textEncoder
+        saverOutput.start
       );
 
       objectWrapper.b = "new value";
@@ -130,8 +129,6 @@ describe("objectWrapper tests", () => {
 
     test("ObjectWrapper class set new prop value", () => {
       const arrayBuffer = new ArrayBuffer(256);
-      const textEncoder = new utils.TextEncoder();
-      const textDecoder = new utils.TextDecoder();
       const dataView = new DataView(arrayBuffer);
       initializeArrayBuffer(arrayBuffer);
 
@@ -145,13 +142,12 @@ describe("objectWrapper tests", () => {
         }
       };
 
-      const saverOutput = objectSaver(textEncoder, dataView, 0, objectToSave);
+      const saverOutput = objectSaver(externalArgs, dataView, objectToSave);
 
       const objectWrapper = createObjectWrapper(
+        externalArgs,
         dataView,
-        saverOutput.start,
-        textDecoder,
-        textEncoder
+        saverOutput.start
       );
 
       objectWrapper.newprop = "valueOnNewProp";
@@ -174,8 +170,6 @@ describe("objectWrapper tests", () => {
 
     test("ObjectWrapper class delete", () => {
       const arrayBuffer = new ArrayBuffer(256);
-      const textEncoder = new utils.TextEncoder();
-      const textDecoder = new utils.TextDecoder();
       const dataView = new DataView(arrayBuffer);
       initializeArrayBuffer(arrayBuffer);
 
@@ -189,13 +183,12 @@ describe("objectWrapper tests", () => {
         }
       };
 
-      const saverOutput = objectSaver(textEncoder, dataView, 0, objectToSave);
+      const saverOutput = objectSaver(externalArgs, dataView, objectToSave);
 
       const objectWrapper = createObjectWrapper(
+        externalArgs,
         dataView,
-        saverOutput.start,
-        textDecoder,
-        textEncoder
+        saverOutput.start
       );
 
       delete objectWrapper.b;
