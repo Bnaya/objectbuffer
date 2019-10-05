@@ -7,9 +7,9 @@ import {
   appendEntry
 } from "./store";
 import { ENTRY_TYPE } from "./entry-types";
-import * as utils from "util";
+import * as util from "util";
 import { arrayBuffer2HexArray } from "./testUtils";
-import { ObjectEntry, ObjectPropEntry } from "./interfaces";
+import { ObjectEntry, ObjectPropEntry, ExternalArgs } from "./interfaces";
 
 describe("Store tests - Misc", () => {
   test("initializeArrayBuffer", () => {
@@ -44,20 +44,28 @@ describe("Store tests - Misc", () => {
 });
 
 describe("Store tests writeEntry", () => {
+  const externalArgs: ExternalArgs = {
+    textEncoder: new util.TextEncoder(),
+    textDecoder: new util.TextDecoder(),
+    arrayAdditionalAllocation: 0,
+    minimumStringAllocation: 0
+  };
+
   test("writeEntry max number", () => {
-    const textEncoder = new utils.TextEncoder();
+    const externalArgs: ExternalArgs = {
+      textEncoder: new util.TextEncoder(),
+      textDecoder: new util.TextDecoder(),
+      arrayAdditionalAllocation: 0,
+      minimumStringAllocation: 0
+    };
+
     const arrayBuffer = new ArrayBuffer(17);
     const dataView = new DataView(arrayBuffer);
 
-    const writtenLength = writeEntry(
-      dataView,
-      8,
-      {
-        type: ENTRY_TYPE.NUMBER,
-        value: Number.MAX_VALUE
-      },
-      textEncoder
-    );
+    const writtenLength = writeEntry(externalArgs, dataView, 8, {
+      type: ENTRY_TYPE.NUMBER,
+      value: Number.MAX_VALUE
+    });
     expect(writtenLength).toBe(9);
 
     expect(arrayBuffer2HexArray(arrayBuffer)).toMatchInlineSnapshot(`
@@ -83,19 +91,13 @@ describe("Store tests writeEntry", () => {
     `);
   });
   test("writeEntry min number", () => {
-    const textEncoder = new utils.TextEncoder();
     const arrayBuffer = new ArrayBuffer(17);
     const dataView = new DataView(arrayBuffer);
 
-    const writtenLength = writeEntry(
-      dataView,
-      8,
-      {
-        type: ENTRY_TYPE.NUMBER,
-        value: Number.MIN_VALUE
-      },
-      textEncoder
-    );
+    const writtenLength = writeEntry(externalArgs, dataView, 8, {
+      type: ENTRY_TYPE.NUMBER,
+      value: Number.MIN_VALUE
+    });
     expect(writtenLength).toBe(9);
 
     expect(arrayBuffer2HexArray(arrayBuffer)).toMatchInlineSnapshot(`
@@ -122,19 +124,13 @@ describe("Store tests writeEntry", () => {
   });
 
   test("writeEntry string", () => {
-    const textEncoder = new utils.TextEncoder();
     const arrayBuffer = new ArrayBuffer(17);
     const dataView = new DataView(arrayBuffer);
 
-    const writtenLength = writeEntry(
-      dataView,
-      8,
-      {
-        type: ENTRY_TYPE.STRING,
-        value: "aא弟"
-      },
-      textEncoder
-    );
+    const writtenLength = writeEntry(externalArgs, dataView, 8, {
+      type: ENTRY_TYPE.STRING,
+      value: "aא弟"
+    });
     expect(writtenLength).toBe(9);
 
     expect(arrayBuffer2HexArray(arrayBuffer)).toMatchInlineSnapshot(`
@@ -162,20 +158,23 @@ describe("Store tests writeEntry", () => {
 });
 
 describe("Store tests readEntry", () => {
+  const externalArgs: ExternalArgs = {
+    textEncoder: new util.TextEncoder(),
+    textDecoder: new util.TextDecoder(),
+    arrayAdditionalAllocation: 0,
+    minimumStringAllocation: 0
+  };
+
   test("readEntry max number", () => {
-    const textEncoder = new utils.TextEncoder();
-    const textDecoder = new utils.TextDecoder();
     const arrayBuffer = new ArrayBuffer(17);
     const dataView = new DataView(arrayBuffer);
 
-    const writtenLength = writeEntry(
-      dataView,
-      8,
-      { type: ENTRY_TYPE.NUMBER, value: Number.MAX_VALUE },
-      textEncoder
-    );
+    const writtenLength = writeEntry(externalArgs, dataView, 8, {
+      type: ENTRY_TYPE.NUMBER,
+      value: Number.MAX_VALUE
+    });
 
-    const [redEntry, redBytesLength] = readEntry(dataView, 8, textDecoder);
+    const [redEntry, redBytesLength] = readEntry(externalArgs, dataView, 8);
 
     expect(redBytesLength).toBe(writtenLength);
 
@@ -188,19 +187,15 @@ describe("Store tests readEntry", () => {
   });
 
   test("readEntry min number", () => {
-    const textEncoder = new utils.TextEncoder();
-    const textDecoder = new utils.TextDecoder();
     const arrayBuffer = new ArrayBuffer(17);
     const dataView = new DataView(arrayBuffer);
 
-    const writtenLength = writeEntry(
-      dataView,
-      8,
-      { type: ENTRY_TYPE.NUMBER, value: Number.MIN_VALUE },
-      textEncoder
-    );
+    const writtenLength = writeEntry(externalArgs, dataView, 8, {
+      type: ENTRY_TYPE.NUMBER,
+      value: Number.MIN_VALUE
+    });
 
-    const [redEntry, redBytesLength] = readEntry(dataView, 8, textDecoder);
+    const [redEntry, redBytesLength] = readEntry(externalArgs, dataView, 8);
 
     expect(redBytesLength).toBe(writtenLength);
 
@@ -213,22 +208,15 @@ describe("Store tests readEntry", () => {
   });
 
   test("readEntry string", () => {
-    const textEncoder = new utils.TextEncoder();
-    const textDecoder = new utils.TextDecoder();
     const arrayBuffer = new ArrayBuffer(10);
     const dataView = new DataView(arrayBuffer);
 
-    const writtenByteLength = writeEntry(
-      dataView,
-      0,
-      {
-        type: ENTRY_TYPE.STRING,
-        value: "aא弟"
-      },
-      textEncoder
-    );
+    const writtenByteLength = writeEntry(externalArgs, dataView, 0, {
+      type: ENTRY_TYPE.STRING,
+      value: "aא弟"
+    });
 
-    const [entry, redBytesLength] = readEntry(dataView, 0, textDecoder);
+    const [entry, redBytesLength] = readEntry(externalArgs, dataView, 0);
 
     expect(writtenByteLength).toBe(redBytesLength);
 
@@ -241,22 +229,15 @@ describe("Store tests readEntry", () => {
   });
 
   test("readEntry BigInt", () => {
-    const textEncoder = new utils.TextEncoder();
-    const textDecoder = new utils.TextDecoder();
     const arrayBuffer = new ArrayBuffer(16);
     const dataView = new DataView(arrayBuffer);
 
-    const writtenByteLength = writeEntry(
-      dataView,
-      0,
-      {
-        type: ENTRY_TYPE.BIGINT,
-        value: BigInt("0b0" + "1".repeat(63))
-      },
-      textEncoder
-    );
+    const writtenByteLength = writeEntry(externalArgs, dataView, 0, {
+      type: ENTRY_TYPE.BIGINT,
+      value: BigInt("0b0" + "1".repeat(63))
+    });
 
-    const [entry, redBytesLength] = readEntry(dataView, 0, textDecoder);
+    const [entry, redBytesLength] = readEntry(externalArgs, dataView, 0);
 
     expect(writtenByteLength).toBe(redBytesLength);
 
@@ -269,19 +250,15 @@ describe("Store tests readEntry", () => {
   });
 
   test("readEntry UBigInt", () => {
-    const textEncoder = new utils.TextEncoder();
-    const textDecoder = new utils.TextDecoder();
     const arrayBuffer = new ArrayBuffer(16);
     const dataView = new DataView(arrayBuffer);
 
-    const writtenByteLength = writeEntry(
-      dataView,
-      0,
-      { type: ENTRY_TYPE.UBIGINT, value: BigInt("0b" + "1".repeat(64)) },
-      textEncoder
-    );
+    const writtenByteLength = writeEntry(externalArgs, dataView, 0, {
+      type: ENTRY_TYPE.UBIGINT,
+      value: BigInt("0b" + "1".repeat(64))
+    });
 
-    const [entry, redBytesLength] = readEntry(dataView, 0, textDecoder);
+    const [entry, redBytesLength] = readEntry(externalArgs, dataView, 0);
 
     expect(writtenByteLength).toBe(redBytesLength);
 
@@ -295,8 +272,6 @@ describe("Store tests readEntry", () => {
 
   describe("Store tests write/read entry", () => {
     test("object entry", () => {
-      const textEncoder = new utils.TextEncoder();
-      const textDecoder = new utils.TextDecoder();
       const arrayBuffer = new ArrayBuffer(8);
       const dataView = new DataView(arrayBuffer);
 
@@ -306,13 +281,13 @@ describe("Store tests readEntry", () => {
       };
 
       const writtenByteLength = writeEntry(
+        externalArgs,
         dataView,
         0,
-        entryToWrite,
-        textEncoder
+        entryToWrite
       );
 
-      const [entry, redBytesLength] = readEntry(dataView, 0, textDecoder);
+      const [entry, redBytesLength] = readEntry(externalArgs, dataView, 0);
 
       expect(writtenByteLength).toBe(redBytesLength);
 
@@ -326,8 +301,6 @@ describe("Store tests readEntry", () => {
   });
 
   test("object property entry", () => {
-    const textEncoder = new utils.TextEncoder();
-    const textDecoder = new utils.TextDecoder();
     const arrayBuffer = new ArrayBuffer(32);
     const dataView = new DataView(arrayBuffer);
 
@@ -341,13 +314,13 @@ describe("Store tests readEntry", () => {
     };
 
     const writtenByteLength = writeEntry(
+      externalArgs,
       dataView,
       0,
-      entryToWrite,
-      textEncoder
+      entryToWrite
     );
 
-    const [entry, redBytesLength] = readEntry(dataView, 0, textDecoder);
+    const [entry, redBytesLength] = readEntry(externalArgs, dataView, 0);
 
     expect(writtenByteLength).toBe(redBytesLength);
 
@@ -366,18 +339,13 @@ describe("Store tests readEntry", () => {
   describe("appendEntry - general", () => {
     test("appendEntry", () => {
       const arrayBuffer = new ArrayBuffer(40);
-      const textEncoder = new utils.TextEncoder();
       const dataView = new DataView(arrayBuffer);
       initializeArrayBuffer(arrayBuffer);
 
-      const r1 = appendEntry(
-        dataView,
-        {
-          type: ENTRY_TYPE.STRING,
-          value: "im a string"
-        },
-        textEncoder
-      );
+      const r1 = appendEntry(externalArgs, dataView, {
+        type: ENTRY_TYPE.STRING,
+        value: "im a string"
+      });
 
       expect(r1).toMatchInlineSnapshot(`
         Object {
@@ -431,14 +399,10 @@ describe("Store tests readEntry", () => {
         ]
       `);
 
-      const r2 = appendEntry(
-        dataView,
-        {
-          type: ENTRY_TYPE.BOOLEAN,
-          value: true
-        },
-        textEncoder
-      );
+      const r2 = appendEntry(externalArgs, dataView, {
+        type: ENTRY_TYPE.BOOLEAN,
+        value: true
+      });
 
       expect(r2).toMatchInlineSnapshot(`
         Object {

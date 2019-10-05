@@ -1,12 +1,11 @@
-import { ObjectEntry, ObjectPropEntry } from "./interfaces";
+import { ObjectEntry, ObjectPropEntry, ExternalArgs } from "./interfaces";
 import { readEntry, writeEntry } from "./store";
 import { invariant } from "./utils";
 import { ENTRY_TYPE } from "./entry-types";
 
 export function deleteObjectPropertyEntryByKey(
+  externalArgs: ExternalArgs,
   dataView: DataView,
-  textDecoder: any,
-  textEncoder: any,
   containingObjectEntryPointer: number,
   keyToDeleteBy: string
 ): boolean {
@@ -16,9 +15,9 @@ export function deleteObjectPropertyEntryByKey(
   );
 
   const objectEntry = readEntry(
+    externalArgs,
     dataView,
-    containingObjectEntryPointer,
-    textDecoder
+    containingObjectEntryPointer
   )[0] as ObjectEntry;
 
   if (objectEntry.value === 0) {
@@ -27,21 +26,16 @@ export function deleteObjectPropertyEntryByKey(
   }
 
   const firstPropEntry = readEntry(
+    externalArgs,
     dataView,
-    objectEntry.value,
-    textDecoder
+    objectEntry.value
   )[0] as ObjectPropEntry;
 
   if (firstPropEntry.value.key === keyToDeleteBy) {
-    writeEntry(
-      dataView,
-      containingObjectEntryPointer,
-      {
-        type: ENTRY_TYPE.OBJECT,
-        value: firstPropEntry.value.next
-      },
-      textEncoder
-    );
+    writeEntry(externalArgs, dataView, containingObjectEntryPointer, {
+      type: ENTRY_TYPE.OBJECT,
+      value: firstPropEntry.value.next
+    });
 
     return true;
   }
@@ -52,9 +46,9 @@ export function deleteObjectPropertyEntryByKey(
 
   while (entryToMaybeUpdate.value.next !== 0) {
     entryToMaybeDelete = readEntry(
+      externalArgs,
       dataView,
-      entryToMaybeUpdate.value.next,
-      textDecoder
+      entryToMaybeUpdate.value.next
     )[0] as ObjectPropEntry;
 
     if (entryToMaybeDelete.value.key === keyToDeleteBy) {
@@ -66,19 +60,14 @@ export function deleteObjectPropertyEntryByKey(
   }
 
   if (entryToMaybeDelete && entryToMaybeDelete.value.key === keyToDeleteBy) {
-    writeEntry(
-      dataView,
-      entryToMaybeUpdatePointer,
-      {
-        type: ENTRY_TYPE.OBJECT_PROP,
-        value: {
-          key: entryToMaybeUpdate.value.key,
-          value: entryToMaybeUpdate.value.value,
-          next: entryToMaybeDelete.value.next
-        }
-      },
-      textEncoder
-    );
+    writeEntry(externalArgs, dataView, entryToMaybeUpdatePointer, {
+      type: ENTRY_TYPE.OBJECT_PROP,
+      value: {
+        key: entryToMaybeUpdate.value.key,
+        value: entryToMaybeUpdate.value.value,
+        next: entryToMaybeDelete.value.next
+      }
+    });
 
     return true;
   } else {
@@ -96,14 +85,14 @@ export function deleteObjectPropertyEntryByKey(
  * @param textDecoder
  */
 export function findLastObjectPropertyEntry(
+  externalArgs: ExternalArgs,
   dataView: DataView,
-  containingObjectEntryPointer: number,
-  textDecoder: any
+  containingObjectEntryPointer: number
 ): [number, ObjectPropEntry | ObjectEntry] {
   const [containingObjectEntry] = readEntry(
+    externalArgs,
     dataView,
-    containingObjectEntryPointer,
-    textDecoder
+    containingObjectEntryPointer
   ) as [ObjectEntry, number];
 
   if (containingObjectEntry.value === 0) {
@@ -115,9 +104,9 @@ export function findLastObjectPropertyEntry(
   // eslint-disable-next-line no-constant-condition
   while (true) {
     const [objectPropEntry] = readEntry(
+      externalArgs,
       dataView,
-      nextElementPointer,
-      textDecoder
+      nextElementPointer
     ) as [ObjectPropEntry, number];
 
     if (objectPropEntry.value.next === 0) {
@@ -129,15 +118,15 @@ export function findLastObjectPropertyEntry(
 }
 
 export function findObjectPropertyEntry(
+  externalArgs: ExternalArgs,
   dataView: DataView,
   containingObjectEntryPointer: number,
-  key: string,
-  textDecoder: any
+  key: string
 ): [number, ObjectPropEntry] | undefined {
   const [containingObjectEntry] = readEntry(
+    externalArgs,
     dataView,
-    containingObjectEntryPointer,
-    textDecoder
+    containingObjectEntryPointer
   ) as [ObjectEntry, number];
 
   let currentPointer = containingObjectEntry.value;
@@ -149,7 +138,7 @@ export function findObjectPropertyEntry(
 
   // eslint-disable-next-line no-constant-condition
   while (true) {
-    [objectPropEntry] = readEntry(dataView, currentPointer, textDecoder) as [
+    [objectPropEntry] = readEntry(externalArgs, dataView, currentPointer) as [
       ObjectPropEntry,
       number
     ];
@@ -169,15 +158,15 @@ export function findObjectPropertyEntry(
 }
 
 export function findObjectPropertyEntryOld(
+  externalArgs: ExternalArgs,
   dataView: DataView,
   containingObjectEntryPointer: number,
-  key: string,
-  textDecoder: any
+  key: string
 ): ObjectPropEntry | undefined {
   const [containingObjectEntry] = readEntry(
+    externalArgs,
     dataView,
-    containingObjectEntryPointer,
-    textDecoder
+    containingObjectEntryPointer
   ) as [ObjectEntry, number];
 
   let nextElementPointer = containingObjectEntry.value;
@@ -185,9 +174,9 @@ export function findObjectPropertyEntryOld(
 
   do {
     [objectPropEntry] = readEntry(
+      externalArgs,
       dataView,
-      nextElementPointer,
-      textDecoder
+      nextElementPointer
     ) as [ObjectPropEntry, number];
 
     nextElementPointer = objectPropEntry.value.next;
@@ -201,14 +190,14 @@ export function findObjectPropertyEntryOld(
 }
 
 export function getObjectPropertiesEntries(
+  externalArgs: ExternalArgs,
   dataView: DataView,
-  containingObjectEntryPointer: number,
-  textDecoder: any
+  containingObjectEntryPointer: number
 ): ObjectPropEntry[] {
   const [containingObjectEntry] = readEntry(
+    externalArgs,
     dataView,
-    containingObjectEntryPointer,
-    textDecoder
+    containingObjectEntryPointer
   ) as [ObjectEntry, number];
 
   const foundProps: ObjectPropEntry[] = [];
@@ -218,9 +207,9 @@ export function getObjectPropertiesEntries(
 
   do {
     [objectPropEntry] = readEntry(
+      externalArgs,
       dataView,
-      nextElementPointer,
-      textDecoder
+      nextElementPointer
     ) as [ObjectPropEntry, number];
 
     foundProps.push(objectPropEntry);

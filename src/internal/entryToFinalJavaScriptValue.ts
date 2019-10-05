@@ -1,14 +1,12 @@
-import { Entry } from "./interfaces";
+import { Entry, ExternalArgs } from "./interfaces";
 import { ENTRY_TYPE, isPrimitiveEntryType } from "./entry-types";
 import { createObjectWrapper } from "./objectWrapper";
 import { createArrayWrapper } from "./arrayWrapper";
 import { getCacheFor } from "./externalObjectsCache";
 
 export function entryToFinalJavaScriptValue(
+  externalArgs: ExternalArgs,
   dataView: DataView,
-  textDecoder: any,
-  textEncoder: any,
-  arrayAdditionalAllocation: number,
   valueEntry: Entry,
   pointerToEntry: number
 ) {
@@ -30,14 +28,7 @@ export function entryToFinalJavaScriptValue(
     let ret = cache.get(pointerToEntry);
 
     if (!ret) {
-      ret = createObjectWrapper(
-        dataView,
-        pointerToEntry,
-        textDecoder,
-        textEncoder,
-        false,
-        arrayAdditionalAllocation
-      );
+      ret = createObjectWrapper(externalArgs, dataView, pointerToEntry, false);
 
       cache.set(pointerToEntry, ret);
     }
@@ -51,13 +42,7 @@ export function entryToFinalJavaScriptValue(
     let ret = cache.get(pointerToEntry);
 
     if (!ret) {
-      ret = createArrayWrapper(
-        dataView,
-        arrayAdditionalAllocation,
-        pointerToEntry,
-        textDecoder,
-        textEncoder
-      );
+      ret = createArrayWrapper(externalArgs, dataView, pointerToEntry);
 
       cache.set(pointerToEntry, ret);
     }

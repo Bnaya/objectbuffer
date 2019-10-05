@@ -3,11 +3,11 @@ import { appendEntry } from "./store";
 import { objectSaver } from "./objectSaver";
 import { arraySaver } from "./arraySaver";
 import { GET_UNDERLYING_POINTER_SYMBOL } from "./symbols";
+import { ExternalArgs } from "./interfaces";
 
 export function saveValue(
-  textEncoder: any,
+  externalArgs: ExternalArgs,
   dataView: DataView,
-  arrayAdditionalAllocation: number,
   value: any
 ) {
   let totalWrittenBytes = 0;
@@ -15,7 +15,7 @@ export function saveValue(
 
   if (isPrimitive(value)) {
     const entry = primitiveValueToEntry(value);
-    const { start, length } = appendEntry(dataView, entry, textEncoder);
+    const { start, length } = appendEntry(externalArgs, dataView, entry);
 
     valuePointer = start;
     totalWrittenBytes += length;
@@ -25,12 +25,7 @@ export function saveValue(
       valuePointer = maybeOurPointer;
       totalWrittenBytes += 0;
     } else {
-      const { start, length } = arraySaver(
-        textEncoder,
-        dataView,
-        arrayAdditionalAllocation,
-        value
-      );
+      const { start, length } = arraySaver(externalArgs, dataView, value);
 
       valuePointer = start;
       totalWrittenBytes += length;
@@ -42,12 +37,7 @@ export function saveValue(
       valuePointer = maybeOurPointer;
       totalWrittenBytes += 0;
     } else {
-      const { start, length } = objectSaver(
-        textEncoder,
-        dataView,
-        arrayAdditionalAllocation,
-        value
-      );
+      const { start, length } = objectSaver(externalArgs, dataView, value);
       valuePointer = start;
       totalWrittenBytes += length;
     }

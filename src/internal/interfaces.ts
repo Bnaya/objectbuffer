@@ -80,3 +80,10 @@ export interface ArrayEntry {
   length: number;
   allocatedLength: number;
 }
+
+export type ExternalArgs = Readonly<{
+  arrayAdditionalAllocation: number;
+  minimumStringAllocation: number;
+  textDecoder: any;
+  textEncoder: any;
+}>;

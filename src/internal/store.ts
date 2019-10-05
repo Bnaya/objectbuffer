@@ -1,6 +1,7 @@
 import { ENTRY_TYPE } from "./entry-types";
 import { Entry, ObjectPropEntry } from "./interfaces";
 import { arrayBufferCopyTo } from "./utils";
+import { ExternalArgs } from "./interfaces";
 
 export function initializeArrayBuffer(arrayBuffer: ArrayBuffer) {
   const dataView = new DataView(arrayBuffer);
@@ -18,13 +19,10 @@ export function initializeArrayBuffer(arrayBuffer: ArrayBuffer) {
 }
 
 export function writeEntry(
+  externalArgs: ExternalArgs,
   dataView: DataView,
   startingCursor: number,
-  entry: Entry,
-  /**
-   * pass yours env's textEncoder. (node and the browser has it)
-   */
-  textEncoder: any
+  entry: Entry
 ) {
   let cursor = startingCursor;
 
@@ -54,7 +52,9 @@ export function writeEntry(
 
     case ENTRY_TYPE.STRING:
       // eslint-disable-next-line no-case-declarations
-      const encodedString: Uint8Array = textEncoder.encode(entry.value);
+      const encodedString: Uint8Array = externalArgs.textEncoder.encode(
+        entry.value
+      );
       dataView.setUint16(cursor, encodedString.byteLength);
       cursor += Uint16Array.BYTES_PER_ELEMENT;
 
@@ -81,7 +81,9 @@ export function writeEntry(
 
     case ENTRY_TYPE.OBJECT_PROP:
       // eslint-disable-next-line no-case-declarations
-      const encodedStringKey: Uint8Array = textEncoder.encode(entry.value.key);
+      const encodedStringKey: Uint8Array = externalArgs.textEncoder.encode(
+        entry.value.key
+      );
       dataView.setUint16(cursor, encodedStringKey.byteLength);
       cursor += Uint16Array.BYTES_PER_ELEMENT;
 
@@ -116,17 +118,14 @@ export function writeEntry(
 }
 
 export function appendEntry(
+  externalArgs: ExternalArgs,
   dataView: DataView,
-  entry: Entry,
-  /**
-   * pass yours env's textEncoder. (node and the browser has it)
-   */
-  textEncoder: any
+  entry: Entry
 ) {
   // End of data pointer
   const firstFreeByte = dataView.getUint32(8);
 
-  const written = writeEntry(dataView, firstFreeByte, entry, textEncoder);
+  const written = writeEntry(externalArgs, dataView, firstFreeByte, entry);
   dataView.setUint32(8, firstFreeByte + written);
 
   return {
@@ -136,12 +135,9 @@ export function appendEntry(
 }
 
 export function readEntry(
+  externalArgs: ExternalArgs,
   dataView: DataView,
-  startingCursor: number,
-  /**
-   * pass yours env's textDecoder. (node and the browser has it)
-   */
-  textDecoder: any
+  startingCursor: number
 ): [Entry, number] {
   let cursor = startingCursor;
 
@@ -183,7 +179,7 @@ export function readEntry(
       const tempAB = new ArrayBuffer(stringLength);
       arrayBufferCopyTo(dataView.buffer, cursor, stringLength, tempAB, 0);
 
-      entry.value = textDecoder.decode(tempAB);
+      entry.value = externalArgs.textDecoder.decode(tempAB);
 
       cursor += stringLength;
 
@@ -217,7 +213,7 @@ export function readEntry(
 
       // eslint-disable-next-line no-case-declarations
       const objectPropsValue: ObjectPropEntry["value"] = {
-        key: textDecoder.decode(tempAB2),
+        key: externalArgs.textDecoder.decode(tempAB2),
         value: dataView.getUint32(cursor + keyStringLength),
         next: dataView.getUint32(
           cursor + keyStringLength + Uint32Array.BYTES_PER_ELEMENT

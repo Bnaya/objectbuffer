@@ -1,40 +1,35 @@
 import { appendEntry, reserveMemory } from "./store";
 import { ENTRY_TYPE } from "./entry-types";
-import { ArrayEntry } from "./interfaces";
+import { ArrayEntry, ExternalArgs } from "./interfaces";
 import { saveValue } from "./saveValue";
 
 export function arraySaver(
-  textEncoder: any,
+  externalArgs: ExternalArgs,
   dataView: DataView,
-  arrayAdditionalAllocation: number,
   arrayToSave: Array<any>
 ) {
   let totalWrittenBytes = 0;
 
   let memoryForPointersCursor = reserveMemory(
     dataView,
-    (arrayToSave.length + arrayAdditionalAllocation) *
+    (arrayToSave.length + externalArgs.arrayAdditionalAllocation) *
       Uint32Array.BYTES_PER_ELEMENT
   );
 
   totalWrittenBytes +=
-    (arrayToSave.length + arrayAdditionalAllocation) *
+    (arrayToSave.length + externalArgs.arrayAdditionalAllocation) *
     Uint32Array.BYTES_PER_ELEMENT;
 
   const arrayStartEntry: ArrayEntry = {
     type: ENTRY_TYPE.ARRAY,
     value: memoryForPointersCursor,
-    allocatedLength: arrayToSave.length + arrayAdditionalAllocation,
+    allocatedLength:
+      arrayToSave.length + externalArgs.arrayAdditionalAllocation,
     length: arrayToSave.length
   };
 
   for (const item of arrayToSave) {
-    const rOfValue = saveValue(
-      textEncoder,
-      dataView,
-      arrayAdditionalAllocation,
-      item
-    );
+    const rOfValue = saveValue(externalArgs, dataView, item);
 
     dataView.setUint32(memoryForPointersCursor, rOfValue.start);
     memoryForPointersCursor += Uint32Array.BYTES_PER_ELEMENT;
@@ -43,9 +38,9 @@ export function arraySaver(
   }
 
   const arrayEntryAppendResult = appendEntry(
+    externalArgs,
     dataView,
-    arrayStartEntry,
-    textEncoder
+    arrayStartEntry
   );
 
   totalWrittenBytes += arrayEntryAppendResult.length;

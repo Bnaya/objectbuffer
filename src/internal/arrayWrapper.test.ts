@@ -1,14 +1,19 @@
 /* eslint-env jest */
 
 import { initializeArrayBuffer } from "./store";
-import * as utils from "util";
+import * as util from "util";
 import { createArrayWrapper } from "./arrayWrapper";
 import { arraySaver } from "./arraySaver";
 import { getFirstFreeByte } from "./testUtils";
+import { ExternalArgs } from "./interfaces";
 
 describe("arrayWrapper tests", () => {
-  const textEncoder = new utils.TextEncoder();
-  const textDecoder = new utils.TextDecoder();
+  const externalArgs: ExternalArgs = {
+    textEncoder: new util.TextEncoder(),
+    textDecoder: new util.TextDecoder(),
+    arrayAdditionalAllocation: 0,
+    minimumStringAllocation: 0
+  };
 
   describe("arrayWrapper - general", () => {
     test("arrayWrapper class 1", () => {
@@ -18,14 +23,12 @@ describe("arrayWrapper tests", () => {
 
       const arrayToSave = ["a", "b", 1];
 
-      const saverOutput = arraySaver(textEncoder, dataView, 0, arrayToSave);
+      const saverOutput = arraySaver(externalArgs, dataView, arrayToSave);
 
       const arrayWrapper: any = createArrayWrapper(
+        externalArgs,
         dataView,
-        0,
-        saverOutput.start,
-        textDecoder,
-        textEncoder
+        saverOutput.start
       );
 
       expect(arrayWrapper).toMatchInlineSnapshot(`
@@ -46,14 +49,12 @@ describe("arrayWrapper tests", () => {
 
       const arrayToSave = ["a", "b", 1];
 
-      const saverOutput = arraySaver(textEncoder, dataView, 0, arrayToSave);
+      const saverOutput = arraySaver(externalArgs, dataView, arrayToSave);
 
       const arrayWrapper = createArrayWrapper(
+        externalArgs,
         dataView,
-        0,
-        saverOutput.start,
-        textDecoder,
-        textEncoder
+        saverOutput.start
       );
 
       expect([...arrayWrapper.keys()]).toEqual([0, 1, 2]);
@@ -68,14 +69,12 @@ describe("arrayWrapper tests", () => {
 
       const arrayToSave = ["a", "b", 1];
 
-      const saverOutput = arraySaver(textEncoder, dataView, 0, arrayToSave);
+      const saverOutput = arraySaver(externalArgs, dataView, arrayToSave);
 
       const arrayWrapper = createArrayWrapper(
+        externalArgs,
         dataView,
-        0,
-        saverOutput.start,
-        textDecoder,
-        textEncoder
+        saverOutput.start
       );
 
       expect([...arrayWrapper.entries()]).toMatchInlineSnapshot(`
@@ -105,14 +104,12 @@ describe("arrayWrapper tests", () => {
 
       const arrayToSave = ["a", "b", 1];
 
-      const saverOutput = arraySaver(textEncoder, dataView, 0, arrayToSave);
+      const saverOutput = arraySaver(externalArgs, dataView, arrayToSave);
 
       const arrayWrapper = createArrayWrapper(
+        externalArgs,
         dataView,
-        0,
-        saverOutput.start,
-        textDecoder,
-        textEncoder
+        saverOutput.start
       );
 
       expect([...arrayWrapper.values()]).toMatchInlineSnapshot(`
@@ -140,14 +137,12 @@ describe("arrayWrapper tests", () => {
 
       const arrayToSave = ["a", "b", 1];
 
-      const saverOutput = arraySaver(textEncoder, dataView, 0, arrayToSave);
+      const saverOutput = arraySaver(externalArgs, dataView, arrayToSave);
 
       const arrayWrapper: any = createArrayWrapper(
+        externalArgs,
         dataView,
-        0,
-        saverOutput.start,
-        textDecoder,
-        textEncoder
+        saverOutput.start
       );
 
       arrayWrapper[1] = "new value";
@@ -168,14 +163,16 @@ describe("arrayWrapper tests", () => {
 
       const arrayToSave = ["a", "b", 1];
 
-      const saverOutput = arraySaver(textEncoder, dataView, 15, arrayToSave);
+      const saverOutput = arraySaver(
+        { ...externalArgs, arrayAdditionalAllocation: 15 },
+        dataView,
+        arrayToSave
+      );
 
       const arrayWrapper: any = createArrayWrapper(
+        { ...externalArgs, arrayAdditionalAllocation: 15 },
         dataView,
-        15,
-        saverOutput.start,
-        textDecoder,
-        textEncoder
+        saverOutput.start
       );
 
       arrayWrapper[10] = "new value";
@@ -204,14 +201,12 @@ describe("arrayWrapper tests", () => {
 
       const arrayToSave = ["a", "b", 1];
 
-      const saverOutput = arraySaver(textEncoder, dataView, 0, arrayToSave);
+      const saverOutput = arraySaver(externalArgs, dataView, arrayToSave);
 
       const arrayWrapper: any = createArrayWrapper(
+        { ...externalArgs, arrayAdditionalAllocation: 3 },
         dataView,
-        3,
-        saverOutput.start,
-        textDecoder,
-        textEncoder
+        saverOutput.start
       );
 
       arrayWrapper[10] = "new value";
@@ -242,14 +237,12 @@ describe("arrayWrapper tests", () => {
 
     const arrayToSave = [2, 1, null, 3, 10, undefined, 6, 77];
 
-    const saverOutput = arraySaver(textEncoder, dataView, 0, arrayToSave);
+    const saverOutput = arraySaver(externalArgs, dataView, arrayToSave);
 
     const arrayWrapper = createArrayWrapper(
+      { ...externalArgs, arrayAdditionalAllocation: 3 },
       dataView,
-      3,
-      saverOutput.start,
-      textDecoder,
-      textEncoder
+      saverOutput.start
     );
 
     arrayWrapper.sort();
@@ -279,14 +272,12 @@ describe("arrayWrapper tests", () => {
       value
     }));
 
-    const saverOutput = arraySaver(textEncoder, dataView, 0, arrayToSave);
+    const saverOutput = arraySaver(externalArgs, dataView, arrayToSave);
 
     const arrayWrapper = createArrayWrapper(
+      { ...externalArgs, arrayAdditionalAllocation: 3 },
       dataView,
-      3,
-      saverOutput.start,
-      textDecoder,
-      textEncoder
+      saverOutput.start
     );
 
     arrayWrapper.sort((a, b) => {
@@ -332,14 +323,12 @@ describe("arrayWrapper tests", () => {
 
     const arrayToSave = [1, 2, 3, 4, 5, 6, 7];
 
-    const saverOutput = arraySaver(textEncoder, dataView, 0, arrayToSave);
+    const saverOutput = arraySaver(externalArgs, dataView, arrayToSave);
 
     const arrayWrapper = createArrayWrapper(
+      { ...externalArgs, arrayAdditionalAllocation: 3 },
       dataView,
-      3,
-      saverOutput.start,
-      textDecoder,
-      textEncoder
+      saverOutput.start
     );
 
     arrayWrapper.reverse();

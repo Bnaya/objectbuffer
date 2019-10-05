@@ -2,22 +2,25 @@
 
 import * as util from "util";
 
-import { createObjectBuffer } from "../";
+import { createObjectBuffer, ExternalArgs } from "../";
 import { getFirstFreeByte } from "../internal/testUtils";
 import { getUnderlyingArrayBuffer } from "../internal/api";
 
 // actually not very good, as the browser's TextEncoder won't work with SAB, but node will.
 describe("equality.test tests", () => {
-  const textEncoder = new util.TextEncoder();
-  const textDecoder = new util.TextDecoder();
+  const externalArgs: ExternalArgs = {
+    textEncoder: new util.TextEncoder(),
+    textDecoder: new util.TextDecoder(),
+    arrayAdditionalAllocation: 0,
+    minimumStringAllocation: 0
+  };
 
   test("equality.test tests", () => {
     const objectBuffer = createObjectBuffer<any>(
-      textDecoder,
-      textEncoder,
+      externalArgs,
       1024,
       { arr: [1, 2, 3, 4], obj: { a: 1 } },
-      { arrayAdditionalAllocation: 0, useSharedArrayBuffer: false }
+      { useSharedArrayBuffer: false }
     );
 
     objectBuffer.arr2 = objectBuffer.arr;

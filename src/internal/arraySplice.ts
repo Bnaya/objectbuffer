@@ -8,19 +8,22 @@ import {
   setValuePointerAtArrayIndex
 } from "./arrayHelpers";
 import { assertNonNull } from "./assertNonNull";
+import { ExternalArgs } from "./interfaces";
 
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/splice#Syntax
 export function arraySplice(
+  externalArgs: ExternalArgs,
   dataView: DataView,
-  textDecoder: any,
-  textEncoder: any,
-  arrayAdditionalAllocation: number,
   pointerToArrayEntry: number,
   startArg: number,
   deleteCountArg?: number,
   ...itemsToAddArg: Array<any>
 ) {
-  const metadata = arrayGetMetadata(dataView, textDecoder, pointerToArrayEntry);
+  const metadata = arrayGetMetadata(
+    externalArgs,
+    dataView,
+    pointerToArrayEntry
+  );
 
   const calcedStart = calculateSpliceStart(metadata.length, startArg);
 
@@ -32,14 +35,7 @@ export function arraySplice(
 
   const newLength = metadata.length + itemsToAddArg.length - calcedDeleteCount;
 
-  extendArrayIfNeeded(
-    dataView,
-    textDecoder,
-    textEncoder,
-    pointerToArrayEntry,
-    arrayAdditionalAllocation,
-    newLength
-  );
+  extendArrayIfNeeded(externalArgs, dataView, pointerToArrayEntry, newLength);
 
   const deletedItemsToReturn = [];
   // can be negative
@@ -52,10 +48,8 @@ export function arraySplice(
   ) {
     deletedItemsToReturn.push(
       getFinalValueAtArrayIndex(
+        externalArgs,
         dataView,
-        textDecoder,
-        textEncoder,
-        arrayAdditionalAllocation,
         pointerToArrayEntry,
         deletedItemIndexToSave
       )
@@ -75,8 +69,8 @@ export function arraySplice(
       writeValueToIndex -= 1
     ) {
       const valueToCopyPointers = arrayGetPointersToValueInIndex(
+        externalArgs,
         dataView,
-        textDecoder,
         pointerToArrayEntry,
         writeValueToIndex - itemCountChange
       );
@@ -84,8 +78,8 @@ export function arraySplice(
       assertNonNull(valueToCopyPointers);
 
       setValuePointerAtArrayIndex(
+        externalArgs,
         dataView,
-        textDecoder,
         pointerToArrayEntry,
         writeValueToIndex,
         valueToCopyPointers.pointer
@@ -105,8 +99,8 @@ export function arraySplice(
       writeValueToIndex += 1
     ) {
       const valueToCopyPointers = arrayGetPointersToValueInIndex(
+        externalArgs,
         dataView,
-        textDecoder,
         pointerToArrayEntry,
         writeValueToIndex - itemCountChange
       );
@@ -114,8 +108,8 @@ export function arraySplice(
       assertNonNull(valueToCopyPointers);
 
       setValuePointerAtArrayIndex(
+        externalArgs,
         dataView,
-        textDecoder,
         pointerToArrayEntry,
         writeValueToIndex,
         valueToCopyPointers.pointer
@@ -139,10 +133,8 @@ export function arraySplice(
 
   for (let i = 0; i < itemsToAddArg.length; i += 1) {
     setValueAtArrayIndex(
+      externalArgs,
       dataView,
-      textDecoder,
-      textEncoder,
-      arrayAdditionalAllocation,
       pointerToArrayEntry,
       calcedStart + i,
       itemsToAddArg[i]
@@ -150,13 +142,7 @@ export function arraySplice(
   }
 
   if (newLength < metadata.length) {
-    shrinkArray(
-      dataView,
-      textDecoder,
-      textEncoder,
-      pointerToArrayEntry,
-      newLength
-    );
+    shrinkArray(externalArgs, dataView, pointerToArrayEntry, newLength);
   }
 
   return deletedItemsToReturn;

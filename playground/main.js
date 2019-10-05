@@ -3,12 +3,18 @@ import * as objectbufferModules from "../src";
 
 import Worker from "worker-loader!./Worker.js";
 
-const textDecoder = new TextDecoder();
-const textEncoder = new TextEncoder();
+/**
+ * @type {objectbufferModules.ExternalArgs}
+ */
+const externalArgs = {
+  textDecoder: new TextDecoder(),
+  textEncoder: new TextEncoder(),
+  arrayAdditionalAllocation: 0,
+  minimumStringAllocation: 0
+};
 
 const o = objectbufferModules.createObjectBuffer(
-  textDecoder,
-  textEncoder,
+  externalArgs,
   512,
   {
     some: {
@@ -19,7 +25,7 @@ const o = objectbufferModules.createObjectBuffer(
       ]
     }
   },
-  { arrayAdditionalAllocation: 5, useSharedArrayBuffer: true }
+  { useSharedArrayBuffer: true }
 );
 
 // o.yetAnother = [234, 234, "asf"];

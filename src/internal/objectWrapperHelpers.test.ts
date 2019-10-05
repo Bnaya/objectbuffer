@@ -1,7 +1,7 @@
 /* eslint-env jest */
 
 import { initializeArrayBuffer } from "./store";
-import * as utils from "util";
+import * as util from "util";
 import { objectSaver } from "./objectSaver";
 import {
   findObjectPropertyEntry,
@@ -10,13 +10,19 @@ import {
   findLastObjectPropertyEntry
 } from "./objectWrapperHelpers";
 import { getFirstFreeByte } from "./testUtils";
+import { ExternalArgs } from "./interfaces";
 
 describe("objectWrapperHelpers tests", () => {
+  const externalArgs: ExternalArgs = {
+    textEncoder: new util.TextEncoder(),
+    textDecoder: new util.TextDecoder(),
+    arrayAdditionalAllocation: 0,
+    minimumStringAllocation: 0
+  };
+
   describe("objectWrapperHelpers - general", () => {
     test("findObjectPropertyEntry", () => {
       const arrayBuffer = new ArrayBuffer(128);
-      const textEncoder = new utils.TextEncoder();
-      const textDecoder = new utils.TextDecoder();
       const dataView = new DataView(arrayBuffer);
       initializeArrayBuffer(arrayBuffer);
 
@@ -27,13 +33,13 @@ describe("objectWrapperHelpers tests", () => {
         5: undefined
       };
 
-      const saverOutput = objectSaver(textEncoder, dataView, 0, objectToSave);
+      const saverOutput = objectSaver(externalArgs, dataView, objectToSave);
 
       let foundEntry = findObjectPropertyEntry(
+        externalArgs,
         dataView,
         saverOutput.start,
-        "a",
-        textDecoder
+        "a"
       );
 
       expect(foundEntry).toMatchInlineSnapshot(`
@@ -51,10 +57,10 @@ describe("objectWrapperHelpers tests", () => {
       `);
 
       foundEntry = findObjectPropertyEntry(
+        externalArgs,
         dataView,
         saverOutput.start,
-        "notfoundkey",
-        textDecoder
+        "notfoundkey"
       );
 
       expect(foundEntry).toMatchInlineSnapshot(`undefined`);
@@ -62,8 +68,6 @@ describe("objectWrapperHelpers tests", () => {
 
     test("getObjectPropertiesEntries", () => {
       const arrayBuffer = new ArrayBuffer(256);
-      const textEncoder = new utils.TextEncoder();
-      const textDecoder = new utils.TextDecoder();
       const dataView = new DataView(arrayBuffer);
       initializeArrayBuffer(arrayBuffer);
 
@@ -77,12 +81,12 @@ describe("objectWrapperHelpers tests", () => {
         }
       };
 
-      const saverOutput = objectSaver(textEncoder, dataView, 0, objectToSave);
+      const saverOutput = objectSaver(externalArgs, dataView, objectToSave);
 
       const gotEntries = getObjectPropertiesEntries(
+        externalArgs,
         dataView,
-        saverOutput.start,
-        textDecoder
+        saverOutput.start
       );
 
       expect(gotEntries).toMatchInlineSnapshot(`
@@ -132,8 +136,6 @@ describe("objectWrapperHelpers tests", () => {
     });
     test("deleteObjectPropertyEntryByKey - delete first one", () => {
       const arrayBuffer = new ArrayBuffer(256);
-      const textEncoder = new utils.TextEncoder();
-      const textDecoder = new utils.TextDecoder();
       const dataView = new DataView(arrayBuffer);
       initializeArrayBuffer(arrayBuffer);
 
@@ -144,20 +146,19 @@ describe("objectWrapperHelpers tests", () => {
         d: null
       };
 
-      const saverOutput = objectSaver(textEncoder, dataView, 0, objectToSave);
+      const saverOutput = objectSaver(externalArgs, dataView, objectToSave);
 
       deleteObjectPropertyEntryByKey(
+        externalArgs,
         dataView,
-        textDecoder,
-        textEncoder,
         saverOutput.start,
         "a"
       );
 
       const gotEntries = getObjectPropertiesEntries(
+        externalArgs,
         dataView,
-        saverOutput.start,
-        textDecoder
+        saverOutput.start
       );
 
       expect(gotEntries).toMatchInlineSnapshot(`
@@ -192,8 +193,6 @@ describe("objectWrapperHelpers tests", () => {
 
     test("deleteObjectPropertyEntryByKey - delete last one", () => {
       const arrayBuffer = new ArrayBuffer(256);
-      const textEncoder = new utils.TextEncoder();
-      const textDecoder = new utils.TextDecoder();
       const dataView = new DataView(arrayBuffer);
       initializeArrayBuffer(arrayBuffer);
 
@@ -204,18 +203,17 @@ describe("objectWrapperHelpers tests", () => {
         d: null
       };
 
-      const saverOutput = objectSaver(textEncoder, dataView, 0, objectToSave);
+      const saverOutput = objectSaver(externalArgs, dataView, objectToSave);
 
       deleteObjectPropertyEntryByKey(
+        externalArgs,
         dataView,
-        textDecoder,
-        textEncoder,
         saverOutput.start,
         "d"
       );
 
       expect(
-        getObjectPropertiesEntries(dataView, saverOutput.start, textDecoder)
+        getObjectPropertiesEntries(externalArgs, dataView, saverOutput.start)
       ).toMatchInlineSnapshot(`
         Array [
           Object {
@@ -250,8 +248,6 @@ describe("objectWrapperHelpers tests", () => {
 
     test("deleteObjectPropertyEntryByKey - delete in the middle", () => {
       const arrayBuffer = new ArrayBuffer(256);
-      const textEncoder = new utils.TextEncoder();
-      const textDecoder = new utils.TextDecoder();
       const dataView = new DataView(arrayBuffer);
       initializeArrayBuffer(arrayBuffer);
 
@@ -263,18 +259,17 @@ describe("objectWrapperHelpers tests", () => {
         e: 66
       };
 
-      const saverOutput = objectSaver(textEncoder, dataView, 0, objectToSave);
+      const saverOutput = objectSaver(externalArgs, dataView, objectToSave);
 
       deleteObjectPropertyEntryByKey(
+        externalArgs,
         dataView,
-        textDecoder,
-        textEncoder,
         saverOutput.start,
         "c"
       );
 
       expect(
-        getObjectPropertiesEntries(dataView, saverOutput.start, textDecoder)
+        getObjectPropertiesEntries(externalArgs, dataView, saverOutput.start)
       ).toMatchInlineSnapshot(`
         Array [
           Object {
@@ -317,8 +312,6 @@ describe("objectWrapperHelpers tests", () => {
 
     test("findLastObjectPropertyEntry - None Empty Object", () => {
       const arrayBuffer = new ArrayBuffer(128);
-      const textEncoder = new utils.TextEncoder();
-      const textDecoder = new utils.TextDecoder();
       const dataView = new DataView(arrayBuffer);
       initializeArrayBuffer(arrayBuffer);
 
@@ -328,12 +321,12 @@ describe("objectWrapperHelpers tests", () => {
         c: undefined
       };
 
-      const saverOutput = objectSaver(textEncoder, dataView, 0, objectToSave);
+      const saverOutput = objectSaver(externalArgs, dataView, objectToSave);
 
       const found = findLastObjectPropertyEntry(
+        externalArgs,
         dataView,
-        saverOutput.start,
-        textDecoder
+        saverOutput.start
       );
 
       expect(found).toMatchInlineSnapshot(`
@@ -352,7 +345,7 @@ describe("objectWrapperHelpers tests", () => {
 
       // this is here for control only
       expect(
-        getObjectPropertiesEntries(dataView, saverOutput.start, textDecoder)
+        getObjectPropertiesEntries(externalArgs, dataView, saverOutput.start)
       ).toMatchInlineSnapshot(`
         Array [
           Object {
@@ -387,19 +380,17 @@ describe("objectWrapperHelpers tests", () => {
 
     test("findLastObjectPropertyEntryPointer - Empty Object", () => {
       const arrayBuffer = new ArrayBuffer(64);
-      const textEncoder = new utils.TextEncoder();
-      const textDecoder = new utils.TextDecoder();
       const dataView = new DataView(arrayBuffer);
       initializeArrayBuffer(arrayBuffer);
 
       const objectToSave = {};
 
-      const saverOutput = objectSaver(textEncoder, dataView, 0, objectToSave);
+      const saverOutput = objectSaver(externalArgs, dataView, objectToSave);
 
       const found = findLastObjectPropertyEntry(
+        externalArgs,
         dataView,
-        saverOutput.start,
-        textDecoder
+        saverOutput.start
       );
 
       expect(found).toMatchInlineSnapshot(`
