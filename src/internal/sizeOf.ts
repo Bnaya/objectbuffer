@@ -2,6 +2,13 @@
 import { ExternalArgs } from "./interfaces";
 import { saveValue } from "./saveValue";
 
+/**
+ * Calculate the size (bytes) of the given value.
+ * Also validates that the value is saveable
+ *
+ * @param externalArgs
+ * @param value
+ */
 export function sizeOf(externalArgs: ExternalArgs, value: any) {
   // eslint-disable-next-line @typescript-eslint/no-use-before-define
   const fakeDataView = new FakeDataView();

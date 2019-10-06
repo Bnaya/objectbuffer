@@ -6,8 +6,7 @@ import { createObjectBuffer, ExternalArgs } from "../";
 import { getFirstFreeByte } from "../internal/testUtils";
 import { getUnderlyingArrayBuffer } from "../internal/api";
 
-// actually not very good, as the browser's TextEncoder won't work with SAB, but node will.
-describe("equality.test tests", () => {
+describe("equality.test tests. make sure our cache of proxies works", () => {
   const externalArgs: ExternalArgs = {
     textEncoder: new util.TextEncoder(),
     textDecoder: new util.TextDecoder(),

@@ -26,7 +26,7 @@ describe("arraySplice tests", () => {
 
     const arrayWrapper = createArrayWrapper(
       { ...externalArgs, arrayAdditionalAllocation: 3 },
-      dataView,
+      { dataView },
       saverOutput.start
     );
 
@@ -95,7 +95,7 @@ describe("arraySplice tests", () => {
 
     const arrayWrapper = createArrayWrapper(
       { ...externalArgs, arrayAdditionalAllocation: 3 },
-      dataView,
+      { dataView },
       saverOutput.start
     );
 
@@ -141,7 +141,7 @@ describe("arraySplice tests", () => {
 
     const arrayWrapper = createArrayWrapper(
       { ...externalArgs, arrayAdditionalAllocation: 3 },
-      dataView,
+      { dataView },
       saverOutput.start
     );
 
@@ -196,7 +196,7 @@ describe("arraySplice tests", () => {
 
     const arrayWrapper = createArrayWrapper(
       { ...externalArgs, arrayAdditionalAllocation: 3 },
-      dataView,
+      { dataView },
       saverOutput.start
     );
 
@@ -269,7 +269,7 @@ describe("arraySplice tests", () => {
 
     const arrayWrapper = createArrayWrapper(
       { ...externalArgs, arrayAdditionalAllocation: 3 },
-      dataView,
+      { dataView },
       saverOutput.start
     );
 
@@ -343,7 +343,7 @@ describe("arraySplice tests", () => {
 
     const arrayWrapper = createArrayWrapper(
       { ...externalArgs, arrayAdditionalAllocation: 3 },
-      dataView,
+      { dataView },
       saverOutput.start
     );
 
@@ -407,7 +407,7 @@ describe("arraySplice tests", () => {
 
     const arrayWrapper = createArrayWrapper(
       { ...externalArgs, arrayAdditionalAllocation: 3 },
-      dataView,
+      { dataView },
       saverOutput.start
     );
 
@@ -477,7 +477,7 @@ describe("arraySplice tests", () => {
 
     const arrayWrapper = createArrayWrapper(
       { ...externalArgs, arrayAdditionalAllocation: 3 },
-      dataView,
+      { dataView },
       saverOutput.start
     );
 
@@ -547,7 +547,7 @@ describe("arraySplice tests", () => {
 
     const arrayWrapper = createArrayWrapper(
       { ...externalArgs, arrayAdditionalAllocation: 3 },
-      dataView,
+      { dataView },
       saverOutput.start
     );
 

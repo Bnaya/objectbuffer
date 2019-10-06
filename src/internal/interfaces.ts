@@ -82,6 +82,13 @@ export interface ArrayEntry {
   allocatedLength: number;
 }
 
+/**
+ * The carrier object allows us to swap the DataView easily
+ */
+export interface DataViewCarrier {
+  dataView: DataView;
+}
+
 export type ExternalArgs = Readonly<{
   arrayAdditionalAllocation: number;
   minimumStringAllocation: number;

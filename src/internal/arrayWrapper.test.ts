@@ -27,7 +27,7 @@ describe("arrayWrapper tests", () => {
 
       const arrayWrapper: any = createArrayWrapper(
         externalArgs,
-        dataView,
+        { dataView },
         saverOutput.start
       );
 
@@ -53,7 +53,7 @@ describe("arrayWrapper tests", () => {
 
       const arrayWrapper = createArrayWrapper(
         externalArgs,
-        dataView,
+        { dataView },
         saverOutput.start
       );
 
@@ -73,7 +73,7 @@ describe("arrayWrapper tests", () => {
 
       const arrayWrapper = createArrayWrapper(
         externalArgs,
-        dataView,
+        { dataView },
         saverOutput.start
       );
 
@@ -108,7 +108,7 @@ describe("arrayWrapper tests", () => {
 
       const arrayWrapper = createArrayWrapper(
         externalArgs,
-        dataView,
+        { dataView },
         saverOutput.start
       );
 
@@ -141,7 +141,7 @@ describe("arrayWrapper tests", () => {
 
       const arrayWrapper: any = createArrayWrapper(
         externalArgs,
-        dataView,
+        { dataView },
         saverOutput.start
       );
 
@@ -171,7 +171,7 @@ describe("arrayWrapper tests", () => {
 
       const arrayWrapper: any = createArrayWrapper(
         { ...externalArgs, arrayAdditionalAllocation: 15 },
-        dataView,
+        { dataView },
         saverOutput.start
       );
 
@@ -205,7 +205,7 @@ describe("arrayWrapper tests", () => {
 
       const arrayWrapper: any = createArrayWrapper(
         { ...externalArgs, arrayAdditionalAllocation: 3 },
-        dataView,
+        { dataView },
         saverOutput.start
       );
 
@@ -241,7 +241,7 @@ describe("arrayWrapper tests", () => {
 
     const arrayWrapper = createArrayWrapper(
       { ...externalArgs, arrayAdditionalAllocation: 3 },
-      dataView,
+      { dataView },
       saverOutput.start
     );
 
@@ -276,7 +276,7 @@ describe("arrayWrapper tests", () => {
 
     const arrayWrapper = createArrayWrapper(
       { ...externalArgs, arrayAdditionalAllocation: 3 },
-      dataView,
+      { dataView },
       saverOutput.start
     );
 
@@ -327,7 +327,7 @@ describe("arrayWrapper tests", () => {
 
     const arrayWrapper = createArrayWrapper(
       { ...externalArgs, arrayAdditionalAllocation: 3 },
-      dataView,
+      { dataView },
       saverOutput.start
     );
 
@@ -361,7 +361,7 @@ describe("arrayWrapper tests", () => {
 
     const arrayWrapper = createArrayWrapper(
       { ...externalArgs, arrayAdditionalAllocation: 3 },
-      dataView,
+      { dataView },
       saverOutput.start
     );
 
