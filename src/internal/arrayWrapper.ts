@@ -8,12 +8,12 @@ import {
 } from "./arrayHelpers";
 import { GET_UNDERLYING_POINTER_SYMBOL } from "./symbols";
 import { arraySplice } from "./arraySplice";
-import { ExternalArgs } from "./interfaces";
+import { ExternalArgs, DataViewCarrier } from "./interfaces";
 
 export class ArrayWrapper implements ProxyHandler<{}> {
   constructor(
     private externalArgs: ExternalArgs,
-    private dataView: DataView,
+    private dataViewCarrier: DataViewCarrier,
     private entryPointer: number
   ) {}
 
@@ -31,7 +31,7 @@ export class ArrayWrapper implements ProxyHandler<{}> {
     if (p === "length") {
       return arrayGetMetadata(
         this.externalArgs,
-        this.dataView,
+        this.dataViewCarrier.dataView,
         this.entryPointer
       ).length;
     }
@@ -42,7 +42,7 @@ export class ArrayWrapper implements ProxyHandler<{}> {
       if (Number.isSafeInteger(asInt)) {
         return getFinalValueAtArrayIndex(
           this.externalArgs,
-          this.dataView,
+          this.dataViewCarrier.dataView,
           this.entryPointer,
           asInt
         );
@@ -67,7 +67,7 @@ export class ArrayWrapper implements ProxyHandler<{}> {
   public ownKeys(): PropertyKey[] {
     const length = arrayGetMetadata(
       this.externalArgs,
-      this.dataView,
+      this.dataViewCarrier.dataView,
       this.entryPointer
     ).length;
 
@@ -85,7 +85,7 @@ export class ArrayWrapper implements ProxyHandler<{}> {
   public has(target: {}, p: PropertyKey): boolean {
     const length = arrayGetMetadata(
       this.externalArgs,
-      this.dataView,
+      this.dataViewCarrier.dataView,
       this.entryPointer
     ).length;
 
@@ -106,7 +106,7 @@ export class ArrayWrapper implements ProxyHandler<{}> {
 
       const currentLength = arrayGetMetadata(
         this.externalArgs,
-        this.dataView,
+        this.dataViewCarrier.dataView,
         this.entryPointer
       ).length;
 
@@ -122,7 +122,7 @@ export class ArrayWrapper implements ProxyHandler<{}> {
 
       extendArrayIfNeeded(
         this.externalArgs,
-        this.dataView,
+        this.dataViewCarrier.dataView,
         this.entryPointer,
         value
       );
@@ -132,14 +132,14 @@ export class ArrayWrapper implements ProxyHandler<{}> {
 
     extendArrayIfNeeded(
       this.externalArgs,
-      this.dataView,
+      this.dataViewCarrier.dataView,
       this.entryPointer,
       Number.parseInt(p as string, 10) + 1
     );
 
     setValueAtArrayIndex(
       this.externalArgs,
-      this.dataView,
+      this.dataViewCarrier.dataView,
       this.entryPointer,
       Number.parseInt(p as string, 10),
       value
@@ -169,7 +169,7 @@ export class ArrayWrapper implements ProxyHandler<{}> {
         index,
         getFinalValueAtArrayIndex(
           this.externalArgs,
-          this.dataView,
+          this.dataViewCarrier.dataView,
           this.entryPointer,
           index
         )
@@ -179,7 +179,7 @@ export class ArrayWrapper implements ProxyHandler<{}> {
 
       length = arrayGetMetadata(
         this.externalArgs,
-        this.dataView,
+        this.dataViewCarrier.dataView,
         this.entryPointer
       ).length;
     } while (index < length);
@@ -196,7 +196,7 @@ export class ArrayWrapper implements ProxyHandler<{}> {
 
       length = arrayGetMetadata(
         this.externalArgs,
-        this.dataView,
+        this.dataViewCarrier.dataView,
         this.entryPointer
       ).length;
     } while (index < length);
@@ -209,7 +209,7 @@ export class ArrayWrapper implements ProxyHandler<{}> {
     do {
       yield getFinalValueAtArrayIndex(
         this.externalArgs,
-        this.dataView,
+        this.dataViewCarrier.dataView,
         this.entryPointer,
         index
       );
@@ -218,7 +218,7 @@ export class ArrayWrapper implements ProxyHandler<{}> {
 
       length = arrayGetMetadata(
         this.externalArgs,
-        this.dataView,
+        this.dataViewCarrier.dataView,
         this.entryPointer
       ).length;
     } while (index < length);
@@ -229,13 +229,18 @@ export class ArrayWrapper implements ProxyHandler<{}> {
   }
 
   public sort(comparator?: (a: any, b: any) => 1 | -1 | 0) {
-    arraySort(this.externalArgs, this.dataView, this.entryPointer, comparator);
+    arraySort(
+      this.externalArgs,
+      this.dataViewCarrier.dataView,
+      this.entryPointer,
+      comparator
+    );
   }
 
   public splice(start: number, deleteCount?: number, ...items: any[]) {
     return arraySplice(
       this.externalArgs,
-      this.dataView,
+      this.dataViewCarrier.dataView,
       this.entryPointer,
       start,
       deleteCount,
@@ -244,7 +249,11 @@ export class ArrayWrapper implements ProxyHandler<{}> {
   }
 
   public reverse() {
-    arrayReverse(this.externalArgs, this.dataView, this.entryPointer);
+    arrayReverse(
+      this.externalArgs,
+      this.dataViewCarrier.dataView,
+      this.entryPointer
+    );
     return this;
   }
 
@@ -261,18 +270,21 @@ export class ArrayWrapper implements ProxyHandler<{}> {
   public unshift(...elements: any) {
     this.splice(0, 0, ...elements);
 
-    return arrayGetMetadata(this.externalArgs, this.dataView, this.entryPointer)
-      .length;
+    return arrayGetMetadata(
+      this.externalArgs,
+      this.dataViewCarrier.dataView,
+      this.entryPointer
+    ).length;
   }
 }
 
 export function createArrayWrapper(
   externalArgs: ExternalArgs,
-  dataView: DataView,
+  dataViewCarrier: DataViewCarrier,
   entryPointer: number
 ): Array<any> {
   return new Proxy(
     [],
-    new ArrayWrapper(externalArgs, dataView, entryPointer)
+    new ArrayWrapper(externalArgs, dataViewCarrier, entryPointer)
   ) as any;
 }

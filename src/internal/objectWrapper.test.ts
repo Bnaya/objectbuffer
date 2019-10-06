@@ -35,7 +35,7 @@ describe("objectWrapper tests", () => {
 
       const objectWrapper: any = createObjectWrapper(
         externalArgs,
-        dataView,
+        { dataView },
         saverOutput.start
       );
 
@@ -77,7 +77,7 @@ describe("objectWrapper tests", () => {
 
       const objectWrapper: any = createObjectWrapper(
         externalArgs,
-        dataView,
+        { dataView },
         saverOutput.start
       );
 
@@ -106,7 +106,7 @@ describe("objectWrapper tests", () => {
 
       const objectWrapper = createObjectWrapper(
         externalArgs,
-        dataView,
+        { dataView },
         saverOutput.start
       );
 
@@ -146,7 +146,7 @@ describe("objectWrapper tests", () => {
 
       const objectWrapper = createObjectWrapper(
         externalArgs,
-        dataView,
+        { dataView },
         saverOutput.start
       );
 
@@ -187,7 +187,7 @@ describe("objectWrapper tests", () => {
 
       const objectWrapper = createObjectWrapper(
         externalArgs,
-        dataView,
+        { dataView },
         saverOutput.start
       );
 

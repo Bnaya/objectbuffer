@@ -27,7 +27,7 @@ describe("pop it all", () => {
 
     const arrayWrapper = createArrayWrapper(
       externalArgs,
-      dataView,
+      { dataView },
       saverOutput.start
     );
 

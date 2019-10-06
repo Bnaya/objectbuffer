@@ -1,9 +1,8 @@
-import { ObjectEntry, ExternalArgs } from "./interfaces";
+import { ObjectEntry, ExternalArgs, DataViewCarrier } from "./interfaces";
 import {
   readEntry,
   writeEntry,
   appendEntry,
-  canSaveValueIntoEntry,
   overwriteEntryIfPossible
 } from "./store";
 import { ENTRY_TYPE } from "./entry-types";
@@ -18,29 +17,37 @@ import { saveValue } from "./saveValue";
 import { entryToFinalJavaScriptValue } from "./entryToFinalJavaScriptValue";
 import {
   GET_UNDERLYING_ARRAY_BUFFER_SYMBOL,
-  GET_UNDERLYING_POINTER_SYMBOL
+  GET_UNDERLYING_POINTER_SYMBOL,
+  REPLACE_DATA_VIEW_SYMBOL
 } from "./symbols";
-import { isPrimitive, primitiveValueToEntry } from "./utils";
 
 export class ObjectWrapper implements ProxyHandler<{}> {
   constructor(
     private externalArgs: ExternalArgs,
-    private dataView: DataView,
+    private dataViewCarrier: DataViewCarrier,
     private entryPointer: number,
     private isTopLevel: boolean
   ) {}
 
-  public getUnderlyingArrayBuffer() {
+  private replaceDataView(dataView: DataView) {
+    this.dataViewCarrier.dataView = dataView;
+  }
+
+  private getUnderlyingArrayBuffer() {
     if (!this.isTopLevel) {
       throw new Error("Only Supported on Top Level");
     }
 
-    return this.dataView.buffer;
+    return this.dataViewCarrier.dataView.buffer;
   }
 
   public get(target: {}, p: PropertyKey): any {
     if (p === GET_UNDERLYING_ARRAY_BUFFER_SYMBOL) {
       return this.getUnderlyingArrayBuffer();
+    }
+
+    if (p === REPLACE_DATA_VIEW_SYMBOL) {
+      return this.replaceDataView.bind(this);
     }
 
     if (p === GET_UNDERLYING_POINTER_SYMBOL) {
@@ -54,7 +61,7 @@ export class ObjectWrapper implements ProxyHandler<{}> {
 
     const foundEntry = findObjectPropertyEntry(
       this.externalArgs,
-      this.dataView,
+      this.dataViewCarrier.dataView,
       this.entryPointer,
       // Add validation ?
       // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
@@ -68,13 +75,13 @@ export class ObjectWrapper implements ProxyHandler<{}> {
 
     const [valueEntry] = readEntry(
       this.externalArgs,
-      this.dataView,
+      this.dataViewCarrier.dataView,
       foundEntry[1].value.value
     );
 
     return entryToFinalJavaScriptValue(
       this.externalArgs,
-      this.dataView,
+      this.dataViewCarrier.dataView,
       valueEntry,
       foundEntry[1].value.value
     );
@@ -83,7 +90,7 @@ export class ObjectWrapper implements ProxyHandler<{}> {
   public deleteProperty(target: {}, p: PropertyKey): boolean {
     return deleteObjectPropertyEntryByKey(
       this.externalArgs,
-      this.dataView,
+      this.dataViewCarrier.dataView,
       this.entryPointer,
       p as any
     );
@@ -92,7 +99,7 @@ export class ObjectWrapper implements ProxyHandler<{}> {
   public enumerate(): PropertyKey[] {
     const gotEntries = getObjectPropertiesEntries(
       this.externalArgs,
-      this.dataView,
+      this.dataViewCarrier.dataView,
       this.entryPointer
     );
 
@@ -102,7 +109,7 @@ export class ObjectWrapper implements ProxyHandler<{}> {
   public ownKeys(): PropertyKey[] {
     const gotEntries = getObjectPropertiesEntries(
       this.externalArgs,
-      this.dataView,
+      this.dataViewCarrier.dataView,
       this.entryPointer
     );
 
@@ -121,7 +128,7 @@ export class ObjectWrapper implements ProxyHandler<{}> {
 
     const foundEntry = findObjectPropertyEntry(
       this.externalArgs,
-      this.dataView,
+      this.dataViewCarrier.dataView,
       this.entry.value,
       // Add validation ?
       // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
@@ -135,7 +142,7 @@ export class ObjectWrapper implements ProxyHandler<{}> {
   public set(target: {}, p: PropertyKey, value: any): boolean {
     const foundPropEntry = findObjectPropertyEntry(
       this.externalArgs,
-      this.dataView,
+      this.dataViewCarrier.dataView,
       this.entryPointer,
       p as string
     );
@@ -144,13 +151,13 @@ export class ObjectWrapper implements ProxyHandler<{}> {
     if (foundPropEntry === undefined) {
       const { start: newValueEntryPointer } = saveValue(
         this.externalArgs,
-        this.dataView,
+        this.dataViewCarrier.dataView,
         value
       );
 
       const { start: newPropEntryPointer } = appendEntry(
         this.externalArgs,
-        this.dataView,
+        this.dataViewCarrier.dataView,
         {
           type: ENTRY_TYPE.OBJECT_PROP,
           value: {
@@ -163,49 +170,64 @@ export class ObjectWrapper implements ProxyHandler<{}> {
 
       const [lastItemPointer, lastItemEntry] = findLastObjectPropertyEntry(
         this.externalArgs,
-        this.dataView,
+        this.dataViewCarrier.dataView,
         this.entryPointer
       );
 
       if (lastItemEntry.type === ENTRY_TYPE.OBJECT) {
-        writeEntry(this.externalArgs, this.dataView, lastItemPointer, {
-          type: ENTRY_TYPE.OBJECT,
-          value: newPropEntryPointer
-        });
-      } else {
-        writeEntry(this.externalArgs, this.dataView, lastItemPointer, {
-          type: ENTRY_TYPE.OBJECT_PROP,
-          value: {
-            next: newPropEntryPointer,
-            value: lastItemEntry.value.value,
-            key: lastItemEntry.value.key
+        writeEntry(
+          this.externalArgs,
+          this.dataViewCarrier.dataView,
+          lastItemPointer,
+          {
+            type: ENTRY_TYPE.OBJECT,
+            value: newPropEntryPointer
           }
-        });
+        );
+      } else {
+        writeEntry(
+          this.externalArgs,
+          this.dataViewCarrier.dataView,
+          lastItemPointer,
+          {
+            type: ENTRY_TYPE.OBJECT_PROP,
+            value: {
+              next: newPropEntryPointer,
+              value: lastItemEntry.value.value,
+              key: lastItemEntry.value.key
+            }
+          }
+        );
       }
     } else {
       if (
         !overwriteEntryIfPossible(
           this.externalArgs,
-          this.dataView,
+          this.dataViewCarrier.dataView,
           foundPropEntry[1].value.value,
           value
         )
       ) {
         const { start: newValueEntryPointer } = saveValue(
           this.externalArgs,
-          this.dataView,
+          this.dataViewCarrier.dataView,
           value
         );
 
         // overwrite value
-        writeEntry(this.externalArgs, this.dataView, foundPropEntry[0], {
-          type: ENTRY_TYPE.OBJECT_PROP,
-          value: {
-            key: foundPropEntry[1].value.key,
-            next: foundPropEntry[1].value.next,
-            value: newValueEntryPointer
+        writeEntry(
+          this.externalArgs,
+          this.dataViewCarrier.dataView,
+          foundPropEntry[0],
+          {
+            type: ENTRY_TYPE.OBJECT_PROP,
+            value: {
+              key: foundPropEntry[1].value.key,
+              next: foundPropEntry[1].value.next,
+              value: newValueEntryPointer
+            }
           }
-        });
+        );
       }
     }
 
@@ -242,7 +264,7 @@ export class ObjectWrapper implements ProxyHandler<{}> {
   private get entry(): ObjectEntry {
     return readEntry(
       this.externalArgs,
-      this.dataView,
+      this.dataViewCarrier.dataView,
       this.entryPointer
     )[0] as ObjectEntry;
   }
@@ -250,12 +272,12 @@ export class ObjectWrapper implements ProxyHandler<{}> {
 
 export function createObjectWrapper<T = any>(
   externalArgs: ExternalArgs,
-  dataView: DataView,
+  dataViewCarrier: DataViewCarrier,
   entryPointer: number,
   isTopLevel = false
 ): T {
   return new Proxy(
     { objectBufferWrapper: "objectBufferWrapper" },
-    new ObjectWrapper(externalArgs, dataView, entryPointer, isTopLevel)
+    new ObjectWrapper(externalArgs, dataViewCarrier, entryPointer, isTopLevel)
   ) as any;
 }

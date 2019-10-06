@@ -99,3 +99,7 @@ export function arrayBufferCopyTo(
     copyTo[toTargetByte + i] = copyFrom[startByte + i];
   }
 }
+
+export function getFirstFreeByte(arrayBuffer: ArrayBuffer) {
+  return new DataView(arrayBuffer).getUint32(8);
+}

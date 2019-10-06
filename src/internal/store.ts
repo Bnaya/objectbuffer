@@ -1,4 +1,4 @@
-import { ENTRY_TYPE, isPrimitiveEntryType } from "./entry-types";
+import { ENTRY_TYPE } from "./entry-types";
 import { Entry, ObjectPropEntry, primitive } from "./interfaces";
 import { arrayBufferCopyTo, isPrimitive, primitiveValueToEntry } from "./utils";
 import { ExternalArgs } from "./interfaces";

@@ -23,12 +23,17 @@ export function entryToFinalJavaScriptValue(
   }
 
   if (valueEntry.type === ENTRY_TYPE.OBJECT) {
-    const cache = getCacheFor(dataView);
+    const cache = getCacheFor(dataView.buffer);
 
     let ret = cache.get(pointerToEntry);
 
     if (!ret) {
-      ret = createObjectWrapper(externalArgs, dataView, pointerToEntry, false);
+      ret = createObjectWrapper(
+        externalArgs,
+        { dataView },
+        pointerToEntry,
+        false
+      );
 
       cache.set(pointerToEntry, ret);
     }
@@ -37,12 +42,12 @@ export function entryToFinalJavaScriptValue(
   }
 
   if (valueEntry.type === ENTRY_TYPE.ARRAY) {
-    const cache = getCacheFor(dataView);
+    const cache = getCacheFor(dataView.buffer);
 
     let ret = cache.get(pointerToEntry);
 
     if (!ret) {
-      ret = createArrayWrapper(externalArgs, dataView, pointerToEntry);
+      ret = createArrayWrapper(externalArgs, { dataView }, pointerToEntry);
 
       cache.set(pointerToEntry, ret);
     }
