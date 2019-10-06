@@ -17,7 +17,7 @@ describe("arrayWrapper tests", () => {
 
   describe("arrayWrapper - general", () => {
     test("arrayWrapper class 1", () => {
-      const arrayBuffer = new ArrayBuffer(128);
+      const arrayBuffer = new ArrayBuffer(136);
       const dataView = new DataView(arrayBuffer);
       initializeArrayBuffer(arrayBuffer);
 
@@ -39,7 +39,7 @@ describe("arrayWrapper tests", () => {
         ]
       `);
 
-      expect(getFirstFreeByte(arrayBuffer)).toMatchInlineSnapshot(`66`);
+      expect(getFirstFreeByte(arrayBuffer)).toMatchInlineSnapshot(`72`);
     });
 
     test("arrayWrapper array.keys()", () => {
@@ -59,7 +59,7 @@ describe("arrayWrapper tests", () => {
 
       expect([...arrayWrapper.keys()]).toEqual([0, 1, 2]);
 
-      expect(getFirstFreeByte(arrayBuffer)).toMatchInlineSnapshot(`66`);
+      expect(getFirstFreeByte(arrayBuffer)).toMatchInlineSnapshot(`72`);
     });
 
     test("arrayWrapper array.entries()", () => {
@@ -94,7 +94,7 @@ describe("arrayWrapper tests", () => {
         ]
       `);
 
-      expect(getFirstFreeByte(arrayBuffer)).toMatchInlineSnapshot(`66`);
+      expect(getFirstFreeByte(arrayBuffer)).toMatchInlineSnapshot(`72`);
     });
 
     test("arrayWrapper array.values() & iterator", () => {
@@ -127,7 +127,7 @@ describe("arrayWrapper tests", () => {
         ]
       `);
 
-      expect(getFirstFreeByte(arrayBuffer)).toMatchInlineSnapshot(`66`);
+      expect(getFirstFreeByte(arrayBuffer)).toMatchInlineSnapshot(`72`);
     });
 
     test("arrayWrapper set value in bound", () => {
@@ -195,7 +195,7 @@ describe("arrayWrapper tests", () => {
     });
 
     test("arrayWrapper set value out of bound, but outside allocated space", () => {
-      const arrayBuffer = new ArrayBuffer(134);
+      const arrayBuffer = new ArrayBuffer(150);
       const dataView = new DataView(arrayBuffer);
       initializeArrayBuffer(arrayBuffer);
 
@@ -226,12 +226,12 @@ describe("arrayWrapper tests", () => {
           "new value",
         ]
       `);
-      expect(getFirstFreeByte(arrayBuffer)).toMatchInlineSnapshot(`134`);
+      expect(getFirstFreeByte(arrayBuffer)).toMatchInlineSnapshot(`151`);
     });
   });
 
   test("arrayWrapper sort - no comparator", () => {
-    const arrayBuffer = new ArrayBuffer(128);
+    const arrayBuffer = new ArrayBuffer(150);
     const dataView = new DataView(arrayBuffer);
     initializeArrayBuffer(arrayBuffer);
 
@@ -348,5 +348,58 @@ describe("arrayWrapper tests", () => {
     `);
 
     expect(getFirstFreeByte(arrayBuffer)).toMatchInlineSnapshot(`128`);
+  });
+
+  test("arrayWrapper - set length", () => {
+    const arrayBuffer = new ArrayBuffer(256);
+    const dataView = new DataView(arrayBuffer);
+    initializeArrayBuffer(arrayBuffer);
+
+    const arrayToSave = [1, 2, 3, 4, 5, 6, 7];
+
+    const saverOutput = arraySaver(externalArgs, dataView, arrayToSave);
+
+    const arrayWrapper = createArrayWrapper(
+      { ...externalArgs, arrayAdditionalAllocation: 3 },
+      dataView,
+      saverOutput.start
+    );
+
+    arrayWrapper.length = 10;
+    expect(arrayWrapper).toMatchInlineSnapshot(`
+      Array [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        undefined,
+        undefined,
+        undefined,
+      ]
+    `);
+
+    arrayWrapper.length = 1;
+    expect(arrayWrapper).toMatchInlineSnapshot(`
+      Array [
+        1,
+      ]
+    `);
+
+    expect(() => {
+      arrayWrapper.length = -1;
+    }).toThrowErrorMatchingInlineSnapshot(`"Invalid array length"`);
+
+    expect(() => {
+      arrayWrapper.length = ("a" as unknown) as number;
+    }).toThrowErrorMatchingInlineSnapshot(`"Invalid array length"`);
+
+    expect(() => {
+      arrayWrapper.length = 2.2;
+    }).toThrowErrorMatchingInlineSnapshot(`"Invalid array length"`);
+
+    expect(getFirstFreeByte(arrayBuffer)).toMatchInlineSnapshot(`180`);
   });
 });

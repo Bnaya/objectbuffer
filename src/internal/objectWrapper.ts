@@ -1,5 +1,11 @@
 import { ObjectEntry, ExternalArgs } from "./interfaces";
-import { readEntry, writeEntry, appendEntry } from "./store";
+import {
+  readEntry,
+  writeEntry,
+  appendEntry,
+  canSaveValueIntoEntry,
+  overwriteEntryIfPossible
+} from "./store";
 import { ENTRY_TYPE } from "./entry-types";
 import {
   findObjectPropertyEntry,
@@ -14,6 +20,7 @@ import {
   GET_UNDERLYING_ARRAY_BUFFER_SYMBOL,
   GET_UNDERLYING_POINTER_SYMBOL
 } from "./symbols";
+import { isPrimitive, primitiveValueToEntry } from "./utils";
 
 export class ObjectWrapper implements ProxyHandler<{}> {
   constructor(
@@ -126,12 +133,6 @@ export class ObjectWrapper implements ProxyHandler<{}> {
   }
 
   public set(target: {}, p: PropertyKey, value: any): boolean {
-    const { start: newValueEntryPointer } = saveValue(
-      this.externalArgs,
-      this.dataView,
-      value
-    );
-
     const foundPropEntry = findObjectPropertyEntry(
       this.externalArgs,
       this.dataView,
@@ -141,6 +142,12 @@ export class ObjectWrapper implements ProxyHandler<{}> {
 
     // new prop
     if (foundPropEntry === undefined) {
+      const { start: newValueEntryPointer } = saveValue(
+        this.externalArgs,
+        this.dataView,
+        value
+      );
+
       const { start: newPropEntryPointer } = appendEntry(
         this.externalArgs,
         this.dataView,
@@ -176,15 +183,30 @@ export class ObjectWrapper implements ProxyHandler<{}> {
         });
       }
     } else {
-      // overwrite value
-      writeEntry(this.externalArgs, this.dataView, foundPropEntry[0], {
-        type: ENTRY_TYPE.OBJECT_PROP,
-        value: {
-          key: foundPropEntry[1].value.key,
-          next: foundPropEntry[1].value.next,
-          value: newValueEntryPointer
-        }
-      });
+      if (
+        !overwriteEntryIfPossible(
+          this.externalArgs,
+          this.dataView,
+          foundPropEntry[1].value.value,
+          value
+        )
+      ) {
+        const { start: newValueEntryPointer } = saveValue(
+          this.externalArgs,
+          this.dataView,
+          value
+        );
+
+        // overwrite value
+        writeEntry(this.externalArgs, this.dataView, foundPropEntry[0], {
+          type: ENTRY_TYPE.OBJECT_PROP,
+          value: {
+            key: foundPropEntry[1].value.key,
+            next: foundPropEntry[1].value.next,
+            value: newValueEntryPointer
+          }
+        });
+      }
     }
 
     return true;

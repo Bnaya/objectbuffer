@@ -124,14 +124,15 @@ describe("Store tests writeEntry", () => {
   });
 
   test("writeEntry string", () => {
-    const arrayBuffer = new ArrayBuffer(17);
+    const arrayBuffer = new ArrayBuffer(19);
     const dataView = new DataView(arrayBuffer);
 
     const writtenLength = writeEntry(externalArgs, dataView, 8, {
       type: ENTRY_TYPE.STRING,
-      value: "aא弟"
+      value: "aא弟",
+      allocatedBytes: 0
     });
-    expect(writtenLength).toBe(9);
+    expect(writtenLength).toBe(11);
 
     expect(arrayBuffer2HexArray(arrayBuffer)).toMatchInlineSnapshot(`
       Array [
@@ -146,6 +147,8 @@ describe("Store tests writeEntry", () => {
         "0x05",
         "0x00",
         "0x06",
+        "0x00",
+        "0x00",
         "0x61",
         "0xd7",
         "0x90",
@@ -208,12 +211,13 @@ describe("Store tests readEntry", () => {
   });
 
   test("readEntry string", () => {
-    const arrayBuffer = new ArrayBuffer(10);
+    const arrayBuffer = new ArrayBuffer(12);
     const dataView = new DataView(arrayBuffer);
 
     const writtenByteLength = writeEntry(externalArgs, dataView, 0, {
       type: ENTRY_TYPE.STRING,
-      value: "aא弟"
+      value: "aא弟",
+      allocatedBytes: 0
     });
 
     const [entry, redBytesLength] = readEntry(externalArgs, dataView, 0);
@@ -222,6 +226,7 @@ describe("Store tests readEntry", () => {
 
     expect(entry).toMatchInlineSnapshot(`
       Object {
+        "allocatedBytes": 0,
         "type": 5,
         "value": "aא弟",
       }
@@ -229,7 +234,7 @@ describe("Store tests readEntry", () => {
   });
 
   test("readEntry BigInt", () => {
-    const arrayBuffer = new ArrayBuffer(16);
+    const arrayBuffer = new ArrayBuffer(20);
     const dataView = new DataView(arrayBuffer);
 
     const writtenByteLength = writeEntry(externalArgs, dataView, 0, {
@@ -338,78 +343,23 @@ describe("Store tests readEntry", () => {
 
   describe("appendEntry - general", () => {
     test("appendEntry", () => {
-      const arrayBuffer = new ArrayBuffer(40);
+      const arrayBuffer = new ArrayBuffer(42);
       const dataView = new DataView(arrayBuffer);
       initializeArrayBuffer(arrayBuffer);
 
       const r1 = appendEntry(externalArgs, dataView, {
         type: ENTRY_TYPE.STRING,
-        value: "im a string"
+        value: "im a string",
+        allocatedBytes: 0
       });
 
       expect(r1).toMatchInlineSnapshot(`
         Object {
-          "length": 14,
+          "length": 16,
           "start": 24,
         }
       `);
 
-      expect(arrayBuffer2HexArray(arrayBuffer, true)).toMatchInlineSnapshot(`
-        Array [
-          "0:0x00",
-          "1:0x00",
-          "2:0x00",
-          "3:0x00",
-          "4:0x00",
-          "5:0x00",
-          "6:0x00",
-          "7:0x00",
-          "8:0x00",
-          "9:0x00",
-          "10:0x00",
-          "11:0x26",
-          "12:0x00",
-          "13:0x00",
-          "14:0x00",
-          "15:0x00",
-          "16:0x00",
-          "17:0x00",
-          "18:0x00",
-          "19:0x18",
-          "20:0x00",
-          "21:0x00",
-          "22:0x00",
-          "23:0x00",
-          "24:0x05",
-          "25:0x00",
-          "26:0x0b",
-          "27:0x69",
-          "28:0x6d",
-          "29:0x20",
-          "30:0x61",
-          "31:0x20",
-          "32:0x73",
-          "33:0x74",
-          "34:0x72",
-          "35:0x69",
-          "36:0x6e",
-          "37:0x67",
-          "38:0x00",
-          "39:0x00",
-        ]
-      `);
-
-      const r2 = appendEntry(externalArgs, dataView, {
-        type: ENTRY_TYPE.BOOLEAN,
-        value: true
-      });
-
-      expect(r2).toMatchInlineSnapshot(`
-        Object {
-          "length": 2,
-          "start": 38,
-        }
-      `);
       expect(arrayBuffer2HexArray(arrayBuffer, true)).toMatchInlineSnapshot(`
         Array [
           "0:0x00",
@@ -439,19 +389,79 @@ describe("Store tests readEntry", () => {
           "24:0x05",
           "25:0x00",
           "26:0x0b",
-          "27:0x69",
-          "28:0x6d",
-          "29:0x20",
-          "30:0x61",
+          "27:0x00",
+          "28:0x00",
+          "29:0x69",
+          "30:0x6d",
           "31:0x20",
-          "32:0x73",
-          "33:0x74",
-          "34:0x72",
-          "35:0x69",
-          "36:0x6e",
-          "37:0x67",
-          "38:0x06",
-          "39:0x01",
+          "32:0x61",
+          "33:0x20",
+          "34:0x73",
+          "35:0x74",
+          "36:0x72",
+          "37:0x69",
+          "38:0x6e",
+          "39:0x67",
+          "40:0x00",
+          "41:0x00",
+        ]
+      `);
+
+      const r2 = appendEntry(externalArgs, dataView, {
+        type: ENTRY_TYPE.BOOLEAN,
+        value: true
+      });
+
+      expect(r2).toMatchInlineSnapshot(`
+        Object {
+          "length": 2,
+          "start": 40,
+        }
+      `);
+      expect(arrayBuffer2HexArray(arrayBuffer, true)).toMatchInlineSnapshot(`
+        Array [
+          "0:0x00",
+          "1:0x00",
+          "2:0x00",
+          "3:0x00",
+          "4:0x00",
+          "5:0x00",
+          "6:0x00",
+          "7:0x00",
+          "8:0x00",
+          "9:0x00",
+          "10:0x00",
+          "11:0x2a",
+          "12:0x00",
+          "13:0x00",
+          "14:0x00",
+          "15:0x00",
+          "16:0x00",
+          "17:0x00",
+          "18:0x00",
+          "19:0x18",
+          "20:0x00",
+          "21:0x00",
+          "22:0x00",
+          "23:0x00",
+          "24:0x05",
+          "25:0x00",
+          "26:0x0b",
+          "27:0x00",
+          "28:0x00",
+          "29:0x69",
+          "30:0x6d",
+          "31:0x20",
+          "32:0x61",
+          "33:0x20",
+          "34:0x73",
+          "35:0x74",
+          "36:0x72",
+          "37:0x69",
+          "38:0x6e",
+          "39:0x67",
+          "40:0x06",
+          "41:0x01",
         ]
       `);
     });

@@ -1,4 +1,4 @@
-import { primitive, Entry } from "./interfaces";
+import { primitive, Entry, ExternalArgs } from "./interfaces";
 import { ENTRY_TYPE } from "./entry-types";
 
 const primitives = [
@@ -21,11 +21,19 @@ export function isPrimitive(value: unknown): value is primitive {
   return false;
 }
 
-export function primitiveValueToEntry(value: primitive): Entry {
+export function primitiveValueToEntry(
+  externalArgs: ExternalArgs,
+  value: primitive,
+  stringAllocatedBytes: number
+): Entry {
   if (typeof value === "string") {
     return {
       type: ENTRY_TYPE.STRING,
-      value
+      value,
+      allocatedBytes: Math.max(
+        externalArgs.textEncoder.encode(value).length,
+        stringAllocatedBytes
+      )
     };
   }
 

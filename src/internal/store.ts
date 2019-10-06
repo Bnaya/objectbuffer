@@ -1,6 +1,6 @@
-import { ENTRY_TYPE } from "./entry-types";
-import { Entry, ObjectPropEntry } from "./interfaces";
-import { arrayBufferCopyTo } from "./utils";
+import { ENTRY_TYPE, isPrimitiveEntryType } from "./entry-types";
+import { Entry, ObjectPropEntry, primitive } from "./interfaces";
+import { arrayBufferCopyTo, isPrimitive, primitiveValueToEntry } from "./utils";
 import { ExternalArgs } from "./interfaces";
 
 export function initializeArrayBuffer(arrayBuffer: ArrayBuffer) {
@@ -58,10 +58,16 @@ export function writeEntry(
       dataView.setUint16(cursor, encodedString.byteLength);
       cursor += Uint16Array.BYTES_PER_ELEMENT;
 
+      dataView.setUint16(cursor, entry.allocatedBytes);
+      cursor += Uint16Array.BYTES_PER_ELEMENT;
+
       for (let i = 0; i < encodedString.length; i++) {
         dataView.setUint8(cursor, encodedString[i]);
         cursor += Uint8Array.BYTES_PER_ELEMENT;
       }
+
+      cursor += entry.allocatedBytes;
+
       break;
 
     case ENTRY_TYPE.BIGINT:
@@ -159,7 +165,7 @@ export function readEntry(
       break;
 
     case ENTRY_TYPE.BOOLEAN:
-      entry.value = dataView.getUint8(cursor);
+      entry.value = dataView.getUint8(cursor) !== 0;
       cursor += Uint8Array.BYTES_PER_ELEMENT;
       break;
 
@@ -171,6 +177,9 @@ export function readEntry(
     case ENTRY_TYPE.STRING:
       // eslint-disable-next-line no-case-declarations
       const stringLength = dataView.getUint16(cursor);
+      cursor += Uint16Array.BYTES_PER_ELEMENT;
+
+      entry.allocatedBytes = dataView.getUint16(cursor);
       cursor += Uint16Array.BYTES_PER_ELEMENT;
 
       // this wrapping is needed until:
@@ -250,4 +259,80 @@ export function reserveMemory(dataView: DataView, length: number) {
   dataView.setUint32(8, firstFreeByte + length);
 
   return firstFreeByte;
+}
+
+export function canSaveValueIntoEntry(
+  externalArgs: ExternalArgs,
+  entryA: Entry,
+  value: primitive
+) {
+  const typeofTheValue = typeof value;
+
+  if (entryA.type === ENTRY_TYPE.BOOLEAN && typeofTheValue === "boolean") {
+    return true;
+  }
+
+  // number & bigint 64 are the same size
+  if (
+    (entryA.type === ENTRY_TYPE.BIGINT ||
+      entryA.type === ENTRY_TYPE.UBIGINT ||
+      entryA.type === ENTRY_TYPE.NUMBER) &&
+    (typeofTheValue === "bigint" || typeofTheValue === "number")
+  ) {
+    return true;
+  }
+
+  if (
+    entryA.type === ENTRY_TYPE.STRING &&
+    typeofTheValue === "string" &&
+    entryA.allocatedBytes >= externalArgs.textEncoder.encode(value).length
+  ) {
+    return true;
+  }
+
+  if (
+    ((entryA.type === ENTRY_TYPE.NULL ||
+      entryA.type === ENTRY_TYPE.UNDEFINED) &&
+      value === undefined) ||
+    value === null
+  ) {
+    return true;
+  }
+
+  return false;
+}
+
+export function overwriteEntryIfPossible(
+  externalArgs: ExternalArgs,
+  dataView: DataView,
+  pointerToExistingEntry: number,
+  value: any
+) {
+  if (isPrimitive(value)) {
+    const existingValueEntry = readEntry(
+      externalArgs,
+      dataView,
+      pointerToExistingEntry
+    );
+
+    if (canSaveValueIntoEntry(externalArgs, existingValueEntry[0], value)) {
+      const stringAllocatedBytes =
+        existingValueEntry[0].type === ENTRY_TYPE.STRING
+          ? existingValueEntry[0].allocatedBytes
+          : 0;
+
+      const newEntry = primitiveValueToEntry(
+        externalArgs,
+        value,
+        stringAllocatedBytes
+      );
+
+      writeEntry(externalArgs, dataView, pointerToExistingEntry, newEntry);
+      return true;
+    }
+
+    return false;
+  }
+
+  return false;
 }

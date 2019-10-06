@@ -14,7 +14,11 @@ export function saveValue(
   let valuePointer = 0;
 
   if (isPrimitive(value)) {
-    const entry = primitiveValueToEntry(value);
+    const entry = primitiveValueToEntry(
+      externalArgs,
+      value,
+      externalArgs.minimumStringAllocation
+    );
     const { start, length } = appendEntry(externalArgs, dataView, entry);
 
     valuePointer = start;

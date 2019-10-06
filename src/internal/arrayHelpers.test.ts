@@ -107,7 +107,7 @@ describe("arrayHelpers tests", () => {
       );
 
       expect(finalValue).toMatchInlineSnapshot(`"b"`);
-      expect(getFirstFreeByte(arrayBuffer)).toMatchInlineSnapshot(`53`);
+      expect(getFirstFreeByte(arrayBuffer)).toMatchInlineSnapshot(`59`);
     });
   });
 
@@ -137,6 +137,6 @@ describe("arrayHelpers tests", () => {
     );
 
     expect(finalValue).toMatchInlineSnapshot(`"im the new value"`);
-    expect(getFirstFreeByte(arrayBuffer)).toMatchInlineSnapshot(`82`);
+    expect(getFirstFreeByte(arrayBuffer)).toMatchInlineSnapshot(`100`);
   });
 });

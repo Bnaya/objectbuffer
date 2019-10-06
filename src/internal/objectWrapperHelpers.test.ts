@@ -44,13 +44,13 @@ describe("objectWrapperHelpers tests", () => {
 
       expect(foundEntry).toMatchInlineSnapshot(`
         Array [
-          79,
+          91,
           Object {
             "type": 8,
             "value": Object {
               "key": "a",
-              "next": 50,
-              "value": 70,
+              "next": 62,
+              "value": 82,
             },
           },
         ]
@@ -95,24 +95,24 @@ describe("objectWrapperHelpers tests", () => {
             "type": 8,
             "value": Object {
               "key": "5",
-              "next": 137,
-              "value": 149,
+              "next": 149,
+              "value": 161,
             },
           },
           Object {
             "type": 8,
             "value": Object {
               "key": "a",
-              "next": 108,
-              "value": 128,
+              "next": 120,
+              "value": 140,
             },
           },
           Object {
             "type": 8,
             "value": Object {
               "key": "kawabanga",
-              "next": 95,
-              "value": 107,
+              "next": 107,
+              "value": 119,
             },
           },
           Object {
@@ -220,8 +220,8 @@ describe("objectWrapperHelpers tests", () => {
             "type": 8,
             "value": Object {
               "key": "a",
-              "next": 63,
-              "value": 75,
+              "next": 75,
+              "value": 87,
             },
           },
           Object {
@@ -243,7 +243,7 @@ describe("objectWrapperHelpers tests", () => {
         ]
       `);
 
-      expect(getFirstFreeByte(arrayBuffer)).toMatchInlineSnapshot(`101`);
+      expect(getFirstFreeByte(arrayBuffer)).toMatchInlineSnapshot(`113`);
     });
 
     test("deleteObjectPropertyEntryByKey - delete in the middle", () => {
@@ -276,8 +276,8 @@ describe("objectWrapperHelpers tests", () => {
             "type": 8,
             "value": Object {
               "key": "a",
-              "next": 84,
-              "value": 96,
+              "next": 96,
+              "value": 108,
             },
           },
           Object {
@@ -307,7 +307,7 @@ describe("objectWrapperHelpers tests", () => {
         ]
       `);
 
-      expect(getFirstFreeByte(arrayBuffer)).toMatchInlineSnapshot(`122`);
+      expect(getFirstFreeByte(arrayBuffer)).toMatchInlineSnapshot(`134`);
     });
 
     test("findLastObjectPropertyEntry - None Empty Object", () => {
@@ -352,8 +352,8 @@ describe("objectWrapperHelpers tests", () => {
             "type": 8,
             "value": Object {
               "key": "a",
-              "next": 50,
-              "value": 62,
+              "next": 62,
+              "value": 74,
             },
           },
           Object {
@@ -375,7 +375,7 @@ describe("objectWrapperHelpers tests", () => {
         ]
       `);
 
-      expect(getFirstFreeByte(arrayBuffer)).toMatchInlineSnapshot(`88`);
+      expect(getFirstFreeByte(arrayBuffer)).toMatchInlineSnapshot(`100`);
     });
 
     test("findLastObjectPropertyEntryPointer - Empty Object", () => {

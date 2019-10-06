@@ -11,34 +11,54 @@ describe("pop it all", () => {
   const externalArgs: ExternalArgs = {
     textEncoder: new util.TextEncoder(),
     textDecoder: new util.TextDecoder(),
-    arrayAdditionalAllocation: 0,
+    arrayAdditionalAllocation: 20,
     minimumStringAllocation: 0
   };
 
   test("lets 1", () => {
-    const arrayBuffer = new ArrayBuffer(1024);
+    const arrayBuffer = new ArrayBuffer(256);
     const dataView = new DataView(arrayBuffer);
     initializeArrayBuffer(arrayBuffer);
 
-    const arrayToSave = ["a", "b", 1];
+    const arrayToSave = ["a", "b", -100];
+    const arrayToCompare = arrayToSave.slice();
 
     const saverOutput = arraySaver(externalArgs, dataView, arrayToSave);
 
-    const arrayWrapper: any = createArrayWrapper(
+    const arrayWrapper = createArrayWrapper(
       externalArgs,
       dataView,
       saverOutput.start
     );
 
-    for (let i = 0; i < 10; i++) {
+    const sizeAfterEachPush: number[] = [];
+
+    for (let i = 0; i < 10; i += 1) {
       arrayWrapper.push(i);
+      arrayToCompare.push(i);
+      sizeAfterEachPush.push(getFirstFreeByte(arrayBuffer));
     }
+
+    expect(sizeAfterEachPush).toMatchInlineSnapshot(`
+      Array [
+        161,
+        170,
+        179,
+        188,
+        197,
+        206,
+        215,
+        224,
+        233,
+        242,
+      ]
+    `);
 
     expect(arrayWrapper).toMatchInlineSnapshot(`
       Array [
         "a",
         "b",
-        1,
+        -100,
         0,
         1,
         2,
@@ -52,12 +72,15 @@ describe("pop it all", () => {
       ]
     `);
 
+    expect([...arrayWrapper]).toEqual(arrayToCompare);
+
     do {
+      arrayToCompare.pop();
       arrayWrapper.pop();
     } while (arrayWrapper.length !== 0);
 
     expect(arrayWrapper).toMatchInlineSnapshot(`Array []`);
-
-    expect(getFirstFreeByte(arrayBuffer)).toMatchInlineSnapshot(`703`);
+    expect(arrayWrapper).toEqual(arrayToCompare);
+    expect(getFirstFreeByte(arrayBuffer)).toMatchInlineSnapshot(`242`);
   });
 });
