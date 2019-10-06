@@ -3,7 +3,6 @@ import {
   readEntry,
   writeEntry,
   appendEntry,
-  canSaveValueIntoEntry,
   overwriteEntryIfPossible
 } from "./store";
 import { ENTRY_TYPE } from "./entry-types";
@@ -20,7 +19,6 @@ import {
   GET_UNDERLYING_ARRAY_BUFFER_SYMBOL,
   GET_UNDERLYING_POINTER_SYMBOL
 } from "./symbols";
-import { isPrimitive, primitiveValueToEntry } from "./utils";
 
 export class ObjectWrapper implements ProxyHandler<{}> {
   constructor(

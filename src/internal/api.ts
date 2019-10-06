@@ -75,3 +75,5 @@ function externalArgsApiToExternalArgsApi(p: ExternalArgsApi): ExternalArgs {
       : 0
   };
 }
+
+export { sizeOf } from "./sizeOf";

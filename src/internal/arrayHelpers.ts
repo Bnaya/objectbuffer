@@ -2,7 +2,6 @@ import {
   readEntry,
   reserveMemory,
   writeEntry,
-  canSaveValueIntoEntry,
   overwriteEntryIfPossible
 } from "./store";
 import { ArrayEntry, ExternalArgs } from "./interfaces";
