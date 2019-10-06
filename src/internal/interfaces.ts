@@ -30,6 +30,7 @@ export interface BooleanEntry {
 export interface StringEntry {
   type: ENTRY_TYPE.STRING;
   value: string;
+  allocatedBytes: number;
 }
 
 export interface NumberEntry {

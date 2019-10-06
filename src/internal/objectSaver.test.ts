@@ -35,13 +35,13 @@ describe("objectSaver tests", () => {
 
       expect(saverOutput).toMatchInlineSnapshot(`
         Object {
-          "length": 159,
-          "start": 178,
+          "length": 171,
+          "start": 190,
         }
       `);
 
       expect(arrayBuffer2HexArray(arrayBuffer, true)).toMatchSnapshot();
-      expect(getFirstFreeByte(arrayBuffer)).toMatchInlineSnapshot(`183`);
+      expect(getFirstFreeByte(arrayBuffer)).toMatchInlineSnapshot(`195`);
     });
   });
 });

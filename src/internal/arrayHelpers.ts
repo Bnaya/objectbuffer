@@ -1,4 +1,10 @@
-import { readEntry, reserveMemory, writeEntry } from "./store";
+import {
+  readEntry,
+  reserveMemory,
+  writeEntry,
+  canSaveValueIntoEntry,
+  overwriteEntryIfPossible
+} from "./store";
 import { ArrayEntry, ExternalArgs } from "./interfaces";
 import { entryToFinalJavaScriptValue } from "./entryToFinalJavaScriptValue";
 import { saveValue } from "./saveValue";
@@ -100,15 +106,27 @@ export function setValueAtArrayIndex(
   indexToSet: number,
   value: any
 ) {
-  const saveValueResult = saveValue(externalArgs, dataView, value);
-
-  setValuePointerAtArrayIndex(
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const pointers = arrayGetPointersToValueInIndex(
     externalArgs,
     dataView,
     pointerToArrayEntry,
-    indexToSet,
-    saveValueResult.start
-  );
+    indexToSet
+  )!;
+
+  if (
+    !overwriteEntryIfPossible(externalArgs, dataView, pointers.pointer, value)
+  ) {
+    const saveValueResult = saveValue(externalArgs, dataView, value);
+
+    setValuePointerAtArrayIndex(
+      externalArgs,
+      dataView,
+      pointerToArrayEntry,
+      indexToSet,
+      saveValueResult.start
+    );
+  }
 }
 
 /**

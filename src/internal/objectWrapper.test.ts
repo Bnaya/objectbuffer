@@ -55,7 +55,7 @@ describe("objectWrapper tests", () => {
         ]
       `);
 
-      expect(getFirstFreeByte(arrayBuffer)).toMatchInlineSnapshot(`167`);
+      expect(getFirstFreeByte(arrayBuffer)).toMatchInlineSnapshot(`179`);
     });
 
     test("ObjectWrapper class 2", () => {
@@ -84,7 +84,7 @@ describe("objectWrapper tests", () => {
       expect(objectWrapper.noneExistsProp).toMatchInlineSnapshot(`undefined`);
       expect(objectWrapper.a).toMatchInlineSnapshot(`6`);
 
-      expect(getFirstFreeByte(arrayBuffer)).toMatchInlineSnapshot(`167`);
+      expect(getFirstFreeByte(arrayBuffer)).toMatchInlineSnapshot(`179`);
     });
 
     test("ObjectWrapper class set override value", () => {
@@ -165,7 +165,7 @@ describe("objectWrapper tests", () => {
         }
       `);
 
-      expect(getFirstFreeByte(arrayBuffer)).toMatchInlineSnapshot(`202`);
+      expect(getFirstFreeByte(arrayBuffer)).toMatchInlineSnapshot(`230`);
     });
 
     test("ObjectWrapper class delete", () => {
@@ -204,7 +204,7 @@ describe("objectWrapper tests", () => {
         }
       `);
 
-      expect(getFirstFreeByte(arrayBuffer)).toMatchInlineSnapshot(`167`);
+      expect(getFirstFreeByte(arrayBuffer)).toMatchInlineSnapshot(`179`);
     });
   });
 });

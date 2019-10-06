@@ -71,11 +71,15 @@ export class ArrayWrapper implements ProxyHandler<{}> {
       this.entryPointer
     ).length;
 
-    return [...new Array(length).keys()];
+    return [...new Array(length).keys(), "length"];
   }
 
-  public getOwnPropertyDescriptor() {
-    return { configurable: true, enumerable: true };
+  public getOwnPropertyDescriptor(target: {}, prop: any) {
+    if (prop === "length") {
+      return { configurable: false, enumerable: false };
+    }
+
+    return { configurable: false, enumerable: true };
   }
 
   public has(target: {}, p: PropertyKey): boolean {
@@ -95,6 +99,37 @@ export class ArrayWrapper implements ProxyHandler<{}> {
   }
 
   public set(target: {}, p: PropertyKey, value: any): boolean {
+    if (p === "length") {
+      if (!Number.isSafeInteger(value) || value < 0) {
+        throw new RangeError("Invalid array length");
+      }
+
+      const currentLength = arrayGetMetadata(
+        this.externalArgs,
+        this.dataView,
+        this.entryPointer
+      ).length;
+
+      if (currentLength === value) {
+        return true;
+      }
+
+      if (currentLength > value) {
+        this.splice(value, currentLength - value);
+
+        return true;
+      }
+
+      extendArrayIfNeeded(
+        this.externalArgs,
+        this.dataView,
+        this.entryPointer,
+        value
+      );
+
+      return true;
+    }
+
     extendArrayIfNeeded(
       this.externalArgs,
       this.dataView,

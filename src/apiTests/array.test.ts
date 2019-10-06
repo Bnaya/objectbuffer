@@ -39,6 +39,6 @@ describe("SharedArrayBuffer tests", () => {
 
     expect(
       getFirstFreeByte(getUnderlyingArrayBuffer(objectBuffer))
-    ).toMatchInlineSnapshot(`132`);
+    ).toMatchInlineSnapshot(`135`);
   });
 });
