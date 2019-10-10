@@ -295,7 +295,8 @@ export function canSaveValueIntoEntry(
   if (
     entryA.type === ENTRY_TYPE.STRING &&
     typeofTheValue === "string" &&
-    entryA.allocatedBytes >= externalArgs.textEncoder.encode(value).length
+    entryA.allocatedBytes >=
+      externalArgs.textEncoder.encode(value as string).length
   ) {
     return true;
   }

@@ -2,3 +2,4 @@ node_modules
 dist
 coverage
 COMMIT
+yarn-error.log

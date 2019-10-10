@@ -1,6 +1,10 @@
+// @ts-check
+
 /* eslint-disable no-undef */
 import * as objectbufferModules from "../src";
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+// @ts-ignore
 import Worker from "worker-loader!./Worker.js";
 
 /**
@@ -38,9 +42,8 @@ const worker = new Worker();
 
 worker.postMessage(ab);
 
-// expose to console
-
-window.theObjectBuffer = o;
+// expose to the console
+globalThis.theObjectBuffer = o;
 
 const input = document.createElement("input");
 const button = document.createElement("button");
@@ -50,7 +53,10 @@ document.body.appendChild(input);
 document.body.appendChild(button);
 
 button.addEventListener("click", () => {
-  if (objectbufferModules.locks.getLock(1, ab)) {
+  if (
+    ab instanceof SharedArrayBuffer &&
+    objectbufferModules.locks.getLock(1, ab)
+  ) {
     o.some.nested[0].thing = input.value;
 
     if (!objectbufferModules.locks.releaseLock(1, ab)) {

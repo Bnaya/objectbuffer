@@ -8,6 +8,7 @@ import {
 import { ExternalArgs } from "./interfaces";
 import { arrayBufferCopyTo, getFirstFreeByte } from "./utils";
 import { getCacheFor } from "./externalObjectsCache";
+import { TextDecoder, TextEncoder } from "./textEncoderDecoderTypes";
 
 export function createObjectBuffer<T = any>(
   externalArgs: ExternalArgsApi,
@@ -114,8 +115,8 @@ export function replaceUnderlyingArrayBuffer(
 export type ExternalArgsApi = Readonly<{
   arrayAdditionalAllocation?: number;
   minimumStringAllocation?: number;
-  textDecoder: any;
-  textEncoder: any;
+  textDecoder: TextDecoder;
+  textEncoder: TextEncoder;
 }>;
 
 function externalArgsApiToExternalArgsApi(p: ExternalArgsApi): ExternalArgs {
