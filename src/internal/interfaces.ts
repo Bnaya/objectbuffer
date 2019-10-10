@@ -1,4 +1,5 @@
 import { ENTRY_TYPE } from "./entry-types";
+import { TextDecoder, TextEncoder } from "./textEncoderDecoderTypes";
 
 export type primitive = string | number | bigint | boolean | undefined | null;
 
@@ -98,6 +99,6 @@ export interface DataViewCarrier {
 export type ExternalArgs = Readonly<{
   arrayAdditionalAllocation: number;
   minimumStringAllocation: number;
-  textDecoder: any;
-  textEncoder: any;
+  textDecoder: TextDecoder;
+  textEncoder: TextEncoder;
 }>;
