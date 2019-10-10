@@ -12,7 +12,8 @@ export type Entry =
   | UBigIntEntry
   | ObjectEntry
   | ObjectPropEntry
-  | ArrayEntry;
+  | ArrayEntry
+  | DateEntry;
 
 export interface NullEntry {
   type: ENTRY_TYPE.NULL;
@@ -80,6 +81,11 @@ export interface ArrayEntry {
   value: number;
   length: number;
   allocatedLength: number;
+}
+
+export interface DateEntry {
+  type: ENTRY_TYPE.DATE;
+  value: number;
 }
 
 /**
