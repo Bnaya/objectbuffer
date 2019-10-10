@@ -36,11 +36,11 @@ if you exceed the sb size, an exception will be thrown.
 * Kinda whatever that can go into `JSON.stringify`
 * objects
 * arrays
+* Date
 * global lock using [Atomics](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Atomics) (i hope its really working)
 
 ### Missing parts
 
-* `Date`
 * `Map`
 * `Set`
 
