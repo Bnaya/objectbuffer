@@ -2,6 +2,7 @@ import { Entry, ExternalArgs } from "./interfaces";
 import { ENTRY_TYPE, isPrimitiveEntryType } from "./entry-types";
 import { createObjectWrapper } from "./objectWrapper";
 import { createArrayWrapper } from "./arrayWrapper";
+import { createDateWrapper } from "./dateWrapper";
 import { getCacheFor } from "./externalObjectsCache";
 
 export function entryToFinalJavaScriptValue(
@@ -48,6 +49,20 @@ export function entryToFinalJavaScriptValue(
 
     if (!ret) {
       ret = createArrayWrapper(externalArgs, { dataView }, pointerToEntry);
+
+      cache.set(pointerToEntry, ret);
+    }
+
+    return ret;
+  }
+
+  if (valueEntry.type === ENTRY_TYPE.DATE) {
+    const cache = getCacheFor(dataView.buffer);
+
+    let ret = cache.get(pointerToEntry);
+
+    if (!ret) {
+      ret = createDateWrapper(externalArgs, { dataView }, pointerToEntry);
 
       cache.set(pointerToEntry, ret);
     }

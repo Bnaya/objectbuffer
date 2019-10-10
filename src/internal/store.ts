@@ -114,6 +114,11 @@ export function writeEntry(
       cursor += Uint32Array.BYTES_PER_ELEMENT;
       break;
 
+    case ENTRY_TYPE.DATE:
+      dataView.setBigUint64(cursor, BigInt(entry.value));
+      cursor += BigUint64Array.BYTES_PER_ELEMENT;
+      break;
+
     default:
       // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
       // @ts-ignore
@@ -244,6 +249,11 @@ export function readEntry(
       cursor += Uint32Array.BYTES_PER_ELEMENT;
       entry.allocatedLength = dataView.getUint32(cursor);
       cursor += Uint32Array.BYTES_PER_ELEMENT;
+      break;
+
+    case ENTRY_TYPE.DATE:
+      entry.value = Number(dataView.getBigUint64(cursor));
+      cursor += BigUint64Array.BYTES_PER_ELEMENT;
       break;
 
     default:

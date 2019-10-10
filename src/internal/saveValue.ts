@@ -4,6 +4,7 @@ import { objectSaver } from "./objectSaver";
 import { arraySaver } from "./arraySaver";
 import { GET_UNDERLYING_POINTER_SYMBOL } from "./symbols";
 import { ExternalArgs } from "./interfaces";
+import { ENTRY_TYPE } from "./entry-types";
 
 export function saveValue(
   externalArgs: ExternalArgs,
@@ -30,6 +31,21 @@ export function saveValue(
       totalWrittenBytes += 0;
     } else {
       const { start, length } = arraySaver(externalArgs, dataView, value);
+
+      valuePointer = start;
+      totalWrittenBytes += length;
+    }
+  } else if (value instanceof Date) {
+    const maybeOurPointer = (value as any)[GET_UNDERLYING_POINTER_SYMBOL];
+
+    if (maybeOurPointer) {
+      valuePointer = maybeOurPointer;
+      totalWrittenBytes += 0;
+    } else {
+      const { start, length } = appendEntry(externalArgs, dataView, {
+        type: ENTRY_TYPE.DATE,
+        value: value.getTime()
+      });
 
       valuePointer = start;
       totalWrittenBytes += length;
