@@ -10,7 +10,7 @@ import { arrayBufferCopyTo, getFirstFreeByte } from "./utils";
 import { getCacheFor } from "./externalObjectsCache";
 import { TextDecoder, TextEncoder } from "./textEncoderDecoderTypes";
 
-interface CreateObjectBufferOptions {
+export interface CreateObjectBufferOptions {
   /**
    *  Use SharedArrayBuffer and not regular ArrayBuffer
    *

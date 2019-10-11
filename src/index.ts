@@ -18,3 +18,4 @@ export {
 } from "./internal/api";
 export { acquireLock, acquireLockWait, releaseLock } from "./internal/locks";
 export type ExternalArgs = import("./internal/interfaces").ExternalArgs;
+export type CreateObjectBufferOptions = import("./internal/api").CreateObjectBufferOptions;
