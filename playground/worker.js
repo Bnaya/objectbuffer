@@ -15,11 +15,7 @@ addEventListener("message", ev => {
   let lastValueToFollow = "IM NOT INTERESTING";
 
   if (ev.data instanceof SharedArrayBuffer) {
-    const o = objectbufferModule.createObjectBufferFromArrayBuffer(
-      externalArgs,
-      ev.data,
-      false
-    );
+    const o = objectbufferModule.loadObjectBuffer(externalArgs, ev.data, false);
 
     const lockStatus = objectbufferModule.locks.waitForLock(2, ev.data, 1000);
 

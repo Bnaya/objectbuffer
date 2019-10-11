@@ -115,8 +115,8 @@ export function writeEntry(
       break;
 
     case ENTRY_TYPE.DATE:
-      dataView.setBigUint64(cursor, BigInt(entry.value));
-      cursor += BigUint64Array.BYTES_PER_ELEMENT;
+      dataView.setFloat64(cursor, entry.value);
+      cursor += Float64Array.BYTES_PER_ELEMENT;
       break;
 
     default:
@@ -252,8 +252,8 @@ export function readEntry(
       break;
 
     case ENTRY_TYPE.DATE:
-      entry.value = Number(dataView.getBigUint64(cursor));
-      cursor += BigUint64Array.BYTES_PER_ELEMENT;
+      entry.value = dataView.getFloat64(cursor);
+      cursor += Float64Array.BYTES_PER_ELEMENT;
       break;
 
     default:

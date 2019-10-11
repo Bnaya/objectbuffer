@@ -20,7 +20,8 @@
   "cSpell.words": [
     "ormconfig",
     "phin",
-    "pubsub"
+    "pubsub",
+    "typedoc"
   ],
   "eslint.autoFixOnSave": true,
   "eslint.validate": [

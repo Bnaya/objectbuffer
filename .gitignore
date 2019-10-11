@@ -3,3 +3,4 @@ dist
 coverage
 COMMIT
 yarn-error.log
+generated-docs

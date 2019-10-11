@@ -30,7 +30,8 @@
     "cleanup": "rimraf dist",
     "build": "yarn cleanup; yarn babel-build; yarn build-declarations; rollup -c; cp dist/index.d.ts dist/objectbuffer.cjs.d.ts ;echo `git rev-parse HEAD` > COMMIT",
     "prepack": "yarn build",
-    "browser-playground": "webpack-dev-server --mode=development --config playground/webpack.config.js playground/main.js --open"
+    "browser-playground": "webpack-dev-server --mode=development --config playground/webpack.config.js playground/main.js --open",
+    "generate-docs": "rimraf -f generated-docs && yarn typedoc --out generated-docs/ --excludeNotExported --ignoreCompilerErrors --mode modules src/index.ts"
   },
   "devDependencies": {
     "@babel/cli": "^7.6.2",
@@ -55,6 +56,8 @@
     "rollup": "^1.23.0",
     "rollup-plugin-babel": "^4.3.3",
     "rollup-plugin-node-resolve": "^5.2.0",
+    "typedoc": "npm:@gnd/typedoc",
+    "typedoc-plugin-markdown": "^2.2.10",
     "typescript": "^3.7.0-dev.20191004",
     "webpack": "^4.41.0",
     "webpack-cli": "^3.3.9",
@@ -73,5 +76,8 @@
     "README",
     "COMMIT",
     "LICENSE"
-  ]
+  ],
+  "resolutions": {
+    "typescript": "^3.7.0-dev.20191004"
+  }
 }
