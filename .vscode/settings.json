@@ -18,9 +18,11 @@
   //   "src/**/*.js.map": true
   // },
   "cSpell.words": [
+    "objectbuffer",
     "ormconfig",
     "phin",
-    "pubsub"
+    "pubsub",
+    "typedoc"
   ],
   "eslint.autoFixOnSave": true,
   "eslint.validate": [

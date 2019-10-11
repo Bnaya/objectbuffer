@@ -4,7 +4,7 @@ import * as util from "util";
 import {
   createObjectBuffer,
   getUnderlyingArrayBuffer,
-  createObjectBufferFromArrayBuffer,
+  loadObjectBuffer,
   ExternalArgs
 } from ".";
 import { arrayBuffer2HexArray } from "./internal/testUtils";
@@ -58,7 +58,7 @@ describe("getUnderlyingArrayBuffer", () => {
   });
 });
 
-describe("createObjectBufferFromArrayBuffer", () => {
+describe("loadObjectBuffer", () => {
   const externalArgs: ExternalArgs = {
     textEncoder: new util.TextEncoder(),
     textDecoder: new util.TextDecoder(),
@@ -66,7 +66,7 @@ describe("createObjectBufferFromArrayBuffer", () => {
     minimumStringAllocation: 0
   };
 
-  test("createObjectBufferFromArrayBuffer simple", () => {
+  test("loadObjectBuffer simple", () => {
     const o = createObjectBuffer(externalArgs, 128, {
       a: "b",
       b: null,
@@ -75,7 +75,7 @@ describe("createObjectBufferFromArrayBuffer", () => {
 
     const arrayBuffer = getUnderlyingArrayBuffer(o);
 
-    const newOne = createObjectBufferFromArrayBuffer(externalArgs, arrayBuffer);
+    const newOne = loadObjectBuffer(externalArgs, arrayBuffer);
 
     expect(o).toMatchInlineSnapshot(`
       Object {
