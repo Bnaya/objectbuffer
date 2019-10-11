@@ -55,11 +55,11 @@ document.body.appendChild(button);
 button.addEventListener("click", () => {
   if (
     ab instanceof SharedArrayBuffer &&
-    objectbufferModules.locks.getLock(1, ab)
+    objectbufferModules.acquireLock(1, ab)
   ) {
     o.some.nested[0].thing = input.value;
 
-    if (!objectbufferModules.locks.releaseLock(1, ab)) {
+    if (!objectbufferModules.releaseLock(1, ab)) {
       console.warn("releaseLock failed ??");
     }
   } else {
