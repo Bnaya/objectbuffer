@@ -32,6 +32,7 @@ console.log(JSON.stringify(myObject));
 
 ### Type aliases
 
+* [CreateObjectBufferOptions](README.md#createobjectbufferoptions)
 * [ExternalArgs](README.md#externalargs)
 
 ### Functions
@@ -49,11 +50,19 @@ console.log(JSON.stringify(myObject));
 
 ## Type aliases
 
+###  CreateObjectBufferOptions
+
+Ƭ **CreateObjectBufferOptions**: *[CreateObjectBufferOptions](undefined)*
+
+*Defined in [index.ts:21](https://github.com/Bnaya/objectbuffer/blob/fe29e82/src/index.ts#L21)*
+
+___
+
 ###  ExternalArgs
 
 Ƭ **ExternalArgs**: *object*
 
-*Defined in [index.ts:20](https://github.com/Bnaya/objectbuffer/blob/9d15511/src/index.ts#L20)*
+*Defined in [index.ts:20](https://github.com/Bnaya/objectbuffer/blob/fe29e82/src/index.ts#L20)*
 
 #### Type declaration:
 
@@ -63,7 +72,7 @@ console.log(JSON.stringify(myObject));
 
 ▸ **acquireLock**(`agentId`: number, `objectBuffer`: any): *boolean*
 
-*Defined in [internal/locks.ts:14](https://github.com/Bnaya/objectbuffer/blob/9d15511/src/internal/locks.ts#L14)*
+*Defined in [internal/locks.ts:14](https://github.com/Bnaya/objectbuffer/blob/fe29e82/src/internal/locks.ts#L14)*
 
 Try to acquire a lock on the given objectBuffer, as the given agentId.
 
@@ -82,7 +91,7 @@ ___
 
 ▸ **acquireLockWait**(`agentId`: number, `objectBuffer`: any, `timeout`: number): *"have-lock" | "miss-lock" | "timed-out" | "no-lock"*
 
-*Defined in [internal/locks.ts:61](https://github.com/Bnaya/objectbuffer/blob/9d15511/src/internal/locks.ts#L61)*
+*Defined in [internal/locks.ts:61](https://github.com/Bnaya/objectbuffer/blob/fe29e82/src/internal/locks.ts#L61)*
 
  Try to get a lock on a the given objectBuffer, or wait until timeout
  Will Not work on the main thread.
@@ -105,9 +114,9 @@ ___
 
 ###  createObjectBuffer
 
-▸ **createObjectBuffer**<**T**>(`externalArgs`: [ExternalArgsApi](undefined), `size`: number, `initialValue`: T, `options`: CreateObjectBufferOptions): *T*
+▸ **createObjectBuffer**<**T**>(`externalArgs`: [ExternalArgsApi](undefined), `size`: number, `initialValue`: T, `options`: [CreateObjectBufferOptions](undefined)): *T*
 
-*Defined in [internal/api.ts:28](https://github.com/Bnaya/objectbuffer/blob/9d15511/src/internal/api.ts#L28)*
+*Defined in [internal/api.ts:28](https://github.com/Bnaya/objectbuffer/blob/fe29e82/src/internal/api.ts#L28)*
 
 Create a new objectBuffer, with the given initial value
 
@@ -124,7 +133,7 @@ Name | Type | Default |
 `externalArgs` | [ExternalArgsApi](undefined) | - |
 `size` | number | - |
 `initialValue` | T | - |
-`options` | CreateObjectBufferOptions |  {} |
+`options` | [CreateObjectBufferOptions](undefined) |  {} |
 
 **Returns:** *T*
 
@@ -134,7 +143,7 @@ ___
 
 ▸ **getUnderlyingArrayBuffer**(`objectBuffer`: any): *ArrayBuffer | SharedArrayBuffer*
 
-*Defined in [internal/api.ts:78](https://github.com/Bnaya/objectbuffer/blob/9d15511/src/internal/api.ts#L78)*
+*Defined in [internal/api.ts:78](https://github.com/Bnaya/objectbuffer/blob/fe29e82/src/internal/api.ts#L78)*
 
 **Parameters:**
 
@@ -150,7 +159,7 @@ ___
 
 ▸ **loadObjectBuffer**<**T**>(`externalArgs`: [ExternalArgsApi](undefined), `arrayBuffer`: ArrayBuffer | SharedArrayBuffer): *T*
 
-*Defined in [internal/api.ts:93](https://github.com/Bnaya/objectbuffer/blob/9d15511/src/internal/api.ts#L93)*
+*Defined in [internal/api.ts:93](https://github.com/Bnaya/objectbuffer/blob/fe29e82/src/internal/api.ts#L93)*
 
 Create objectBuffer object from the given ArrayBuffer
 
@@ -176,7 +185,7 @@ ___
 
 ▸ **releaseLock**(`agentId`: number, `objectBuffer`: any): *boolean*
 
-*Defined in [internal/locks.ts:32](https://github.com/Bnaya/objectbuffer/blob/9d15511/src/internal/locks.ts#L32)*
+*Defined in [internal/locks.ts:32](https://github.com/Bnaya/objectbuffer/blob/fe29e82/src/internal/locks.ts#L32)*
 
  Try to release a lock acquired by [acquireLock](README.md#acquirelock) or [acquireLockWait](README.md#acquirelockwait)
 
@@ -195,7 +204,7 @@ ___
 
 ▸ **replaceUnderlyingArrayBuffer**(`objectBuffer`: any, `newArrayBuffer`: ArrayBuffer | SharedArrayBuffer): *void*
 
-*Defined in [internal/api.ts:117](https://github.com/Bnaya/objectbuffer/blob/9d15511/src/internal/api.ts#L117)*
+*Defined in [internal/api.ts:117](https://github.com/Bnaya/objectbuffer/blob/fe29e82/src/internal/api.ts#L117)*
 
 Replace the Underlying array buffer with the given one.
 The given ArrayBuffer is expected to be a copy of the prev ArrayBuffer,
@@ -218,7 +227,7 @@ ___
 
 ▸ **resizeObjectBuffer**(`objectBuffer`: any, `newSize`: number): *ArrayBuffer*
 
-*Defined in [internal/api.ts:61](https://github.com/Bnaya/objectbuffer/blob/9d15511/src/internal/api.ts#L61)*
+*Defined in [internal/api.ts:61](https://github.com/Bnaya/objectbuffer/blob/fe29e82/src/internal/api.ts#L61)*
 
 Grow or shrink the underlying ArrayBuffer
 
@@ -237,7 +246,7 @@ ___
 
 ▸ **sizeOf**(`externalArgs`: [ExternalArgs](README.md#externalargs), `value`: any): *number*
 
-*Defined in [internal/sizeOf.ts:12](https://github.com/Bnaya/objectbuffer/blob/9d15511/src/internal/sizeOf.ts#L12)*
+*Defined in [internal/sizeOf.ts:12](https://github.com/Bnaya/objectbuffer/blob/fe29e82/src/internal/sizeOf.ts#L12)*
 
 Calculate the size (bytes) of the given value.
 Also validates that the value is saveable
@@ -257,7 +266,7 @@ ___
 
 ▸ **spaceLeft**(`objectBuffer`: any): *number*
 
-*Defined in [internal/api.ts:147](https://github.com/Bnaya/objectbuffer/blob/9d15511/src/internal/api.ts#L147)*
+*Defined in [internal/api.ts:147](https://github.com/Bnaya/objectbuffer/blob/fe29e82/src/internal/api.ts#L147)*
 
 Return the number of free bytes left in the given objectBuffer
 

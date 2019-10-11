@@ -1,9 +1,40 @@
-# WIP: object-like API, backed by a [shared]arraybuffer
+# ObjectBuffer: object-like API, backed by a [shared]arraybuffer
 
 For Modern browsers and node. Zero direct dependencies.
 
-The library offers you an API that have the look & feel of a regular javascript object, while the data is saved to an `ArrayBuffer` that can be shared or transferred to a `WebWorker`.  
-The library is still not complete, and will never offer full compatibility with plain js objects due, to the nature of the language and the problems space.
+Save, read and update plain javascript objects into `ArrayBuffer` (And not only TypedArrays),  using regular javascript object api, without serialization/deserialization.  
+Look at it as a simple implementation of javascript objects in user-land.
+
+That's enables us to `transfer` or share objects in-memory with `WebWorker` without additional memory or serialization
+
+The library is still not `1.0`, but usable, and will never offer full compatibility with plain js (`Symbol` and such)
+
+## Quick example
+
+```js
+import { createObjectBuffer, getUnderlyingArrayBuffer } from "@bnaya/objectbuffer";
+
+const initialValue = {
+  foo: { bar: new Date(), arr: [1], nesting:{ WorksTM: true } }
+};
+// ArrayBuffer is created under the hood
+const myObject = createObjectBuffer(
+  {
+    // available globally in the browser, or inside `util` in node
+    textEncoder: new TextEncoder(),
+    textDecoder: new TextDecoder()
+  },
+  // size in bytes
+  1024,
+  initialValue
+);
+
+const arrayBuffer = getUnderlyingArrayBuffer(myObject);
+
+myObject.additionalProp = "new Value";
+myObject.arr.push(2);
+
+```
 
 ## Play with it
 
@@ -12,37 +43,41 @@ The library is still not complete, and will never offer full compatibility with 
 See also [main.js](playground/main.js) for shared memory example.
 to run it: clone the repo, `yarn install` and `yarn browser-playground`
 
+## API reference
+
+[link](docs/generated/README.md)
+
 ## Why
 
-Exchanging data with `WebWorkers` (other than ArrayBuffer) is done by serializing and copying the data to the other side.  
-for some use-cases, it's slow and memory expensive.
+Exchanging plain objects with `WebWorkers` is done by serializing and copying the data to the other side.  
+for some use-cases, it's slow and memory expensive.  
 `ArrayBuffer` can be `transferred` without a copy, and `SharedArrayBuffer` can be directly shared, but out of the box, it's hard to use `ArrayBuffer` as more than a [TypedArray](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Typed_arrays).  
 
-`SharedArrayBuffer` and `ArrayBuffer`
+## Disclaimer / Motivation
 
-## Motivation
+I'm working on it mostly from personal interest, and i'm not using it for any project yet.  
+Before putting any eggs in the basket, please go over the [implementation details document](docs/implementationDetails.md)
 
-Personal interest. Maybe will be useful as shared memory primitive, and communicating with WASM. Maybe state management with shared memory across workers?
+## What's working
 
-## What do we have in hand
-
-It's working! but very unoptimized (eg objects are simple linked lists), only append data (no logic to reuse unreachable memory)
-and its not extending the backing `arraybuffer` size by itself.
-if you exceed the sb size, an exception will be thrown.  
-[ArrayBuffer.prototype.transfer](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer/transfer) is still not supported anywhere, so we can't do that efficiently anyhow
-
-### What's working
-
-* Kinda whatever that can go into `JSON.stringify`
-* objects
+* strings
+* number
+* objects (with nesting and all)
 * arrays
 * Date
-* global lock using [Atomics](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Atomics) (i hope its really working)
+* Internal references (`foo.bar2 = foo.bar` will not create a copy)
+* Internal equality between objects (`foo.bar === foo.bar` will be true)
+* global lock for shared memory using [Atomics](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Atomics) (i hope its really working)
 
-### Missing parts
+## Caveats & Limitations
 
-* `Map`
-* `Set`
+* Need to specify size for the `ArrayBuffer`. When exceed that size, exception will be thrown. (Can be extended with a utility function, but not automatically)
+* Not memory re-use. memory allocation is append based, or overwrite when possible [#21](https://github.com/Bnaya/objectbuffer/issues/21)
+* Object are implemented using simple linked list [#26](https://github.com/Bnaya/objectbuffer/issues/26)
+* Maps & Sets are not supported yet [#15](https://github.com/Bnaya/objectbuffer/issues/15) & [#24](https://github.com/Bnaya/objectbuffer/issues/24)
+* No prototype chain. objects props will simply be copied
+* Additional props on Array, Date, primitives will not be saved.
+* getters, setters, will not work/break the library
 
 ### What's not working yet, but can be
 
