@@ -1,4 +1,9 @@
-import { ObjectEntry, ObjectPropEntry, ExternalArgs } from "./interfaces";
+import {
+  ObjectEntry,
+  ObjectPropEntry,
+  ExternalArgs,
+  DataViewCarrier
+} from "./interfaces";
 import {
   readEntry,
   writeEntry,
@@ -313,13 +318,13 @@ export function objectSet(
 
 export function objectGet(
   externalArgs: ExternalArgs,
-  dataView: DataView,
+  dataViewCarrier: DataViewCarrier,
   entryPointer: number,
   p: string
 ) {
   const foundEntry = findObjectPropertyEntry(
     externalArgs,
-    dataView,
+    dataViewCarrier.dataView,
     entryPointer,
     p
   );
@@ -330,13 +335,13 @@ export function objectGet(
 
   const [valueEntry] = readEntry(
     externalArgs,
-    dataView,
+    dataViewCarrier.dataView,
     foundEntry[1].value.value
   );
 
   return entryToFinalJavaScriptValue(
     externalArgs,
-    dataView,
+    dataViewCarrier,
     valueEntry,
     foundEntry[1].value.value
   );

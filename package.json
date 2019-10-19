@@ -31,6 +31,7 @@
     "build": "yarn cleanup; yarn babel-build; yarn build-declarations; rollup -c; cp dist/index.d.ts dist/objectbuffer.cjs.d.ts ;echo `git rev-parse HEAD` > COMMIT",
     "prepack": "yarn build",
     "browser-playground": "webpack-dev-server --mode=development --config playground/webpack.config.js playground/main.js --open",
+    "webpack-playground": "webpack-dev-server --mode=development --config playground/webpack.config.js --open",
     "generate-docs": "rimraf -f docs/generated/ && typedoc --out docs/generated/ --includes . --name objectbuffer --readme none --entryPoint \"\\\"index\\\"\" --excludeNotExported --ignoreCompilerErrors --mode modules src/index.ts"
   },
   "devDependencies": {

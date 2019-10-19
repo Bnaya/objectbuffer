@@ -1,4 +1,4 @@
-import { Entry, ExternalArgs } from "./interfaces";
+import { Entry, ExternalArgs, DataViewCarrier } from "./interfaces";
 import { ENTRY_TYPE, isPrimitiveEntryType } from "./entry-types";
 import { createObjectWrapper } from "./objectWrapper";
 import { createArrayWrapper } from "./arrayWrapper";
@@ -7,7 +7,7 @@ import { getCacheFor } from "./externalObjectsCache";
 
 export function entryToFinalJavaScriptValue(
   externalArgs: ExternalArgs,
-  dataView: DataView,
+  dataViewCarrier: DataViewCarrier,
   valueEntry: Entry,
   pointerToEntry: number
 ) {
@@ -24,14 +24,14 @@ export function entryToFinalJavaScriptValue(
   }
 
   if (valueEntry.type === ENTRY_TYPE.OBJECT) {
-    const cache = getCacheFor(dataView.buffer);
+    const cache = getCacheFor(dataViewCarrier.dataView.buffer);
 
     let ret = cache.get(pointerToEntry);
 
     if (!ret) {
       ret = createObjectWrapper(
         externalArgs,
-        { dataView },
+        dataViewCarrier,
         pointerToEntry,
         false
       );
@@ -43,12 +43,12 @@ export function entryToFinalJavaScriptValue(
   }
 
   if (valueEntry.type === ENTRY_TYPE.ARRAY) {
-    const cache = getCacheFor(dataView.buffer);
+    const cache = getCacheFor(dataViewCarrier.dataView.buffer);
 
     let ret = cache.get(pointerToEntry);
 
     if (!ret) {
-      ret = createArrayWrapper(externalArgs, { dataView }, pointerToEntry);
+      ret = createArrayWrapper(externalArgs, dataViewCarrier, pointerToEntry);
 
       cache.set(pointerToEntry, ret);
     }
@@ -57,12 +57,12 @@ export function entryToFinalJavaScriptValue(
   }
 
   if (valueEntry.type === ENTRY_TYPE.DATE) {
-    const cache = getCacheFor(dataView.buffer);
+    const cache = getCacheFor(dataViewCarrier.dataView.buffer);
 
     let ret = cache.get(pointerToEntry);
 
     if (!ret) {
-      ret = createDateWrapper(externalArgs, { dataView }, pointerToEntry);
+      ret = createDateWrapper(externalArgs, dataViewCarrier, pointerToEntry);
 
       cache.set(pointerToEntry, ret);
     }

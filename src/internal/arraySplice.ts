@@ -8,12 +8,12 @@ import {
   setValuePointerAtArrayIndex
 } from "./arrayHelpers";
 import { assertNonNull } from "./assertNonNull";
-import { ExternalArgs } from "./interfaces";
+import { ExternalArgs, DataViewCarrier } from "./interfaces";
 
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/splice#Syntax
 export function arraySplice(
   externalArgs: ExternalArgs,
-  dataView: DataView,
+  dataViewCarrier: DataViewCarrier,
   pointerToArrayEntry: number,
   startArg: number,
   deleteCountArg?: number,
@@ -21,7 +21,7 @@ export function arraySplice(
 ) {
   const metadata = arrayGetMetadata(
     externalArgs,
-    dataView,
+    dataViewCarrier.dataView,
     pointerToArrayEntry
   );
 
@@ -35,7 +35,12 @@ export function arraySplice(
 
   const newLength = metadata.length + itemsToAddArg.length - calcedDeleteCount;
 
-  extendArrayIfNeeded(externalArgs, dataView, pointerToArrayEntry, newLength);
+  extendArrayIfNeeded(
+    externalArgs,
+    dataViewCarrier.dataView,
+    pointerToArrayEntry,
+    newLength
+  );
 
   const deletedItemsToReturn = [];
   // can be negative
@@ -49,7 +54,7 @@ export function arraySplice(
     deletedItemsToReturn.push(
       getFinalValueAtArrayIndex(
         externalArgs,
-        dataView,
+        dataViewCarrier,
         pointerToArrayEntry,
         deletedItemIndexToSave
       )
@@ -70,7 +75,7 @@ export function arraySplice(
     ) {
       const valueToCopyPointers = arrayGetPointersToValueInIndex(
         externalArgs,
-        dataView,
+        dataViewCarrier.dataView,
         pointerToArrayEntry,
         writeValueToIndex - itemCountChange
       );
@@ -79,7 +84,7 @@ export function arraySplice(
 
       setValuePointerAtArrayIndex(
         externalArgs,
-        dataView,
+        dataViewCarrier.dataView,
         pointerToArrayEntry,
         writeValueToIndex,
         valueToCopyPointers.pointer
@@ -100,7 +105,7 @@ export function arraySplice(
     ) {
       const valueToCopyPointers = arrayGetPointersToValueInIndex(
         externalArgs,
-        dataView,
+        dataViewCarrier.dataView,
         pointerToArrayEntry,
         writeValueToIndex - itemCountChange
       );
@@ -109,14 +114,17 @@ export function arraySplice(
 
       setValuePointerAtArrayIndex(
         externalArgs,
-        dataView,
+        dataViewCarrier.dataView,
         pointerToArrayEntry,
         writeValueToIndex,
         valueToCopyPointers.pointer
       );
 
       // empty old array index, its still allocated!
-      dataView.setUint32(valueToCopyPointers.pointerToThePointer, 0);
+      dataViewCarrier.dataView.setUint32(
+        valueToCopyPointers.pointerToThePointer,
+        0
+      );
 
       // using that is wastefull
       // setValueAtArrayIndex(
@@ -134,7 +142,7 @@ export function arraySplice(
   for (let i = 0; i < itemsToAddArg.length; i += 1) {
     setValueAtArrayIndex(
       externalArgs,
-      dataView,
+      dataViewCarrier.dataView,
       pointerToArrayEntry,
       calcedStart + i,
       itemsToAddArg[i]
@@ -142,7 +150,12 @@ export function arraySplice(
   }
 
   if (newLength < metadata.length) {
-    shrinkArray(externalArgs, dataView, pointerToArrayEntry, newLength);
+    shrinkArray(
+      externalArgs,
+      dataViewCarrier.dataView,
+      pointerToArrayEntry,
+      newLength
+    );
   }
 
   return deletedItemsToReturn;

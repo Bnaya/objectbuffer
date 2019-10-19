@@ -4,7 +4,7 @@ import {
   writeEntry,
   overwriteEntryIfPossible
 } from "./store";
-import { ArrayEntry, ExternalArgs } from "./interfaces";
+import { ArrayEntry, ExternalArgs, DataViewCarrier } from "./interfaces";
 import { entryToFinalJavaScriptValue } from "./entryToFinalJavaScriptValue";
 import { saveValue } from "./saveValue";
 import { ENTRY_TYPE } from "./entry-types";
@@ -54,13 +54,13 @@ export function arrayGetPointersToValueInIndex(
 
 export function getFinalValueAtArrayIndex(
   externalArgs: ExternalArgs,
-  dataView: DataView,
+  dataViewCarrier: DataViewCarrier,
   pointerToArrayEntry: number,
   indexToGet: number
 ) {
   const pointers = arrayGetPointersToValueInIndex(
     externalArgs,
-    dataView,
+    dataViewCarrier.dataView,
     pointerToArrayEntry,
     indexToGet
   );
@@ -69,11 +69,15 @@ export function getFinalValueAtArrayIndex(
     return undefined;
   }
 
-  const entry = readEntry(externalArgs, dataView, pointers.pointer);
+  const entry = readEntry(
+    externalArgs,
+    dataViewCarrier.dataView,
+    pointers.pointer
+  );
 
   return entryToFinalJavaScriptValue(
     externalArgs,
-    dataView,
+    dataViewCarrier,
     entry[0],
     pointers.pointer
   );
@@ -228,25 +232,32 @@ function reallocateArray(
 
 export function arraySort(
   externalArgs: ExternalArgs,
-  dataView: DataView,
+  dataViewCarrier: DataViewCarrier,
   pointerToArrayEntry: number,
   sortComparator: (a: any, b: any) => 1 | -1 | 0 = defaultCompareFunction
 ) {
   const metadata = arrayGetMetadata(
     externalArgs,
-    dataView,
+    dataViewCarrier.dataView,
     pointerToArrayEntry
   );
   const pointersToValues = [...new Array(metadata.length).keys()]
     .map(index => metadata.value + index * Uint32Array.BYTES_PER_ELEMENT)
-    .map(pointerToPointer => dataView.getUint32(pointerToPointer));
+    .map(pointerToPointer =>
+      dataViewCarrier.dataView.getUint32(pointerToPointer)
+    );
 
   const sortMe = pointersToValues.map(pointer => {
-    const entry = readEntry(externalArgs, dataView, pointer);
+    const entry = readEntry(externalArgs, dataViewCarrier.dataView, pointer);
 
     return [
       pointer,
-      entryToFinalJavaScriptValue(externalArgs, dataView, entry[0], pointer)
+      entryToFinalJavaScriptValue(
+        externalArgs,
+        dataViewCarrier,
+        entry[0],
+        pointer
+      )
     ] as const;
   });
 
@@ -255,7 +266,7 @@ export function arraySort(
   });
 
   for (let i = 0; i < sortMe.length; i += 1) {
-    dataView.setUint32(
+    dataViewCarrier.dataView.setUint32(
       metadata.value + i * Uint32Array.BYTES_PER_ELEMENT,
       sortMe[i][0]
     );

@@ -47,7 +47,7 @@ export class ArrayWrapper implements ProxyHandler<{}> {
       if (Number.isSafeInteger(asInt)) {
         return getFinalValueAtArrayIndex(
           this.externalArgs,
-          this.dataViewCarrier.dataView,
+          this.dataViewCarrier,
           this.entryPointer,
           asInt
         );
@@ -180,7 +180,7 @@ export class ArrayWrapper implements ProxyHandler<{}> {
         index,
         getFinalValueAtArrayIndex(
           this.externalArgs,
-          this.dataViewCarrier.dataView,
+          this.dataViewCarrier,
           this.entryPointer,
           index
         )
@@ -220,7 +220,7 @@ export class ArrayWrapper implements ProxyHandler<{}> {
     do {
       yield getFinalValueAtArrayIndex(
         this.externalArgs,
-        this.dataViewCarrier.dataView,
+        this.dataViewCarrier,
         this.entryPointer,
         index
       );
@@ -242,7 +242,7 @@ export class ArrayWrapper implements ProxyHandler<{}> {
   public sort(comparator?: (a: any, b: any) => 1 | -1 | 0) {
     arraySort(
       this.externalArgs,
-      this.dataViewCarrier.dataView,
+      this.dataViewCarrier,
       this.entryPointer,
       comparator
     );
@@ -251,7 +251,7 @@ export class ArrayWrapper implements ProxyHandler<{}> {
   public splice(start: number, deleteCount?: number, ...items: any[]) {
     return arraySplice(
       this.externalArgs,
-      this.dataViewCarrier.dataView,
+      this.dataViewCarrier,
       this.entryPointer,
       start,
       deleteCount,

@@ -3,7 +3,12 @@
 import * as util from "util";
 
 import { createObjectBuffer, ExternalArgs, resizeObjectBuffer } from "../";
-import { getUnderlyingArrayBuffer } from "../internal/api";
+import {
+  getUnderlyingArrayBuffer,
+  replaceUnderlyingArrayBuffer,
+  spaceLeft
+} from "../internal/api";
+import { arrayBufferCopyTo } from "../internal/utils";
 
 describe("replaceArrayBufferFlow", () => {
   const externalArgs: ExternalArgs = {
@@ -12,6 +17,30 @@ describe("replaceArrayBufferFlow", () => {
     arrayAdditionalAllocation: 0,
     minimumStringAllocation: 0
   };
+
+  test("test replaceUnderlyingArrayBuffer works", () => {
+    const objectBuffer = createObjectBuffer<any>(externalArgs, 512, {
+      a: 1
+    });
+
+    const oldAb = getUnderlyingArrayBuffer(objectBuffer);
+
+    const newAb = new ArrayBuffer(1024);
+    arrayBufferCopyTo(oldAb, 0, oldAb.byteLength, newAb, 0);
+
+    // destroy oldAb values
+    const destroyer = new Uint8Array(oldAb);
+    destroyer.set(destroyer.map(() => 0));
+
+    replaceUnderlyingArrayBuffer(objectBuffer, newAb);
+
+    expect(spaceLeft(objectBuffer)).toMatchInlineSnapshot(`974`);
+    expect(objectBuffer).toMatchInlineSnapshot(`
+      Object {
+        "a": 1,
+      }
+    `);
+  });
 
   test("test resizeObjectBuffer works", () => {
     const objectBuffer = createObjectBuffer<any>(externalArgs, 1024, {

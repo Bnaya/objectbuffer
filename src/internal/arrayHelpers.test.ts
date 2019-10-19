@@ -59,7 +59,7 @@ describe("arrayHelpers tests", () => {
 
       const finalValue = getFinalValueAtArrayIndex(
         externalArgs,
-        dataView,
+        { dataView },
         saverOutput.start,
         0
       );
@@ -80,7 +80,7 @@ describe("arrayHelpers tests", () => {
 
       const finalValue = getFinalValueAtArrayIndex(
         externalArgs,
-        dataView,
+        { dataView },
         saverOutput.start,
         10
       );
@@ -101,7 +101,7 @@ describe("arrayHelpers tests", () => {
 
       const finalValue = getFinalValueAtArrayIndex(
         externalArgs,
-        dataView,
+        { dataView },
         saverOutput.start,
         1
       );
@@ -131,7 +131,7 @@ describe("arrayHelpers tests", () => {
 
     const finalValue = getFinalValueAtArrayIndex(
       externalArgs,
-      dataView,
+      { dataView },
       saverOutput.start,
       1
     );

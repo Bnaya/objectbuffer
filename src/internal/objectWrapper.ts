@@ -43,7 +43,7 @@ export class ObjectWrapper implements ProxyHandler<{}> {
 
     return objectGet(
       this.externalArgs,
-      this.dataViewCarrier.dataView,
+      this.dataViewCarrier,
       this.entryPointer,
       p as string
     );
