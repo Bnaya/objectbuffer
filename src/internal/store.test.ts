@@ -238,7 +238,7 @@ describe("Store tests readEntry", () => {
     const dataView = new DataView(arrayBuffer);
 
     const writtenByteLength = writeEntry(externalArgs, dataView, 0, {
-      type: ENTRY_TYPE.BIGINT,
+      type: ENTRY_TYPE.BIGINT_POSITIVE,
       value: BigInt("0b0" + "1".repeat(63))
     });
 
@@ -259,7 +259,7 @@ describe("Store tests readEntry", () => {
     const dataView = new DataView(arrayBuffer);
 
     const writtenByteLength = writeEntry(externalArgs, dataView, 0, {
-      type: ENTRY_TYPE.UBIGINT,
+      type: ENTRY_TYPE.BIGINT_POSITIVE,
       value: BigInt("0b" + "1".repeat(64))
     });
 
@@ -269,10 +269,61 @@ describe("Store tests readEntry", () => {
 
     expect(entry).toMatchInlineSnapshot(`
       Object {
-        "type": 4,
+        "type": 3,
         "value": 18446744073709551615n,
       }
     `);
+  });
+  test("ENTRY_TYPE.BIGINT_POSITIVE max value", () => {
+    const arrayBuffer = new ArrayBuffer(16);
+    const dataView = new DataView(arrayBuffer);
+
+    writeEntry(externalArgs, dataView, 0, {
+      type: ENTRY_TYPE.BIGINT_POSITIVE,
+      value: BigInt("0b" + "1".repeat(64))
+    });
+
+    expect(readEntry(externalArgs, dataView, 0)).toMatchInlineSnapshot(`
+      Array [
+        Object {
+          "type": 3,
+          "value": 18446744073709551615n,
+        },
+        9,
+      ]
+    `);
+  });
+
+  test("ENTRY_TYPE.BIGINT_NEGATIVE min value", () => {
+    const arrayBuffer = new ArrayBuffer(16);
+    const dataView = new DataView(arrayBuffer);
+
+    writeEntry(externalArgs, dataView, 0, {
+      type: ENTRY_TYPE.BIGINT_NEGATIVE,
+      value: -BigInt("0b" + "1".repeat(64))
+    });
+
+    expect(readEntry(externalArgs, dataView, 0)).toMatchInlineSnapshot(`
+      Array [
+        Object {
+          "type": 4,
+          "value": -18446744073709551615n,
+        },
+        9,
+      ]
+    `);
+  });
+
+  test("BigInt64 overflow error", () => {
+    const arrayBuffer = new ArrayBuffer(16);
+    const dataView = new DataView(arrayBuffer);
+
+    expect(() => {
+      writeEntry(externalArgs, dataView, 0, {
+        type: ENTRY_TYPE.BIGINT_POSITIVE,
+        value: BigInt("0b" + "1".repeat(65))
+      });
+    }).toThrowErrorMatchingInlineSnapshot(`"BigInt64OverflowError"`);
   });
 
   describe("Store tests write/read entry", () => {

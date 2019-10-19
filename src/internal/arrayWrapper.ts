@@ -6,9 +6,14 @@ import {
   extendArrayIfNeeded,
   arrayReverse
 } from "./arrayHelpers";
-import { GET_UNDERLYING_POINTER_SYMBOL } from "./symbols";
+import { INTERNAL_API_SYMBOL } from "./symbols";
 import { arraySplice } from "./arraySplice";
 import { ExternalArgs, DataViewCarrier } from "./interfaces";
+import {
+  IllegalArrayIndexError,
+  UnsupportedOperationError
+} from "./exceptions";
+import { handleOOM } from "./handleOOM";
 
 export class ArrayWrapper implements ProxyHandler<{}> {
   constructor(
@@ -18,8 +23,8 @@ export class ArrayWrapper implements ProxyHandler<{}> {
   ) {}
 
   public get(target: {}, p: PropertyKey): any {
-    if (p === GET_UNDERLYING_POINTER_SYMBOL) {
-      return this.entryPointer;
+    if (p === INTERNAL_API_SYMBOL) {
+      return this;
     }
 
     if (p in this && p !== "constructor") {
@@ -79,6 +84,10 @@ export class ArrayWrapper implements ProxyHandler<{}> {
       return { configurable: false, enumerable: false };
     }
 
+    if (!this.has(target, prop)) {
+      return undefined;
+    }
+
     return { configurable: false, enumerable: true };
   }
 
@@ -98,8 +107,12 @@ export class ArrayWrapper implements ProxyHandler<{}> {
     throw new Error("unsupported");
   }
 
-  public set(target: {}, p: PropertyKey, value: any): boolean {
-    if (p === "length") {
+  public set(target: {}, accessedProp: PropertyKey, value: any): boolean {
+    if (typeof accessedProp === "symbol") {
+      throw new IllegalArrayIndexError();
+    }
+
+    if (accessedProp === "length") {
       if (!Number.isSafeInteger(value) || value < 0) {
         throw new RangeError("Invalid array length");
       }
@@ -114,50 +127,48 @@ export class ArrayWrapper implements ProxyHandler<{}> {
         return true;
       }
 
-      if (currentLength > value) {
-        this.splice(value, currentLength - value);
+      handleOOM(() => {
+        if (currentLength > value) {
+          this.splice(value, currentLength - value);
 
-        return true;
-      }
+          return true;
+        }
 
-      extendArrayIfNeeded(
-        this.externalArgs,
-        this.dataViewCarrier.dataView,
-        this.entryPointer,
-        value
-      );
+        extendArrayIfNeeded(
+          this.externalArgs,
+          this.dataViewCarrier.dataView,
+          this.entryPointer,
+          value
+        );
+      }, this.dataViewCarrier.dataView);
 
       return true;
     }
 
-    extendArrayIfNeeded(
-      this.externalArgs,
-      this.dataViewCarrier.dataView,
-      this.entryPointer,
-      Number.parseInt(p as string, 10) + 1
-    );
+    const possibleIndex = Number.parseInt(accessedProp as string, 10);
 
-    setValueAtArrayIndex(
-      this.externalArgs,
-      this.dataViewCarrier.dataView,
-      this.entryPointer,
-      Number.parseInt(p as string, 10),
-      value
-    );
+    if (!Number.isSafeInteger(possibleIndex) || possibleIndex < 0) {
+      throw new IllegalArrayIndexError();
+    }
+
+    handleOOM(() => {
+      extendArrayIfNeeded(
+        this.externalArgs,
+        this.dataViewCarrier.dataView,
+        this.entryPointer,
+        possibleIndex + 1
+      );
+
+      setValueAtArrayIndex(
+        this.externalArgs,
+        this.dataViewCarrier.dataView,
+        this.entryPointer,
+        possibleIndex,
+        value
+      );
+    }, this.dataViewCarrier.dataView);
 
     return true;
-  }
-
-  public isExtensible() {
-    return true;
-  }
-
-  public preventExtensions(): boolean {
-    throw new Error("unsupported");
-  }
-
-  public setPrototypeOf(): boolean {
-    throw new Error("unsupported");
   }
 
   public *entries(): Iterable<[number, any]> {
@@ -275,6 +286,43 @@ export class ArrayWrapper implements ProxyHandler<{}> {
       this.dataViewCarrier.dataView,
       this.entryPointer
     ).length;
+  }
+
+  public getDataView() {
+    return this.dataViewCarrier.dataView;
+  }
+
+  public getEntryPointer() {
+    return this.entryPointer;
+  }
+
+  public isExtensible() {
+    return true;
+  }
+
+  public preventExtensions(): boolean {
+    throw new UnsupportedOperationError();
+  }
+
+  public setPrototypeOf(): boolean {
+    throw new UnsupportedOperationError();
+  }
+
+  public defineProperty(): // target: {},
+  // p: PropertyKey,
+  // attributes: PropertyDescriptor
+  boolean {
+    throw new UnsupportedOperationError();
+    // if (
+    //   typeof p === "symbol" ||
+    //   attributes.enumerable === false ||
+    //   attributes.get ||
+    //   attributes.set
+    // ) {
+    //   throw new IllegalObjectPropConfigError();
+    // }
+
+    // return Object.defineProperty(target, p, attributes);
   }
 }
 

@@ -27,11 +27,9 @@ describe("primitivesMemoryReuse", () => {
     objectBuffer.num = BigInt("-100");
     memoryAfterEachOperation.push(getFirstFreeByte(ab));
 
-    objectBuffer.num = -BigInt(
-      "0b0111111111111111111111111111111111111111111111111111111111111111"
-    );
+    objectBuffer.num = -BigInt("18446744073709551615");
 
-    objectBuffer.num--;
+    objectBuffer.num++;
 
     memoryAfterEachOperation.push(getFirstFreeByte(ab));
 
@@ -46,7 +44,7 @@ describe("primitivesMemoryReuse", () => {
 
     expect(objectBuffer).toMatchInlineSnapshot(`
       Object {
-        "num": -9223372036854775808n,
+        "num": -18446744073709551614n,
       }
     `);
   });

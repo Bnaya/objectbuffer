@@ -7,7 +7,9 @@ Look at it as a simple implementation of javascript objects in user-land.
 
 That's enables us to `transfer` or share objects in-memory with `WebWorker` without additional memory or serialization
 
-The library is still not `1.0`, but usable, and will never offer full compatibility with plain js (`Symbol` and such)
+The library is still not `1.0`, but already usable, and will never offer full compatibility with plain js (`Symbol` and such)
+
+For in-depth overview of how things are implemented, see [implementation details document](docs/implementationDetails.md)
 
 ## Quick example
 
@@ -52,6 +54,11 @@ to run it: clone the repo, `yarn install` and `yarn browser-playground`
 Exchanging plain objects with `WebWorkers` is done by serializing and copying the data to the other side.  
 for some use-cases, it's slow and memory expensive.  
 `ArrayBuffer` can be `transferred` without a copy, and `SharedArrayBuffer` can be directly shared, but out of the box, it's hard to use `ArrayBuffer` as more than a [TypedArray](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Typed_arrays).  
+
+## Why not [FlatBuffers](https://github.com/google/flatbuffers)
+
+For many cases FlatBuffers is the right tool!  
+FlatBuffers requires full re-serialization when changing values. inside. The api is also more different than javascript objects.
 
 ## Disclaimer / Motivation
 

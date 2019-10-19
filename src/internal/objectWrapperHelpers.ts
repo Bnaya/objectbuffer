@@ -1,7 +1,14 @@
 import { ObjectEntry, ObjectPropEntry, ExternalArgs } from "./interfaces";
-import { readEntry, writeEntry } from "./store";
+import {
+  readEntry,
+  writeEntry,
+  appendEntry,
+  overwriteEntryIfPossible
+} from "./store";
 import { invariant } from "./utils";
 import { ENTRY_TYPE } from "./entry-types";
+import { entryToFinalJavaScriptValue } from "./entryToFinalJavaScriptValue";
+import { saveValue } from "./saveValue";
 
 export function deleteObjectPropertyEntryByKey(
   externalArgs: ExternalArgs,
@@ -132,12 +139,8 @@ export function findObjectPropertyEntry(
   let currentPointer = containingObjectEntry.value;
   let objectPropEntry: ObjectPropEntry | undefined;
 
-  if (containingObjectEntry.value === 0) {
-    return undefined;
-  }
-
   // eslint-disable-next-line no-constant-condition
-  while (true) {
+  while (currentPointer !== 0) {
     [objectPropEntry] = readEntry(externalArgs, dataView, currentPointer) as [
       ObjectPropEntry,
       number
@@ -150,7 +153,7 @@ export function findObjectPropertyEntry(
     currentPointer = objectPropEntry.value.next;
   }
 
-  if (objectPropEntry.value.key === key) {
+  if (objectPropEntry && objectPropEntry.value.key === key) {
     return [currentPointer, objectPropEntry];
   }
 
@@ -168,6 +171,10 @@ export function findObjectPropertyEntryOld(
     dataView,
     containingObjectEntryPointer
   ) as [ObjectEntry, number];
+
+  if (containingObjectEntry.value === 0) {
+    return undefined;
+  }
 
   let nextElementPointer = containingObjectEntry.value;
   let objectPropEntry: ObjectPropEntry | undefined;
@@ -205,6 +212,10 @@ export function getObjectPropertiesEntries(
   let nextElementPointer = containingObjectEntry.value;
   let objectPropEntry: ObjectPropEntry | undefined;
 
+  if (nextElementPointer === 0) {
+    return [];
+  }
+
   do {
     [objectPropEntry] = readEntry(
       externalArgs,
@@ -218,4 +229,115 @@ export function getObjectPropertiesEntries(
   } while (nextElementPointer !== 0);
 
   return foundProps;
+}
+
+export function objectSet(
+  externalArgs: ExternalArgs,
+  dataView: DataView,
+  entryPointer: number,
+  p: string,
+  value: any
+) {
+  const foundPropEntry = findObjectPropertyEntry(
+    externalArgs,
+    dataView,
+    entryPointer,
+    p as string
+  );
+
+  // new prop
+  if (foundPropEntry === undefined) {
+    const { start: newValueEntryPointer } = saveValue(
+      externalArgs,
+      dataView,
+      value
+    );
+
+    const { start: newPropEntryPointer } = appendEntry(externalArgs, dataView, {
+      type: ENTRY_TYPE.OBJECT_PROP,
+      value: {
+        next: 0,
+        value: newValueEntryPointer,
+        key: p as string
+      }
+    });
+
+    const [lastItemPointer, lastItemEntry] = findLastObjectPropertyEntry(
+      externalArgs,
+      dataView,
+      entryPointer
+    );
+
+    if (lastItemEntry.type === ENTRY_TYPE.OBJECT) {
+      writeEntry(externalArgs, dataView, lastItemPointer, {
+        type: ENTRY_TYPE.OBJECT,
+        value: newPropEntryPointer
+      });
+    } else {
+      writeEntry(externalArgs, dataView, lastItemPointer, {
+        type: ENTRY_TYPE.OBJECT_PROP,
+        value: {
+          next: newPropEntryPointer,
+          value: lastItemEntry.value.value,
+          key: lastItemEntry.value.key
+        }
+      });
+    }
+  } else {
+    if (
+      !overwriteEntryIfPossible(
+        externalArgs,
+        dataView,
+        foundPropEntry[1].value.value,
+        value
+      )
+    ) {
+      const { start: newValueEntryPointer } = saveValue(
+        externalArgs,
+        dataView,
+        value
+      );
+
+      // overwrite value
+      writeEntry(externalArgs, dataView, foundPropEntry[0], {
+        type: ENTRY_TYPE.OBJECT_PROP,
+        value: {
+          key: foundPropEntry[1].value.key,
+          next: foundPropEntry[1].value.next,
+          value: newValueEntryPointer
+        }
+      });
+    }
+  }
+}
+
+export function objectGet(
+  externalArgs: ExternalArgs,
+  dataView: DataView,
+  entryPointer: number,
+  p: string
+) {
+  const foundEntry = findObjectPropertyEntry(
+    externalArgs,
+    dataView,
+    entryPointer,
+    p
+  );
+
+  if (foundEntry === undefined) {
+    return undefined;
+  }
+
+  const [valueEntry] = readEntry(
+    externalArgs,
+    dataView,
+    foundEntry[1].value.value
+  );
+
+  return entryToFinalJavaScriptValue(
+    externalArgs,
+    dataView,
+    valueEntry,
+    foundEntry[1].value.value
+  );
 }

@@ -9,8 +9,8 @@ export type Entry =
   | BooleanEntry
   | StringEntry
   | NumberEntry
-  | BigIntEntry
-  | UBigIntEntry
+  | BigIntPositiveEntry
+  | BigIntNegativeEntry
   | ObjectEntry
   | ObjectPropEntry
   | ArrayEntry
@@ -40,13 +40,13 @@ export interface NumberEntry {
   value: number;
 }
 
-export interface BigIntEntry {
-  type: ENTRY_TYPE.BIGINT;
+export interface BigIntPositiveEntry {
+  type: ENTRY_TYPE.BIGINT_POSITIVE;
   value: bigint;
 }
 
-export interface UBigIntEntry {
-  type: ENTRY_TYPE.UBIGINT;
+export interface BigIntNegativeEntry {
+  type: ENTRY_TYPE.BIGINT_NEGATIVE;
   value: bigint;
 }
 
@@ -102,3 +102,8 @@ export type ExternalArgs = Readonly<{
   textDecoder: TextDecoder;
   textEncoder: TextEncoder;
 }>;
+
+export interface InternalAPI {
+  getDataView(): DataView;
+  getEntryPointer(): number;
+}
