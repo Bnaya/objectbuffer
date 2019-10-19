@@ -1,14 +1,12 @@
 import { initializeArrayBuffer } from "./store";
 import { objectSaver } from "./objectSaver";
 import { createObjectWrapper } from "./objectWrapper";
-import {
-  GET_UNDERLYING_ARRAY_BUFFER_SYMBOL,
-  REPLACE_DATA_VIEW_SYMBOL
-} from "./symbols";
-import { ExternalArgs } from "./interfaces";
+import { INTERNAL_API_SYMBOL, REPLACE_DATA_VIEW_SYMBOL } from "./symbols";
+import { ExternalArgs, InternalAPI } from "./interfaces";
 import { arrayBufferCopyTo, getFirstFreeByte } from "./utils";
 import { getCacheFor } from "./externalObjectsCache";
 import { TextDecoder, TextEncoder } from "./textEncoderDecoderTypes";
+import { INITIAL_ENTRY_POINTER_TO_POINTER } from "./consts";
 
 export interface CreateObjectBufferOptions {
   /**
@@ -42,7 +40,7 @@ export function createObjectBuffer<T = any>(
     initialValue
   );
 
-  dataView.setUint32(16, start);
+  dataView.setUint32(INITIAL_ENTRY_POINTER_TO_POINTER, start);
 
   return createObjectWrapper(
     externalArgsApiToExternalArgsApi(externalArgs),
@@ -78,7 +76,8 @@ export function resizeObjectBuffer(objectBuffer: any, newSize: number) {
 export function getUnderlyingArrayBuffer(
   objectBuffer: any
 ): ArrayBuffer | SharedArrayBuffer {
-  return objectBuffer[GET_UNDERLYING_ARRAY_BUFFER_SYMBOL];
+  return (objectBuffer[INTERNAL_API_SYMBOL] as InternalAPI).getDataView()
+    .buffer;
 }
 
 /**
@@ -99,7 +98,7 @@ export function loadObjectBuffer<T = any>(
   return createObjectWrapper(
     externalArgsApiToExternalArgsApi(externalArgs),
     { dataView },
-    dataView.getUint32(16),
+    dataView.getUint32(INITIAL_ENTRY_POINTER_TO_POINTER),
     true
   );
 }

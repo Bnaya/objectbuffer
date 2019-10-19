@@ -2,6 +2,14 @@ import { ENTRY_TYPE } from "./entry-types";
 import { Entry, ObjectPropEntry, primitive } from "./interfaces";
 import { arrayBufferCopyTo, isPrimitive, primitiveValueToEntry } from "./utils";
 import { ExternalArgs } from "./interfaces";
+import { BigInt64OverflowError, OutOfMemoryError } from "./exceptions";
+import {
+  FIRST_FREE_BYTE_POINTER_TO_POINTER,
+  INITIAL_ENTRY_POINTER_TO_POINTER,
+  INITIAL_ENTRY_POINTER_VALUE
+} from "./consts";
+
+const MAX_64_BIG_INT = BigInt("0xFFFFFFFFFFFFFFFF");
 
 export function initializeArrayBuffer(arrayBuffer: ArrayBuffer) {
   const dataView = new DataView(arrayBuffer);
@@ -10,10 +18,16 @@ export function initializeArrayBuffer(arrayBuffer: ArrayBuffer) {
   dataView.setInt32(0, 0);
 
   // End of data pointer / first free byte
-  dataView.setUint32(8, 24);
+  dataView.setUint32(
+    FIRST_FREE_BYTE_POINTER_TO_POINTER,
+    INITIAL_ENTRY_POINTER_VALUE
+  );
 
   // first entry pointer
-  dataView.setUint32(16, 24);
+  dataView.setUint32(
+    INITIAL_ENTRY_POINTER_TO_POINTER,
+    INITIAL_ENTRY_POINTER_VALUE
+  );
 
   return dataView;
 }
@@ -70,14 +84,17 @@ export function writeEntry(
 
       break;
 
-    case ENTRY_TYPE.BIGINT:
-      dataView.setBigInt64(cursor, entry.value);
-      cursor += BigInt64Array.BYTES_PER_ELEMENT;
-      break;
+    case ENTRY_TYPE.BIGINT_NEGATIVE:
+    case ENTRY_TYPE.BIGINT_POSITIVE:
+      if (entry.value > MAX_64_BIG_INT || entry.value < -MAX_64_BIG_INT) {
+        throw new BigInt64OverflowError();
+      }
 
-    case ENTRY_TYPE.UBIGINT:
-      dataView.setBigUint64(cursor, entry.value);
-      cursor += BigUint64Array.BYTES_PER_ELEMENT;
+      dataView.setBigUint64(
+        cursor,
+        entry.type === ENTRY_TYPE.BIGINT_NEGATIVE ? -entry.value : entry.value
+      );
+      cursor += BigInt64Array.BYTES_PER_ELEMENT;
       break;
 
     case ENTRY_TYPE.OBJECT:
@@ -134,15 +151,28 @@ export function appendEntry(
   entry: Entry
 ) {
   // End of data pointer
-  const firstFreeByte = dataView.getUint32(8);
+  const firstFreeByte = dataView.getUint32(FIRST_FREE_BYTE_POINTER_TO_POINTER);
 
-  const written = writeEntry(externalArgs, dataView, firstFreeByte, entry);
-  dataView.setUint32(8, firstFreeByte + written);
+  try {
+    const written = writeEntry(externalArgs, dataView, firstFreeByte, entry);
 
-  return {
-    start: firstFreeByte,
-    length: written
-  };
+    dataView.setUint32(
+      FIRST_FREE_BYTE_POINTER_TO_POINTER,
+      firstFreeByte + written
+    );
+
+    return {
+      start: firstFreeByte,
+      length: written
+    };
+  } catch (e) {
+    if (e instanceof RangeError) {
+      // Assume Offset is outside the bounds of the DataView
+      // need to test it cross browser
+
+      throw new OutOfMemoryError();
+    } else throw e;
+  }
 }
 
 export function readEntry(
@@ -187,25 +217,30 @@ export function readEntry(
       entry.allocatedBytes = dataView.getUint16(cursor);
       cursor += Uint16Array.BYTES_PER_ELEMENT;
 
-      // this wrapping is needed until:
-      // https://github.com/whatwg/encoding/issues/172
-      // eslint-disable-next-line no-case-declarations
-      const tempAB = new ArrayBuffer(stringLength);
-      arrayBufferCopyTo(dataView.buffer, cursor, stringLength, tempAB, 0);
+      // decode fails with zero length array
+      if (stringLength > 0) {
+        // this wrapping is needed until:
+        // https://github.com/whatwg/encoding/issues/172
+        // eslint-disable-next-line no-case-declarations
+        const tempAB = new ArrayBuffer(stringLength);
+        arrayBufferCopyTo(dataView.buffer, cursor, stringLength, tempAB, 0);
 
-      entry.value = externalArgs.textDecoder.decode(tempAB);
+        entry.value = externalArgs.textDecoder.decode(tempAB);
+      } else {
+        entry.value = "";
+      }
 
       cursor += stringLength;
 
       break;
 
-    case ENTRY_TYPE.BIGINT:
-      entry.value = dataView.getBigInt64(cursor);
-      cursor += BigInt64Array.BYTES_PER_ELEMENT;
+    case ENTRY_TYPE.BIGINT_POSITIVE:
+      entry.value = dataView.getBigUint64(cursor);
+      cursor += BigUint64Array.BYTES_PER_ELEMENT;
       break;
 
-    case ENTRY_TYPE.UBIGINT:
-      entry.value = dataView.getBigUint64(cursor);
+    case ENTRY_TYPE.BIGINT_NEGATIVE:
+      entry.value = -dataView.getBigUint64(cursor);
       cursor += BigUint64Array.BYTES_PER_ELEMENT;
       break;
 
@@ -264,11 +299,25 @@ export function readEntry(
 }
 
 export function reserveMemory(dataView: DataView, length: number) {
-  const firstFreeByte = dataView.getUint32(8);
+  try {
+    const allocatedMemoryAddress = dataView.getUint32(
+      FIRST_FREE_BYTE_POINTER_TO_POINTER
+    );
 
-  dataView.setUint32(8, firstFreeByte + length);
+    dataView.setUint32(
+      FIRST_FREE_BYTE_POINTER_TO_POINTER,
+      allocatedMemoryAddress + length
+    );
 
-  return firstFreeByte;
+    return allocatedMemoryAddress;
+  } catch (e) {
+    if (e instanceof RangeError) {
+      // Assume Offset is outside the bounds of the DataView
+      // need to test it cross browser
+
+      throw new OutOfMemoryError();
+    } else throw e;
+  }
 }
 
 export function canSaveValueIntoEntry(
@@ -284,8 +333,8 @@ export function canSaveValueIntoEntry(
 
   // number & bigint 64 are the same size
   if (
-    (entryA.type === ENTRY_TYPE.BIGINT ||
-      entryA.type === ENTRY_TYPE.UBIGINT ||
+    (entryA.type === ENTRY_TYPE.BIGINT_NEGATIVE ||
+      entryA.type === ENTRY_TYPE.BIGINT_POSITIVE ||
       entryA.type === ENTRY_TYPE.NUMBER) &&
     (typeofTheValue === "bigint" || typeofTheValue === "number")
   ) {

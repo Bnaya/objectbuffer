@@ -13,8 +13,8 @@ describe("Test Entry types", () => {
         "12": "SET",
         "13": "DATE",
         "2": "NUMBER",
-        "3": "BIGINT",
-        "4": "UBIGINT",
+        "3": "BIGINT_POSITIVE",
+        "4": "BIGINT_NEGATIVE",
         "5": "STRING",
         "6": "BOOLEAN",
         "7": "OBJECT",
@@ -22,7 +22,8 @@ describe("Test Entry types", () => {
         "9": "ARRAY",
         "ARRAY": 9,
         "ARRAY_ITEM": 10,
-        "BIGINT": 3,
+        "BIGINT_NEGATIVE": 4,
+        "BIGINT_POSITIVE": 3,
         "BOOLEAN": 6,
         "DATE": 13,
         "MAP": 11,
@@ -32,7 +33,6 @@ describe("Test Entry types", () => {
         "OBJECT_PROP": 8,
         "SET": 12,
         "STRING": 5,
-        "UBIGINT": 4,
         "UNDEFINED": 0,
       }
     `);

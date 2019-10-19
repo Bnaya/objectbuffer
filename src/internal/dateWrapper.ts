@@ -2,6 +2,8 @@ import { ExternalArgs, DataViewCarrier, DateEntry } from "./interfaces";
 
 import { readEntry, writeEntry } from "./store";
 import { ENTRY_TYPE } from "./entry-types";
+import { INTERNAL_API_SYMBOL } from "./symbols";
+import { UnsupportedOperationError } from "./exceptions";
 
 const getFunctions: Array<keyof Date> = [
   "toString",
@@ -69,6 +71,10 @@ export class DateWrapper implements ProxyHandler<Date> {
   }
 
   get(target: Date, p: PropertyKey) {
+    if (p === INTERNAL_API_SYMBOL) {
+      return this;
+    }
+
     if (getFunctions.includes(p as any)) {
       if (!(p in this.useMeToGiveNamesToFunctionsAndCacheThem)) {
         this.useMeToGiveNamesToFunctionsAndCacheThem[p] = () => {
@@ -114,6 +120,26 @@ export class DateWrapper implements ProxyHandler<Date> {
         value: this.dateObjectForReuse.getTime()
       }
     );
+  }
+
+  public getDataView() {
+    return this.dataViewCarrier.dataView;
+  }
+
+  public getEntryPointer() {
+    return this.entryPointer;
+  }
+
+  public defineProperty(): boolean {
+    throw new UnsupportedOperationError();
+  }
+
+  public setPrototypeOf(): boolean {
+    throw new UnsupportedOperationError();
+  }
+
+  public isExtensible() {
+    return false;
   }
 }
 

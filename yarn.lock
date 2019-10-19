@@ -2056,12 +2056,7 @@ commander@2.17.x:
   resolved "https://registry.yarnpkg.com/commander/-/commander-2.17.1.tgz#bd77ab7de6de94205ceacc72f1716d29f20a77bf"
   integrity sha512-wPMUt6FnH2yzG95SA6mzjQOEKUU3aLaDEmzs1ti+1E9h+CsrZghRlqEM/EJ4KscsQVG8uNN4uVreUeT8+drlgg==
 
-commander@^2.10.0, commander@^2.20.0, commander@^2.8.1:
-  version "2.20.0"
-  resolved "https://registry.yarnpkg.com/commander/-/commander-2.20.0.tgz#d58bb2b5c1ee8f87b0d340027e9e94e222c5a422"
-  integrity sha512-7j2y+40w61zy6YC2iRNpUe/NwhNyoXrYpHMrSunaMG64nRnaf96zO/KMQR4OyN/UnE5KLyEBnKHd4aG3rskjpQ==
-
-commander@^2.18.0:
+commander@^2.10.0, commander@^2.18.0, commander@^2.20.0, commander@^2.8.1:
   version "2.20.1"
   resolved "https://registry.yarnpkg.com/commander/-/commander-2.20.1.tgz#3863ce3ca92d0831dcf2a102f5fb4b5926afd0f9"
   integrity sha512-cCuLsMhJeWQ/ZpsFTbE765kvVfoeSddc4nU3up4fV+fDBcfUXnbITJ+JzhkdjzOqhURjZgujxaioam4RM9yGUg==
@@ -6431,17 +6426,10 @@ retry@^0.12.0:
   resolved "https://registry.yarnpkg.com/retry/-/retry-0.12.0.tgz#1b42a6266a21f07421d1b0b54b7dc167b01c013b"
   integrity sha1-G0KmJmoh8HQh0bC1S33BZ7AcATs=
 
-rimraf@2.6.3, rimraf@^2.5.4, rimraf@^2.6.1, rimraf@^2.6.3:
+rimraf@2.6.3, rimraf@^2.5.4, rimraf@^2.6.1, rimraf@^2.6.2, rimraf@^2.6.3:
   version "2.6.3"
   resolved "https://registry.yarnpkg.com/rimraf/-/rimraf-2.6.3.tgz#b2d104fe0d8fb27cf9e0a1cda8262dd3833c6cab"
   integrity sha512-mwqeW5XsA2qAejG46gYdENaxXjx9onRNCfn7L0duuP4hCuTIi/QO7PDK07KJfp1d+izWPrzEJDcSqBa0OZQriA==
-  dependencies:
-    glob "^7.1.3"
-
-rimraf@^2.6.2:
-  version "2.7.1"
-  resolved "https://registry.yarnpkg.com/rimraf/-/rimraf-2.7.1.tgz#35797f13a7fdadc566142c29d4f07ccad483e3ec"
-  integrity sha512-uWjbaKIK3T1OSVptzX7Nl6PvQ3qAGtKEtVRjRuazjfL3Bx5eI409VZSqgND+4UNnmzLVdPj9FqFJNPqBZFve4w==
   dependencies:
     glob "^7.1.3"
 
@@ -7390,10 +7378,10 @@ typedoc-plugin-markdown@^2.2.10:
     typedoc-default-themes "^0.6.0"
     typescript "3.6.x"
 
-typescript@3.6.x, typescript@^3.2.1, typescript@^3.7.0-dev.20191004:
-  version "3.7.0-dev.20191004"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.7.0-dev.20191004.tgz#f17749a9be2c650de615351e63ad5de70e292168"
-  integrity sha512-HoDEBY2LsQv5STXCw1Mt/xylYhGUeymFzHWV+5NGl2hCxLDeNmYmV38tlFoCSK2RQkFTpE2Fr9jQ6OzWiWgrpQ==
+typescript@3.6.x, typescript@^3.2.1, typescript@^3.7.0-dev.20191004, typescript@^3.7.0-dev.20191013:
+  version "3.7.0-dev.20191013"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.7.0-dev.20191013.tgz#a05c662f91826829ce8f68e02507a2efa40df1e9"
+  integrity sha512-YQYixdtIJJT9sLjbmrZ5WXqABas3DfVzIFVQj9mT/NkU16k/7mtVnvJlk5O7UpiZ3N5QsPzyt0Isbmu0eu2imw==
 
 uglify-js@3.4.x, uglify-js@^3.1.4:
   version "3.4.10"

@@ -1,25 +1,19 @@
 import { ObjectEntry, ExternalArgs, DataViewCarrier } from "./interfaces";
-import {
-  readEntry,
-  writeEntry,
-  appendEntry,
-  overwriteEntryIfPossible
-} from "./store";
-import { ENTRY_TYPE } from "./entry-types";
+import { readEntry } from "./store";
 import {
   findObjectPropertyEntry,
   getObjectPropertiesEntries,
   deleteObjectPropertyEntryByKey,
-  findLastObjectPropertyEntry
+  objectGet,
+  objectSet
 } from "./objectWrapperHelpers";
-import { saveValue } from "./saveValue";
 
-import { entryToFinalJavaScriptValue } from "./entryToFinalJavaScriptValue";
+import { REPLACE_DATA_VIEW_SYMBOL, INTERNAL_API_SYMBOL } from "./symbols";
 import {
-  GET_UNDERLYING_ARRAY_BUFFER_SYMBOL,
-  GET_UNDERLYING_POINTER_SYMBOL,
-  REPLACE_DATA_VIEW_SYMBOL
-} from "./symbols";
+  IllegalObjectPropConfigError,
+  UnsupportedOperationError
+} from "./exceptions";
+import { handleOOM } from "./handleOOM";
 
 export class ObjectWrapper implements ProxyHandler<{}> {
   constructor(
@@ -33,25 +27,13 @@ export class ObjectWrapper implements ProxyHandler<{}> {
     this.dataViewCarrier.dataView = dataView;
   }
 
-  private getUnderlyingArrayBuffer() {
-    if (!this.isTopLevel) {
-      throw new Error("Only Supported on Top Level");
-    }
-
-    return this.dataViewCarrier.dataView.buffer;
-  }
-
   public get(target: {}, p: PropertyKey): any {
-    if (p === GET_UNDERLYING_ARRAY_BUFFER_SYMBOL) {
-      return this.getUnderlyingArrayBuffer();
-    }
-
     if (p === REPLACE_DATA_VIEW_SYMBOL) {
       return this.replaceDataView.bind(this);
     }
 
-    if (p === GET_UNDERLYING_POINTER_SYMBOL) {
-      return this.entryPointer;
+    if (p === INTERNAL_API_SYMBOL) {
+      return this;
     }
 
     /// empty object
@@ -59,31 +41,11 @@ export class ObjectWrapper implements ProxyHandler<{}> {
       return undefined;
     }
 
-    const foundEntry = findObjectPropertyEntry(
+    return objectGet(
       this.externalArgs,
       this.dataViewCarrier.dataView,
       this.entryPointer,
-      // Add validation ?
-      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-      // @ts-ignore
-      p
-    );
-
-    if (foundEntry === undefined) {
-      return undefined;
-    }
-
-    const [valueEntry] = readEntry(
-      this.externalArgs,
-      this.dataViewCarrier.dataView,
-      foundEntry[1].value.value
-    );
-
-    return entryToFinalJavaScriptValue(
-      this.externalArgs,
-      this.dataViewCarrier.dataView,
-      valueEntry,
-      foundEntry[1].value.value
+      p as string
     );
   }
 
@@ -92,7 +54,7 @@ export class ObjectWrapper implements ProxyHandler<{}> {
       this.externalArgs,
       this.dataViewCarrier.dataView,
       this.entryPointer,
-      p as any
+      p as string
     );
   }
 
@@ -116,11 +78,19 @@ export class ObjectWrapper implements ProxyHandler<{}> {
     return gotEntries.map(e => e.value.key);
   }
 
-  public getOwnPropertyDescriptor() {
-    return { configurable: true, enumerable: true };
+  public getOwnPropertyDescriptor(target: {}, p: PropertyKey) {
+    if (this.has(target, p)) {
+      return { configurable: true, enumerable: true };
+    }
+
+    return undefined;
   }
 
   public has(target: {}, p: PropertyKey) {
+    if (typeof p === "symbol") {
+      throw new IllegalObjectPropConfigError();
+    }
+
     /// empty object
     if (this.entry.value === 0) {
       return false;
@@ -129,107 +99,27 @@ export class ObjectWrapper implements ProxyHandler<{}> {
     const foundEntry = findObjectPropertyEntry(
       this.externalArgs,
       this.dataViewCarrier.dataView,
-      this.entry.value,
-      // Add validation ?
-      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-      // @ts-ignore
-      p
+      this.entryPointer,
+      p as string
     );
 
     return foundEntry !== undefined;
   }
 
   public set(target: {}, p: PropertyKey, value: any): boolean {
-    const foundPropEntry = findObjectPropertyEntry(
-      this.externalArgs,
-      this.dataViewCarrier.dataView,
-      this.entryPointer,
-      p as string
-    );
+    if (typeof p === "symbol") {
+      throw new IllegalObjectPropConfigError();
+    }
 
-    // new prop
-    if (foundPropEntry === undefined) {
-      const { start: newValueEntryPointer } = saveValue(
+    handleOOM(() => {
+      objectSet(
         this.externalArgs,
         this.dataViewCarrier.dataView,
+        this.entryPointer,
+        p as string,
         value
       );
-
-      const { start: newPropEntryPointer } = appendEntry(
-        this.externalArgs,
-        this.dataViewCarrier.dataView,
-        {
-          type: ENTRY_TYPE.OBJECT_PROP,
-          value: {
-            next: 0,
-            value: newValueEntryPointer,
-            key: p as string
-          }
-        }
-      );
-
-      const [lastItemPointer, lastItemEntry] = findLastObjectPropertyEntry(
-        this.externalArgs,
-        this.dataViewCarrier.dataView,
-        this.entryPointer
-      );
-
-      if (lastItemEntry.type === ENTRY_TYPE.OBJECT) {
-        writeEntry(
-          this.externalArgs,
-          this.dataViewCarrier.dataView,
-          lastItemPointer,
-          {
-            type: ENTRY_TYPE.OBJECT,
-            value: newPropEntryPointer
-          }
-        );
-      } else {
-        writeEntry(
-          this.externalArgs,
-          this.dataViewCarrier.dataView,
-          lastItemPointer,
-          {
-            type: ENTRY_TYPE.OBJECT_PROP,
-            value: {
-              next: newPropEntryPointer,
-              value: lastItemEntry.value.value,
-              key: lastItemEntry.value.key
-            }
-          }
-        );
-      }
-    } else {
-      if (
-        !overwriteEntryIfPossible(
-          this.externalArgs,
-          this.dataViewCarrier.dataView,
-          foundPropEntry[1].value.value,
-          value
-        )
-      ) {
-        const { start: newValueEntryPointer } = saveValue(
-          this.externalArgs,
-          this.dataViewCarrier.dataView,
-          value
-        );
-
-        // overwrite value
-        writeEntry(
-          this.externalArgs,
-          this.dataViewCarrier.dataView,
-          foundPropEntry[0],
-          {
-            type: ENTRY_TYPE.OBJECT_PROP,
-            value: {
-              key: foundPropEntry[1].value.key,
-              next: foundPropEntry[1].value.next,
-              value: newValueEntryPointer
-            }
-          }
-        );
-      }
-    }
+    }, this.dataViewCarrier.dataView);
 
     return true;
   }
@@ -239,11 +129,11 @@ export class ObjectWrapper implements ProxyHandler<{}> {
   }
 
   public preventExtensions(): boolean {
-    throw new Error("unsupported");
+    throw new UnsupportedOperationError();
   }
 
   public setPrototypeOf(): boolean {
-    throw new Error("unsupported");
+    throw new UnsupportedOperationError();
   }
 
   // getPrototypeOf? (target: T): object | null;
@@ -255,7 +145,22 @@ export class ObjectWrapper implements ProxyHandler<{}> {
   // get? (target: T, p: PropertyKey, receiver: any): any;
   // set? (target: T, p: PropertyKey, value: any, receiver: any): boolean;
   // deleteProperty? (target: T, p: PropertyKey): boolean;
-  // defineProperty? (target: T, p: PropertyKey, attributes: PropertyDescriptor): boolean;
+  public defineProperty(): // target: {},
+  // p: PropertyKey,
+  // attributes: PropertyDescriptor
+  boolean {
+    throw new UnsupportedOperationError();
+    // if (
+    //   typeof p === "symbol" ||
+    //   attributes.enumerable === false ||
+    //   attributes.get ||
+    //   attributes.set
+    // ) {
+    //   throw new IllegalObjectPropConfigError();
+    // }
+
+    // return Object.defineProperty(target, p, attributes);
+  }
   // enumerate? (target: T): PropertyKey[];
   // ownKeys? (target: T): PropertyKey[];
   // apply? (target: T, thisArg: any, argArray?: any): any;
@@ -267,6 +172,14 @@ export class ObjectWrapper implements ProxyHandler<{}> {
       this.dataViewCarrier.dataView,
       this.entryPointer
     )[0] as ObjectEntry;
+  }
+
+  public getDataView() {
+    return this.dataViewCarrier.dataView;
+  }
+
+  public getEntryPointer() {
+    return this.entryPointer;
   }
 }
 

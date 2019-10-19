@@ -7,3 +7,5 @@ export const GET_UNDERLYING_POINTER_SYMBOL = Symbol(
 );
 
 export const REPLACE_DATA_VIEW_SYMBOL = Symbol("REPLACE_DATA_VIEW_SYMBOL");
+
+export const INTERNAL_API_SYMBOL = Symbol("INTERNAL_API");

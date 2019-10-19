@@ -1,0 +1,117 @@
+import { ExternalArgs } from "../internal/interfaces";
+import * as util from "util";
+import { createObjectBuffer } from "..";
+
+/* eslint-env jest */
+
+describe("defensiveErrors", () => {
+  const externalArgs: ExternalArgs = {
+    textEncoder: new util.TextEncoder(),
+    textDecoder: new util.TextDecoder(),
+    arrayAdditionalAllocation: 0,
+    minimumStringAllocation: 0
+  };
+
+  test("defensiveErrors Date", () => {
+    const objectBuffer = createObjectBuffer(externalArgs, 256, {
+      date: new Date(0),
+      array: [1],
+      object: {}
+    });
+
+    expect(() => {
+      (objectBuffer.date as any)[5] = "a";
+    }).toThrowErrorMatchingInlineSnapshot(`"UnsupportedOperationError"`);
+    expect(() => {
+      (objectBuffer.date as any)["bla"] = "a";
+    }).toThrowErrorMatchingInlineSnapshot(`"UnsupportedOperationError"`);
+    expect(() => {
+      (objectBuffer.date as any)[Symbol("bla")] = "a";
+    }).toThrowErrorMatchingInlineSnapshot(`"UnsupportedOperationError"`);
+
+    expect(() => {
+      Object.defineProperty(objectBuffer.date, "propy", {
+        enumerable: true
+      });
+    }).toThrowErrorMatchingInlineSnapshot(`"UnsupportedOperationError"`);
+
+    expect(() => {
+      Object.setPrototypeOf(objectBuffer.date, {});
+    }).toThrowErrorMatchingInlineSnapshot(`"UnsupportedOperationError"`);
+
+    expect(objectBuffer).toMatchInlineSnapshot(`
+      Object {
+        "array": Array [
+          1,
+        ],
+        "date": "1970-01-01T00:00:00.000Z",
+        "object": Object {},
+      }
+    `);
+  });
+
+  test("defensiveErrors Array", () => {
+    const objectBuffer = createObjectBuffer(externalArgs, 256, {
+      date: new Date(0),
+      array: [1],
+      object: {}
+    });
+
+    expect(() => {
+      objectBuffer.array[-5] = 5;
+    }).toThrowErrorMatchingInlineSnapshot(`"IllegalArrayIndexError"`);
+    expect(() => {
+      (objectBuffer.array as any)["bla"] = "a";
+    }).toThrowErrorMatchingInlineSnapshot(`"IllegalArrayIndexError"`);
+    expect(() => {
+      (objectBuffer.array as any)[Symbol("bla")] = "a";
+    }).toThrowErrorMatchingInlineSnapshot(`"IllegalArrayIndexError"`);
+
+    expect(() => {
+      Object.setPrototypeOf(objectBuffer.array, {});
+    }).toThrowErrorMatchingInlineSnapshot(`"UnsupportedOperationError"`);
+
+    expect(objectBuffer).toMatchInlineSnapshot(`
+      Object {
+        "array": Array [
+          1,
+        ],
+        "date": "1970-01-01T00:00:00.000Z",
+        "object": Object {},
+      }
+    `);
+  });
+
+  test("defensiveErrors Object", () => {
+    const objectBuffer = createObjectBuffer(externalArgs, 256, {
+      date: new Date(0),
+      array: [1],
+      object: {}
+    });
+
+    expect(() => {
+      Object.defineProperty(objectBuffer.object, "newProp", {
+        configurable: false,
+        enumerable: false
+      });
+    }).toThrowErrorMatchingInlineSnapshot(`"UnsupportedOperationError"`);
+
+    expect(() => {
+      (objectBuffer.object as any)[Symbol("bla")] = "a";
+    }).toThrowErrorMatchingInlineSnapshot(`"IllegalObjectPropConfigError"`);
+
+    expect(() => {
+      Object.setPrototypeOf(objectBuffer.object, {});
+    }).toThrowErrorMatchingInlineSnapshot(`"UnsupportedOperationError"`);
+
+    expect(objectBuffer).toMatchInlineSnapshot(`
+      Object {
+        "array": Array [
+          1,
+        ],
+        "date": "1970-01-01T00:00:00.000Z",
+        "object": Object {},
+      }
+    `);
+  });
+});
