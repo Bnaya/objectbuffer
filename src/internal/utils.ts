@@ -1,4 +1,10 @@
-import { primitive, Entry, ExternalArgs, InternalAPI } from "./interfaces";
+import {
+  primitive,
+  Entry,
+  ExternalArgs,
+  InternalAPI,
+  ExternalArgsApi
+} from "./interfaces";
 import { ENTRY_TYPE } from "./entry-types";
 import { INTERNAL_API_SYMBOL } from "./symbols";
 import { FIRST_FREE_BYTE_POINTER_TO_POINTER } from "./consts";
@@ -119,4 +125,18 @@ export function getOurPointerIfApplicable(value: any, ourDateView: DataView) {
   if (api && api.getDataView() === ourDateView) {
     return api.getEntryPointer();
   }
+}
+
+export function externalArgsApiToExternalArgsApi(
+  p: ExternalArgsApi
+): ExternalArgs {
+  return {
+    ...p,
+    arrayAdditionalAllocation: p.arrayAdditionalAllocation
+      ? p.arrayAdditionalAllocation
+      : 0,
+    minimumStringAllocation: p.minimumStringAllocation
+      ? p.minimumStringAllocation
+      : 0
+  };
 }

@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { ExternalArgs } from "./interfaces";
 import { saveValue } from "./saveValue";
+import { ExternalArgsApi } from "./interfaces";
+import { externalArgsApiToExternalArgsApi } from "./utils";
 
 /**
  * Calculate the size (bytes) of the given value.
@@ -9,11 +10,15 @@ import { saveValue } from "./saveValue";
  * @param externalArgs
  * @param value
  */
-export function sizeOf(externalArgs: ExternalArgs, value: any) {
+export function sizeOf(externalArgs: ExternalArgsApi, value: any) {
   // eslint-disable-next-line @typescript-eslint/no-use-before-define
   const fakeDataView = new FakeDataView();
 
-  saveValue(externalArgs, fakeDataView, value);
+  saveValue(
+    externalArgsApiToExternalArgsApi(externalArgs),
+    fakeDataView,
+    value
+  );
 
   return fakeDataView.sizeOf;
 }

@@ -2,10 +2,13 @@ import { initializeArrayBuffer } from "./store";
 import { objectSaver } from "./objectSaver";
 import { createObjectWrapper } from "./objectWrapper";
 import { INTERNAL_API_SYMBOL, REPLACE_DATA_VIEW_SYMBOL } from "./symbols";
-import { ExternalArgs, InternalAPI } from "./interfaces";
-import { arrayBufferCopyTo, getFirstFreeByte } from "./utils";
+import { InternalAPI, ExternalArgsApi } from "./interfaces";
+import {
+  arrayBufferCopyTo,
+  getFirstFreeByte,
+  externalArgsApiToExternalArgsApi
+} from "./utils";
 import { getCacheFor } from "./externalObjectsCache";
-import { TextDecoder, TextEncoder } from "./textEncoderDecoderTypes";
 import { INITIAL_ENTRY_POINTER_TO_POINTER } from "./consts";
 
 export interface CreateObjectBufferOptions {
@@ -130,13 +133,6 @@ export function replaceUnderlyingArrayBuffer(
   objectBuffer[REPLACE_DATA_VIEW_SYMBOL](new DataView(newArrayBuffer));
 }
 
-export type ExternalArgsApi = Readonly<{
-  arrayAdditionalAllocation?: number;
-  minimumStringAllocation?: number;
-  textDecoder: TextDecoder;
-  textEncoder: TextEncoder;
-}>;
-
 export { sizeOf } from "./sizeOf";
 
 /**
@@ -147,16 +143,4 @@ export function spaceLeft(objectBuffer: any) {
   const ab = getUnderlyingArrayBuffer(objectBuffer);
 
   return ab.byteLength - getFirstFreeByte(ab);
-}
-
-function externalArgsApiToExternalArgsApi(p: ExternalArgsApi): ExternalArgs {
-  return {
-    ...p,
-    arrayAdditionalAllocation: p.arrayAdditionalAllocation
-      ? p.arrayAdditionalAllocation
-      : 0,
-    minimumStringAllocation: p.minimumStringAllocation
-      ? p.minimumStringAllocation
-      : 0
-  };
 }

@@ -103,6 +103,13 @@ export type ExternalArgs = Readonly<{
   textEncoder: TextEncoder;
 }>;
 
+export type ExternalArgsApi = Readonly<{
+  arrayAdditionalAllocation?: number;
+  minimumStringAllocation?: number;
+  textDecoder: TextDecoder;
+  textEncoder: TextEncoder;
+}>;
+
 export interface InternalAPI {
   getDataView(): DataView;
   getEntryPointer(): number;
