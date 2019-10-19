@@ -17,5 +17,5 @@ export {
   spaceLeft
 } from "./internal/api";
 export { acquireLock, acquireLockWait, releaseLock } from "./internal/locks";
-export type ExternalArgs = import("./internal/interfaces").ExternalArgs;
+export type ExternalArgs = import("./internal/api").ExternalArgsApi;
 export type CreateObjectBufferOptions = import("./internal/api").CreateObjectBufferOptions;
