@@ -38,9 +38,11 @@ myObject.arr.push(2);
 
 ```
 
-## Play with it
+## Play with it (codesandbox)
 
-[![Edit objectbuffer demo - SharedArrayBuffer](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/objectbuffer-demo-sharedarraybuffer-tf3il?fontsize=14&module=%2Fsrc%2Findex.ts)
+* [Sort Array on worker (comlink)](https://codesandbox.io/s/objectbuffer-comlink-demo-sort-array-on-webworker-no-data-copy-vkpqp?expanddevtools=1&fontsize=14&hidenavigation=1&module=%2Fsrc%2Findex.ts)
+* [Sort Array on worker (no comlink)](https://codesandbox.io/s/objectbuffer-demo-sort-array-on-webworker-no-data-copy-52xiw?expanddevtools=1&fontsize=14&hidenavigation=1&module=%2Fsrc%2Findex.ts)
+* [Shared memory - SharedArrayBuffer](https://codesandbox.io/s/objectbuffer-demo-sharedarraybuffer-tf3il?fontsize=14&module=%2Fsrc%2Findex.ts)
 
 See also [main.js](playground/main.js) for shared memory example.
 to run it: clone the repo, `yarn install` and `yarn browser-playground`
