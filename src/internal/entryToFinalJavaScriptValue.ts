@@ -1,13 +1,24 @@
-import { Entry, ExternalArgs, DataViewCarrier } from "./interfaces";
+import { Entry, ExternalArgs, DataViewAndAllocatorCarrier } from "./interfaces";
 import { ENTRY_TYPE, isPrimitiveEntryType } from "./entry-types";
 import { createObjectWrapper } from "./objectWrapper";
 import { createArrayWrapper } from "./arrayWrapper";
 import { createDateWrapper } from "./dateWrapper";
 import { getCacheFor } from "./externalObjectsCache";
+import { decrementRefCount } from "./store";
+import { getAllLinkedAddresses } from "./getAllLinkedAddresses";
+
+declare const FinalizationGroup: any;
+declare const WeakRef: any;
+
+const TYPE_TO_FACTORY = {
+  [ENTRY_TYPE.OBJECT]: createObjectWrapper,
+  [ENTRY_TYPE.DATE]: createDateWrapper,
+  [ENTRY_TYPE.ARRAY]: createArrayWrapper
+} as const;
 
 export function entryToFinalJavaScriptValue(
   externalArgs: ExternalArgs,
-  dataViewCarrier: DataViewCarrier,
+  carrier: DataViewAndAllocatorCarrier,
   valueEntry: Entry,
   pointerToEntry: number
 ) {
@@ -23,47 +34,39 @@ export function entryToFinalJavaScriptValue(
     return valueEntry.value;
   }
 
-  if (valueEntry.type === ENTRY_TYPE.OBJECT) {
-    const cache = getCacheFor(dataViewCarrier.dataView.buffer);
-
-    let ret = cache.get(pointerToEntry);
-
-    if (!ret) {
-      ret = createObjectWrapper(
+  if (
+    valueEntry.type === ENTRY_TYPE.OBJECT ||
+    valueEntry.type === ENTRY_TYPE.DATE ||
+    valueEntry.type === ENTRY_TYPE.ARRAY
+  ) {
+    const cache = getCacheFor(carrier, (memoryAddress: number) => {
+      const newRefsCount = decrementRefCount(
         externalArgs,
-        dataViewCarrier,
-        pointerToEntry,
-        false
+        carrier.dataView,
+        memoryAddress
       );
 
-      cache.set(pointerToEntry, ret);
-    }
+      if (newRefsCount === 0) {
+        const freeUs = getAllLinkedAddresses(
+          externalArgs,
+          carrier.dataView,
+          false,
+          memoryAddress
+        );
 
-    return ret;
-  }
-
-  if (valueEntry.type === ENTRY_TYPE.ARRAY) {
-    const cache = getCacheFor(dataViewCarrier.dataView.buffer);
-
+        for (const address of freeUs) {
+          carrier.allocator.free(address);
+        }
+      }
+    });
     let ret = cache.get(pointerToEntry);
 
     if (!ret) {
-      ret = createArrayWrapper(externalArgs, dataViewCarrier, pointerToEntry);
-
-      cache.set(pointerToEntry, ret);
-    }
-
-    return ret;
-  }
-
-  if (valueEntry.type === ENTRY_TYPE.DATE) {
-    const cache = getCacheFor(dataViewCarrier.dataView.buffer);
-
-    let ret = cache.get(pointerToEntry);
-
-    if (!ret) {
-      ret = createDateWrapper(externalArgs, dataViewCarrier, pointerToEntry);
-
+      ret = TYPE_TO_FACTORY[valueEntry.type](
+        externalArgs,
+        carrier,
+        pointerToEntry
+      );
       cache.set(pointerToEntry, ret);
     }
 

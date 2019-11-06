@@ -18,7 +18,7 @@ describe("createObjectBuffer", () => {
   };
 
   test("createObjectBuffer simple", () => {
-    const o = createObjectBuffer(externalArgs, 128, {
+    const o = createObjectBuffer(externalArgs, 256, {
       a: "b",
       b: null,
       c: { t: 5 }
@@ -44,7 +44,7 @@ describe("getUnderlyingArrayBuffer", () => {
     minimumStringAllocation: 0
   };
   test("getUnderlyingArrayBuffer simple", () => {
-    const o = createObjectBuffer(externalArgs, 80, {
+    const o = createObjectBuffer(externalArgs, 256, {
       b: null,
       c: { t: 5 }
     });
@@ -67,7 +67,7 @@ describe("loadObjectBuffer", () => {
   };
 
   test("loadObjectBuffer simple", () => {
-    const o = createObjectBuffer(externalArgs, 128, {
+    const o = createObjectBuffer(externalArgs, 256, {
       a: "b",
       b: null,
       c: { t: 5 }

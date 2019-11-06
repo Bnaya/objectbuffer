@@ -1,15 +1,15 @@
 import { initializeArrayBuffer } from "./store";
 import { objectSaver } from "./objectSaver";
 import { createObjectWrapper } from "./objectWrapper";
-import { INTERNAL_API_SYMBOL, REPLACE_DATA_VIEW_SYMBOL } from "./symbols";
-import { InternalAPI, ExternalArgsApi } from "./interfaces";
+import { ExternalArgsApi } from "./interfaces";
 import {
   arrayBufferCopyTo,
-  getFirstFreeByte,
-  externalArgsApiToExternalArgsApi
+  externalArgsApiToExternalArgsApi,
+  getInternalAPI
 } from "./utils";
 import { getCacheFor } from "./externalObjectsCache";
-import { INITIAL_ENTRY_POINTER_TO_POINTER } from "./consts";
+import { INITIAL_ENTRY_POINTER_TO_POINTER, MEM_POOL_START } from "./consts";
+import { MemPool } from "@bnaya/malloc-temporary-fork";
 
 export interface CreateObjectBufferOptions {
   /**
@@ -37,9 +37,17 @@ export function createObjectBuffer<T = any>(
     : ArrayBuffer)(size);
   const dataView = initializeArrayBuffer(arrayBuffer);
 
-  const { start } = objectSaver(
+  const allocator = new MemPool({
+    buf: arrayBuffer,
+    start: MEM_POOL_START
+  });
+
+  const carrier = { dataView, allocator };
+
+  const start = objectSaver(
     externalArgsApiToExternalArgsApi(externalArgs),
-    dataView,
+    carrier,
+    [],
     initialValue
   );
 
@@ -47,9 +55,8 @@ export function createObjectBuffer<T = any>(
 
   return createObjectWrapper(
     externalArgsApiToExternalArgsApi(externalArgs),
-    { dataView },
-    start,
-    true
+    carrier,
+    start
   );
 }
 
@@ -79,8 +86,7 @@ export function resizeObjectBuffer(objectBuffer: any, newSize: number) {
 export function getUnderlyingArrayBuffer(
   objectBuffer: any
 ): ArrayBuffer | SharedArrayBuffer {
-  return (objectBuffer[INTERNAL_API_SYMBOL] as InternalAPI).getDataView()
-    .buffer;
+  return getInternalAPI(objectBuffer).getCarrier().dataView.buffer;
 }
 
 /**
@@ -97,12 +103,16 @@ export function loadObjectBuffer<T = any>(
   arrayBuffer: ArrayBuffer | SharedArrayBuffer
 ): T {
   const dataView = new DataView(arrayBuffer);
+  const allocator = new MemPool({
+    buf: arrayBuffer,
+    start: MEM_POOL_START,
+    skipInitialization: true
+  });
 
   return createObjectWrapper(
     externalArgsApiToExternalArgsApi(externalArgs),
-    { dataView },
-    dataView.getUint32(INITIAL_ENTRY_POINTER_TO_POINTER),
-    true
+    { dataView, allocator },
+    dataView.getUint32(INITIAL_ENTRY_POINTER_TO_POINTER)
   );
 }
 
@@ -130,17 +140,39 @@ export function replaceUnderlyingArrayBuffer(
     oldCache.delete(entry[0]);
   }
 
-  objectBuffer[REPLACE_DATA_VIEW_SYMBOL](new DataView(newArrayBuffer));
+  const allocator = new MemPool({
+    buf: newArrayBuffer,
+    start: MEM_POOL_START,
+    skipInitialization: true
+  });
+
+  // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+  // @ts-ignore
+  allocator.end = newArrayBuffer.byteLength;
+
+  getInternalAPI(objectBuffer).replaceCarrierContent(
+    new DataView(newArrayBuffer),
+    allocator
+  );
 }
 
 export { sizeOf } from "./sizeOf";
 
 /**
- * Return the number of free bytes left in the given objectBuffer
- * @param objectBuffer
+ * Return the number of free & used bytes left in the given objectBuffer
  */
-export function spaceLeft(objectBuffer: any) {
-  const ab = getUnderlyingArrayBuffer(objectBuffer);
+export function memoryStats(objectBuffer: any) {
+  const buf = getUnderlyingArrayBuffer(objectBuffer);
 
-  return ab.byteLength - getFirstFreeByte(ab);
+  const pool = new MemPool({
+    buf,
+    skipInitialization: true,
+    start: MEM_POOL_START
+  });
+
+  const { available, total } = pool.stats();
+
+  return { available, used: total - available };
 }
+
+export { disposeWrapperObject } from "./disposeWrapperObject";

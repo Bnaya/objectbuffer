@@ -4,8 +4,9 @@ import { initializeArrayBuffer } from "./store";
 import * as util from "util";
 import { createArrayWrapper } from "./arrayWrapper";
 import { arraySaver } from "./arraySaver";
-import { getFirstFreeByte } from "./testUtils";
 import { ExternalArgs } from "./interfaces";
+import { MemPool } from "@bnaya/malloc-temporary-fork";
+import { MEM_POOL_START } from "./consts";
 
 describe("pop it all", () => {
   const externalArgs: ExternalArgs = {
@@ -16,19 +17,28 @@ describe("pop it all", () => {
   };
 
   test("lets 1", () => {
-    const arrayBuffer = new ArrayBuffer(256);
+    const arrayBuffer = new ArrayBuffer(512);
     const dataView = new DataView(arrayBuffer);
     initializeArrayBuffer(arrayBuffer);
+    const allocator = new MemPool({
+      buf: arrayBuffer,
+      start: MEM_POOL_START
+    });
 
     const arrayToSave = ["a", "b", -100];
     const arrayToCompare = arrayToSave.slice();
 
-    const saverOutput = arraySaver(externalArgs, dataView, arrayToSave);
+    const saverOutput = arraySaver(
+      externalArgs,
+      { dataView, allocator },
+      [],
+      arrayToSave
+    );
 
     const arrayWrapper = createArrayWrapper(
       externalArgs,
-      { dataView },
-      saverOutput.start
+      { dataView, allocator },
+      saverOutput
     );
 
     const sizeAfterEachPush: number[] = [];
@@ -36,21 +46,21 @@ describe("pop it all", () => {
     for (let i = 0; i < 10; i += 1) {
       arrayWrapper.push(i);
       arrayToCompare.push(i);
-      sizeAfterEachPush.push(getFirstFreeByte(arrayBuffer));
+      sizeAfterEachPush.push(allocator.stats().available);
     }
 
     expect(sizeAfterEachPush).toMatchInlineSnapshot(`
       Array [
-        161,
-        170,
-        179,
-        188,
-        197,
-        206,
-        215,
+        272,
+        248,
         224,
-        233,
-        242,
+        200,
+        176,
+        152,
+        128,
+        104,
+        80,
+        56,
       ]
     `);
 
@@ -80,7 +90,7 @@ describe("pop it all", () => {
     } while (arrayWrapper.length !== 0);
 
     expect(arrayWrapper).toMatchInlineSnapshot(`Array []`);
-    expect(arrayWrapper).toEqual(arrayToCompare);
-    expect(getFirstFreeByte(arrayBuffer)).toMatchInlineSnapshot(`242`);
+    expect(arrayToCompare).toEqual(arrayWrapper);
+    expect(allocator.stats().available).toMatchInlineSnapshot(`56`);
   });
 });

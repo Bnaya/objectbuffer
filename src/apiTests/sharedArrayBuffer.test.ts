@@ -2,12 +2,8 @@
 
 import * as util from "util";
 
-import {
-  createObjectBuffer,
-  getUnderlyingArrayBuffer,
-  ExternalArgs
-} from "../";
-import { getFirstFreeByte } from "../internal/testUtils";
+import { createObjectBuffer, ExternalArgs } from "../";
+import { memoryStats } from "../internal/api";
 
 // actually not very good, as the browser's TextEncoder won't work with SAB, but node will.
 describe("SharedArrayBuffer tests", () => {
@@ -38,8 +34,6 @@ describe("SharedArrayBuffer tests", () => {
       }
     `);
 
-    expect(
-      getFirstFreeByte(getUnderlyingArrayBuffer(objectBuffer))
-    ).toMatchInlineSnapshot(`131`);
+    expect(memoryStats(objectBuffer).used).toMatchInlineSnapshot(`176`);
   });
 });
