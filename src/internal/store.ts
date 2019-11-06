@@ -1,13 +1,19 @@
-import { ENTRY_TYPE } from "./entry-types";
-import { Entry, ObjectPropEntry, primitive } from "./interfaces";
+import { ENTRY_TYPE, isPrimitiveEntryType } from "./entry-types";
+import {
+  Entry,
+  ObjectPropEntry,
+  primitive,
+  DataViewAndAllocatorCarrier
+} from "./interfaces";
 import { arrayBufferCopyTo, isPrimitive, primitiveValueToEntry } from "./utils";
 import { ExternalArgs } from "./interfaces";
-import { BigInt64OverflowError, OutOfMemoryError } from "./exceptions";
+import { BigInt64OverflowError } from "./exceptions";
 import {
-  FIRST_FREE_BYTE_POINTER_TO_POINTER,
   INITIAL_ENTRY_POINTER_TO_POINTER,
   INITIAL_ENTRY_POINTER_VALUE
 } from "./consts";
+import { saveValue } from "./saveValue";
+import { getAllLinkedAddresses } from "./getAllLinkedAddresses";
 
 const MAX_64_BIG_INT = BigInt("0xFFFFFFFFFFFFFFFF");
 
@@ -17,12 +23,6 @@ export function initializeArrayBuffer(arrayBuffer: ArrayBuffer) {
   // global lock
   dataView.setInt32(0, 0);
 
-  // End of data pointer / first free byte
-  dataView.setUint32(
-    FIRST_FREE_BYTE_POINTER_TO_POINTER,
-    INITIAL_ENTRY_POINTER_VALUE
-  );
-
   // first entry pointer
   dataView.setUint32(
     INITIAL_ENTRY_POINTER_TO_POINTER,
@@ -30,6 +30,94 @@ export function initializeArrayBuffer(arrayBuffer: ArrayBuffer) {
   );
 
   return dataView;
+}
+
+export function sizeOfEntry(externalArgs: ExternalArgs, entry: Entry) {
+  let cursor = 0;
+
+  cursor += Uint8Array.BYTES_PER_ELEMENT;
+
+  switch (entry.type) {
+    case ENTRY_TYPE.UNDEFINED:
+      break;
+
+    case ENTRY_TYPE.NULL:
+      break;
+
+    case ENTRY_TYPE.BOOLEAN:
+      cursor += Uint8Array.BYTES_PER_ELEMENT;
+      break;
+
+    case ENTRY_TYPE.NUMBER:
+      cursor += Float64Array.BYTES_PER_ELEMENT;
+      break;
+
+    case ENTRY_TYPE.STRING:
+      // eslint-disable-next-line no-case-declarations
+      const encodedString: Uint8Array = externalArgs.textEncoder.encode(
+        entry.value
+      );
+      cursor += Uint16Array.BYTES_PER_ELEMENT;
+
+      cursor += Uint16Array.BYTES_PER_ELEMENT;
+
+      for (let i = 0; i < encodedString.length; i++) {
+        cursor += Uint8Array.BYTES_PER_ELEMENT;
+      }
+
+      cursor += entry.allocatedBytes;
+
+      break;
+
+    case ENTRY_TYPE.BIGINT_NEGATIVE:
+    case ENTRY_TYPE.BIGINT_POSITIVE:
+      if (entry.value > MAX_64_BIG_INT || entry.value < -MAX_64_BIG_INT) {
+        throw new BigInt64OverflowError();
+      }
+
+      cursor += BigInt64Array.BYTES_PER_ELEMENT;
+      break;
+
+    case ENTRY_TYPE.OBJECT:
+      cursor += Uint8Array.BYTES_PER_ELEMENT;
+      cursor += Uint32Array.BYTES_PER_ELEMENT;
+      break;
+
+    case ENTRY_TYPE.OBJECT_PROP:
+      // eslint-disable-next-line no-case-declarations
+      const encodedStringKey: Uint8Array = externalArgs.textEncoder.encode(
+        entry.value.key
+      );
+      cursor += Uint16Array.BYTES_PER_ELEMENT;
+
+      for (let i = 0; i < encodedStringKey.length; i++) {
+        cursor += Uint8Array.BYTES_PER_ELEMENT;
+      }
+
+      cursor += Uint32Array.BYTES_PER_ELEMENT;
+
+      cursor += Uint32Array.BYTES_PER_ELEMENT;
+      break;
+
+    case ENTRY_TYPE.ARRAY:
+      cursor += Uint32Array.BYTES_PER_ELEMENT;
+      cursor += Uint32Array.BYTES_PER_ELEMENT;
+      cursor += Uint32Array.BYTES_PER_ELEMENT;
+      cursor += Uint8Array.BYTES_PER_ELEMENT;
+      break;
+
+    case ENTRY_TYPE.DATE:
+      cursor += Float64Array.BYTES_PER_ELEMENT;
+      cursor += Uint8Array.BYTES_PER_ELEMENT;
+      break;
+
+    default:
+      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+      // @ts-ignore
+      throw new Error(ENTRY_TYPE[entry.type] + " Not implemented yet");
+  }
+
+  return cursor;
 }
 
 export function writeEntry(
@@ -98,6 +186,8 @@ export function writeEntry(
       break;
 
     case ENTRY_TYPE.OBJECT:
+      dataView.setUint8(cursor, entry.refsCount);
+      cursor += Uint8Array.BYTES_PER_ELEMENT;
       dataView.setUint32(cursor, entry.value);
       cursor += Uint32Array.BYTES_PER_ELEMENT;
       break;
@@ -123,6 +213,8 @@ export function writeEntry(
       break;
 
     case ENTRY_TYPE.ARRAY:
+      dataView.setUint8(cursor, entry.refsCount);
+      cursor += Uint8Array.BYTES_PER_ELEMENT;
       dataView.setUint32(cursor, entry.value);
       cursor += Uint32Array.BYTES_PER_ELEMENT;
       dataView.setUint32(cursor, entry.length);
@@ -132,6 +224,8 @@ export function writeEntry(
       break;
 
     case ENTRY_TYPE.DATE:
+      dataView.setUint8(cursor, entry.refsCount);
+      cursor += Uint8Array.BYTES_PER_ELEMENT;
       dataView.setFloat64(cursor, entry.value);
       cursor += Float64Array.BYTES_PER_ELEMENT;
       break;
@@ -141,45 +235,27 @@ export function writeEntry(
       // @ts-ignore
       throw new Error(ENTRY_TYPE[entry.type] + " Not implemented yet");
   }
-
-  return cursor - startingCursor;
 }
 
 export function appendEntry(
   externalArgs: ExternalArgs,
-  dataView: DataView,
+  carrier: DataViewAndAllocatorCarrier,
   entry: Entry
 ) {
-  // End of data pointer
-  const firstFreeByte = dataView.getUint32(FIRST_FREE_BYTE_POINTER_TO_POINTER);
+  const size = sizeOfEntry(externalArgs, entry);
 
-  try {
-    const written = writeEntry(externalArgs, dataView, firstFreeByte, entry);
+  const memoryAddress = carrier.allocator.calloc(size);
 
-    dataView.setUint32(
-      FIRST_FREE_BYTE_POINTER_TO_POINTER,
-      firstFreeByte + written
-    );
+  writeEntry(externalArgs, carrier.dataView, memoryAddress, entry);
 
-    return {
-      start: firstFreeByte,
-      length: written
-    };
-  } catch (e) {
-    if (e instanceof RangeError) {
-      // Assume Offset is outside the bounds of the DataView
-      // need to test it cross browser
-
-      throw new OutOfMemoryError();
-    } else throw e;
-  }
+  return memoryAddress;
 }
 
 export function readEntry(
   externalArgs: ExternalArgs,
   dataView: DataView,
   startingCursor: number
-): [Entry, number] {
+): Entry {
   let cursor = startingCursor;
 
   const entryType: ENTRY_TYPE = dataView.getUint8(cursor);
@@ -245,6 +321,8 @@ export function readEntry(
       break;
 
     case ENTRY_TYPE.OBJECT:
+      entry.refsCount = dataView.getUint8(cursor);
+      cursor += Uint8Array.BYTES_PER_ELEMENT;
       entry.value = dataView.getUint32(cursor);
       cursor += Uint32Array.BYTES_PER_ELEMENT;
       break;
@@ -278,6 +356,8 @@ export function readEntry(
       break;
 
     case ENTRY_TYPE.ARRAY:
+      entry.refsCount = dataView.getUint8(cursor);
+      cursor += Uint8Array.BYTES_PER_ELEMENT;
       entry.value = dataView.getUint32(cursor);
       cursor += Uint32Array.BYTES_PER_ELEMENT;
       entry.length = dataView.getUint32(cursor);
@@ -287,6 +367,8 @@ export function readEntry(
       break;
 
     case ENTRY_TYPE.DATE:
+      entry.refsCount = dataView.getUint8(cursor);
+      cursor += Uint8Array.BYTES_PER_ELEMENT;
       entry.value = dataView.getFloat64(cursor);
       cursor += Float64Array.BYTES_PER_ELEMENT;
       break;
@@ -295,32 +377,10 @@ export function readEntry(
       throw new Error(ENTRY_TYPE[entryType] + " Not implemented yet");
   }
 
-  return [entry, cursor - startingCursor];
+  return entry;
 }
 
-export function reserveMemory(dataView: DataView, length: number) {
-  try {
-    const allocatedMemoryAddress = dataView.getUint32(
-      FIRST_FREE_BYTE_POINTER_TO_POINTER
-    );
-
-    dataView.setUint32(
-      FIRST_FREE_BYTE_POINTER_TO_POINTER,
-      allocatedMemoryAddress + length
-    );
-
-    return allocatedMemoryAddress;
-  } catch (e) {
-    if (e instanceof RangeError) {
-      // Assume Offset is outside the bounds of the DataView
-      // need to test it cross browser
-
-      throw new OutOfMemoryError();
-    } else throw e;
-  }
-}
-
-export function canSaveValueIntoEntry(
+export function canReuseMemoryOfEntry(
   externalArgs: ExternalArgs,
   entryA: Entry,
   value: primitive
@@ -362,37 +422,162 @@ export function canSaveValueIntoEntry(
   return false;
 }
 
-export function overwriteEntryIfPossible(
+export function writeValueInPtrToPtr(
   externalArgs: ExternalArgs,
-  dataView: DataView,
-  pointerToExistingEntry: number,
+  carrier: DataViewAndAllocatorCarrier,
+  ptrToPtr: number,
   value: any
 ) {
-  if (isPrimitive(value)) {
-    const existingValueEntry = readEntry(
+  const existingEntryPointer = carrier.dataView.getUint32(ptrToPtr);
+  const existingValueEntry = readEntry(
+    externalArgs,
+    carrier.dataView,
+    existingEntryPointer
+  );
+
+  // try to re use memory
+  if (
+    isPrimitive(value) &&
+    isPrimitiveEntryType(existingValueEntry.type) &&
+    canReuseMemoryOfEntry(externalArgs, existingValueEntry, value) &&
+    existingEntryPointer !== 0
+  ) {
+    const stringAllocatedBytes =
+      existingValueEntry.type === ENTRY_TYPE.STRING
+        ? existingValueEntry.allocatedBytes
+        : 0;
+
+    const newEntry = primitiveValueToEntry(
       externalArgs,
-      dataView,
-      pointerToExistingEntry
+      value,
+      stringAllocatedBytes
     );
 
-    if (canSaveValueIntoEntry(externalArgs, existingValueEntry[0], value)) {
-      const stringAllocatedBytes =
-        existingValueEntry[0].type === ENTRY_TYPE.STRING
-          ? existingValueEntry[0].allocatedBytes
-          : 0;
+    writeEntry(externalArgs, carrier.dataView, existingEntryPointer, newEntry);
+  } else {
+    const referencedPointers: number[] = [];
+    const newEntryPointer = saveValue(
+      externalArgs,
+      carrier,
+      referencedPointers,
+      value
+    );
 
-      const newEntry = primitiveValueToEntry(
-        externalArgs,
-        value,
-        stringAllocatedBytes
-      );
+    carrier.dataView.setUint32(ptrToPtr, newEntryPointer);
 
-      writeEntry(externalArgs, dataView, pointerToExistingEntry, newEntry);
-      return true;
+    return {
+      referencedPointers,
+      existingEntryPointer,
+      existingValueEntry
+    };
+  }
+}
+
+export function writeValueInPtrToPtrAndHandleMemory(
+  externalArgs: ExternalArgs,
+  carrier: DataViewAndAllocatorCarrier,
+  ptrToPtr: number,
+  value: any
+) {
+  const {
+    existingValueEntry = false,
+    existingEntryPointer = 0,
+    referencedPointers = []
+  } = writeValueInPtrToPtr(externalArgs, carrier, ptrToPtr, value) || {};
+
+  if (referencedPointers.length > 0) {
+    for (const ptr of referencedPointers) {
+      incrementRefCount(externalArgs, carrier.dataView, ptr);
     }
-
-    return false;
   }
 
-  return false;
+  if (existingValueEntry && "refsCount" in existingValueEntry) {
+    const newRefCount = decrementRefCount(
+      externalArgs,
+      carrier.dataView,
+      existingEntryPointer
+    );
+
+    if (newRefCount === 0) {
+      const addressesToFree = getAllLinkedAddresses(
+        externalArgs,
+        carrier.dataView,
+        false,
+        existingEntryPointer
+      );
+
+      for (const address of addressesToFree) {
+        carrier.allocator.free(address);
+      }
+    }
+  } else {
+    carrier.allocator.free(existingEntryPointer);
+  }
+}
+
+export function incrementRefCount(
+  externalArgs: ExternalArgs,
+  dataView: DataView,
+  entryPointer: number
+) {
+  const entry = readEntry(externalArgs, dataView, entryPointer);
+
+  if ("refsCount" in entry) {
+    entry.refsCount += 1;
+    writeEntry(externalArgs, dataView, entryPointer, entry);
+
+    return entry.refsCount;
+  }
+
+  throw new Error("unexpected");
+}
+
+export function decrementRefCount(
+  externalArgs: ExternalArgs,
+  dataView: DataView,
+  entryPointer: number
+) {
+  const entry = readEntry(externalArgs, dataView, entryPointer);
+
+  if ("refsCount" in entry) {
+    entry.refsCount -= 1;
+    writeEntry(externalArgs, dataView, entryPointer, entry);
+
+    return entry.refsCount;
+  }
+
+  throw new Error("unexpected");
+}
+
+export function getRefCount(
+  externalArgs: ExternalArgs,
+  dataView: DataView,
+  entryPointer: number
+) {
+  const entry = readEntry(externalArgs, dataView, entryPointer);
+
+  if ("refsCount" in entry) {
+    return entry.refsCount;
+  }
+
+  throw new Error("unexpected");
+}
+
+export function getObjectPropPtrToPtr(
+  { dataView }: DataViewAndAllocatorCarrier,
+  pointerToEntry: number
+) {
+  const keyStringLength = dataView.getUint16(pointerToEntry + 1);
+  const valuePtrToPtr =
+    Uint16Array.BYTES_PER_ELEMENT + pointerToEntry + 1 + keyStringLength;
+  const nextPtrToPtr = valuePtrToPtr + Uint32Array.BYTES_PER_ELEMENT;
+
+  return {
+    valuePtrToPtr,
+    nextPtrToPtr
+  };
+}
+
+export function getObjectValuePtrToPtr(pointerToEntry: number) {
+  return pointerToEntry + 1 + 1;
 }

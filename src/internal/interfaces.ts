@@ -1,5 +1,6 @@
 import { ENTRY_TYPE } from "./entry-types";
 import { TextDecoder, TextEncoder } from "./textEncoderDecoderTypes";
+import { IMemPool } from "@bnaya/malloc-temporary-fork";
 
 export type primitive = string | number | bigint | boolean | undefined | null;
 
@@ -52,6 +53,7 @@ export interface BigIntNegativeEntry {
 
 export interface ObjectEntry {
   type: ENTRY_TYPE.OBJECT;
+  refsCount: number;
   /**
    * Pointer to first prop
    * */
@@ -78,6 +80,8 @@ export interface ObjectPropEntry {
 
 export interface ArrayEntry {
   type: ENTRY_TYPE.ARRAY;
+  refsCount: number;
+
   // pointer to the first array item
   value: number;
   length: number;
@@ -86,14 +90,16 @@ export interface ArrayEntry {
 
 export interface DateEntry {
   type: ENTRY_TYPE.DATE;
+  refsCount: number;
   value: number;
 }
 
 /**
  * The carrier object allows us to swap the DataView easily
  */
-export interface DataViewCarrier {
+export interface DataViewAndAllocatorCarrier {
   dataView: DataView;
+  allocator: import("@bnaya/malloc-temporary-fork").IMemPool;
 }
 
 export type ExternalArgs = Readonly<{
@@ -111,6 +117,9 @@ export type ExternalArgsApi = Readonly<{
 }>;
 
 export interface InternalAPI {
-  getDataView(): DataView;
+  getExternalArgs(): ExternalArgs;
+  getCarrier(): Readonly<DataViewAndAllocatorCarrier>;
+  replaceCarrierContent(dataView: DataView, pool: IMemPool): void;
   getEntryPointer(): number;
+  destroy(): number;
 }

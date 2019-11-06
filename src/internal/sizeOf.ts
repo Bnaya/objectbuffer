@@ -1,142 +1,147 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { saveValue } from "./saveValue";
-import { ExternalArgsApi } from "./interfaces";
-import { externalArgsApiToExternalArgsApi } from "./utils";
+import {
+  ExternalArgsApi,
+  ExternalArgs,
+  ArrayEntry,
+  ObjectPropEntry,
+  ObjectEntry
+} from "./interfaces";
+import {
+  externalArgsApiToExternalArgsApi,
+  isPrimitive,
+  primitiveValueToEntry
+} from "./utils";
+import { sizeOfEntry } from "./store";
+import { ENTRY_TYPE } from "./entry-types";
 
 /**
  * Calculate the size (bytes) of the given value.
  * Also validates that the value is saveable
- *
- * @param externalArgs
- * @param value
  */
 export function sizeOf(externalArgs: ExternalArgsApi, value: any) {
-  // eslint-disable-next-line @typescript-eslint/no-use-before-define
-  const fakeDataView = new FakeDataView();
-
-  saveValue(
+  const temp = sizeOfValue(
     externalArgsApiToExternalArgsApi(externalArgs),
-    fakeDataView,
     value
   );
 
-  return fakeDataView.sizeOf;
+  return temp.memoryAllocated + temp.numberOfAllocations * 8;
 }
 
-const freeMemoryLocation = 8;
+interface CheckerResult {
+  memoryAllocated: number;
+  numberOfAllocations: number;
+}
 
-class FakeDataView implements DataView {
-  private firstFreeByte: number;
+function sizeOfArray(
+  externalArgs: ExternalArgs,
+  arrayToSave: Array<any>
+): CheckerResult {
+  let memoryAllocated = 0;
+  let numberOfAllocations = 0;
 
-  buffer!: ArrayBuffer;
-  byteLength!: number;
-  byteOffset!: number;
+  memoryAllocated +=
+    (arrayToSave.length + externalArgs.arrayAdditionalAllocation) *
+    Uint32Array.BYTES_PER_ELEMENT;
 
-  constructor() {
-    this.firstFreeByte = freeMemoryLocation;
+  numberOfAllocations += 1;
+
+  const arrayStartEntry: ArrayEntry = {
+    type: ENTRY_TYPE.ARRAY,
+    value: 0,
+    refsCount: 0,
+    allocatedLength:
+      arrayToSave.length + externalArgs.arrayAdditionalAllocation,
+    length: arrayToSave.length
+  };
+
+  memoryAllocated += sizeOfEntry(externalArgs, arrayStartEntry);
+  numberOfAllocations += 1;
+
+  for (const item of arrayToSave) {
+    const r = sizeOfValue(externalArgs, item);
+
+    memoryAllocated += r.memoryAllocated;
+    numberOfAllocations += r.numberOfAllocations;
   }
 
-  public get sizeOf() {
-    return this.firstFreeByte - freeMemoryLocation;
+  return {
+    memoryAllocated,
+    numberOfAllocations
+  };
+}
+
+export function sizeOfObject(
+  externalArgs: ExternalArgs,
+  objectToSave: any
+): CheckerResult {
+  let memoryAllocated = 0;
+  let numberOfAllocations = 0;
+
+  const objectEntries = Object.entries(objectToSave).reverse();
+
+  for (const [key, value] of objectEntries) {
+    const r = sizeOfValue(externalArgs, value);
+    memoryAllocated += r.memoryAllocated;
+    numberOfAllocations += r.numberOfAllocations;
+
+    const objectPropEntry: ObjectPropEntry = {
+      type: ENTRY_TYPE.OBJECT_PROP,
+      value: {
+        value: 0,
+        key,
+        next: 0
+      }
+    };
+
+    const rOfPropEntry = sizeOfEntry(externalArgs, objectPropEntry);
+
+    memoryAllocated += rOfPropEntry;
+    numberOfAllocations += 1;
   }
 
-  getFloat32(byteOffset: number, littleEndian?: boolean | undefined): number {
-    throw new Error("Method not implemented.");
-  }
-  getFloat64(byteOffset: number, littleEndian?: boolean | undefined): number {
-    throw new Error("Method not implemented.");
-  }
-  getInt8(byteOffset: number): number {
-    throw new Error("Method not implemented.");
-  }
-  getInt16(byteOffset: number, littleEndian?: boolean | undefined): number {
-    throw new Error("Method not implemented.");
-  }
-  getInt32(byteOffset: number, littleEndian?: boolean | undefined): number {
-    throw new Error("Method not implemented.");
-  }
-  getUint8(byteOffset: number): number {
-    throw new Error("Method not implemented.");
-  }
-  getUint16(byteOffset: number, littleEndian?: boolean | undefined): number {
-    throw new Error("Method not implemented.");
-  }
-  getUint32(byteOffset: number, littleEndian?: boolean | undefined): number {
-    if (byteOffset === freeMemoryLocation) {
-      return this.firstFreeByte;
-    }
+  const objectStartEntry: ObjectEntry = {
+    type: ENTRY_TYPE.OBJECT,
+    refsCount: 0,
+    value: 0
+  };
 
-    throw new Error("Method not implemented.");
-  }
-  setFloat32(
-    byteOffset: number,
-    value: number,
-    littleEndian?: boolean | undefined
-  ): void {
-    return;
-  }
-  setFloat64(
-    byteOffset: number,
-    value: number,
-    littleEndian?: boolean | undefined
-  ): void {
-    return;
-  }
-  setInt8(byteOffset: number, value: number): void {
-    return;
-  }
-  setInt16(
-    byteOffset: number,
-    value: number,
-    littleEndian?: boolean | undefined
-  ): void {
-    return;
-  }
-  setInt32(
-    byteOffset: number,
-    value: number,
-    littleEndian?: boolean | undefined
-  ): void {
-    return;
-  }
-  setUint8(byteOffset: number, value: number): void {
-    return;
-  }
-  setUint16(
-    byteOffset: number,
-    value: number,
-    littleEndian?: boolean | undefined
-  ): void {
-    return;
-  }
-  setUint32(
-    byteOffset: number,
-    value: number,
-    littleEndian?: boolean | undefined
-  ): void {
-    if (byteOffset == freeMemoryLocation) {
-      this.firstFreeByte = value;
-    }
-  }
-  [Symbol.toStringTag]: string;
-  getBigInt64(byteOffset: number, littleEndian?: boolean | undefined): bigint {
-    throw new Error("Method not implemented.");
-  }
-  getBigUint64(byteOffset: number, littleEndian?: boolean | undefined): bigint {
-    throw new Error("Method not implemented.");
-  }
-  setBigInt64(
-    byteOffset: number,
-    value: bigint,
-    littleEndian?: boolean | undefined
-  ): void {
-    return;
-  }
-  setBigUint64(
-    byteOffset: number,
-    value: bigint,
-    littleEndian?: boolean | undefined
-  ): void {
-    return;
+  memoryAllocated += sizeOfEntry(externalArgs, objectStartEntry);
+  numberOfAllocations += 1;
+
+  return {
+    memoryAllocated,
+    numberOfAllocations
+  };
+}
+
+export function sizeOfValue(
+  externalArgs: ExternalArgs,
+  value: any
+): CheckerResult {
+  if (isPrimitive(value)) {
+    const entry = primitiveValueToEntry(
+      externalArgs,
+      value,
+      externalArgs.minimumStringAllocation
+    );
+
+    return {
+      memoryAllocated: sizeOfEntry(externalArgs, entry),
+      numberOfAllocations: 1
+    };
+  } else if (Array.isArray(value)) {
+    return sizeOfArray(externalArgs, value);
+  } else if (value instanceof Date) {
+    return {
+      memoryAllocated: sizeOfEntry(externalArgs, {
+        type: ENTRY_TYPE.DATE,
+        refsCount: 0,
+        value: value.getTime()
+      }),
+      numberOfAllocations: 1
+    };
+  } else if (typeof value === "object") {
+    return sizeOfObject(externalArgs, value);
+  } else {
+    throw new Error("unsupported yet");
   }
 }

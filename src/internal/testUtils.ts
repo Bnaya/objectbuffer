@@ -1,5 +1,3 @@
-import { FIRST_FREE_BYTE_POINTER_TO_POINTER } from "./consts";
-
 export function arrayBuffer2HexArray(
   buffer: ArrayBuffer,
   withByteNumber = false
@@ -15,8 +13,9 @@ export function arrayBuffer2HexArray(
   );
 }
 
-export function getFirstFreeByte(arrayBuffer: ArrayBuffer) {
-  return new DataView(arrayBuffer).getUint32(
-    FIRST_FREE_BYTE_POINTER_TO_POINTER
-  );
+export function wait(time: number) {
+  return new Promise(res => {
+    // eslint-disable-next-line no-undef
+    setTimeout(res, time);
+  });
 }

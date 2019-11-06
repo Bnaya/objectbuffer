@@ -4,8 +4,9 @@ import { initializeArrayBuffer } from "./store";
 import * as util from "util";
 import { createArrayWrapper } from "./arrayWrapper";
 import { arraySaver } from "./arraySaver";
-import { getFirstFreeByte } from "./testUtils";
 import { ExternalArgs } from "./interfaces";
+import { MemPool } from "@bnaya/malloc-temporary-fork";
+import { MEM_POOL_START } from "./consts";
 
 describe("arrayWrapper tests", () => {
   const externalArgs: ExternalArgs = {
@@ -17,18 +18,28 @@ describe("arrayWrapper tests", () => {
 
   describe("arrayWrapper - general", () => {
     test("arrayWrapper class 1", () => {
-      const arrayBuffer = new ArrayBuffer(136);
+      const arrayBuffer = new ArrayBuffer(256);
       const dataView = new DataView(arrayBuffer);
       initializeArrayBuffer(arrayBuffer);
 
+      const allocator = new MemPool({
+        buf: arrayBuffer,
+        start: MEM_POOL_START
+      });
+
       const arrayToSave = ["a", "b", 1];
 
-      const saverOutput = arraySaver(externalArgs, dataView, arrayToSave);
+      const saverOutput = arraySaver(
+        externalArgs,
+        { dataView, allocator },
+        [],
+        arrayToSave
+      );
 
       const arrayWrapper: any = createArrayWrapper(
         externalArgs,
-        { dataView },
-        saverOutput.start
+        { dataView, allocator },
+        saverOutput
       );
 
       expect(arrayWrapper).toMatchInlineSnapshot(`
@@ -39,42 +50,60 @@ describe("arrayWrapper tests", () => {
         ]
       `);
 
-      expect(getFirstFreeByte(arrayBuffer)).toMatchInlineSnapshot(`72`);
+      expect(allocator.stats().available).toMatchInlineSnapshot(`120`);
     });
 
     test("arrayWrapper array.keys()", () => {
-      const arrayBuffer = new ArrayBuffer(128);
+      const arrayBuffer = new ArrayBuffer(256);
       const dataView = new DataView(arrayBuffer);
       initializeArrayBuffer(arrayBuffer);
+      const allocator = new MemPool({
+        buf: arrayBuffer,
+        start: MEM_POOL_START
+      });
 
       const arrayToSave = ["a", "b", 1];
 
-      const saverOutput = arraySaver(externalArgs, dataView, arrayToSave);
+      const saverOutput = arraySaver(
+        externalArgs,
+        { dataView, allocator },
+        [],
+        arrayToSave
+      );
 
       const arrayWrapper = createArrayWrapper(
         externalArgs,
-        { dataView },
-        saverOutput.start
+        { dataView, allocator },
+        saverOutput
       );
 
       expect([...arrayWrapper.keys()]).toEqual([0, 1, 2]);
 
-      expect(getFirstFreeByte(arrayBuffer)).toMatchInlineSnapshot(`72`);
+      expect(allocator.stats().available).toMatchInlineSnapshot(`120`);
     });
 
     test("arrayWrapper array.entries()", () => {
-      const arrayBuffer = new ArrayBuffer(128);
+      const arrayBuffer = new ArrayBuffer(256);
       const dataView = new DataView(arrayBuffer);
       initializeArrayBuffer(arrayBuffer);
+      const allocator = new MemPool({
+        buf: arrayBuffer,
+        start: MEM_POOL_START
+      });
 
       const arrayToSave = ["a", "b", 1];
 
-      const saverOutput = arraySaver(externalArgs, dataView, arrayToSave);
+      const saverOutput = arraySaver(
+        externalArgs,
+        { dataView, allocator },
+        [],
+        arrayToSave
+      );
 
       const arrayWrapper = createArrayWrapper(
         externalArgs,
-        { dataView },
-        saverOutput.start
+        { dataView, allocator },
+        saverOutput
       );
 
       expect([...arrayWrapper.entries()]).toMatchInlineSnapshot(`
@@ -94,22 +123,31 @@ describe("arrayWrapper tests", () => {
         ]
       `);
 
-      expect(getFirstFreeByte(arrayBuffer)).toMatchInlineSnapshot(`72`);
+      expect(allocator.stats().available).toMatchInlineSnapshot(`120`);
     });
 
     test("arrayWrapper array.values() & iterator", () => {
-      const arrayBuffer = new ArrayBuffer(128);
+      const arrayBuffer = new ArrayBuffer(256);
       const dataView = new DataView(arrayBuffer);
       initializeArrayBuffer(arrayBuffer);
+      const allocator = new MemPool({
+        buf: arrayBuffer,
+        start: MEM_POOL_START
+      });
 
       const arrayToSave = ["a", "b", 1];
 
-      const saverOutput = arraySaver(externalArgs, dataView, arrayToSave);
+      const saverOutput = arraySaver(
+        externalArgs,
+        { dataView, allocator },
+        [],
+        arrayToSave
+      );
 
       const arrayWrapper = createArrayWrapper(
         externalArgs,
-        { dataView },
-        saverOutput.start
+        { dataView, allocator },
+        saverOutput
       );
 
       expect([...arrayWrapper.values()]).toMatchInlineSnapshot(`
@@ -127,22 +165,31 @@ describe("arrayWrapper tests", () => {
         ]
       `);
 
-      expect(getFirstFreeByte(arrayBuffer)).toMatchInlineSnapshot(`72`);
+      expect(allocator.stats().available).toMatchInlineSnapshot(`120`);
     });
 
     test("arrayWrapper set value in bound", () => {
-      const arrayBuffer = new ArrayBuffer(128);
+      const arrayBuffer = new ArrayBuffer(256);
       const dataView = new DataView(arrayBuffer);
       initializeArrayBuffer(arrayBuffer);
+      const allocator = new MemPool({
+        buf: arrayBuffer,
+        start: MEM_POOL_START
+      });
 
       const arrayToSave = ["a", "b", 1];
 
-      const saverOutput = arraySaver(externalArgs, dataView, arrayToSave);
+      const saverOutput = arraySaver(
+        externalArgs,
+        { dataView, allocator },
+        [],
+        arrayToSave
+      );
 
       const arrayWrapper: any = createArrayWrapper(
         externalArgs,
-        { dataView },
-        saverOutput.start
+        { dataView, allocator },
+        saverOutput
       );
 
       arrayWrapper[1] = "new value";
@@ -160,19 +207,24 @@ describe("arrayWrapper tests", () => {
       const arrayBuffer = new ArrayBuffer(256);
       const dataView = new DataView(arrayBuffer);
       initializeArrayBuffer(arrayBuffer);
+      const allocator = new MemPool({
+        buf: arrayBuffer,
+        start: MEM_POOL_START
+      });
 
       const arrayToSave = ["a", "b", 1];
 
       const saverOutput = arraySaver(
         { ...externalArgs, arrayAdditionalAllocation: 15 },
-        dataView,
+        { dataView, allocator },
+        [],
         arrayToSave
       );
 
       const arrayWrapper: any = createArrayWrapper(
         { ...externalArgs, arrayAdditionalAllocation: 15 },
-        { dataView },
-        saverOutput.start
+        { dataView, allocator },
+        saverOutput
       );
 
       arrayWrapper[10] = "new value";
@@ -195,18 +247,27 @@ describe("arrayWrapper tests", () => {
     });
 
     test("arrayWrapper set value out of bound, but outside allocated space", () => {
-      const arrayBuffer = new ArrayBuffer(150);
+      const arrayBuffer = new ArrayBuffer(256);
       const dataView = new DataView(arrayBuffer);
       initializeArrayBuffer(arrayBuffer);
+      const allocator = new MemPool({
+        buf: arrayBuffer,
+        start: MEM_POOL_START
+      });
 
       const arrayToSave = ["a", "b", 1];
 
-      const saverOutput = arraySaver(externalArgs, dataView, arrayToSave);
+      const saverOutput = arraySaver(
+        externalArgs,
+        { dataView, allocator },
+        [],
+        arrayToSave
+      );
 
       const arrayWrapper: any = createArrayWrapper(
         { ...externalArgs, arrayAdditionalAllocation: 3 },
-        { dataView },
-        saverOutput.start
+        { dataView, allocator },
+        saverOutput
       );
 
       arrayWrapper[10] = "new value";
@@ -226,23 +287,32 @@ describe("arrayWrapper tests", () => {
           "new value",
         ]
       `);
-      expect(getFirstFreeByte(arrayBuffer)).toMatchInlineSnapshot(`151`);
+      expect(allocator.stats().available).toMatchInlineSnapshot(`24`);
     });
   });
 
   test("arrayWrapper sort - no comparator", () => {
-    const arrayBuffer = new ArrayBuffer(150);
+    const arrayBuffer = new ArrayBuffer(512);
     const dataView = new DataView(arrayBuffer);
     initializeArrayBuffer(arrayBuffer);
+    const allocator = new MemPool({
+      buf: arrayBuffer,
+      start: MEM_POOL_START
+    });
 
     const arrayToSave = [2, 1, null, 3, 10, undefined, 6, 77];
 
-    const saverOutput = arraySaver(externalArgs, dataView, arrayToSave);
+    const saverOutput = arraySaver(
+      externalArgs,
+      { dataView, allocator },
+      [],
+      arrayToSave
+    );
 
     const arrayWrapper = createArrayWrapper(
       { ...externalArgs, arrayAdditionalAllocation: 3 },
-      { dataView },
-      saverOutput.start
+      { dataView, allocator },
+      saverOutput
     );
 
     arrayWrapper.sort();
@@ -260,24 +330,33 @@ describe("arrayWrapper tests", () => {
       ]
     `);
 
-    expect(getFirstFreeByte(arrayBuffer)).toMatchInlineSnapshot(`125`);
+    expect(allocator.stats().available).toMatchInlineSnapshot(`240`);
   });
 
   test("arrayWrapper sort - with comparator", () => {
-    const arrayBuffer = new ArrayBuffer(256);
+    const arrayBuffer = new ArrayBuffer(512);
     const dataView = new DataView(arrayBuffer);
     initializeArrayBuffer(arrayBuffer);
+    const allocator = new MemPool({
+      buf: arrayBuffer,
+      start: MEM_POOL_START
+    });
 
     const arrayToSave = [2, 1, 3, 10, 6, 77].map(value => ({
       value
     }));
 
-    const saverOutput = arraySaver(externalArgs, dataView, arrayToSave);
+    const saverOutput = arraySaver(
+      externalArgs,
+      { dataView, allocator },
+      [],
+      arrayToSave
+    );
 
     const arrayWrapper = createArrayWrapper(
       { ...externalArgs, arrayAdditionalAllocation: 3 },
-      { dataView },
-      saverOutput.start
+      { dataView, allocator },
+      saverOutput
     );
 
     arrayWrapper.sort((a, b) => {
@@ -313,27 +392,38 @@ describe("arrayWrapper tests", () => {
       ]
     `);
 
-    expect(getFirstFreeByte(arrayBuffer)).toMatchInlineSnapshot(`241`);
+    expect(allocator.stats().available).toMatchInlineSnapshot(`40`);
   });
 
-  test("arrayWrapper  - reverse", () => {
-    const arrayBuffer = new ArrayBuffer(128);
+  test("arrayWrapper - reverse", () => {
+    const arrayBuffer = new ArrayBuffer(512);
     const dataView = new DataView(arrayBuffer);
     initializeArrayBuffer(arrayBuffer);
+    const allocator = new MemPool({
+      buf: arrayBuffer,
+      start: MEM_POOL_START
+    });
 
     const arrayToSave = [1, 2, 3, 4, 5, 6, 7];
 
-    const saverOutput = arraySaver(externalArgs, dataView, arrayToSave);
+    const saverOutput = arraySaver(
+      externalArgs,
+      { dataView, allocator },
+      [],
+      arrayToSave
+    );
 
     const arrayWrapper = createArrayWrapper(
       { ...externalArgs, arrayAdditionalAllocation: 3 },
-      { dataView },
-      saverOutput.start
+      { dataView, allocator },
+      saverOutput
     );
 
     arrayWrapper.reverse();
     arrayWrapper.reverse();
-    arrayWrapper.reverse();
+    const r = arrayWrapper.reverse();
+
+    expect(r).toBe(arrayWrapper);
 
     expect(arrayWrapper).toMatchInlineSnapshot(`
       Array [
@@ -347,22 +437,31 @@ describe("arrayWrapper tests", () => {
       ]
     `);
 
-    expect(getFirstFreeByte(arrayBuffer)).toMatchInlineSnapshot(`128`);
+    expect(allocator.stats().available).toMatchInlineSnapshot(`248`);
   });
 
   test("arrayWrapper - set length", () => {
-    const arrayBuffer = new ArrayBuffer(256);
+    const arrayBuffer = new ArrayBuffer(512);
     const dataView = new DataView(arrayBuffer);
     initializeArrayBuffer(arrayBuffer);
+    const allocator = new MemPool({
+      buf: arrayBuffer,
+      start: MEM_POOL_START
+    });
 
     const arrayToSave = [1, 2, 3, 4, 5, 6, 7];
 
-    const saverOutput = arraySaver(externalArgs, dataView, arrayToSave);
+    const saverOutput = arraySaver(
+      externalArgs,
+      { dataView, allocator },
+      [],
+      arrayToSave
+    );
 
     const arrayWrapper = createArrayWrapper(
       { ...externalArgs, arrayAdditionalAllocation: 3 },
-      { dataView },
-      saverOutput.start
+      { dataView, allocator },
+      saverOutput
     );
 
     arrayWrapper.length = 10;
@@ -400,6 +499,6 @@ describe("arrayWrapper tests", () => {
       arrayWrapper.length = 2.2;
     }).toThrowErrorMatchingInlineSnapshot(`"Invalid array length"`);
 
-    expect(getFirstFreeByte(arrayBuffer)).toMatchInlineSnapshot(`180`);
+    expect(allocator.stats().available).toMatchInlineSnapshot(`184`);
   });
 });

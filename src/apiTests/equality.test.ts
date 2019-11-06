@@ -3,8 +3,7 @@
 import * as util from "util";
 
 import { createObjectBuffer, ExternalArgs } from "../";
-import { getFirstFreeByte } from "../internal/testUtils";
-import { getUnderlyingArrayBuffer } from "../internal/api";
+import { memoryStats } from "../internal/api";
 
 describe("equality.test tests. make sure our cache of proxies works", () => {
   const externalArgs: ExternalArgs = {
@@ -54,8 +53,6 @@ describe("equality.test tests. make sure our cache of proxies works", () => {
       }
     `);
 
-    expect(
-      getFirstFreeByte(getUnderlyingArrayBuffer(objectBuffer))
-    ).toMatchInlineSnapshot(`178`);
+    expect(memoryStats(objectBuffer).used).toMatchInlineSnapshot(`352`);
   });
 });

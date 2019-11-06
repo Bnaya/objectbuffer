@@ -6,15 +6,15 @@ import {
 import { appendEntry } from "./store";
 import { objectSaver } from "./objectSaver";
 import { arraySaver } from "./arraySaver";
-import { ExternalArgs } from "./interfaces";
+import { ExternalArgs, DataViewAndAllocatorCarrier } from "./interfaces";
 import { ENTRY_TYPE } from "./entry-types";
 
 export function saveValue(
   externalArgs: ExternalArgs,
-  dataView: DataView,
+  carrier: DataViewAndAllocatorCarrier,
+  referencedPointers: number[],
   value: any
 ) {
-  let totalWrittenBytes = 0;
   let valuePointer = 0;
   let maybeOurPointer: number | undefined;
 
@@ -24,36 +24,30 @@ export function saveValue(
       value,
       externalArgs.minimumStringAllocation
     );
-    const { start, length } = appendEntry(externalArgs, dataView, entry);
-
-    valuePointer = start;
-    totalWrittenBytes += length;
-  } else if ((maybeOurPointer = getOurPointerIfApplicable(value, dataView))) {
+    valuePointer = appendEntry(externalArgs, carrier, entry);
+  } else if (
+    (maybeOurPointer = getOurPointerIfApplicable(value, carrier.dataView))
+  ) {
     valuePointer = maybeOurPointer;
-    totalWrittenBytes += 0;
+    referencedPointers.push(valuePointer);
   } else if (Array.isArray(value)) {
-    const { start, length } = arraySaver(externalArgs, dataView, value);
-
-    valuePointer = start;
-    totalWrittenBytes += length;
+    valuePointer = arraySaver(externalArgs, carrier, referencedPointers, value);
   } else if (value instanceof Date) {
-    const { start, length } = appendEntry(externalArgs, dataView, {
+    valuePointer = appendEntry(externalArgs, carrier, {
       type: ENTRY_TYPE.DATE,
+      refsCount: 1,
       value: value.getTime()
     });
-
-    valuePointer = start;
-    totalWrittenBytes += length;
   } else if (typeof value === "object") {
-    const { start, length } = objectSaver(externalArgs, dataView, value);
-    valuePointer = start;
-    totalWrittenBytes += length;
+    valuePointer = objectSaver(
+      externalArgs,
+      carrier,
+      referencedPointers,
+      value
+    );
   } else {
     throw new Error("unsupported yet");
   }
 
-  return {
-    start: valuePointer,
-    length: totalWrittenBytes
-  };
+  return valuePointer;
 }

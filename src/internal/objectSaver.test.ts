@@ -2,9 +2,11 @@
 
 import { initializeArrayBuffer } from "./store";
 import * as util from "util";
-import { arrayBuffer2HexArray, getFirstFreeByte } from "./testUtils";
+import { arrayBuffer2HexArray } from "./testUtils";
 import { objectSaver } from "./objectSaver";
 import { ExternalArgs } from "./interfaces";
+import { MemPool } from "@bnaya/malloc-temporary-fork";
+import { MEM_POOL_START } from "./consts";
 
 describe("objectSaver tests", () => {
   const externalArgs: ExternalArgs = {
@@ -16,9 +18,13 @@ describe("objectSaver tests", () => {
 
   describe("objectSaver - general", () => {
     test("objectSaver", () => {
-      const arrayBuffer = new ArrayBuffer(256);
+      const arrayBuffer = new ArrayBuffer(512);
       const dataView = new DataView(arrayBuffer);
       initializeArrayBuffer(arrayBuffer);
+      const allocator = new MemPool({
+        buf: arrayBuffer,
+        start: MEM_POOL_START
+      });
 
       const objectToSave = {
         a: 6,
@@ -31,17 +37,17 @@ describe("objectSaver tests", () => {
         }
       };
 
-      const saverOutput = objectSaver(externalArgs, dataView, objectToSave);
+      const saverOutput = objectSaver(
+        externalArgs,
+        { dataView, allocator },
+        [],
+        objectToSave
+      );
 
-      expect(saverOutput).toMatchInlineSnapshot(`
-        Object {
-          "length": 171,
-          "start": 190,
-        }
-      `);
+      expect(saverOutput).toMatchInlineSnapshot(`384`);
 
       expect(arrayBuffer2HexArray(arrayBuffer, true)).toMatchSnapshot();
-      expect(getFirstFreeByte(arrayBuffer)).toMatchInlineSnapshot(`195`);
+      expect(allocator.stats().available).toMatchInlineSnapshot(`120`);
     });
   });
 });

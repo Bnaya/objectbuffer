@@ -2,22 +2,24 @@ import {
   ObjectEntry,
   ObjectPropEntry,
   ExternalArgs,
-  DataViewCarrier
+  DataViewAndAllocatorCarrier
 } from "./interfaces";
 import {
   readEntry,
   writeEntry,
   appendEntry,
-  overwriteEntryIfPossible
+  getObjectPropPtrToPtr,
+  writeValueInPtrToPtrAndHandleMemory
 } from "./store";
 import { invariant } from "./utils";
 import { ENTRY_TYPE } from "./entry-types";
 import { entryToFinalJavaScriptValue } from "./entryToFinalJavaScriptValue";
 import { saveValue } from "./saveValue";
+import { getAllLinkedAddresses } from "./getAllLinkedAddresses";
 
 export function deleteObjectPropertyEntryByKey(
   externalArgs: ExternalArgs,
-  dataView: DataView,
+  { dataView, allocator }: DataViewAndAllocatorCarrier,
   containingObjectEntryPointer: number,
   keyToDeleteBy: string
 ): boolean {
@@ -30,7 +32,7 @@ export function deleteObjectPropertyEntryByKey(
     externalArgs,
     dataView,
     containingObjectEntryPointer
-  )[0] as ObjectEntry;
+  ) as ObjectEntry;
 
   if (objectEntry.value === 0) {
     // Nothing to delete here
@@ -41,13 +43,25 @@ export function deleteObjectPropertyEntryByKey(
     externalArgs,
     dataView,
     objectEntry.value
-  )[0] as ObjectPropEntry;
+  ) as ObjectPropEntry;
 
   if (firstPropEntry.value.key === keyToDeleteBy) {
     writeEntry(externalArgs, dataView, containingObjectEntryPointer, {
       type: ENTRY_TYPE.OBJECT,
+      refsCount: objectEntry.refsCount,
       value: firstPropEntry.value.next
     });
+
+    const addressesToFree = getAllLinkedAddresses(
+      externalArgs,
+      dataView,
+      false,
+      objectEntry.value
+    );
+
+    for (const address of addressesToFree) {
+      allocator.free(address);
+    }
 
     return true;
   }
@@ -55,23 +69,29 @@ export function deleteObjectPropertyEntryByKey(
   let entryToMaybeUpdate = firstPropEntry;
   let entryToMaybeUpdatePointer = firstPropEntry.value.next;
   let entryToMaybeDelete: ObjectPropEntry | undefined;
+  let entryToMaybeDeletePointer: number | undefined;
 
   while (entryToMaybeUpdate.value.next !== 0) {
+    entryToMaybeDeletePointer = entryToMaybeUpdate.value.next;
     entryToMaybeDelete = readEntry(
       externalArgs,
       dataView,
-      entryToMaybeUpdate.value.next
-    )[0] as ObjectPropEntry;
+      entryToMaybeDeletePointer
+    ) as ObjectPropEntry;
 
     if (entryToMaybeDelete.value.key === keyToDeleteBy) {
       break;
     }
 
-    entryToMaybeUpdatePointer = entryToMaybeUpdate.value.next;
+    entryToMaybeUpdatePointer = entryToMaybeDeletePointer;
     entryToMaybeUpdate = entryToMaybeDelete;
   }
 
-  if (entryToMaybeDelete && entryToMaybeDelete.value.key === keyToDeleteBy) {
+  if (
+    entryToMaybeDelete &&
+    entryToMaybeDeletePointer &&
+    entryToMaybeDelete.value.key === keyToDeleteBy
+  ) {
     writeEntry(externalArgs, dataView, entryToMaybeUpdatePointer, {
       type: ENTRY_TYPE.OBJECT_PROP,
       value: {
@@ -81,6 +101,16 @@ export function deleteObjectPropertyEntryByKey(
       }
     });
 
+    const addressesToFree = getAllLinkedAddresses(
+      externalArgs,
+      dataView,
+      false,
+      entryToMaybeDeletePointer
+    );
+
+    for (const address of addressesToFree) {
+      allocator.free(address);
+    }
     return true;
   } else {
     // key not found
@@ -101,11 +131,11 @@ export function findLastObjectPropertyEntry(
   dataView: DataView,
   containingObjectEntryPointer: number
 ): [number, ObjectPropEntry | ObjectEntry] {
-  const [containingObjectEntry] = readEntry(
+  const containingObjectEntry = readEntry(
     externalArgs,
     dataView,
     containingObjectEntryPointer
-  ) as [ObjectEntry, number];
+  ) as ObjectEntry;
 
   if (containingObjectEntry.value === 0) {
     return [containingObjectEntryPointer, containingObjectEntry];
@@ -115,11 +145,11 @@ export function findLastObjectPropertyEntry(
 
   // eslint-disable-next-line no-constant-condition
   while (true) {
-    const [objectPropEntry] = readEntry(
+    const objectPropEntry = readEntry(
       externalArgs,
       dataView,
       nextElementPointer
-    ) as [ObjectPropEntry, number];
+    ) as ObjectPropEntry;
 
     if (objectPropEntry.value.next === 0) {
       return [nextElementPointer, objectPropEntry];
@@ -135,21 +165,22 @@ export function findObjectPropertyEntry(
   containingObjectEntryPointer: number,
   key: string
 ): [number, ObjectPropEntry] | undefined {
-  const [containingObjectEntry] = readEntry(
+  const containingObjectEntry = readEntry(
     externalArgs,
     dataView,
     containingObjectEntryPointer
-  ) as [ObjectEntry, number];
+  ) as ObjectEntry;
 
   let currentPointer = containingObjectEntry.value;
   let objectPropEntry: ObjectPropEntry | undefined;
 
   // eslint-disable-next-line no-constant-condition
   while (currentPointer !== 0) {
-    [objectPropEntry] = readEntry(externalArgs, dataView, currentPointer) as [
-      ObjectPropEntry,
-      number
-    ];
+    objectPropEntry = readEntry(
+      externalArgs,
+      dataView,
+      currentPointer
+    ) as ObjectPropEntry;
 
     if (objectPropEntry.value.key === key || objectPropEntry.value.next === 0) {
       break;
@@ -171,11 +202,11 @@ export function findObjectPropertyEntryOld(
   containingObjectEntryPointer: number,
   key: string
 ): ObjectPropEntry | undefined {
-  const [containingObjectEntry] = readEntry(
+  const containingObjectEntry = readEntry(
     externalArgs,
     dataView,
     containingObjectEntryPointer
-  ) as [ObjectEntry, number];
+  ) as ObjectEntry;
 
   if (containingObjectEntry.value === 0) {
     return undefined;
@@ -185,11 +216,11 @@ export function findObjectPropertyEntryOld(
   let objectPropEntry: ObjectPropEntry | undefined;
 
   do {
-    [objectPropEntry] = readEntry(
+    objectPropEntry = readEntry(
       externalArgs,
       dataView,
       nextElementPointer
-    ) as [ObjectPropEntry, number];
+    ) as ObjectPropEntry;
 
     nextElementPointer = objectPropEntry.value.next;
   } while (objectPropEntry.value.key !== key && nextElementPointer !== 0);
@@ -206,11 +237,11 @@ export function getObjectPropertiesEntries(
   dataView: DataView,
   containingObjectEntryPointer: number
 ): ObjectPropEntry[] {
-  const [containingObjectEntry] = readEntry(
+  const containingObjectEntry = readEntry(
     externalArgs,
     dataView,
     containingObjectEntryPointer
-  ) as [ObjectEntry, number];
+  ) as ObjectEntry;
 
   const foundProps: ObjectPropEntry[] = [];
 
@@ -222,11 +253,11 @@ export function getObjectPropertiesEntries(
   }
 
   do {
-    [objectPropEntry] = readEntry(
+    objectPropEntry = readEntry(
       externalArgs,
       dataView,
       nextElementPointer
-    ) as [ObjectPropEntry, number];
+    ) as ObjectPropEntry;
 
     foundProps.push(objectPropEntry);
 
@@ -238,48 +269,52 @@ export function getObjectPropertiesEntries(
 
 export function objectSet(
   externalArgs: ExternalArgs,
-  dataView: DataView,
+  carrier: DataViewAndAllocatorCarrier,
   entryPointer: number,
   p: string,
   value: any
 ) {
   const foundPropEntry = findObjectPropertyEntry(
     externalArgs,
-    dataView,
+    carrier.dataView,
     entryPointer,
-    p as string
+    p
   );
+
+  const refrencedPointers: number[] = [];
 
   // new prop
   if (foundPropEntry === undefined) {
-    const { start: newValueEntryPointer } = saveValue(
+    const newValueEntryPointer = saveValue(
       externalArgs,
-      dataView,
+      carrier,
+      refrencedPointers,
       value
     );
 
-    const { start: newPropEntryPointer } = appendEntry(externalArgs, dataView, {
+    const newPropEntryPointer = appendEntry(externalArgs, carrier, {
       type: ENTRY_TYPE.OBJECT_PROP,
       value: {
         next: 0,
         value: newValueEntryPointer,
-        key: p as string
+        key: p
       }
     });
 
     const [lastItemPointer, lastItemEntry] = findLastObjectPropertyEntry(
       externalArgs,
-      dataView,
+      carrier.dataView,
       entryPointer
     );
 
     if (lastItemEntry.type === ENTRY_TYPE.OBJECT) {
-      writeEntry(externalArgs, dataView, lastItemPointer, {
+      writeEntry(externalArgs, carrier.dataView, lastItemPointer, {
         type: ENTRY_TYPE.OBJECT,
+        refsCount: lastItemEntry.refsCount,
         value: newPropEntryPointer
       });
     } else {
-      writeEntry(externalArgs, dataView, lastItemPointer, {
+      writeEntry(externalArgs, carrier.dataView, lastItemPointer, {
         type: ENTRY_TYPE.OBJECT_PROP,
         value: {
           next: newPropEntryPointer,
@@ -289,36 +324,18 @@ export function objectSet(
       });
     }
   } else {
-    if (
-      !overwriteEntryIfPossible(
-        externalArgs,
-        dataView,
-        foundPropEntry[1].value.value,
-        value
-      )
-    ) {
-      const { start: newValueEntryPointer } = saveValue(
-        externalArgs,
-        dataView,
-        value
-      );
-
-      // overwrite value
-      writeEntry(externalArgs, dataView, foundPropEntry[0], {
-        type: ENTRY_TYPE.OBJECT_PROP,
-        value: {
-          key: foundPropEntry[1].value.key,
-          next: foundPropEntry[1].value.next,
-          value: newValueEntryPointer
-        }
-      });
-    }
+    writeValueInPtrToPtrAndHandleMemory(
+      externalArgs,
+      carrier,
+      getObjectPropPtrToPtr(carrier, foundPropEntry[0]).valuePtrToPtr,
+      value
+    );
   }
 }
 
 export function objectGet(
   externalArgs: ExternalArgs,
-  dataViewCarrier: DataViewCarrier,
+  dataViewCarrier: DataViewAndAllocatorCarrier,
   entryPointer: number,
   p: string
 ) {
@@ -333,7 +350,7 @@ export function objectGet(
     return undefined;
   }
 
-  const [valueEntry] = readEntry(
+  const valueEntry = readEntry(
     externalArgs,
     dataViewCarrier.dataView,
     foundEntry[1].value.value

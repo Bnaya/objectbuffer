@@ -14,7 +14,8 @@ export {
   loadObjectBuffer,
   replaceUnderlyingArrayBuffer,
   sizeOf,
-  spaceLeft
+  memoryStats,
+  disposeWrapperObject
 } from "./internal/api";
 export { acquireLock, acquireLockWait, releaseLock } from "./internal/locks";
 export type ExternalArgs = import("./internal/interfaces").ExternalArgsApi;

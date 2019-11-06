@@ -4,8 +4,9 @@ import { initializeArrayBuffer } from "./store";
 import * as util from "util";
 import { objectSaver } from "./objectSaver";
 import { createObjectWrapper } from "./objectWrapper";
-import { getFirstFreeByte } from "./testUtils";
 import { ExternalArgs } from "./interfaces";
+import { MEM_POOL_START } from "./consts";
+import { MemPool } from "@bnaya/malloc-temporary-fork";
 
 describe("objectWrapper tests", () => {
   const externalArgs: ExternalArgs = {
@@ -17,9 +18,13 @@ describe("objectWrapper tests", () => {
 
   describe("objectWrapper - general", () => {
     test("ObjectWrapper class 1", () => {
-      const arrayBuffer = new ArrayBuffer(256);
+      const arrayBuffer = new ArrayBuffer(512);
       const dataView = new DataView(arrayBuffer);
       initializeArrayBuffer(arrayBuffer);
+      const allocator = new MemPool({
+        buf: arrayBuffer,
+        start: MEM_POOL_START
+      });
 
       const objectToSave = {
         a: 6,
@@ -31,12 +36,17 @@ describe("objectWrapper tests", () => {
         }
       };
 
-      const saverOutput = objectSaver(externalArgs, dataView, objectToSave);
+      const saverOutput = objectSaver(
+        externalArgs,
+        { dataView, allocator },
+        [],
+        objectToSave
+      );
 
       const objectWrapper: any = createObjectWrapper(
         externalArgs,
-        { dataView },
-        saverOutput.start
+        { dataView, allocator },
+        saverOutput
       );
 
       expect(Object.keys(objectWrapper)).toMatchInlineSnapshot(`
@@ -55,13 +65,17 @@ describe("objectWrapper tests", () => {
         ]
       `);
 
-      expect(getFirstFreeByte(arrayBuffer)).toMatchInlineSnapshot(`179`);
+      expect(allocator.stats().top).toMatchInlineSnapshot(`352`);
     });
 
     test("ObjectWrapper class 2", () => {
-      const arrayBuffer = new ArrayBuffer(256);
+      const arrayBuffer = new ArrayBuffer(512);
       const dataView = new DataView(arrayBuffer);
       initializeArrayBuffer(arrayBuffer);
+      const allocator = new MemPool({
+        buf: arrayBuffer,
+        start: MEM_POOL_START
+      });
 
       const objectToSave = {
         a: 6,
@@ -73,24 +87,33 @@ describe("objectWrapper tests", () => {
         }
       };
 
-      const saverOutput = objectSaver(externalArgs, dataView, objectToSave);
+      const saverOutput = objectSaver(
+        externalArgs,
+        { dataView, allocator },
+        [],
+        objectToSave
+      );
 
       const objectWrapper: any = createObjectWrapper(
         externalArgs,
-        { dataView },
-        saverOutput.start
+        { dataView, allocator },
+        saverOutput
       );
 
       expect(objectWrapper.noneExistsProp).toMatchInlineSnapshot(`undefined`);
       expect(objectWrapper.a).toMatchInlineSnapshot(`6`);
 
-      expect(getFirstFreeByte(arrayBuffer)).toMatchInlineSnapshot(`179`);
+      expect(allocator.stats().top).toMatchInlineSnapshot(`352`);
     });
 
     test("ObjectWrapper class set override value", () => {
-      const arrayBuffer = new ArrayBuffer(256);
+      const arrayBuffer = new ArrayBuffer(512);
       const dataView = new DataView(arrayBuffer);
       initializeArrayBuffer(arrayBuffer);
+      const allocator = new MemPool({
+        buf: arrayBuffer,
+        start: MEM_POOL_START
+      });
 
       const objectToSave = {
         a: 6,
@@ -102,12 +125,17 @@ describe("objectWrapper tests", () => {
         }
       };
 
-      const saverOutput = objectSaver(externalArgs, dataView, objectToSave);
+      const saverOutput = objectSaver(
+        externalArgs,
+        { dataView, allocator },
+        [],
+        objectToSave
+      );
 
       const objectWrapper = createObjectWrapper(
         externalArgs,
-        { dataView },
-        saverOutput.start
+        { dataView, allocator },
+        saverOutput
       );
 
       objectWrapper.b = "new value";
@@ -124,13 +152,17 @@ describe("objectWrapper tests", () => {
         }
       `);
 
-      expect(getFirstFreeByte(arrayBuffer)).toMatchInlineSnapshot(`179`);
+      expect(allocator.stats().top).toMatchInlineSnapshot(`352`);
     });
 
     test("ObjectWrapper class set new prop value", () => {
-      const arrayBuffer = new ArrayBuffer(256);
+      const arrayBuffer = new ArrayBuffer(512);
       const dataView = new DataView(arrayBuffer);
       initializeArrayBuffer(arrayBuffer);
+      const allocator = new MemPool({
+        buf: arrayBuffer,
+        start: MEM_POOL_START
+      });
 
       const objectToSave = {
         a: 6,
@@ -142,12 +174,17 @@ describe("objectWrapper tests", () => {
         }
       };
 
-      const saverOutput = objectSaver(externalArgs, dataView, objectToSave);
+      const saverOutput = objectSaver(
+        externalArgs,
+        { dataView, allocator },
+        [],
+        objectToSave
+      );
 
       const objectWrapper = createObjectWrapper(
         externalArgs,
-        { dataView },
-        saverOutput.start
+        { dataView, allocator },
+        saverOutput
       );
 
       objectWrapper.newprop = "valueOnNewProp";
@@ -165,13 +202,17 @@ describe("objectWrapper tests", () => {
         }
       `);
 
-      expect(getFirstFreeByte(arrayBuffer)).toMatchInlineSnapshot(`230`);
+      expect(allocator.stats().top).toMatchInlineSnapshot(`432`);
     });
 
     test("ObjectWrapper class delete", () => {
-      const arrayBuffer = new ArrayBuffer(256);
+      const arrayBuffer = new ArrayBuffer(512);
       const dataView = new DataView(arrayBuffer);
       initializeArrayBuffer(arrayBuffer);
+      const allocator = new MemPool({
+        buf: arrayBuffer,
+        start: MEM_POOL_START
+      });
 
       const objectToSave = {
         a: 6,
@@ -183,12 +224,17 @@ describe("objectWrapper tests", () => {
         }
       };
 
-      const saverOutput = objectSaver(externalArgs, dataView, objectToSave);
+      const saverOutput = objectSaver(
+        externalArgs,
+        { dataView, allocator },
+        [],
+        objectToSave
+      );
 
       const objectWrapper = createObjectWrapper(
         externalArgs,
-        { dataView },
-        saverOutput.start
+        { dataView, allocator },
+        saverOutput
       );
 
       delete objectWrapper.b;
@@ -204,7 +250,7 @@ describe("objectWrapper tests", () => {
         }
       `);
 
-      expect(getFirstFreeByte(arrayBuffer)).toMatchInlineSnapshot(`179`);
+      expect(allocator.stats().top).toMatchInlineSnapshot(`352`);
     });
   });
 });

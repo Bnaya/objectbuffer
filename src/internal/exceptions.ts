@@ -27,3 +27,9 @@ export class OutOfMemoryError extends Error {
     super("OutOfMemoryError");
   }
 }
+
+export class WrapperDestroyed extends Error {
+  constructor() {
+    super("WrapperDestroyed");
+  }
+}

@@ -1,5 +1,6 @@
 import { invariant } from "./utils";
 import { getUnderlyingArrayBuffer } from "./api";
+import { LOCK_OFFSET } from "./consts";
 
 /* global Atomics */
 
@@ -18,7 +19,7 @@ export function acquireLock(agentId: number, objectBuffer: any) {
 
   const int32 = new Int32Array(sab);
 
-  const oldValue = Atomics.compareExchange(int32, 0, 0, agentId);
+  const oldValue = Atomics.compareExchange(int32, LOCK_OFFSET, 0, agentId);
 
   return oldValue === 0;
 }
@@ -33,7 +34,7 @@ export function releaseLock(agentId: number, objectBuffer: any) {
   const sab = getUnderlyingArrayBuffer(objectBuffer);
   const int32 = new Int32Array(sab);
 
-  const oldValue = Atomics.compareExchange(int32, 0, agentId, 0);
+  const oldValue = Atomics.compareExchange(int32, LOCK_OFFSET, agentId, 0);
 
   // we've released a lock. lets tell them about it
   if (oldValue === agentId) {
@@ -65,7 +66,7 @@ export function acquireLockWait(
 ) {
   const sab = getUnderlyingArrayBuffer(objectBuffer);
   const int32 = new Int32Array(sab);
-  const oldValue = Atomics.compareExchange(int32, 0, 0, agentId);
+  const oldValue = Atomics.compareExchange(int32, LOCK_OFFSET, 0, agentId);
   if (oldValue === 0) {
     return "have-lock";
   }
@@ -73,7 +74,7 @@ export function acquireLockWait(
   const r = Atomics.wait(int32, 0, oldValue, timeout);
 
   if (r === "not-equal") {
-    if (Atomics.compareExchange(int32, 0, 0, agentId) === 0) {
+    if (Atomics.compareExchange(int32, LOCK_OFFSET, 0, agentId) === 0) {
       return "have-lock";
     } else {
       return "miss-lock";

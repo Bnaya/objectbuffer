@@ -1,7 +1,7 @@
 import { ExternalArgs } from "../internal/interfaces";
 import * as util from "util";
-import { createObjectBuffer, getUnderlyingArrayBuffer } from "..";
-import { getFirstFreeByte } from "../internal/testUtils";
+import { createObjectBuffer } from "..";
+import { memoryStats } from "../internal/api";
 
 /* eslint-env jest */
 
@@ -14,31 +14,30 @@ describe("primitivesMemoryReuse", () => {
   };
 
   test("test number / bigint reuse", () => {
-    const objectBuffer = createObjectBuffer(externalArgs, 64, {
+    const objectBuffer = createObjectBuffer(externalArgs, 128, {
       num: 1 as number | bigint
     });
-    const ab = getUnderlyingArrayBuffer(objectBuffer);
 
-    const memoryAfterEachOperation: number[] = [getFirstFreeByte(ab)];
+    const memoryAfterEachOperation: number[] = [memoryStats(objectBuffer).used];
 
     objectBuffer.num++;
-    memoryAfterEachOperation.push(getFirstFreeByte(ab));
+    memoryAfterEachOperation.push(memoryStats(objectBuffer).used);
 
     objectBuffer.num = BigInt("-100");
-    memoryAfterEachOperation.push(getFirstFreeByte(ab));
+    memoryAfterEachOperation.push(memoryStats(objectBuffer).used);
 
     objectBuffer.num = -BigInt("18446744073709551615");
 
     objectBuffer.num++;
 
-    memoryAfterEachOperation.push(getFirstFreeByte(ab));
+    memoryAfterEachOperation.push(memoryStats(objectBuffer).used);
 
     expect(memoryAfterEachOperation).toMatchInlineSnapshot(`
       Array [
-        52,
-        52,
-        52,
-        52,
+        96,
+        96,
+        96,
+        96,
       ]
     `);
 
@@ -50,24 +49,23 @@ describe("primitivesMemoryReuse", () => {
   });
 
   test("test null/undefined reuse", () => {
-    const objectBuffer = createObjectBuffer(externalArgs, 64, {
+    const objectBuffer = createObjectBuffer(externalArgs, 128, {
       nullContainer: null as null | undefined
     });
-    const ab = getUnderlyingArrayBuffer(objectBuffer);
 
-    const memoryAfterEachOperation: number[] = [getFirstFreeByte(ab)];
+    const memoryAfterEachOperation: number[] = [memoryStats(objectBuffer).used];
 
     objectBuffer.nullContainer = undefined;
-    memoryAfterEachOperation.push(getFirstFreeByte(ab));
+    memoryAfterEachOperation.push(memoryStats(objectBuffer).used);
 
     objectBuffer.nullContainer = null;
-    memoryAfterEachOperation.push(getFirstFreeByte(ab));
+    memoryAfterEachOperation.push(memoryStats(objectBuffer).used);
 
     expect(memoryAfterEachOperation).toMatchInlineSnapshot(`
       Array [
-        54,
-        54,
-        54,
+        96,
+        96,
+        96,
       ]
     `);
 
@@ -79,25 +77,23 @@ describe("primitivesMemoryReuse", () => {
   });
 
   test("test boolean reuse", () => {
-    const objectBuffer = createObjectBuffer(externalArgs, 64, {
+    const objectBuffer = createObjectBuffer(externalArgs, 128, {
       booleanContainer: false
     });
 
-    const ab = getUnderlyingArrayBuffer(objectBuffer);
-
-    const memoryAfterEachOperation: number[] = [getFirstFreeByte(ab)];
+    const memoryAfterEachOperation: number[] = [memoryStats(objectBuffer).used];
 
     objectBuffer.booleanContainer = true;
-    memoryAfterEachOperation.push(getFirstFreeByte(ab));
+    memoryAfterEachOperation.push(memoryStats(objectBuffer).used);
 
     objectBuffer.booleanContainer = false;
-    memoryAfterEachOperation.push(getFirstFreeByte(ab));
+    memoryAfterEachOperation.push(memoryStats(objectBuffer).used);
 
     expect(memoryAfterEachOperation).toMatchInlineSnapshot(`
       Array [
-        58,
-        58,
-        58,
+        104,
+        104,
+        104,
       ]
     `);
 

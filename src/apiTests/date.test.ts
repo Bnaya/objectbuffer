@@ -3,8 +3,7 @@
 import * as util from "util";
 
 import { createObjectBuffer, ExternalArgs } from "../";
-import { getFirstFreeByte } from "../internal/testUtils";
-import { getUnderlyingArrayBuffer } from "../internal/api";
+import { memoryStats } from "../internal/api";
 
 describe("Date test", () => {
   const externalArgs: ExternalArgs = {
@@ -46,8 +45,6 @@ describe("Date test", () => {
       `"2000-04-10T00:00:00.000Z"`
     );
 
-    expect(
-      getFirstFreeByte(getUnderlyingArrayBuffer(objectBuffer))
-    ).toMatchInlineSnapshot(`55`);
+    expect(memoryStats(objectBuffer).used).toMatchInlineSnapshot(`104`);
   });
 });

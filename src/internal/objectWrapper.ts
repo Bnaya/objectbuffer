@@ -1,5 +1,8 @@
-import { ObjectEntry, ExternalArgs, DataViewCarrier } from "./interfaces";
-import { readEntry } from "./store";
+import {
+  ObjectEntry,
+  ExternalArgs,
+  DataViewAndAllocatorCarrier
+} from "./interfaces";
 import {
   findObjectPropertyEntry,
   getObjectPropertiesEntries,
@@ -8,30 +11,17 @@ import {
   objectSet
 } from "./objectWrapperHelpers";
 
-import { REPLACE_DATA_VIEW_SYMBOL, INTERNAL_API_SYMBOL } from "./symbols";
+import { INTERNAL_API_SYMBOL } from "./symbols";
 import {
   IllegalObjectPropConfigError,
   UnsupportedOperationError
 } from "./exceptions";
-import { handleOOM } from "./handleOOM";
+import { allocationsTransaction } from "./allocationsTransaction";
+import { BaseProxyTrap } from "./BaseProxyTrap";
 
-export class ObjectWrapper implements ProxyHandler<{}> {
-  constructor(
-    private externalArgs: ExternalArgs,
-    private dataViewCarrier: DataViewCarrier,
-    private entryPointer: number,
-    private isTopLevel: boolean
-  ) {}
-
-  private replaceDataView(dataView: DataView) {
-    this.dataViewCarrier.dataView = dataView;
-  }
-
+export class ObjectWrapper extends BaseProxyTrap<ObjectEntry>
+  implements ProxyHandler<{}> {
   public get(target: {}, p: PropertyKey): any {
-    if (p === REPLACE_DATA_VIEW_SYMBOL) {
-      return this.replaceDataView.bind(this);
-    }
-
     if (p === INTERNAL_API_SYMBOL) {
       return this;
     }
@@ -43,7 +33,7 @@ export class ObjectWrapper implements ProxyHandler<{}> {
 
     return objectGet(
       this.externalArgs,
-      this.dataViewCarrier,
+      this.carrier,
       this.entryPointer,
       p as string
     );
@@ -52,7 +42,7 @@ export class ObjectWrapper implements ProxyHandler<{}> {
   public deleteProperty(target: {}, p: PropertyKey): boolean {
     return deleteObjectPropertyEntryByKey(
       this.externalArgs,
-      this.dataViewCarrier.dataView,
+      this.carrier,
       this.entryPointer,
       p as string
     );
@@ -61,7 +51,7 @@ export class ObjectWrapper implements ProxyHandler<{}> {
   public enumerate(): PropertyKey[] {
     const gotEntries = getObjectPropertiesEntries(
       this.externalArgs,
-      this.dataViewCarrier.dataView,
+      this.carrier.dataView,
       this.entryPointer
     );
 
@@ -71,7 +61,7 @@ export class ObjectWrapper implements ProxyHandler<{}> {
   public ownKeys(): PropertyKey[] {
     const gotEntries = getObjectPropertiesEntries(
       this.externalArgs,
-      this.dataViewCarrier.dataView,
+      this.carrier.dataView,
       this.entryPointer
     );
 
@@ -87,6 +77,10 @@ export class ObjectWrapper implements ProxyHandler<{}> {
   }
 
   public has(target: {}, p: PropertyKey) {
+    if (p === INTERNAL_API_SYMBOL) {
+      return true;
+    }
+
     if (typeof p === "symbol") {
       throw new IllegalObjectPropConfigError();
     }
@@ -98,7 +92,7 @@ export class ObjectWrapper implements ProxyHandler<{}> {
 
     const foundEntry = findObjectPropertyEntry(
       this.externalArgs,
-      this.dataViewCarrier.dataView,
+      this.carrier.dataView,
       this.entryPointer,
       p as string
     );
@@ -111,15 +105,15 @@ export class ObjectWrapper implements ProxyHandler<{}> {
       throw new IllegalObjectPropConfigError();
     }
 
-    handleOOM(() => {
+    allocationsTransaction(() => {
       objectSet(
         this.externalArgs,
-        this.dataViewCarrier.dataView,
+        this.carrier,
         this.entryPointer,
         p as string,
         value
       );
-    }, this.dataViewCarrier.dataView);
+    }, this.carrier.allocator);
 
     return true;
   }
@@ -165,32 +159,15 @@ export class ObjectWrapper implements ProxyHandler<{}> {
   // ownKeys? (target: T): PropertyKey[];
   // apply? (target: T, thisArg: any, argArray?: any): any;
   // construct? (target: T, argArray: any, newTarget?: any): object;
-
-  private get entry(): ObjectEntry {
-    return readEntry(
-      this.externalArgs,
-      this.dataViewCarrier.dataView,
-      this.entryPointer
-    )[0] as ObjectEntry;
-  }
-
-  public getDataView() {
-    return this.dataViewCarrier.dataView;
-  }
-
-  public getEntryPointer() {
-    return this.entryPointer;
-  }
 }
 
 export function createObjectWrapper<T = any>(
   externalArgs: ExternalArgs,
-  dataViewCarrier: DataViewCarrier,
-  entryPointer: number,
-  isTopLevel = false
+  dataViewCarrier: DataViewAndAllocatorCarrier,
+  entryPointer: number
 ): T {
   return new Proxy(
     { objectBufferWrapper: "objectBufferWrapper" },
-    new ObjectWrapper(externalArgs, dataViewCarrier, entryPointer, isTopLevel)
+    new ObjectWrapper(externalArgs, dataViewCarrier, entryPointer)
   ) as any;
 }

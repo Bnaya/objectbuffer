@@ -1,9 +1,14 @@
-import { ExternalArgs, DataViewCarrier, DateEntry } from "./interfaces";
+import {
+  ExternalArgs,
+  DataViewAndAllocatorCarrier,
+  DateEntry
+} from "./interfaces";
 
 import { readEntry, writeEntry } from "./store";
 import { ENTRY_TYPE } from "./entry-types";
 import { INTERNAL_API_SYMBOL } from "./symbols";
 import { UnsupportedOperationError } from "./exceptions";
+import { BaseProxyTrap } from "./BaseProxyTrap";
 
 const getFunctions: Array<keyof Date> = [
   "toString",
@@ -57,15 +62,17 @@ const setFunctions: Array<keyof Date> = [
   // "setYear"
 ];
 
-export class DateWrapper implements ProxyHandler<Date> {
+export class DateWrapper extends BaseProxyTrap<DateEntry>
+  implements ProxyHandler<Date> {
   private dateObjectForReuse: Date;
   private useMeToGiveNamesToFunctionsAndCacheThem: any;
 
   constructor(
-    private externalArgs: ExternalArgs,
-    private dataViewCarrier: DataViewCarrier,
-    private entryPointer: number
+    externalArgs: ExternalArgs,
+    carrier: DataViewAndAllocatorCarrier,
+    entryPointer: number
   ) {
+    super(externalArgs, carrier, entryPointer);
     this.dateObjectForReuse = new Date();
     this.useMeToGiveNamesToFunctionsAndCacheThem = {};
   }
@@ -103,31 +110,19 @@ export class DateWrapper implements ProxyHandler<Date> {
   private updateDateObjectForReuse() {
     const entry = readEntry(
       this.externalArgs,
-      this.dataViewCarrier.dataView,
+      this.carrier.dataView,
       this.entryPointer
-    ) as [DateEntry, number];
+    ) as DateEntry;
 
-    this.dateObjectForReuse.setTime(entry[0].value);
+    this.dateObjectForReuse.setTime(entry.value);
   }
 
   private persistDateObject() {
-    writeEntry(
-      this.externalArgs,
-      this.dataViewCarrier.dataView,
-      this.entryPointer,
-      {
-        type: ENTRY_TYPE.DATE,
-        value: this.dateObjectForReuse.getTime()
-      }
-    );
-  }
-
-  public getDataView() {
-    return this.dataViewCarrier.dataView;
-  }
-
-  public getEntryPointer() {
-    return this.entryPointer;
+    writeEntry(this.externalArgs, this.carrier.dataView, this.entryPointer, {
+      type: ENTRY_TYPE.DATE,
+      refsCount: this.entry.refsCount,
+      value: this.dateObjectForReuse.getTime()
+    });
   }
 
   public defineProperty(): boolean {
@@ -145,11 +140,11 @@ export class DateWrapper implements ProxyHandler<Date> {
 
 export function createDateWrapper(
   externalArgs: ExternalArgs,
-  dataViewCarrier: DataViewCarrier,
+  carrier: DataViewAndAllocatorCarrier,
   entryPointer: number
 ): Date {
   return new Proxy(
     new Date(0),
-    new DateWrapper(externalArgs, dataViewCarrier, entryPointer)
+    new DateWrapper(externalArgs, carrier, entryPointer)
   );
 }

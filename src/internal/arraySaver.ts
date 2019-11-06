@@ -1,27 +1,26 @@
-import { appendEntry, reserveMemory } from "./store";
+import { appendEntry } from "./store";
 import { ENTRY_TYPE } from "./entry-types";
-import { ArrayEntry, ExternalArgs } from "./interfaces";
+import {
+  ArrayEntry,
+  ExternalArgs,
+  DataViewAndAllocatorCarrier
+} from "./interfaces";
 import { saveValue } from "./saveValue";
 
 export function arraySaver(
   externalArgs: ExternalArgs,
-  dataView: DataView,
+  carrier: DataViewAndAllocatorCarrier,
+  referencedPointers: number[],
   arrayToSave: Array<any>
 ) {
-  let totalWrittenBytes = 0;
-
-  let memoryForPointersCursor = reserveMemory(
-    dataView,
+  let memoryForPointersCursor = carrier.allocator.calloc(
     (arrayToSave.length + externalArgs.arrayAdditionalAllocation) *
       Uint32Array.BYTES_PER_ELEMENT
   );
 
-  totalWrittenBytes +=
-    (arrayToSave.length + externalArgs.arrayAdditionalAllocation) *
-    Uint32Array.BYTES_PER_ELEMENT;
-
   const arrayStartEntry: ArrayEntry = {
     type: ENTRY_TYPE.ARRAY,
+    refsCount: 1,
     value: memoryForPointersCursor,
     allocatedLength:
       arrayToSave.length + externalArgs.arrayAdditionalAllocation,
@@ -29,24 +28,17 @@ export function arraySaver(
   };
 
   for (const item of arrayToSave) {
-    const rOfValue = saveValue(externalArgs, dataView, item);
+    const rOfValue = saveValue(externalArgs, carrier, referencedPointers, item);
 
-    dataView.setUint32(memoryForPointersCursor, rOfValue.start);
+    carrier.dataView.setUint32(memoryForPointersCursor, rOfValue);
     memoryForPointersCursor += Uint32Array.BYTES_PER_ELEMENT;
-
-    totalWrittenBytes += rOfValue.length;
   }
 
   const arrayEntryAppendResult = appendEntry(
     externalArgs,
-    dataView,
+    carrier,
     arrayStartEntry
   );
 
-  totalWrittenBytes += arrayEntryAppendResult.length;
-
-  return {
-    start: arrayEntryAppendResult.start,
-    length: totalWrittenBytes
-  };
+  return arrayEntryAppendResult;
 }

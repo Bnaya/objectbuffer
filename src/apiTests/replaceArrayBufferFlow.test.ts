@@ -6,7 +6,7 @@ import { createObjectBuffer, ExternalArgs, resizeObjectBuffer } from "../";
 import {
   getUnderlyingArrayBuffer,
   replaceUnderlyingArrayBuffer,
-  spaceLeft
+  memoryStats
 } from "../internal/api";
 import { arrayBufferCopyTo } from "../internal/utils";
 
@@ -34,7 +34,7 @@ describe("replaceArrayBufferFlow", () => {
 
     replaceUnderlyingArrayBuffer(objectBuffer, newAb);
 
-    expect(spaceLeft(objectBuffer)).toMatchInlineSnapshot(`974`);
+    expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`928`);
     expect(objectBuffer).toMatchInlineSnapshot(`
       Object {
         "a": 1,

@@ -1,19 +1,19 @@
 import {
   arrayGetMetadata,
   getFinalValueAtArrayIndex,
-  setValueAtArrayIndex,
   shrinkArray,
   extendArrayIfNeeded,
   arrayGetPointersToValueInIndex,
   setValuePointerAtArrayIndex
 } from "./arrayHelpers";
 import { assertNonNull } from "./assertNonNull";
-import { ExternalArgs, DataViewCarrier } from "./interfaces";
+import { ExternalArgs, DataViewAndAllocatorCarrier } from "./interfaces";
+import { writeValueInPtrToPtr } from "./store";
 
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/splice#Syntax
 export function arraySplice(
   externalArgs: ExternalArgs,
-  dataViewCarrier: DataViewCarrier,
+  dataViewCarrier: DataViewAndAllocatorCarrier,
   pointerToArrayEntry: number,
   startArg: number,
   deleteCountArg?: number,
@@ -37,7 +37,7 @@ export function arraySplice(
 
   extendArrayIfNeeded(
     externalArgs,
-    dataViewCarrier.dataView,
+    dataViewCarrier,
     pointerToArrayEntry,
     newLength
   );
@@ -88,6 +88,11 @@ export function arraySplice(
         pointerToArrayEntry,
         writeValueToIndex,
         valueToCopyPointers.pointer
+      );
+
+      dataViewCarrier.dataView.setUint32(
+        valueToCopyPointers.pointerToThePointer,
+        0
       );
     }
   }
@@ -140,11 +145,19 @@ export function arraySplice(
   }
 
   for (let i = 0; i < itemsToAddArg.length; i += 1) {
-    setValueAtArrayIndex(
+    const valueToSetPointers = arrayGetPointersToValueInIndex(
       externalArgs,
       dataViewCarrier.dataView,
       pointerToArrayEntry,
-      calcedStart + i,
+      calcedStart + i
+    );
+
+    assertNonNull(valueToSetPointers);
+
+    writeValueInPtrToPtr(
+      externalArgs,
+      dataViewCarrier,
+      valueToSetPointers.pointerToThePointer,
       itemsToAddArg[i]
     );
   }

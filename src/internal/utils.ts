@@ -7,7 +7,6 @@ import {
 } from "./interfaces";
 import { ENTRY_TYPE } from "./entry-types";
 import { INTERNAL_API_SYMBOL } from "./symbols";
-import { FIRST_FREE_BYTE_POINTER_TO_POINTER } from "./consts";
 
 const primitives = [
   "string",
@@ -111,19 +110,12 @@ export function arrayBufferCopyTo(
   }
 }
 
-export function getFirstFreeByte(
-  arrayBufferOrDataView: DataView | ArrayBuffer
-) {
-  return (arrayBufferOrDataView instanceof DataView
-    ? arrayBufferOrDataView
-    : new DataView(arrayBufferOrDataView)
-  ).getUint32(FIRST_FREE_BYTE_POINTER_TO_POINTER);
-}
-
 export function getOurPointerIfApplicable(value: any, ourDateView: DataView) {
-  const api: InternalAPI | undefined = value[INTERNAL_API_SYMBOL];
-  if (api && api.getDataView() === ourDateView) {
-    return api.getEntryPointer();
+  if (INTERNAL_API_SYMBOL in value) {
+    const api = getInternalAPI(value);
+    if (api.getCarrier().dataView === ourDateView) {
+      return api.getEntryPointer();
+    }
   }
 }
 
@@ -139,4 +131,12 @@ export function externalArgsApiToExternalArgsApi(
       ? p.minimumStringAllocation
       : 0
   };
+}
+
+export function getInternalAPI(value: any): InternalAPI {
+  if (!value[INTERNAL_API_SYMBOL]) {
+    throw new RangeError("getInternalAPI not applicable");
+  }
+
+  return value[INTERNAL_API_SYMBOL];
 }

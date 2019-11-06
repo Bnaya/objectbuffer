@@ -1,7 +1,7 @@
 import { ExternalArgs } from "../internal/interfaces";
 import * as util from "util";
-import { createObjectBuffer, getUnderlyingArrayBuffer } from "..";
-import { getFirstFreeByte } from "../internal/testUtils";
+import { createObjectBuffer } from "..";
+import { memoryStats } from "../internal/api";
 
 /* eslint-env jest */
 
@@ -14,12 +14,11 @@ describe("stringsMemoryReuse.test", () => {
   };
 
   test("setting a shorter string, and then as original size again", () => {
-    const objectBuffer = createObjectBuffer(externalArgs, 64, {
+    const objectBuffer = createObjectBuffer(externalArgs, 256, {
       str: "abc"
     });
-    const ab = getUnderlyingArrayBuffer(objectBuffer);
 
-    const memoryAfterEachOperation: number[] = [getFirstFreeByte(ab)];
+    const memoryAfterEachOperation: number[] = [memoryStats(objectBuffer).used];
 
     objectBuffer.str = "ab";
     expect(objectBuffer).toMatchInlineSnapshot(`
@@ -27,17 +26,17 @@ describe("stringsMemoryReuse.test", () => {
             "str": "ab",
           }
       `);
-    memoryAfterEachOperation.push(getFirstFreeByte(ab));
+    memoryAfterEachOperation.push(memoryStats(objectBuffer).used);
 
     objectBuffer.str = "123";
 
-    memoryAfterEachOperation.push(getFirstFreeByte(ab));
+    memoryAfterEachOperation.push(memoryStats(objectBuffer).used);
 
     expect(memoryAfterEachOperation).toMatchInlineSnapshot(`
       Array [
-        54,
-        54,
-        54,
+        96,
+        96,
+        96,
       ]
     `);
 
@@ -51,14 +50,13 @@ describe("stringsMemoryReuse.test", () => {
   test("minimumStringAllocation", () => {
     const objectBuffer = createObjectBuffer(
       { ...externalArgs, minimumStringAllocation: 10 },
-      128,
+      256,
       {
         str: "123"
       }
     );
-    const ab = getUnderlyingArrayBuffer(objectBuffer);
 
-    const memoryAfterEachOperation: number[] = [getFirstFreeByte(ab)];
+    const memoryAfterEachOperation: number[] = [memoryStats(objectBuffer).used];
 
     objectBuffer.str = "1234567890";
     expect(objectBuffer).toMatchInlineSnapshot(`
@@ -66,20 +64,20 @@ describe("stringsMemoryReuse.test", () => {
         "str": "1234567890",
       }
     `);
-    memoryAfterEachOperation.push(getFirstFreeByte(ab));
+    memoryAfterEachOperation.push(memoryStats(objectBuffer).used);
 
     objectBuffer.str = "123";
-    memoryAfterEachOperation.push(getFirstFreeByte(ab));
+    memoryAfterEachOperation.push(memoryStats(objectBuffer).used);
 
     objectBuffer.str = "1234567890".repeat(2);
-    memoryAfterEachOperation.push(getFirstFreeByte(ab));
+    memoryAfterEachOperation.push(memoryStats(objectBuffer).used);
 
     expect(memoryAfterEachOperation).toMatchInlineSnapshot(`
       Array [
-        61,
-        61,
-        61,
-        106,
+        104,
+        104,
+        104,
+        128,
       ]
     `);
 
