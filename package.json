@@ -35,14 +35,14 @@
     "generate-docs": "rimraf -f docs/generated/ && typedoc --out docs/generated/ --includes . --name objectbuffer --readme none --entryPoint \"\\\"index\\\"\" --excludeNotExported --ignoreCompilerErrors --mode modules src/index.ts"
   },
   "devDependencies": {
-    "@babel/cli": "^7.6.4",
-    "@babel/core": "^7.6.4",
-    "@babel/preset-env": "^7.6.3",
-    "@babel/preset-typescript": "^7.6.0",
-    "@types/jest": "^24.0.20",
-    "@types/node": "^10",
-    "@typescript-eslint/eslint-plugin": "^2.5.0",
-    "@typescript-eslint/parser": "^2.5.0",
+    "@babel/cli": "^7.7.0",
+    "@babel/core": "^7.7.0",
+    "@babel/preset-env": "^7.7.1",
+    "@babel/preset-typescript": "^7.7.0",
+    "@types/jest": "^24.0.22",
+    "@types/node": "^12.12.6",
+    "@typescript-eslint/eslint-plugin": "^2.6.1",
+    "@typescript-eslint/parser": "^2.6.1",
     "babel-loader": "^8.0.6",
     "concurrently": "^5.0.0",
     "eslint": "^6.6.0",
@@ -55,14 +55,14 @@
     "prettier": "^1.18.2",
     "prettier-eslint": "^9.0.0",
     "rimraf": "^3.0.0",
-    "rollup": "^1.26.0",
+    "rollup": "^1.26.3",
     "rollup-plugin-babel": "^4.3.3",
     "rollup-plugin-node-resolve": "^5.2.0",
     "typedoc": "npm:@gnd/typedoc",
     "typedoc-plugin-markdown": "^2.2.11",
-    "typescript": "^3.7.1-rc",
+    "typescript": "^3.7.2",
     "webpack": "^4.41.2",
-    "webpack-cli": "^3.3.9",
+    "webpack-cli": "^3.3.10",
     "webpack-dev-server": "^3.9.0",
     "worker-loader": "^2.0.0",
     "yarn-deduplicate": "^1.1.1"
@@ -80,7 +80,7 @@
     "LICENSE"
   ],
   "resolutions": {
-    "typescript": "^3.7.1-rc"
+    "typescript": "^3.7.2"
   },
   "dependencies": {
     "@bnaya/malloc-temporary-fork": "^4.0.11-transferable"
