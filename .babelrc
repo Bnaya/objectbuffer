@@ -6,7 +6,7 @@
           "@babel/preset-env",
           {
             "targets": {
-              "node": "8"
+              "node": "current"
             },
             "modules": false
           }
@@ -19,6 +19,8 @@
         [
           "@babel/preset-env",
           {
+            "useBuiltIns": "usage",
+            "corejs": 3,
             "targets": {
               "node": "current"
             },
