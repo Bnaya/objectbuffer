@@ -1,17 +1,17 @@
-import { ExternalArgs } from "../internal/interfaces";
 import * as util from "util";
 import { createObjectBuffer } from "..";
 import { memoryStats } from "../internal/api";
+import { externalArgsApiToExternalArgsApi } from "../internal/utils";
 
 /* eslint-env jest */
 
 describe("memoryRollbackOnOOM.test", () => {
-  const externalArgs: ExternalArgs = {
+  const externalArgs = externalArgsApiToExternalArgsApi({
     textEncoder: new util.TextEncoder(),
     textDecoder: new util.TextDecoder(),
     arrayAdditionalAllocation: 0,
     minimumStringAllocation: 0
-  };
+  });
 
   test("memoryRollbackOnOOM", () => {
     const objectBuffer = createObjectBuffer<any>(externalArgs, 256, {
@@ -20,7 +20,7 @@ describe("memoryRollbackOnOOM.test", () => {
 
     const initialFreeSpace = memoryStats(objectBuffer).available;
 
-    expect(initialFreeSpace).toMatchInlineSnapshot(`168`);
+    expect(initialFreeSpace).toMatchInlineSnapshot(`40`);
 
     expect(() => {
       objectBuffer.foo = {
@@ -30,7 +30,7 @@ describe("memoryRollbackOnOOM.test", () => {
       };
     }).toThrowErrorMatchingInlineSnapshot(`"OutOfMemoryError"`);
 
-    expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`168`);
+    expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`40`);
 
     expect(objectBuffer).toMatchInlineSnapshot(`
       Object {

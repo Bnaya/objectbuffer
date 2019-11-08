@@ -4,17 +4,16 @@ import { initializeArrayBuffer } from "./store";
 import * as util from "util";
 import { createArrayWrapper } from "./arrayWrapper";
 import { arraySaver } from "./arraySaver";
-import { ExternalArgs } from "./interfaces";
 import { MemPool } from "@bnaya/malloc-temporary-fork";
 import { MEM_POOL_START } from "./consts";
+import { externalArgsApiToExternalArgsApi } from "./utils";
 
 describe("pop it all", () => {
-  const externalArgs: ExternalArgs = {
+  const externalArgs = externalArgsApiToExternalArgsApi({
     textEncoder: new util.TextEncoder(),
     textDecoder: new util.TextDecoder(),
-    arrayAdditionalAllocation: 20,
-    minimumStringAllocation: 0
-  };
+    arrayAdditionalAllocation: 20
+  });
 
   test("lets 1", () => {
     const arrayBuffer = new ArrayBuffer(512);

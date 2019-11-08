@@ -1,7 +1,6 @@
 /* eslint-env jest */
 
 import * as util from "util";
-import { ExternalArgs } from "./interfaces";
 import { MemPool } from "@bnaya/malloc-temporary-fork";
 import {
   createObjectBuffer,
@@ -9,15 +8,14 @@ import {
   getUnderlyingArrayBuffer
 } from "./api";
 import { getAllLinkedAddresses } from "./getAllLinkedAddresses";
-import { getInternalAPI } from "./utils";
+import { getInternalAPI, externalArgsApiToExternalArgsApi } from "./utils";
 
 describe("getAllLinkedAddresses", () => {
-  const externalArgs: ExternalArgs = {
+  const externalArgs = externalArgsApiToExternalArgsApi({
     textEncoder: new util.TextEncoder(),
     textDecoder: new util.TextDecoder(),
-    arrayAdditionalAllocation: 0,
-    minimumStringAllocation: 0
-  };
+    arrayAdditionalAllocation: 20
+  });
 
   describe("getAllLinkedAddresses no reference counting", () => {
     test("getAllLinkedAddresses", () => {
@@ -31,7 +29,7 @@ describe("getAllLinkedAddresses", () => {
         return address;
       };
 
-      const objectBuffer = createObjectBuffer(externalArgs, 1024, {
+      const objectBuffer = createObjectBuffer(externalArgs, 2048, {
         nestedObject: { a: 1, b: null, c: "string", bigint: BigInt("100") },
         arr: [new Date(0), "somestring", { a: "6", h: null }]
       });
@@ -52,27 +50,55 @@ describe("getAllLinkedAddresses", () => {
 
       expect(linkedAddresses.slice().sort()).toMatchInlineSnapshot(`
         Array [
-          128,
-          144,
-          168,
-          184,
+          1000,
+          1016,
+          104,
+          1040,
+          1056,
+          1072,
+          1088,
+          1104,
+          1128,
+          120,
+          136,
+          160,
+          192,
           208,
-          224,
-          248,
+          232,
           272,
-          296,
+          288,
+          304,
           328,
+          344,
           360,
           384,
           40,
-          400,
+          408,
           424,
-          448,
-          472,
-          488,
-          520,
+          440,
+          456,
+          480,
+          496,
+          512,
+          536,
+          560,
+          584,
+          600,
+          624,
           64,
-          88,
+          640,
+          664,
+          680,
+          696,
+          800,
+          824,
+          848,
+          872,
+          912,
+          928,
+          944,
+          968,
+          984,
         ]
       `);
     });
@@ -90,15 +116,15 @@ describe("getAllLinkedAddresses", () => {
         return address;
       };
 
-      const objectBuffer = createObjectBuffer(externalArgs, 1024, {
+      const objectBuffer = createObjectBuffer(externalArgs, 2048, {
         nestedObject: { a: 1, b: null, c: "string", bigint: BigInt("100") },
         arr: [new Date(0), "somestring", { a: "6", h: null }]
       });
 
       expect(memoryStats(objectBuffer)).toMatchInlineSnapshot(`
         Object {
-          "available": 496,
-          "used": 528,
+          "available": 912,
+          "used": 1136,
         }
       `);
 
@@ -119,8 +145,8 @@ describe("getAllLinkedAddresses", () => {
 
       expect(memoryStats(objectBuffer)).toMatchInlineSnapshot(`
         Object {
-          "available": 968,
-          "used": 56,
+          "available": 1832,
+          "used": 216,
         }
       `);
     });

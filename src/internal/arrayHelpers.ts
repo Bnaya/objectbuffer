@@ -71,16 +71,9 @@ export function getFinalValueAtArrayIndex(
     return undefined;
   }
 
-  const entry = readEntry(
-    externalArgs,
-    dataViewCarrier.dataView,
-    pointers.pointer
-  );
-
   return entryToFinalJavaScriptValue(
     externalArgs,
     dataViewCarrier,
-    entry,
     pointers.pointer
   );
 }
@@ -246,11 +239,9 @@ export function arraySort(
     );
 
   const sortMe = pointersToValues.map(pointer => {
-    const entry = readEntry(externalArgs, dataViewCarrier.dataView, pointer);
-
     return [
       pointer,
-      entryToFinalJavaScriptValue(externalArgs, dataViewCarrier, entry, pointer)
+      entryToFinalJavaScriptValue(externalArgs, dataViewCarrier, pointer)
     ] as const;
   });
 

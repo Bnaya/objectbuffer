@@ -19,3 +19,76 @@ export function wait(time: number) {
     setTimeout(res, time);
   });
 }
+
+import { IMemPool } from "@bnaya/malloc-temporary-fork";
+import { OutOfMemoryError } from "./exceptions";
+
+// extend pool and not monkey patch? need to think about it
+export function recordAllocations(operation: () => void, pool: IMemPool) {
+  const allocations = new Set<number>();
+  const deallocations = new Set<number>();
+
+  const originalMalloc = pool.malloc;
+  const originalCalloc = pool.calloc;
+  const originalRealloc = pool.realloc;
+  const originalFree = pool.free;
+  let isInReallocOrCalloc = false;
+
+  pool.realloc = function realloc(ptr: number, size: number) {
+    isInReallocOrCalloc = true;
+    const allocation = originalRealloc.call(pool, ptr, size);
+
+    if (allocation === 0) {
+      throw new OutOfMemoryError();
+    }
+
+    isInReallocOrCalloc = false;
+
+    return allocation;
+  };
+
+  pool.malloc = function malloc(size: number) {
+    const allocation = originalMalloc.call(pool, size);
+
+    if (allocation === 0) {
+      throw new OutOfMemoryError();
+    }
+
+    if (!isInReallocOrCalloc) {
+      allocations.add(allocation);
+    }
+
+    return allocation;
+  };
+
+  pool.calloc = function calloc(size: number) {
+    isInReallocOrCalloc = true;
+    const allocation = originalCalloc.call(pool, size);
+
+    if (allocation === 0) {
+      throw new OutOfMemoryError();
+    }
+
+    allocations.add(allocation);
+
+    isInReallocOrCalloc = false;
+    return allocation;
+  };
+
+  // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+  // @ts-ignore
+  pool.free = function free(ptr: number) {
+    deallocations.add(ptr);
+    allocations.delete(ptr);
+    originalFree.call(this, ptr);
+  };
+
+  operation();
+
+  pool.malloc = originalMalloc;
+  pool.calloc = originalCalloc;
+  pool.realloc = originalRealloc;
+  pool.free = originalFree;
+
+  return { allocations: [...allocations], deallocations: [...deallocations] };
+}

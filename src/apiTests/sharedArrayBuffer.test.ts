@@ -2,17 +2,18 @@
 
 import * as util from "util";
 
-import { createObjectBuffer, ExternalArgs } from "../";
+import { createObjectBuffer } from "../";
 import { memoryStats } from "../internal/api";
+import { externalArgsApiToExternalArgsApi } from "../internal/utils";
 
 // actually not very good, as the browser's TextEncoder won't work with SAB, but node will.
 describe("SharedArrayBuffer tests", () => {
-  const externalArgs: ExternalArgs = {
+  const externalArgs = externalArgsApiToExternalArgsApi({
     textEncoder: new util.TextEncoder(),
     textDecoder: new util.TextDecoder(),
     arrayAdditionalAllocation: 0,
     minimumStringAllocation: 0
-  };
+  });
 
   test("basic", () => {
     const objectBuffer = createObjectBuffer<any>(
@@ -34,6 +35,6 @@ describe("SharedArrayBuffer tests", () => {
       }
     `);
 
-    expect(memoryStats(objectBuffer).used).toMatchInlineSnapshot(`176`);
+    expect(memoryStats(objectBuffer).used).toMatchInlineSnapshot(`472`);
   });
 });

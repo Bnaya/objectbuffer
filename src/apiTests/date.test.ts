@@ -2,16 +2,17 @@
 
 import * as util from "util";
 
-import { createObjectBuffer, ExternalArgs } from "../";
+import { createObjectBuffer } from "../";
 import { memoryStats } from "../internal/api";
+import { externalArgsApiToExternalArgsApi } from "../internal/utils";
 
 describe("Date test", () => {
-  const externalArgs: ExternalArgs = {
+  const externalArgs = externalArgsApiToExternalArgsApi({
     textEncoder: new util.TextEncoder(),
     textDecoder: new util.TextDecoder(),
     arrayAdditionalAllocation: 0,
     minimumStringAllocation: 0
-  };
+  });
 
   test("Date object test", () => {
     const objectBuffer = createObjectBuffer(externalArgs, 1024, {
@@ -45,6 +46,6 @@ describe("Date test", () => {
       `"2000-04-10T00:00:00.000Z"`
     );
 
-    expect(memoryStats(objectBuffer).used).toMatchInlineSnapshot(`104`);
+    expect(memoryStats(objectBuffer).used).toMatchInlineSnapshot(`232`);
   });
 });

@@ -1,5 +1,7 @@
 # ObjectBuffer: object-like API, backed by a [shared]arraybuffer
 
+## The readme is for latest release `v0.10.0`.big refactor ongoing (allocator, hashmap)
+
 For Modern browsers and node. Zero direct dependencies.
 
 Save, read and update plain javascript objects into `ArrayBuffer` (And not only TypedArrays),  using regular javascript object api, without serialization/deserialization.  

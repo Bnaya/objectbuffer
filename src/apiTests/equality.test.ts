@@ -2,16 +2,17 @@
 
 import * as util from "util";
 
-import { createObjectBuffer, ExternalArgs } from "../";
+import { createObjectBuffer } from "../";
 import { memoryStats } from "../internal/api";
+import { externalArgsApiToExternalArgsApi } from "../internal/utils";
 
 describe("equality.test tests. make sure our cache of proxies works", () => {
-  const externalArgs: ExternalArgs = {
+  const externalArgs = externalArgsApiToExternalArgsApi({
     textEncoder: new util.TextEncoder(),
     textDecoder: new util.TextDecoder(),
     arrayAdditionalAllocation: 0,
     minimumStringAllocation: 0
-  };
+  });
 
   test("equality.test tests", () => {
     const objectBuffer = createObjectBuffer<any>(
@@ -53,6 +54,6 @@ describe("equality.test tests. make sure our cache of proxies works", () => {
       }
     `);
 
-    expect(memoryStats(objectBuffer).used).toMatchInlineSnapshot(`352`);
+    expect(memoryStats(objectBuffer).used).toMatchInlineSnapshot(`720`);
   });
 });

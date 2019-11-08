@@ -12,6 +12,7 @@ import { arrayBuffer2HexArray } from "./testUtils";
 import { ObjectEntry, ObjectPropEntry, ExternalArgs } from "./interfaces";
 import { MemPool } from "@bnaya/malloc-temporary-fork";
 import { MEM_POOL_START } from "./consts";
+import { externalArgsApiToExternalArgsApi } from "./utils";
 
 describe("Store tests - Misc", () => {
   test("initializeArrayBuffer", () => {
@@ -46,20 +47,19 @@ describe("Store tests - Misc", () => {
 });
 
 describe("Store tests writeEntry", () => {
-  const externalArgs: ExternalArgs = {
+  const externalArgs = externalArgsApiToExternalArgsApi({
     textEncoder: new util.TextEncoder(),
     textDecoder: new util.TextDecoder(),
-    arrayAdditionalAllocation: 0,
-    minimumStringAllocation: 0
-  };
+    arrayAdditionalAllocation: 20
+  });
 
   test("writeEntry max number", () => {
-    const externalArgs: ExternalArgs = {
+    const externalArgs: ExternalArgs = externalArgsApiToExternalArgsApi({
       textEncoder: new util.TextEncoder(),
       textDecoder: new util.TextDecoder(),
       arrayAdditionalAllocation: 0,
       minimumStringAllocation: 0
-    };
+    });
 
     const arrayBuffer = new ArrayBuffer(17);
     const dataView = new DataView(arrayBuffer);
@@ -160,12 +160,11 @@ describe("Store tests writeEntry", () => {
 });
 
 describe("Store tests readEntry", () => {
-  const externalArgs: ExternalArgs = {
+  const externalArgs = externalArgsApiToExternalArgsApi({
     textEncoder: new util.TextEncoder(),
     textDecoder: new util.TextDecoder(),
-    arrayAdditionalAllocation: 0,
-    minimumStringAllocation: 0
-  };
+    arrayAdditionalAllocation: 20
+  });
 
   test("readEntry max number", () => {
     const arrayBuffer = new ArrayBuffer(17);

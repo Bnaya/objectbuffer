@@ -13,9 +13,11 @@ export {
   getUnderlyingArrayBuffer,
   loadObjectBuffer,
   replaceUnderlyingArrayBuffer,
-  sizeOf,
+  // eslint-disable-next-line @typescript-eslint/camelcase
+  sizeOf as unreliable_sizeOf,
   memoryStats,
-  disposeWrapperObject
+  disposeWrapperObject,
+  updateExternalArgs
 } from "./internal/api";
 export { acquireLock, acquireLockWait, releaseLock } from "./internal/locks";
 export type ExternalArgs = import("./internal/interfaces").ExternalArgsApi;

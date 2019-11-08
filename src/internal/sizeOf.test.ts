@@ -1,53 +1,71 @@
 /* eslint-env jest */
 
 import * as util from "util";
-import { ExternalArgs } from "./interfaces";
 import { sizeOf } from "./sizeOf";
-// import { createObjectBuffer, memoryStats } from "./api";
-// import { MEM_POOL_START } from "./consts";
-
-// function saveAndStats(externalArgs: ExternalArgs, value: any) {
-//   const o = createObjectBuffer(externalArgs, 1024, value);
-
-//   return {
-//     stats: memoryStats(o),
-//     size: sizeOf(externalArgs, value) + 47
-//   };
-// }
+import { externalArgsApiToExternalArgsApi } from "./utils";
+import { createObjectBuffer, memoryStats } from "..";
 
 describe("sizeOf tests", () => {
-  const externalArgs: ExternalArgs = {
+  const externalArgs = externalArgsApiToExternalArgsApi({
     textEncoder: new util.TextEncoder(),
     textDecoder: new util.TextDecoder(),
-    arrayAdditionalAllocation: 0,
-    minimumStringAllocation: 0
-  };
+    arrayAdditionalAllocation: 20
+  });
+
+  function doThatForMe(value: any) {
+    const o = createObjectBuffer(externalArgs, 1024, { foo: undefined });
+    const beforeSave = memoryStats(o).available;
+
+    o.foo = value;
+
+    const afterSave = memoryStats(o).available;
+
+    const calcedSize = sizeOf(externalArgs, value);
+
+    return {
+      calcedSize,
+      realSize: beforeSave - afterSave
+    };
+  }
+
+  test("compare 1", () => {
+    const r = doThatForMe("12377777771237777777123777777712377777771237777777");
+
+    expect(r).toMatchInlineSnapshot(`
+      Object {
+        "calcedSize": 64,
+        "realSize": 48,
+      }
+    `);
+    // ???
+    expect(r.calcedSize).toBe(r.realSize + 16);
+  });
 
   test("number", () => {
-    expect(sizeOf(externalArgs, 5)).toMatchInlineSnapshot(`17`);
+    expect(sizeOf(externalArgs, 5)).toMatchInlineSnapshot(`24`);
   });
 
   test("string", () => {
-    expect(sizeOf(externalArgs, "סלאם עליכום")).toMatchInlineSnapshot(`55`);
+    expect(sizeOf(externalArgs, "סלאם עליכום")).toMatchInlineSnapshot(`40`);
   });
 
   test("undefined", () => {
-    expect(sizeOf(externalArgs, undefined)).toMatchInlineSnapshot(`9`);
+    expect(sizeOf(externalArgs, undefined)).toMatchInlineSnapshot(`16`);
   });
 
   test("null", () => {
-    expect(sizeOf(externalArgs, null)).toMatchInlineSnapshot(`9`);
+    expect(sizeOf(externalArgs, null)).toMatchInlineSnapshot(`16`);
   });
 
   test("Array", () => {
     expect(
       sizeOf(externalArgs, ["a", { a: "u" }, null, undefined, 1])
-    ).toMatchInlineSnapshot(`149`);
+    ).toMatchInlineSnapshot(`388`);
   });
 
   test("Object", () => {
     expect(
       sizeOf(externalArgs, { a: 1, b: "some string" })
-    ).toMatchInlineSnapshot(`106`);
+    ).toMatchInlineSnapshot(`256`);
   });
 });

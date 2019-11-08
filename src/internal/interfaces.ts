@@ -103,6 +103,8 @@ export interface DataViewAndAllocatorCarrier {
 }
 
 export type ExternalArgs = Readonly<{
+  hashMapLoadFactor: number;
+  hashMapMinInitialCapacity: number;
   arrayAdditionalAllocation: number;
   minimumStringAllocation: number;
   textDecoder: TextDecoder;
@@ -110,6 +112,8 @@ export type ExternalArgs = Readonly<{
 }>;
 
 export type ExternalArgsApi = Readonly<{
+  hashMapLoadFactor?: number;
+  hashMapMinInitialCapacity?: number;
   arrayAdditionalAllocation?: number;
   minimumStringAllocation?: number;
   textDecoder: TextDecoder;
