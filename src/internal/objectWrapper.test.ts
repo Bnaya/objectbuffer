@@ -4,21 +4,19 @@ import { initializeArrayBuffer } from "./store";
 import * as util from "util";
 import { objectSaver } from "./objectSaver";
 import { createObjectWrapper } from "./objectWrapper";
-import { ExternalArgs } from "./interfaces";
 import { MEM_POOL_START } from "./consts";
 import { MemPool } from "@bnaya/malloc-temporary-fork";
+import { externalArgsApiToExternalArgsApi } from "./utils";
 
 describe("objectWrapper tests", () => {
-  const externalArgs: ExternalArgs = {
+  const externalArgs = externalArgsApiToExternalArgsApi({
     textEncoder: new util.TextEncoder(),
-    textDecoder: new util.TextDecoder(),
-    arrayAdditionalAllocation: 0,
-    minimumStringAllocation: 0
-  };
+    textDecoder: new util.TextDecoder()
+  });
 
   describe("objectWrapper - general", () => {
     test("ObjectWrapper class 1", () => {
-      const arrayBuffer = new ArrayBuffer(512);
+      const arrayBuffer = new ArrayBuffer(1024);
       const dataView = new DataView(arrayBuffer);
       initializeArrayBuffer(arrayBuffer);
       const allocator = new MemPool({
@@ -65,11 +63,11 @@ describe("objectWrapper tests", () => {
         ]
       `);
 
-      expect(allocator.stats().top).toMatchInlineSnapshot(`352`);
+      expect(allocator.stats().top).toMatchInlineSnapshot(`728`);
     });
 
     test("ObjectWrapper class 2", () => {
-      const arrayBuffer = new ArrayBuffer(512);
+      const arrayBuffer = new ArrayBuffer(1024);
       const dataView = new DataView(arrayBuffer);
       initializeArrayBuffer(arrayBuffer);
       const allocator = new MemPool({
@@ -103,11 +101,11 @@ describe("objectWrapper tests", () => {
       expect(objectWrapper.noneExistsProp).toMatchInlineSnapshot(`undefined`);
       expect(objectWrapper.a).toMatchInlineSnapshot(`6`);
 
-      expect(allocator.stats().top).toMatchInlineSnapshot(`352`);
+      expect(allocator.stats().top).toMatchInlineSnapshot(`728`);
     });
 
     test("ObjectWrapper class set override value", () => {
-      const arrayBuffer = new ArrayBuffer(512);
+      const arrayBuffer = new ArrayBuffer(1024);
       const dataView = new DataView(arrayBuffer);
       initializeArrayBuffer(arrayBuffer);
       const allocator = new MemPool({
@@ -152,11 +150,11 @@ describe("objectWrapper tests", () => {
         }
       `);
 
-      expect(allocator.stats().top).toMatchInlineSnapshot(`352`);
+      expect(allocator.stats().top).toMatchInlineSnapshot(`728`);
     });
 
     test("ObjectWrapper class set new prop value", () => {
-      const arrayBuffer = new ArrayBuffer(512);
+      const arrayBuffer = new ArrayBuffer(1024);
       const dataView = new DataView(arrayBuffer);
       initializeArrayBuffer(arrayBuffer);
       const allocator = new MemPool({
@@ -202,11 +200,11 @@ describe("objectWrapper tests", () => {
         }
       `);
 
-      expect(allocator.stats().top).toMatchInlineSnapshot(`432`);
+      expect(allocator.stats().top).toMatchInlineSnapshot(`824`);
     });
 
     test("ObjectWrapper class delete", () => {
-      const arrayBuffer = new ArrayBuffer(512);
+      const arrayBuffer = new ArrayBuffer(1024);
       const dataView = new DataView(arrayBuffer);
       initializeArrayBuffer(arrayBuffer);
       const allocator = new MemPool({
@@ -250,7 +248,7 @@ describe("objectWrapper tests", () => {
         }
       `);
 
-      expect(allocator.stats().top).toMatchInlineSnapshot(`352`);
+      expect(allocator.stats().top).toMatchInlineSnapshot(`728`);
     });
   });
 });

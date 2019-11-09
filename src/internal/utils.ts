@@ -124,6 +124,10 @@ export function externalArgsApiToExternalArgsApi(
 ): ExternalArgs {
   return {
     ...p,
+    hashMapMinInitialCapacity: p.hashMapMinInitialCapacity
+      ? p.hashMapMinInitialCapacity
+      : 8,
+    hashMapLoadFactor: p.hashMapLoadFactor ? p.hashMapLoadFactor : 0.75,
     arrayAdditionalAllocation: p.arrayAdditionalAllocation
       ? p.arrayAdditionalAllocation
       : 0,
@@ -139,4 +143,19 @@ export function getInternalAPI(value: any): InternalAPI {
   }
 
   return value[INTERNAL_API_SYMBOL];
+}
+
+export function strByteLength(str: string) {
+  let s = str.length;
+  for (let i = str.length - 1; i >= 0; i--) {
+    const code = str.charCodeAt(i);
+    if (code > 0x7f && code <= 0x7ff) s++;
+    else if (code > 0x7ff && code <= 0xffff) s += 2;
+  }
+
+  return s;
+}
+
+export function align(value: number, alignTo = 8) {
+  return Math.ceil(value / alignTo) * alignTo;
 }

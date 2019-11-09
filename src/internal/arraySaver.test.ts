@@ -4,17 +4,16 @@ import { initializeArrayBuffer } from "./store";
 import * as util from "util";
 import { arrayBuffer2HexArray } from "./testUtils";
 import { arraySaver } from "./arraySaver";
-import { ExternalArgs } from "./interfaces";
 import { MemPool } from "@bnaya/malloc-temporary-fork";
 import { MEM_POOL_START } from "./consts";
+import { externalArgsApiToExternalArgsApi } from "./utils";
 
 describe("arraySaver tests", () => {
-  const externalArgs: ExternalArgs = {
+  const externalArgs = externalArgsApiToExternalArgsApi({
     textEncoder: new util.TextEncoder(),
     textDecoder: new util.TextDecoder(),
-    arrayAdditionalAllocation: 0,
-    minimumStringAllocation: 0
-  };
+    arrayAdditionalAllocation: 20
+  });
 
   describe("arraySaver - general", () => {
     test("arraySaver", () => {
@@ -36,7 +35,7 @@ describe("arraySaver tests", () => {
         arrayToSave
       );
 
-      expect(saverOutput).toMatchInlineSnapshot(`136`);
+      expect(saverOutput).toMatchInlineSnapshot(`216`);
 
       expect(arrayBuffer2HexArray(arrayBuffer, true)).toMatchSnapshot(
         "after array save"

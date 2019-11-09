@@ -4,21 +4,19 @@ import { initializeArrayBuffer } from "./store";
 import * as util from "util";
 import { arrayBuffer2HexArray } from "./testUtils";
 import { objectSaver } from "./objectSaver";
-import { ExternalArgs } from "./interfaces";
 import { MemPool } from "@bnaya/malloc-temporary-fork";
 import { MEM_POOL_START } from "./consts";
+import { externalArgsApiToExternalArgsApi } from "./utils";
 
 describe("objectSaver tests", () => {
-  const externalArgs: ExternalArgs = {
+  const externalArgs = externalArgsApiToExternalArgsApi({
     textEncoder: new util.TextEncoder(),
-    textDecoder: new util.TextDecoder(),
-    arrayAdditionalAllocation: 0,
-    minimumStringAllocation: 0
-  };
+    textDecoder: new util.TextDecoder()
+  });
 
   describe("objectSaver - general", () => {
     test("objectSaver", () => {
-      const arrayBuffer = new ArrayBuffer(512);
+      const arrayBuffer = new ArrayBuffer(1024);
       const dataView = new DataView(arrayBuffer);
       initializeArrayBuffer(arrayBuffer);
       const allocator = new MemPool({
@@ -44,10 +42,10 @@ describe("objectSaver tests", () => {
         objectToSave
       );
 
-      expect(saverOutput).toMatchInlineSnapshot(`384`);
+      expect(saverOutput).toMatchInlineSnapshot(`792`);
 
       expect(arrayBuffer2HexArray(arrayBuffer, true)).toMatchSnapshot();
-      expect(allocator.stats().available).toMatchInlineSnapshot(`120`);
+      expect(allocator.stats().available).toMatchInlineSnapshot(`224`);
     });
   });
 });

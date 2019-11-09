@@ -2,17 +2,18 @@
 
 import * as util from "util";
 
-import { createObjectBuffer, ExternalArgs } from "../";
+import { createObjectBuffer } from "../";
 import { memoryStats } from "../internal/api";
+import { externalArgsApiToExternalArgsApi } from "../internal/utils";
 
 // actually not very good, as the browser's TextEncoder won't work with SAB, but node will.
 describe("Runtime errors", () => {
-  const externalArgs: ExternalArgs = {
+  const externalArgs = externalArgsApiToExternalArgsApi({
     textEncoder: new util.TextEncoder(),
     textDecoder: new util.TextDecoder(),
     arrayAdditionalAllocation: 0,
     minimumStringAllocation: 0
-  };
+  });
 
   test("Fail to create when not enough memory", () => {
     expect(() => {
@@ -33,7 +34,7 @@ describe("Runtime errors", () => {
     }).toThrowErrorMatchingInlineSnapshot(`"OutOfMemoryError"`);
 
     expect(memoryStats(objectBuffer).available).toEqual(freeSpaceLeft);
-    expect(freeSpaceLeft).toMatchInlineSnapshot(`136`);
+    expect(freeSpaceLeft).toMatchInlineSnapshot(`16`);
 
     expect(objectBuffer).toMatchInlineSnapshot(`
       Object {

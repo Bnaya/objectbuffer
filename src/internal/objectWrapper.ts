@@ -4,7 +4,6 @@ import {
   DataViewAndAllocatorCarrier
 } from "./interfaces";
 import {
-  findObjectPropertyEntry,
   getObjectPropertiesEntries,
   deleteObjectPropertyEntryByKey,
   objectGet,
@@ -18,6 +17,7 @@ import {
 } from "./exceptions";
 import { allocationsTransaction } from "./allocationsTransaction";
 import { BaseProxyTrap } from "./BaseProxyTrap";
+import { hashMapNodeLookup } from "./hashmap/hashmap";
 
 export class ObjectWrapper extends BaseProxyTrap<ObjectEntry>
   implements ProxyHandler<{}> {
@@ -26,25 +26,23 @@ export class ObjectWrapper extends BaseProxyTrap<ObjectEntry>
       return this;
     }
 
-    /// empty object
-    if (this.entry.value === 0) {
+    if (typeof p === "symbol") {
       return undefined;
     }
 
-    return objectGet(
-      this.externalArgs,
-      this.carrier,
-      this.entryPointer,
-      p as string
-    );
+    return objectGet(this.externalArgs, this.carrier, this.entry.value, p);
   }
 
   public deleteProperty(target: {}, p: PropertyKey): boolean {
+    if (typeof p === "symbol") {
+      return false;
+    }
+
     return deleteObjectPropertyEntryByKey(
       this.externalArgs,
       this.carrier,
-      this.entryPointer,
-      p as string
+      this.entry.value,
+      p
     );
   }
 
@@ -52,20 +50,20 @@ export class ObjectWrapper extends BaseProxyTrap<ObjectEntry>
     const gotEntries = getObjectPropertiesEntries(
       this.externalArgs,
       this.carrier.dataView,
-      this.entryPointer
+      this.entry.value
     );
 
-    return gotEntries.map(e => e.value.key);
+    return gotEntries.map(e => e.key);
   }
 
   public ownKeys(): PropertyKey[] {
     const gotEntries = getObjectPropertiesEntries(
       this.externalArgs,
       this.carrier.dataView,
-      this.entryPointer
+      this.entry.value
     );
 
-    return gotEntries.map(e => e.value.key);
+    return gotEntries.map(e => e.key);
   }
 
   public getOwnPropertyDescriptor(target: {}, p: PropertyKey) {
@@ -82,22 +80,17 @@ export class ObjectWrapper extends BaseProxyTrap<ObjectEntry>
     }
 
     if (typeof p === "symbol") {
-      throw new IllegalObjectPropConfigError();
-    }
-
-    /// empty object
-    if (this.entry.value === 0) {
       return false;
     }
 
-    const foundEntry = findObjectPropertyEntry(
-      this.externalArgs,
-      this.carrier.dataView,
-      this.entryPointer,
-      p as string
+    return (
+      hashMapNodeLookup(
+        this.externalArgs,
+        this.carrier.dataView,
+        this.entry.value,
+        p
+      ) !== 0
     );
-
-    return foundEntry !== undefined;
   }
 
   public set(target: {}, p: PropertyKey, value: any): boolean {
@@ -106,13 +99,7 @@ export class ObjectWrapper extends BaseProxyTrap<ObjectEntry>
     }
 
     allocationsTransaction(() => {
-      objectSet(
-        this.externalArgs,
-        this.carrier,
-        this.entryPointer,
-        p as string,
-        value
-      );
+      objectSet(this.externalArgs, this.carrier, this.entry.value, p, value);
     }, this.carrier.allocator);
 
     return true;
@@ -130,15 +117,6 @@ export class ObjectWrapper extends BaseProxyTrap<ObjectEntry>
     throw new UnsupportedOperationError();
   }
 
-  // getPrototypeOf? (target: T): object | null;
-  // setPrototypeOf? (target: T, v: any): boolean;
-  // isExtensible? (target: T): boolean;
-  // preventExtensions? (target: T): boolean;
-  // getOwnPropertyDescriptor? (target: T, p: PropertyKey): PropertyDescriptor | undefined;
-  // has? (target: T, p: PropertyKey): boolean;
-  // get? (target: T, p: PropertyKey, receiver: any): any;
-  // set? (target: T, p: PropertyKey, value: any, receiver: any): boolean;
-  // deleteProperty? (target: T, p: PropertyKey): boolean;
   public defineProperty(): // target: {},
   // p: PropertyKey,
   // attributes: PropertyDescriptor
@@ -155,10 +133,6 @@ export class ObjectWrapper extends BaseProxyTrap<ObjectEntry>
 
     // return Object.defineProperty(target, p, attributes);
   }
-  // enumerate? (target: T): PropertyKey[];
-  // ownKeys? (target: T): PropertyKey[];
-  // apply? (target: T, thisArg: any, argArray?: any): any;
-  // construct? (target: T, argArray: any, newTarget?: any): object;
 }
 
 export function createObjectWrapper<T = any>(

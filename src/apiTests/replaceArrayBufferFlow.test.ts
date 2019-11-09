@@ -2,21 +2,24 @@
 
 import * as util from "util";
 
-import { createObjectBuffer, ExternalArgs, resizeObjectBuffer } from "../";
+import { createObjectBuffer, resizeObjectBuffer } from "../";
 import {
   getUnderlyingArrayBuffer,
   replaceUnderlyingArrayBuffer,
   memoryStats
 } from "../internal/api";
-import { arrayBufferCopyTo } from "../internal/utils";
+import {
+  arrayBufferCopyTo,
+  externalArgsApiToExternalArgsApi
+} from "../internal/utils";
 
 describe("replaceArrayBufferFlow", () => {
-  const externalArgs: ExternalArgs = {
+  const externalArgs = externalArgsApiToExternalArgsApi({
     textEncoder: new util.TextEncoder(),
     textDecoder: new util.TextDecoder(),
     arrayAdditionalAllocation: 0,
     minimumStringAllocation: 0
-  };
+  });
 
   test("test replaceUnderlyingArrayBuffer works", () => {
     const objectBuffer = createObjectBuffer<any>(externalArgs, 512, {
@@ -34,7 +37,7 @@ describe("replaceArrayBufferFlow", () => {
 
     replaceUnderlyingArrayBuffer(objectBuffer, newAb);
 
-    expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`928`);
+    expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`800`);
     expect(objectBuffer).toMatchInlineSnapshot(`
       Object {
         "a": 1,
@@ -54,9 +57,9 @@ describe("replaceArrayBufferFlow", () => {
 
     expect(obj1Proxy).toBe(objectBuffer.obj1);
 
-    const newAb = resizeObjectBuffer(objectBuffer, 512);
+    const newAb = resizeObjectBuffer(objectBuffer, 768);
 
-    expect(newAb.byteLength).toMatchInlineSnapshot(`512`);
+    expect(newAb.byteLength).toMatchInlineSnapshot(`768`);
     expect(newAb).not.toBe(oldAb);
 
     expect(obj1Proxy).toBe(objectBuffer.obj1);

@@ -2,18 +2,25 @@ import {
   ExternalArgsApi,
   ExternalArgs,
   ArrayEntry,
-  ObjectPropEntry,
   ObjectEntry
 } from "./interfaces";
 import {
   externalArgsApiToExternalArgsApi,
   isPrimitive,
-  primitiveValueToEntry
+  primitiveValueToEntry,
+  align
 } from "./utils";
-import { sizeOfEntry } from "./store";
 import { ENTRY_TYPE } from "./entry-types";
+import {
+  LINKED_LIST_MACHINE,
+  LINKED_LIST_ITEM_MACHINE
+} from "./linkedList/linkedList";
+import { MAP_MACHINE, NODE_MACHINE } from "./hashmap/memoryLayout";
+import { sizeOfEntry } from "./store";
 
 /**
+ * **UNRELIABLE YET**
+ *
  * Calculate the size (bytes) of the given value.
  * Also validates that the value is saveable
  */
@@ -53,7 +60,7 @@ function sizeOfArray(
     length: arrayToSave.length
   };
 
-  memoryAllocated += sizeOfEntry(externalArgs, arrayStartEntry);
+  memoryAllocated += align(sizeOfEntry(arrayStartEntry));
   numberOfAllocations += 1;
 
   for (const item of arrayToSave) {
@@ -76,26 +83,17 @@ export function sizeOfObject(
   let memoryAllocated = 0;
   let numberOfAllocations = 0;
 
-  const objectEntries = Object.entries(objectToSave).reverse();
+  const objectEntries = Object.entries(objectToSave);
 
-  for (const [key, value] of objectEntries) {
+  const r = sizeOfHashmap(externalArgs, objectEntries.map(([key]) => key));
+
+  memoryAllocated += r.memoryAllocated;
+  numberOfAllocations += r.allocations;
+
+  for (const [value] of objectEntries) {
     const r = sizeOfValue(externalArgs, value);
     memoryAllocated += r.memoryAllocated;
     numberOfAllocations += r.numberOfAllocations;
-
-    const objectPropEntry: ObjectPropEntry = {
-      type: ENTRY_TYPE.OBJECT_PROP,
-      value: {
-        value: 0,
-        key,
-        next: 0
-      }
-    };
-
-    const rOfPropEntry = sizeOfEntry(externalArgs, objectPropEntry);
-
-    memoryAllocated += rOfPropEntry;
-    numberOfAllocations += 1;
   }
 
   const objectStartEntry: ObjectEntry = {
@@ -104,7 +102,7 @@ export function sizeOfObject(
     value: 0
   };
 
-  memoryAllocated += sizeOfEntry(externalArgs, objectStartEntry);
+  memoryAllocated += align(sizeOfEntry(objectStartEntry));
   numberOfAllocations += 1;
 
   return {
@@ -125,18 +123,20 @@ export function sizeOfValue(
     );
 
     return {
-      memoryAllocated: sizeOfEntry(externalArgs, entry),
+      memoryAllocated: align(sizeOfEntry(entry)),
       numberOfAllocations: 1
     };
   } else if (Array.isArray(value)) {
     return sizeOfArray(externalArgs, value);
   } else if (value instanceof Date) {
     return {
-      memoryAllocated: sizeOfEntry(externalArgs, {
-        type: ENTRY_TYPE.DATE,
-        refsCount: 0,
-        value: value.getTime()
-      }),
+      memoryAllocated: align(
+        sizeOfEntry({
+          type: ENTRY_TYPE.DATE,
+          refsCount: 0,
+          value: value.getTime()
+        })
+      ),
       numberOfAllocations: 1
     };
   } else if (typeof value === "object") {
@@ -144,4 +144,52 @@ export function sizeOfValue(
   } else {
     throw new Error("unsupported yet");
   }
+}
+
+// @todo what if rehash will happen on initial insert of value?
+function sizeOfHashmap(
+  externalArgs: ExternalArgs,
+  keysArray: Array<string | number>
+) {
+  const linkedListBaseAllocationsSize =
+    align(LINKED_LIST_MACHINE.map.SIZE_OF) +
+    // end marker
+    align(LINKED_LIST_ITEM_MACHINE.map.SIZE_OF);
+  const linkedListBaseAllocations = 2;
+
+  const linkedListItemsAllocations = keysArray.length;
+  const linkedListItemsAllocationsSize =
+    keysArray.length * align(LINKED_LIST_ITEM_MACHINE.map.SIZE_OF);
+
+  const hashMapBaseAllocations = 2;
+  const hashMapBaseAllocationsSize =
+    align(MAP_MACHINE.map.SIZE_OF) +
+    align(
+      externalArgs.hashMapMinInitialCapacity * Uint32Array.BYTES_PER_ELEMENT
+    );
+
+  const hashMapNodesAllocations = keysArray.length;
+  const hashMapNodesAllocationsSize =
+    align(NODE_MACHINE.map.SIZE_OF) * keysArray.length;
+
+  const hashMapKeysSize = keysArray
+    .map(k => sizeOfEntry(primitiveValueToEntry(externalArgs, k, 0)))
+    .reduce((p, c) => {
+      return p + align(c);
+    }, 0);
+
+  return {
+    allocations:
+      linkedListBaseAllocations +
+      linkedListItemsAllocations +
+      hashMapBaseAllocations +
+      hashMapNodesAllocations +
+      keysArray.length,
+    memoryAllocated:
+      linkedListBaseAllocationsSize +
+      linkedListItemsAllocationsSize +
+      hashMapBaseAllocationsSize +
+      hashMapNodesAllocationsSize +
+      hashMapKeysSize
+  };
 }

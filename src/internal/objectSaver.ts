@@ -2,12 +2,12 @@
 import { appendEntry } from "./store";
 import { ENTRY_TYPE } from "./entry-types";
 import {
-  ObjectPropEntry,
   ObjectEntry,
   ExternalArgs,
   DataViewAndAllocatorCarrier
 } from "./interfaces";
 import { saveValue } from "./saveValue";
+import { createHashMap, hashMapInsertUpdate } from "./hashmap/hashmap";
 
 export function objectSaver(
   externalArgs: ExternalArgs,
@@ -15,36 +15,35 @@ export function objectSaver(
   referencedPointers: number[],
   objectToSave: any
 ) {
-  const objectEntries = Object.entries(objectToSave).reverse();
+  const objectEntries = Object.entries(objectToSave);
 
-  let nextObjectEntryPointer = 0;
+  const hashMapPointer = createHashMap(
+    carrier,
+    Math.max(externalArgs.hashMapMinInitialCapacity, objectEntries.length * 1.3)
+  );
 
   for (const [key, value] of objectEntries) {
-    const rOfValue = saveValue(
+    const ptrToPtr = hashMapInsertUpdate(
+      externalArgs,
+      carrier,
+      hashMapPointer,
+      key
+    );
+
+    const pointerToValue = saveValue(
       externalArgs,
       carrier,
       referencedPointers,
       value
     );
 
-    const objectPropEntry: ObjectPropEntry = {
-      type: ENTRY_TYPE.OBJECT_PROP,
-      value: {
-        value: rOfValue,
-        key,
-        next: nextObjectEntryPointer
-      }
-    };
-
-    const rOfPropEntry = appendEntry(externalArgs, carrier, objectPropEntry);
-
-    nextObjectEntryPointer = rOfPropEntry;
+    carrier.dataView.setUint32(ptrToPtr, pointerToValue);
   }
 
   const objectStartEntry: ObjectEntry = {
     type: ENTRY_TYPE.OBJECT,
     refsCount: 1,
-    value: nextObjectEntryPointer
+    value: hashMapPointer
   };
 
   return appendEntry(externalArgs, carrier, objectStartEntry);

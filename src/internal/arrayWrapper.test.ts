@@ -4,17 +4,16 @@ import { initializeArrayBuffer } from "./store";
 import * as util from "util";
 import { createArrayWrapper } from "./arrayWrapper";
 import { arraySaver } from "./arraySaver";
-import { ExternalArgs } from "./interfaces";
 import { MemPool } from "@bnaya/malloc-temporary-fork";
 import { MEM_POOL_START } from "./consts";
+import { externalArgsApiToExternalArgsApi } from "./utils";
 
 describe("arrayWrapper tests", () => {
-  const externalArgs: ExternalArgs = {
+  const externalArgs = externalArgsApiToExternalArgsApi({
     textEncoder: new util.TextEncoder(),
     textDecoder: new util.TextDecoder(),
-    arrayAdditionalAllocation: 0,
-    minimumStringAllocation: 0
-  };
+    arrayAdditionalAllocation: 20
+  });
 
   describe("arrayWrapper - general", () => {
     test("arrayWrapper class 1", () => {
@@ -50,7 +49,7 @@ describe("arrayWrapper tests", () => {
         ]
       `);
 
-      expect(allocator.stats().available).toMatchInlineSnapshot(`120`);
+      expect(allocator.stats().available).toMatchInlineSnapshot(`40`);
     });
 
     test("arrayWrapper array.keys()", () => {
@@ -79,7 +78,7 @@ describe("arrayWrapper tests", () => {
 
       expect([...arrayWrapper.keys()]).toEqual([0, 1, 2]);
 
-      expect(allocator.stats().available).toMatchInlineSnapshot(`120`);
+      expect(allocator.stats().available).toMatchInlineSnapshot(`40`);
     });
 
     test("arrayWrapper array.entries()", () => {
@@ -123,7 +122,7 @@ describe("arrayWrapper tests", () => {
         ]
       `);
 
-      expect(allocator.stats().available).toMatchInlineSnapshot(`120`);
+      expect(allocator.stats().available).toMatchInlineSnapshot(`40`);
     });
 
     test("arrayWrapper array.values() & iterator", () => {
@@ -165,7 +164,7 @@ describe("arrayWrapper tests", () => {
         ]
       `);
 
-      expect(allocator.stats().available).toMatchInlineSnapshot(`120`);
+      expect(allocator.stats().available).toMatchInlineSnapshot(`40`);
     });
 
     test("arrayWrapper set value in bound", () => {
@@ -287,7 +286,7 @@ describe("arrayWrapper tests", () => {
           "new value",
         ]
       `);
-      expect(allocator.stats().available).toMatchInlineSnapshot(`24`);
+      expect(allocator.stats().available).toMatchInlineSnapshot(`16`);
     });
   });
 
@@ -330,11 +329,11 @@ describe("arrayWrapper tests", () => {
       ]
     `);
 
-    expect(allocator.stats().available).toMatchInlineSnapshot(`240`);
+    expect(allocator.stats().available).toMatchInlineSnapshot(`160`);
   });
 
   test("arrayWrapper sort - with comparator", () => {
-    const arrayBuffer = new ArrayBuffer(512);
+    const arrayBuffer = new ArrayBuffer(2048);
     const dataView = new DataView(arrayBuffer);
     initializeArrayBuffer(arrayBuffer);
     const allocator = new MemPool({
@@ -392,7 +391,7 @@ describe("arrayWrapper tests", () => {
       ]
     `);
 
-    expect(allocator.stats().available).toMatchInlineSnapshot(`40`);
+    expect(allocator.stats().available).toMatchInlineSnapshot(`680`);
   });
 
   test("arrayWrapper - reverse", () => {
@@ -437,7 +436,7 @@ describe("arrayWrapper tests", () => {
       ]
     `);
 
-    expect(allocator.stats().available).toMatchInlineSnapshot(`248`);
+    expect(allocator.stats().available).toMatchInlineSnapshot(`168`);
   });
 
   test("arrayWrapper - set length", () => {
@@ -499,6 +498,6 @@ describe("arrayWrapper tests", () => {
       arrayWrapper.length = 2.2;
     }).toThrowErrorMatchingInlineSnapshot(`"Invalid array length"`);
 
-    expect(allocator.stats().available).toMatchInlineSnapshot(`184`);
+    expect(allocator.stats().available).toMatchInlineSnapshot(`168`);
   });
 });

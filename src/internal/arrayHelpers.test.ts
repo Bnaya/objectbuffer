@@ -11,13 +11,14 @@ import {
 import { ExternalArgs } from "./interfaces";
 import { MemPool } from "@bnaya/malloc-temporary-fork";
 import { MEM_POOL_START } from "./consts";
+import { externalArgsApiToExternalArgsApi } from "./utils";
 
-const externalArgs: ExternalArgs = {
+const externalArgs: ExternalArgs = externalArgsApiToExternalArgsApi({
   textEncoder: new util.TextEncoder(),
   textDecoder: new util.TextDecoder(),
   arrayAdditionalAllocation: 0,
   minimumStringAllocation: 0
-};
+});
 
 describe("arrayHelpers tests", () => {
   test("arrayGetMetadata", () => {
@@ -180,6 +181,6 @@ describe("arrayHelpers tests", () => {
     );
 
     expect(finalValue).toMatchInlineSnapshot(`"im the new value"`);
-    expect(allocator.stats().available).toMatchInlineSnapshot(`112`);
+    expect(allocator.stats().available).toMatchInlineSnapshot(`128`);
   });
 });

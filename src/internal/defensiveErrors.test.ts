@@ -1,19 +1,18 @@
-import { ExternalArgs } from "../internal/interfaces";
 import * as util from "util";
 import { createObjectBuffer } from "..";
+import { externalArgsApiToExternalArgsApi } from "./utils";
 
 /* eslint-env jest */
 
 describe("defensiveErrors", () => {
-  const externalArgs: ExternalArgs = {
+  const externalArgs = externalArgsApiToExternalArgsApi({
     textEncoder: new util.TextEncoder(),
     textDecoder: new util.TextDecoder(),
-    arrayAdditionalAllocation: 0,
-    minimumStringAllocation: 0
-  };
+    arrayAdditionalAllocation: 20
+  });
 
   test("defensiveErrors Date", () => {
-    const objectBuffer = createObjectBuffer(externalArgs, 256, {
+    const objectBuffer = createObjectBuffer(externalArgs, 1024, {
       date: new Date(0),
       array: [1],
       object: {}
@@ -51,7 +50,7 @@ describe("defensiveErrors", () => {
   });
 
   test("defensiveErrors Array", () => {
-    const objectBuffer = createObjectBuffer(externalArgs, 256, {
+    const objectBuffer = createObjectBuffer(externalArgs, 1024, {
       date: new Date(0),
       array: [1],
       object: {}
@@ -83,7 +82,7 @@ describe("defensiveErrors", () => {
   });
 
   test("defensiveErrors Object", () => {
-    const objectBuffer = createObjectBuffer(externalArgs, 256, {
+    const objectBuffer = createObjectBuffer(externalArgs, 1024, {
       date: new Date(0),
       array: [1],
       object: {}

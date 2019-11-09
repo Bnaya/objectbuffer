@@ -1,17 +1,17 @@
-import { ExternalArgs } from "../internal/interfaces";
 import * as util from "util";
 import { createObjectBuffer } from "..";
 import { memoryStats } from "../internal/api";
+import { externalArgsApiToExternalArgsApi } from "../internal/utils";
 
 /* eslint-env jest */
 
-describe("primitivesMemoryReuse", () => {
-  const externalArgs: ExternalArgs = {
+describe.skip("primitivesMemoryReuse", () => {
+  const externalArgs = externalArgsApiToExternalArgsApi({
     textEncoder: new util.TextEncoder(),
     textDecoder: new util.TextDecoder(),
     arrayAdditionalAllocation: 0,
     minimumStringAllocation: 0
-  };
+  });
 
   test("test number / bigint reuse", () => {
     const objectBuffer = createObjectBuffer(externalArgs, 128, {

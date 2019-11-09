@@ -1,10 +1,10 @@
-import { Entry, ExternalArgs, DataViewAndAllocatorCarrier } from "./interfaces";
+import { ExternalArgs, DataViewAndAllocatorCarrier } from "./interfaces";
 import { ENTRY_TYPE, isPrimitiveEntryType } from "./entry-types";
 import { createObjectWrapper } from "./objectWrapper";
 import { createArrayWrapper } from "./arrayWrapper";
 import { createDateWrapper } from "./dateWrapper";
 import { getCacheFor } from "./externalObjectsCache";
-import { decrementRefCount } from "./store";
+import { decrementRefCount, readEntry } from "./store";
 import { getAllLinkedAddresses } from "./getAllLinkedAddresses";
 
 declare const FinalizationGroup: any;
@@ -19,9 +19,10 @@ const TYPE_TO_FACTORY = {
 export function entryToFinalJavaScriptValue(
   externalArgs: ExternalArgs,
   carrier: DataViewAndAllocatorCarrier,
-  valueEntry: Entry,
   pointerToEntry: number
 ) {
+  const valueEntry = readEntry(externalArgs, carrier.dataView, pointerToEntry);
+
   if (valueEntry.type === ENTRY_TYPE.NULL) {
     return null;
   }

@@ -4,17 +4,16 @@ import { initializeArrayBuffer } from "./store";
 import * as util from "util";
 import { createArrayWrapper } from "./arrayWrapper";
 import { arraySaver } from "./arraySaver";
-import { ExternalArgs } from "./interfaces";
 import { MemPool } from "@bnaya/malloc-temporary-fork";
 import { MEM_POOL_START } from "./consts";
+import { externalArgsApiToExternalArgsApi } from "./utils";
 
 describe("arraySplice tests", () => {
-  const externalArgs: ExternalArgs = {
+  const externalArgs = externalArgsApiToExternalArgsApi({
     textEncoder: new util.TextEncoder(),
     textDecoder: new util.TextDecoder(),
-    arrayAdditionalAllocation: 0,
-    minimumStringAllocation: 0
-  };
+    arrayAdditionalAllocation: 20
+  });
 
   test("arrayWrapper splice - add + delete - array stay in same length", () => {
     const arrayBuffer = new ArrayBuffer(512);
@@ -91,7 +90,7 @@ describe("arraySplice tests", () => {
 
     expect(removedFromPlain).toEqual([...removed]);
 
-    expect(allocator.stats().available).toMatchInlineSnapshot(`120`);
+    expect(allocator.stats().available).toMatchInlineSnapshot(`40`);
   });
 
   test("arrayWrapper splice - Just delete items from the middle", () => {
@@ -146,7 +145,7 @@ describe("arraySplice tests", () => {
 
     expect(plainJSArray).toEqual([...arrayWrapper]);
 
-    expect(allocator.stats().available).toMatchInlineSnapshot(`168`);
+    expect(allocator.stats().available).toMatchInlineSnapshot(`88`);
   });
 
   test("arrayWrapper splice - Just add items in the middle", () => {
@@ -210,7 +209,7 @@ describe("arraySplice tests", () => {
     `);
 
     expect(plainJSArray).toEqual([...arrayWrapper]);
-    expect(allocator.stats().available).toMatchInlineSnapshot(`64`);
+    expect(allocator.stats().available).toMatchInlineSnapshot(`56`);
   });
 
   test("arrayWrapper splice - add + delete - array will get longer", () => {
@@ -292,7 +291,7 @@ describe("arraySplice tests", () => {
 
     expect(removedFromPlain).toEqual([...removed]);
 
-    expect(allocator.stats().available).toMatchInlineSnapshot(`32`);
+    expect(allocator.stats().available).toMatchInlineSnapshot(`24`);
   });
 
   test("arrayWrapper splice - add + delete - array will get shorter", () => {
@@ -375,7 +374,7 @@ describe("arraySplice tests", () => {
 
     expect(removedFromPlain).toEqual([...removed]);
 
-    expect(allocator.stats().available).toMatchInlineSnapshot(`104`);
+    expect(allocator.stats().available).toMatchInlineSnapshot(`24`);
   });
 
   test("arrayWrapper splice - start bigger than array", () => {
@@ -448,7 +447,7 @@ describe("arraySplice tests", () => {
 
     expect(removedFromPlain).toEqual([...removed]);
 
-    expect(allocator.stats().available).toMatchInlineSnapshot(`64`);
+    expect(allocator.stats().available).toMatchInlineSnapshot(`56`);
   });
 
   test("arrayWrapper splice - delete bigger than array", () => {
@@ -527,7 +526,7 @@ describe("arraySplice tests", () => {
 
     expect(removedFromPlain).toEqual([...removed]);
 
-    expect(allocator.stats().available).toMatchInlineSnapshot(`136`);
+    expect(allocator.stats().available).toMatchInlineSnapshot(`56`);
   });
 
   test("arrayWrapper splice - negative start", () => {
@@ -606,7 +605,7 @@ describe("arraySplice tests", () => {
 
     expect(removedFromPlain).toEqual([...removed]);
 
-    expect(allocator.stats().available).toMatchInlineSnapshot(`72`);
+    expect(allocator.stats().available).toMatchInlineSnapshot(`56`);
   });
 
   test("arrayWrapper splice - negative delete", () => {
@@ -679,6 +678,6 @@ describe("arraySplice tests", () => {
 
     expect(removedFromPlain).toEqual([...removed]);
 
-    expect(allocator.stats().available).toMatchInlineSnapshot(`48`);
+    expect(allocator.stats().available).toMatchInlineSnapshot(`40`);
   });
 });

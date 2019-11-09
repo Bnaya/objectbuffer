@@ -1,83 +1,27 @@
 /* eslint-env jest */
 
-import { initializeArrayBuffer } from "./store";
+import { initializeArrayBuffer, readEntry } from "./store";
 import * as util from "util";
 import { objectSaver } from "./objectSaver";
 import {
-  findObjectPropertyEntry,
   getObjectPropertiesEntries,
-  deleteObjectPropertyEntryByKey,
-  findLastObjectPropertyEntry
+  deleteObjectPropertyEntryByKey
 } from "./objectWrapperHelpers";
-import { ExternalArgs } from "./interfaces";
 import { MemPool } from "@bnaya/malloc-temporary-fork";
 import { MEM_POOL_START } from "./consts";
+import { externalArgsApiToExternalArgsApi } from "./utils";
+import { ObjectEntry } from "./interfaces";
 
 describe("objectWrapperHelpers tests", () => {
-  const externalArgs: ExternalArgs = {
+  const externalArgs = externalArgsApiToExternalArgsApi({
     textEncoder: new util.TextEncoder(),
     textDecoder: new util.TextDecoder(),
-    arrayAdditionalAllocation: 0,
-    minimumStringAllocation: 0
-  };
+    arrayAdditionalAllocation: 20
+  });
 
   describe("objectWrapperHelpers - general", () => {
-    test("findObjectPropertyEntry", () => {
-      const arrayBuffer = new ArrayBuffer(512);
-      const dataView = new DataView(arrayBuffer);
-      initializeArrayBuffer(arrayBuffer);
-      const allocator = new MemPool({
-        buf: arrayBuffer,
-        start: MEM_POOL_START
-      });
-
-      const objectToSave = {
-        a: 6,
-        kawabanga: null,
-        b: "imastringa",
-        5: undefined
-      };
-
-      const saverOutput = objectSaver(
-        externalArgs,
-        { dataView, allocator },
-        [],
-        objectToSave
-      );
-
-      let foundEntry = findObjectPropertyEntry(
-        externalArgs,
-        dataView,
-        saverOutput,
-        "a"
-      );
-
-      expect(foundEntry).toMatchInlineSnapshot(`
-        Array [
-          176,
-          Object {
-            "type": 8,
-            "value": Object {
-              "key": "a",
-              "next": 120,
-              "value": 152,
-            },
-          },
-        ]
-      `);
-
-      foundEntry = findObjectPropertyEntry(
-        externalArgs,
-        dataView,
-        saverOutput,
-        "notfoundkey"
-      );
-
-      expect(foundEntry).toMatchInlineSnapshot(`undefined`);
-    });
-
     test("getObjectPropertiesEntries", () => {
-      const arrayBuffer = new ArrayBuffer(512);
+      const arrayBuffer = new ArrayBuffer(1024);
       const dataView = new DataView(arrayBuffer);
       initializeArrayBuffer(arrayBuffer);
       const allocator = new MemPool({
@@ -102,53 +46,39 @@ describe("objectWrapperHelpers tests", () => {
         objectToSave
       );
 
-      const gotEntries = getObjectPropertiesEntries(
+      const hashmapPointer = (readEntry(
         externalArgs,
         dataView,
         saverOutput
+      ) as ObjectEntry).value;
+
+      const gotEntries = getObjectPropertiesEntries(
+        externalArgs,
+        dataView,
+        hashmapPointer
       );
 
       expect(gotEntries).toMatchInlineSnapshot(`
         Array [
           Object {
-            "type": 8,
-            "value": Object {
-              "key": "5",
-              "next": 280,
-              "value": 304,
-            },
+            "key": "5",
+            "valuePointer": 192,
           },
           Object {
-            "type": 8,
-            "value": Object {
-              "key": "a",
-              "next": 224,
-              "value": 256,
-            },
+            "key": "a",
+            "valuePointer": 264,
           },
           Object {
-            "type": 8,
-            "value": Object {
-              "key": "kawabanga",
-              "next": 184,
-              "value": 208,
-            },
+            "key": "kawabanga",
+            "valuePointer": 352,
           },
           Object {
-            "type": 8,
-            "value": Object {
-              "key": "b",
-              "next": 112,
-              "value": 144,
-            },
+            "key": "b",
+            "valuePointer": 424,
           },
           Object {
-            "type": 8,
-            "value": Object {
-              "key": "nestedObject",
-              "next": 0,
-              "value": 96,
-            },
+            "key": "nestedObject",
+            "valuePointer": 704,
           },
         ]
       `);
@@ -176,48 +106,42 @@ describe("objectWrapperHelpers tests", () => {
         objectToSave
       );
 
-      expect(allocator.stats().available).toMatchInlineSnapshot(`272`);
+      expect(allocator.stats().available).toMatchInlineSnapshot(`64`);
+
+      const hashmapPointer = (readEntry(
+        externalArgs,
+        dataView,
+        saverOutput
+      ) as ObjectEntry).value;
 
       deleteObjectPropertyEntryByKey(
         externalArgs,
         { dataView, allocator },
-        saverOutput,
+        hashmapPointer,
         "a"
       );
 
-      expect(allocator.stats().available).toMatchInlineSnapshot(`416`);
+      expect(allocator.stats().available).toMatchInlineSnapshot(`144`);
 
       const gotEntries = getObjectPropertiesEntries(
         externalArgs,
         dataView,
-        saverOutput
+        hashmapPointer
       );
 
       expect(gotEntries).toMatchInlineSnapshot(`
         Array [
           Object {
-            "type": 8,
-            "value": Object {
-              "key": "b",
-              "next": 96,
-              "value": 120,
-            },
+            "key": "b",
+            "valuePointer": 272,
           },
           Object {
-            "type": 8,
-            "value": Object {
-              "key": "c",
-              "next": 56,
-              "value": 80,
-            },
+            "key": "c",
+            "valuePointer": 352,
           },
           Object {
-            "type": 8,
-            "value": Object {
-              "key": "d",
-              "next": 0,
-              "value": 40,
-            },
+            "key": "d",
+            "valuePointer": 424,
           },
         ]
       `);
@@ -246,46 +170,40 @@ describe("objectWrapperHelpers tests", () => {
         objectToSave
       );
 
-      expect(allocator.stats().available).toMatchInlineSnapshot(`272`);
+      expect(allocator.stats().available).toMatchInlineSnapshot(`64`);
+
+      const hashmapPointer = (readEntry(
+        externalArgs,
+        dataView,
+        saverOutput
+      ) as ObjectEntry).value;
 
       deleteObjectPropertyEntryByKey(
         externalArgs,
         { dataView, allocator },
-        saverOutput,
+        hashmapPointer,
         "d"
       );
 
-      expect(getObjectPropertiesEntries(externalArgs, dataView, saverOutput))
+      expect(getObjectPropertiesEntries(externalArgs, dataView, hashmapPointer))
         .toMatchInlineSnapshot(`
         Array [
           Object {
-            "type": 8,
-            "value": Object {
-              "key": "a",
-              "next": 160,
-              "value": 184,
-            },
+            "key": "a",
+            "valuePointer": 192,
           },
           Object {
-            "type": 8,
-            "value": Object {
-              "key": "b",
-              "next": 96,
-              "value": 120,
-            },
+            "key": "b",
+            "valuePointer": 272,
           },
           Object {
-            "type": 8,
-            "value": Object {
-              "key": "c",
-              "next": 0,
-              "value": 80,
-            },
+            "key": "c",
+            "valuePointer": 352,
           },
         ]
       `);
 
-      expect(allocator.stats().available).toMatchInlineSnapshot(`312`);
+      expect(allocator.stats().available).toMatchInlineSnapshot(`136`);
     });
 
     test("deleteObjectPropertyEntryByKey - delete in the middle", () => {
@@ -311,168 +229,45 @@ describe("objectWrapperHelpers tests", () => {
         [],
         objectToSave
       );
-      expect(allocator.stats().available).toMatchInlineSnapshot(`224`);
+      expect(allocator.stats().available).toMatchInlineSnapshot(`0`);
+
+      const hashmapPointer = readEntry(
+        externalArgs,
+        dataView,
+        saverOutput
+      ) as ObjectEntry;
 
       deleteObjectPropertyEntryByKey(
         externalArgs,
         { dataView, allocator },
-        saverOutput,
+        hashmapPointer.value,
         "c"
       );
 
-      expect(getObjectPropertiesEntries(externalArgs, dataView, saverOutput))
-        .toMatchInlineSnapshot(`
+      expect(
+        getObjectPropertiesEntries(externalArgs, dataView, hashmapPointer.value)
+      ).toMatchInlineSnapshot(`
         Array [
           Object {
-            "type": 8,
-            "value": Object {
-              "key": "a",
-              "next": 208,
-              "value": 232,
-            },
+            "key": "a",
+            "valuePointer": 192,
           },
           Object {
-            "type": 8,
-            "value": Object {
-              "key": "b",
-              "next": 104,
-              "value": 168,
-            },
+            "key": "b",
+            "valuePointer": 272,
           },
           Object {
-            "type": 8,
-            "value": Object {
-              "key": "d",
-              "next": 64,
-              "value": 88,
-            },
+            "key": "d",
+            "valuePointer": 424,
           },
           Object {
-            "type": 8,
-            "value": Object {
-              "key": "e",
-              "next": 0,
-              "value": 40,
-            },
+            "key": "e",
+            "valuePointer": 496,
           },
         ]
       `);
 
-      expect(allocator.stats().available).toMatchInlineSnapshot(`328`);
-    });
-
-    test("findLastObjectPropertyEntry - None Empty Object", () => {
-      const arrayBuffer = new ArrayBuffer(512);
-      const dataView = new DataView(arrayBuffer);
-      initializeArrayBuffer(arrayBuffer);
-      const allocator = new MemPool({
-        buf: arrayBuffer,
-        start: MEM_POOL_START
-      });
-
-      const objectToSave = {
-        a: 6,
-        b: "imastringa",
-        c: undefined
-      };
-
-      const saverOutput = objectSaver(
-        externalArgs,
-        { dataView, allocator },
-        [],
-        objectToSave
-      );
-
-      const found = findLastObjectPropertyEntry(
-        externalArgs,
-        dataView,
-        saverOutput
-      );
-
-      expect(found).toMatchInlineSnapshot(`
-        Array [
-          56,
-          Object {
-            "type": 8,
-            "value": Object {
-              "key": "c",
-              "next": 0,
-              "value": 40,
-            },
-          },
-        ]
-      `);
-
-      // this is here for control only
-      expect(getObjectPropertiesEntries(externalArgs, dataView, saverOutput))
-        .toMatchInlineSnapshot(`
-        Array [
-          Object {
-            "type": 8,
-            "value": Object {
-              "key": "a",
-              "next": 120,
-              "value": 144,
-            },
-          },
-          Object {
-            "type": 8,
-            "value": Object {
-              "key": "b",
-              "next": 56,
-              "value": 80,
-            },
-          },
-          Object {
-            "type": 8,
-            "value": Object {
-              "key": "c",
-              "next": 0,
-              "value": 40,
-            },
-          },
-        ]
-      `);
-
-      expect(allocator.stats().available).toMatchInlineSnapshot(`312`);
-    });
-
-    test("findLastObjectPropertyEntryPointer - Empty Object", () => {
-      const arrayBuffer = new ArrayBuffer(512);
-      const dataView = new DataView(arrayBuffer);
-      initializeArrayBuffer(arrayBuffer);
-      const allocator = new MemPool({
-        buf: arrayBuffer,
-        start: MEM_POOL_START
-      });
-
-      const objectToSave = {};
-
-      const saverOutput = objectSaver(
-        externalArgs,
-        { dataView, allocator },
-        [],
-        objectToSave
-      );
-
-      const found = findLastObjectPropertyEntry(
-        externalArgs,
-        dataView,
-        saverOutput
-      );
-
-      expect(found).toMatchInlineSnapshot(`
-        Array [
-          40,
-          Object {
-            "refsCount": 1,
-            "type": 7,
-            "value": 0,
-          },
-        ]
-      `);
-
-      expect(allocator.stats().available).toMatchInlineSnapshot(`464`);
+      expect(allocator.stats().available).toMatchInlineSnapshot(`72`);
     });
   });
 });

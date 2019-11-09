@@ -5,7 +5,12 @@ import {
   primitive,
   DataViewAndAllocatorCarrier
 } from "./interfaces";
-import { arrayBufferCopyTo, isPrimitive, primitiveValueToEntry } from "./utils";
+import {
+  arrayBufferCopyTo,
+  isPrimitive,
+  primitiveValueToEntry,
+  strByteLength
+} from "./utils";
 import { ExternalArgs } from "./interfaces";
 import { BigInt64OverflowError } from "./exceptions";
 import {
@@ -32,7 +37,7 @@ export function initializeArrayBuffer(arrayBuffer: ArrayBuffer) {
   return dataView;
 }
 
-export function sizeOfEntry(externalArgs: ExternalArgs, entry: Entry) {
+export function sizeOfEntry(entry: Entry) {
   let cursor = 0;
 
   cursor += Uint8Array.BYTES_PER_ELEMENT;
@@ -53,19 +58,15 @@ export function sizeOfEntry(externalArgs: ExternalArgs, entry: Entry) {
       break;
 
     case ENTRY_TYPE.STRING:
-      // eslint-disable-next-line no-case-declarations
-      const encodedString: Uint8Array = externalArgs.textEncoder.encode(
-        entry.value
-      );
       cursor += Uint16Array.BYTES_PER_ELEMENT;
 
       cursor += Uint16Array.BYTES_PER_ELEMENT;
 
-      for (let i = 0; i < encodedString.length; i++) {
-        cursor += Uint8Array.BYTES_PER_ELEMENT;
-      }
+      cursor += Math.max(strByteLength(entry.value), entry.allocatedBytes);
 
-      cursor += entry.allocatedBytes;
+      // oh boy. i don't want to change it now, but no choice
+      // @todo: this is incorrect? should be Math.max
+      // cursor += entry.allocatedBytes;
 
       break;
 
@@ -84,15 +85,11 @@ export function sizeOfEntry(externalArgs: ExternalArgs, entry: Entry) {
       break;
 
     case ENTRY_TYPE.OBJECT_PROP:
-      // eslint-disable-next-line no-case-declarations
-      const encodedStringKey: Uint8Array = externalArgs.textEncoder.encode(
-        entry.value.key
-      );
+      // key length
       cursor += Uint16Array.BYTES_PER_ELEMENT;
 
-      for (let i = 0; i < encodedStringKey.length; i++) {
-        cursor += Uint8Array.BYTES_PER_ELEMENT;
-      }
+      // actual key data
+      cursor += strByteLength(entry.value.key);
 
       cursor += Uint32Array.BYTES_PER_ELEMENT;
 
@@ -242,7 +239,7 @@ export function appendEntry(
   carrier: DataViewAndAllocatorCarrier,
   entry: Entry
 ) {
-  const size = sizeOfEntry(externalArgs, entry);
+  const size = sizeOfEntry(entry);
 
   const memoryAddress = carrier.allocator.calloc(size);
 
@@ -380,11 +377,7 @@ export function readEntry(
   return entry;
 }
 
-export function canReuseMemoryOfEntry(
-  externalArgs: ExternalArgs,
-  entryA: Entry,
-  value: primitive
-) {
+export function canReuseMemoryOfEntry(entryA: Entry, value: primitive) {
   const typeofTheValue = typeof value;
 
   if (entryA.type === ENTRY_TYPE.BOOLEAN && typeofTheValue === "boolean") {
@@ -404,8 +397,7 @@ export function canReuseMemoryOfEntry(
   if (
     entryA.type === ENTRY_TYPE.STRING &&
     typeofTheValue === "string" &&
-    entryA.allocatedBytes >=
-      externalArgs.textEncoder.encode(value as string).length
+    entryA.allocatedBytes >= strByteLength(value as string)
   ) {
     return true;
   }
@@ -439,7 +431,7 @@ export function writeValueInPtrToPtr(
   if (
     isPrimitive(value) &&
     isPrimitiveEntryType(existingValueEntry.type) &&
-    canReuseMemoryOfEntry(externalArgs, existingValueEntry, value) &&
+    canReuseMemoryOfEntry(existingValueEntry, value) &&
     existingEntryPointer !== 0
   ) {
     const stringAllocatedBytes =
@@ -580,4 +572,67 @@ export function getObjectPropPtrToPtr(
 
 export function getObjectValuePtrToPtr(pointerToEntry: number) {
   return pointerToEntry + 1 + 1;
+}
+
+export function memComp(
+  dataView: DataView,
+  aStart: number,
+  bStart: number,
+  length: number
+) {
+  if (
+    dataView.byteLength < aStart + length ||
+    dataView.byteLength < bStart + length
+  ) {
+    return false;
+  }
+  for (let i = 0; i <= length - i; i += 1) {
+    // compare 8 using Float64Array?
+    if (dataView.getUint8(aStart + i) !== dataView.getUint8(bStart + i)) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+export function compareStringOrNumberEntriesInPlace(
+  dataView: DataView,
+  entryAPointer: number,
+  entryBPointer: number
+) {
+  let cursor = 0;
+  const entryAType: ENTRY_TYPE = dataView.getUint8(entryAPointer + cursor);
+  const entryBType: ENTRY_TYPE = dataView.getUint8(entryBPointer + cursor);
+  cursor += 1;
+
+  if (entryAType !== entryBType) {
+    return false;
+  }
+
+  if (entryAType === ENTRY_TYPE.STRING) {
+    const aLength = dataView.getUint16(entryAPointer + cursor);
+    const bLength = dataView.getUint16(entryBPointer + cursor);
+
+    if (aLength !== bLength) {
+      return false;
+    }
+
+    // string length
+    cursor += Uint16Array.BYTES_PER_ELEMENT;
+    // allocated length, skip.
+    cursor += Uint16Array.BYTES_PER_ELEMENT;
+
+    return memComp(
+      dataView,
+      entryAPointer + cursor,
+      entryBPointer + cursor,
+      aLength
+    );
+  }
+
+  return (
+    dataView.getFloat64(entryAPointer + cursor) ===
+    dataView.getFloat64(entryBPointer + cursor)
+  );
 }

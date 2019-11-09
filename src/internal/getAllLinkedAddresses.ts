@@ -1,6 +1,7 @@
 import { readEntry } from "./store";
-import { ExternalArgs } from "./interfaces";
+import { ExternalArgs, ObjectEntry } from "./interfaces";
 import { ENTRY_TYPE } from "./entry-types";
+import { hashMapGetPointersToFree } from "./hashmap/hashmap";
 
 export function getAllLinkedAddresses(
   externalArgs: ExternalArgs,
@@ -47,39 +48,15 @@ function getAllLinkedAddressesStep(
     case ENTRY_TYPE.OBJECT:
       if (entry.refsCount < 2 || ignoreRefCount) {
         pushTo.push(entryPointer);
-        getAllLinkedAddressesStep(
+        getObjectAddresses(
           externalArgs,
           dataView,
           ignoreRefCount,
-          entry.value,
+          entry,
           pushTo
         );
       }
 
-      break;
-
-    case ENTRY_TYPE.OBJECT_PROP:
-      pushTo.push(entryPointer);
-
-      if (entry.value.next !== 0) {
-        getAllLinkedAddressesStep(
-          externalArgs,
-          dataView,
-          ignoreRefCount,
-          entry.value.next,
-          pushTo
-        );
-      }
-
-      if (entry.value.value !== 0) {
-        getAllLinkedAddressesStep(
-          externalArgs,
-          dataView,
-          ignoreRefCount,
-          entry.value.value,
-          pushTo
-        );
-      }
       break;
 
     case ENTRY_TYPE.ARRAY:
@@ -114,5 +91,30 @@ function getAllLinkedAddressesStep(
       // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
       // @ts-ignore
       throw new Error(ENTRY_TYPE[entry.type] + " Not implemented yet");
+  }
+}
+
+function getObjectAddresses(
+  externalArgs: ExternalArgs,
+  dataView: DataView,
+  ignoreRefCount: boolean,
+  objectEntry: ObjectEntry,
+  pushTo: number[]
+) {
+  const { pointersToValuePointers, pointers } = hashMapGetPointersToFree(
+    dataView,
+    objectEntry.value
+  );
+
+  pushTo.push(...pointers);
+
+  for (const pointer of pointersToValuePointers) {
+    getAllLinkedAddressesStep(
+      externalArgs,
+      dataView,
+      ignoreRefCount,
+      dataView.getUint32(pointer),
+      pushTo
+    );
   }
 }

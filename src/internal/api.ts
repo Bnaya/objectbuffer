@@ -176,3 +176,13 @@ export function memoryStats(objectBuffer: any) {
 }
 
 export { disposeWrapperObject } from "./disposeWrapperObject";
+
+/**
+ * Allows to update external args passed to createObjectBuffer
+ */
+export function updateExternalArgs(
+  objectBuffer: any,
+  options: Partial<ExternalArgsApi>
+) {
+  Object.assign(getInternalAPI(objectBuffer).getExternalArgs(), options);
+}

@@ -2,16 +2,17 @@
 
 import * as util from "util";
 
-import { createObjectBuffer, ExternalArgs } from "../";
+import { createObjectBuffer } from "../";
 import { resizeObjectBuffer, memoryStats } from "../internal/api";
+import { externalArgsApiToExternalArgsApi } from "../internal/utils";
 
 describe("memoryStats test", () => {
-  const externalArgs: ExternalArgs = {
+  const externalArgs = externalArgsApiToExternalArgsApi({
     textEncoder: new util.TextEncoder(),
     textDecoder: new util.TextDecoder(),
     arrayAdditionalAllocation: 0,
     minimumStringAllocation: 0
-  };
+  });
 
   test("memoryStats test", () => {
     const objectBuffer = createObjectBuffer<any>(externalArgs, 1024, {
@@ -21,8 +22,8 @@ describe("memoryStats test", () => {
 
     expect(memoryStats(objectBuffer)).toMatchInlineSnapshot(`
       Object {
-        "available": 720,
-        "used": 304,
+        "available": 432,
+        "used": 592,
       }
     `);
   });
@@ -35,32 +36,32 @@ describe("memoryStats test", () => {
 
     expect(memoryStats(objectBuffer)).toMatchInlineSnapshot(`
       Object {
-        "available": 1744,
-        "used": 304,
+        "available": 1456,
+        "used": 592,
       }
     `);
 
     resizeObjectBuffer(objectBuffer, 1024);
     expect(memoryStats(objectBuffer)).toMatchInlineSnapshot(`
       Object {
-        "available": 720,
-        "used": 304,
+        "available": 432,
+        "used": 592,
       }
     `);
 
     resizeObjectBuffer(objectBuffer, 768);
     expect(memoryStats(objectBuffer)).toMatchInlineSnapshot(`
       Object {
-        "available": 464,
-        "used": 304,
+        "available": 176,
+        "used": 592,
       }
     `);
 
     resizeObjectBuffer(objectBuffer, 2048);
     expect(memoryStats(objectBuffer)).toMatchInlineSnapshot(`
       Object {
-        "available": 1744,
-        "used": 304,
+        "available": 1456,
+        "used": 592,
       }
     `);
   });

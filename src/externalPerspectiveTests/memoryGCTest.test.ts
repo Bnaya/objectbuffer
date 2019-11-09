@@ -2,8 +2,9 @@
 import { ExternalArgs } from "../internal/interfaces";
 import * as util from "util";
 import { createObjectBuffer } from "..";
-import { disposeWrapperObject, memoryStats } from "../internal/api";
+import { memoryStats } from "../internal/api";
 import { wait } from "../internal/testUtils";
+import { externalArgsApiToExternalArgsApi } from "../internal/utils";
 
 /* eslint-env jest, node */
 
@@ -22,12 +23,12 @@ describe.skip("memoryGCTest.test", () => {
     throw new Error("must --harmony-weak-refs");
   }
 
-  const externalArgs: ExternalArgs = {
+  const externalArgs = externalArgsApiToExternalArgsApi({
     textEncoder: new util.TextEncoder(),
     textDecoder: new util.TextDecoder(),
     arrayAdditionalAllocation: 0,
     minimumStringAllocation: 0
-  };
+  });
 
   test("internal ArrayBuffer GC", async () => {
     // @ts-ignore
