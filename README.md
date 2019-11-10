@@ -1,5 +1,8 @@
 # ObjectBuffer: object-like API, backed by a [shared]arraybuffer
 
+[![npm version](https://badge.fury.io/js/%40bnaya%2Fobjectbuffer.svg)](https://badge.fury.io/js/%40bnaya%2Fobjectbuffer)
+[![Coverage Status](https://coveralls.io/repos/github/Bnaya/objectbuffer/badge.svg)](https://coveralls.io/github/Bnaya/objectbuffer)
+
 ## The readme is for latest release `v0.10.0`.big refactor ongoing (allocator, hashmap)
 
 For Modern browsers and node. Zero direct dependencies.
