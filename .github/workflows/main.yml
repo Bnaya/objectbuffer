@@ -1,23 +1,40 @@
-name: CI
+name: General Validity
 
-on: [push]
+on: ["push","pull_request"]
 
 jobs:
   test_and_validate:
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
+  # runs-on: ${{ matrix.os }}
+  # strategy:
+  #   matrix:
+  #     os: [ubuntu-16.04, ubuntu-18.04]
+  #     node: [10, 12]
 
     steps:
     - uses: actions/checkout@v1
-    - uses: borales/actions-yarn@v2.0.0
+
+    - name: yarn install
+      uses: borales/actions-yarn@v2.0.0
       with:
         cmd: install
-    - uses: borales/actions-yarn@v2.0.0
-      with:
-        cmd: test
-    - uses: borales/actions-yarn@v2.0.0
+
+    - name: Lint
+      uses: borales/actions-yarn@v2.0.0
       with:
         cmd: lint
+
+    - name: test + coverage
+      uses: borales/actions-yarn@v2.0.0
+      with:
+        cmd: test-coverage
+
+    - name: Coveralls GitHub Action
+      uses: coverallsapp/github-action@v1.0.1
+      with:
+        github-token: ${{ secrets.github_token }}
+
     - uses: borales/actions-yarn@v2.0.0
       with:
         cmd: build
