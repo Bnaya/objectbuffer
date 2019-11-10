@@ -25,7 +25,7 @@
     "yarn-deduplicate": "yarn-deduplicate -s fewer yarn.lock",
     "lint": "concurrently \"eslint src --ext .js,.jsx,.ts,.tsx\" \"tsc --noEmit --emitDeclarationOnly false\"",
     "test": "jest",
-    "test-coverage": "jest --coverage --coverageReporters=lcov",
+    "test-coverage": "jest --coverage",
     "build-declarations": "tsc -p tsconfig.build.json --isolatedModules false --declaration true --declarationMap true --noEmit false --emitDeclarationOnly true",
     "babel-build": "yarn babel src -d dist --extensions '.ts' --ignore '**/*.test.ts'",
     "cleanup": "rimraf dist",
