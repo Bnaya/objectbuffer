@@ -4,7 +4,7 @@ import { initializeArrayBuffer } from "./store";
 import * as util from "util";
 import { arrayBuffer2HexArray } from "./testUtils";
 import { arraySaver } from "./arraySaver";
-import { MemPool } from "@bnaya/malloc-temporary-fork";
+import { MemPool } from "@thi.ng/malloc";
 import { MEM_POOL_START } from "./consts";
 import { externalArgsApiToExternalArgsApi } from "./utils";
 
@@ -35,7 +35,7 @@ describe("arraySaver tests", () => {
         arrayToSave
       );
 
-      expect(saverOutput).toMatchInlineSnapshot(`216`);
+      expect(saverOutput).toMatchInlineSnapshot(`224`);
 
       expect(arrayBuffer2HexArray(arrayBuffer, true)).toMatchSnapshot(
         "after array save"

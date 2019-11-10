@@ -7,7 +7,7 @@ import {
   getObjectPropertiesEntries,
   deleteObjectPropertyEntryByKey
 } from "./objectWrapperHelpers";
-import { MemPool } from "@bnaya/malloc-temporary-fork";
+import { MemPool } from "@thi.ng/malloc";
 import { MEM_POOL_START } from "./consts";
 import { externalArgsApiToExternalArgsApi } from "./utils";
 import { ObjectEntry } from "./interfaces";
@@ -62,23 +62,23 @@ describe("objectWrapperHelpers tests", () => {
         Array [
           Object {
             "key": "5",
-            "valuePointer": 192,
+            "valuePointer": 200,
           },
           Object {
             "key": "a",
-            "valuePointer": 264,
+            "valuePointer": 272,
           },
           Object {
             "key": "kawabanga",
-            "valuePointer": 352,
+            "valuePointer": 360,
           },
           Object {
             "key": "b",
-            "valuePointer": 424,
+            "valuePointer": 432,
           },
           Object {
             "key": "nestedObject",
-            "valuePointer": 704,
+            "valuePointer": 712,
           },
         ]
       `);
@@ -106,7 +106,7 @@ describe("objectWrapperHelpers tests", () => {
         objectToSave
       );
 
-      expect(allocator.stats().available).toMatchInlineSnapshot(`64`);
+      expect(allocator.stats().available).toMatchInlineSnapshot(`56`);
 
       const hashmapPointer = (readEntry(
         externalArgs,
@@ -121,7 +121,7 @@ describe("objectWrapperHelpers tests", () => {
         "a"
       );
 
-      expect(allocator.stats().available).toMatchInlineSnapshot(`144`);
+      expect(allocator.stats().available).toMatchInlineSnapshot(`136`);
 
       const gotEntries = getObjectPropertiesEntries(
         externalArgs,
@@ -133,15 +133,15 @@ describe("objectWrapperHelpers tests", () => {
         Array [
           Object {
             "key": "b",
-            "valuePointer": 272,
+            "valuePointer": 280,
           },
           Object {
             "key": "c",
-            "valuePointer": 352,
+            "valuePointer": 360,
           },
           Object {
             "key": "d",
-            "valuePointer": 424,
+            "valuePointer": 432,
           },
         ]
       `);
@@ -170,7 +170,7 @@ describe("objectWrapperHelpers tests", () => {
         objectToSave
       );
 
-      expect(allocator.stats().available).toMatchInlineSnapshot(`64`);
+      expect(allocator.stats().available).toMatchInlineSnapshot(`56`);
 
       const hashmapPointer = (readEntry(
         externalArgs,
@@ -190,20 +190,20 @@ describe("objectWrapperHelpers tests", () => {
         Array [
           Object {
             "key": "a",
-            "valuePointer": 192,
+            "valuePointer": 200,
           },
           Object {
             "key": "b",
-            "valuePointer": 272,
+            "valuePointer": 280,
           },
           Object {
             "key": "c",
-            "valuePointer": 352,
+            "valuePointer": 360,
           },
         ]
       `);
 
-      expect(allocator.stats().available).toMatchInlineSnapshot(`136`);
+      expect(allocator.stats().available).toMatchInlineSnapshot(`128`);
     });
 
     test("deleteObjectPropertyEntryByKey - delete in the middle", () => {
@@ -250,19 +250,19 @@ describe("objectWrapperHelpers tests", () => {
         Array [
           Object {
             "key": "a",
-            "valuePointer": 192,
+            "valuePointer": 200,
           },
           Object {
             "key": "b",
-            "valuePointer": 272,
+            "valuePointer": 280,
           },
           Object {
             "key": "d",
-            "valuePointer": 424,
+            "valuePointer": 432,
           },
           Object {
             "key": "e",
-            "valuePointer": 496,
+            "valuePointer": 0,
           },
         ]
       `);

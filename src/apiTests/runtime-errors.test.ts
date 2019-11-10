@@ -18,9 +18,7 @@ describe("Runtime errors", () => {
   test("Fail to create when not enough memory", () => {
     expect(() => {
       createObjectBuffer(externalArgs, 8, { value: "" });
-    }).toThrowErrorMatchingInlineSnapshot(
-      `"Start offset 16 is outside the bounds of the buffer"`
-    );
+    }).toThrowErrorMatchingInlineSnapshot(`"Invalid typed array length: 7"`);
   });
 
   test("Fail to set new data when enough memory", () => {
@@ -34,7 +32,7 @@ describe("Runtime errors", () => {
     }).toThrowErrorMatchingInlineSnapshot(`"OutOfMemoryError"`);
 
     expect(memoryStats(objectBuffer).available).toEqual(freeSpaceLeft);
-    expect(freeSpaceLeft).toMatchInlineSnapshot(`16`);
+    expect(freeSpaceLeft).toMatchInlineSnapshot(`8`);
 
     expect(objectBuffer).toMatchInlineSnapshot(`
       Object {

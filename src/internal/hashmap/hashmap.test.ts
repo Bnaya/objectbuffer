@@ -1,7 +1,7 @@
 /* eslint-env jest */
 import * as util from "util";
 import { arrayBuffer2HexArray, recordAllocations } from "../testUtils";
-import { MemPool } from "@bnaya/malloc-temporary-fork";
+import { MemPool } from "@thi.ng/malloc";
 import { MEM_POOL_START } from "../consts";
 import {
   createHashMap,
@@ -53,7 +53,7 @@ describe("hashmap", () => {
 
   test("createHashMap", () => {
     const mapPointer = createHashMap(carrier, 8);
-    expect(mapPointer).toMatchInlineSnapshot(`40`);
+    expect(mapPointer).toMatchInlineSnapshot(`48`);
     expect(arrayBuffer2HexArray(ab.slice(0, 128), true)).toMatchSnapshot(
       "simple create empty"
     );
@@ -144,7 +144,7 @@ describe("hashmap", () => {
       key
     );
 
-    expect(firstValuePointer).toMatchInlineSnapshot(`136`);
+    expect(firstValuePointer).toMatchInlineSnapshot(`144`);
 
     const foundValuePointer = hashMapValueLookup(
       externalArgs,
@@ -168,7 +168,7 @@ describe("hashmap", () => {
       key
     );
 
-    expect(memoryOfOverWrittenValue).toMatchInlineSnapshot(`144`);
+    expect(memoryOfOverWrittenValue).toMatchInlineSnapshot(`152`);
 
     const foundValuePointer = hashMapValueLookup(
       externalArgs,
@@ -288,34 +288,34 @@ describe("hashmap", () => {
 
     expect(memAvailableAfterEachStep).toMatchInlineSnapshot(`
       Array [
-        1912,
-        1856,
-        1800,
-        1744,
-        1688,
-        1632,
-        1576,
-        1520,
-        1424,
-        1360,
-        1304,
-        1248,
-        1192,
-        1136,
-        1080,
-        1024,
-        888,
-        832,
-        768,
-        712,
-        656,
-        600,
-        544,
-        488,
-        432,
-        376,
-        320,
-        488,
+        1904,
+        1848,
+        1792,
+        1736,
+        1680,
+        1624,
+        1568,
+        1512,
+        1416,
+        1352,
+        1296,
+        1240,
+        1184,
+        1128,
+        1072,
+        1016,
+        880,
+        824,
+        760,
+        704,
+        648,
+        592,
+        536,
+        480,
+        424,
+        368,
+        312,
+        480,
       ]
     `);
   });
@@ -333,7 +333,7 @@ describe("hashmap", () => {
     const { allocations } = recordAllocations(() => {
       hashmapPointer = createHashMap({ dataView, allocator });
 
-      expect(allocator.stats().available).toMatchInlineSnapshot(`888`);
+      expect(allocator.stats().available).toMatchInlineSnapshot(`880`);
 
       let toAdd: undefined | string;
 
@@ -355,52 +355,52 @@ describe("hashmap", () => {
     expect(r).toMatchInlineSnapshot(`
       Object {
         "pointers": Array [
-          40,
-          592,
-          112,
-          128,
-          184,
-          240,
-          296,
-          352,
-          408,
-          464,
-          520,
-          576,
-          680,
-          736,
-          144,
-          168,
-          200,
-          224,
-          256,
-          280,
-          312,
-          336,
-          368,
-          392,
-          424,
-          448,
-          480,
-          504,
-          536,
-          560,
-          64,
-          88,
-          696,
-          720,
+          48,
+          600,
+          120,
+          136,
+          192,
+          248,
+          304,
+          360,
+          416,
+          472,
+          528,
+          584,
+          688,
+          744,
+          152,
+          176,
+          208,
+          232,
+          264,
+          288,
+          320,
+          344,
+          376,
+          400,
+          432,
+          456,
+          488,
+          512,
+          544,
+          568,
+          72,
+          96,
+          704,
+          728,
         ],
         "pointersToValuePointers": Array [
-          144,
-          200,
-          256,
-          312,
-          368,
-          424,
-          480,
-          536,
-          64,
-          696,
+          152,
+          208,
+          264,
+          320,
+          376,
+          432,
+          488,
+          544,
+          72,
+          704,
         ],
       }
     `);

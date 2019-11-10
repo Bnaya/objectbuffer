@@ -4,7 +4,7 @@ import { initializeArrayBuffer } from "./store";
 import * as util from "util";
 import { createArrayWrapper } from "./arrayWrapper";
 import { arraySaver } from "./arraySaver";
-import { MemPool } from "@bnaya/malloc-temporary-fork";
+import { MemPool } from "@thi.ng/malloc";
 import { MEM_POOL_START } from "./consts";
 import { externalArgsApiToExternalArgsApi } from "./utils";
 
@@ -49,7 +49,7 @@ describe("arrayWrapper tests", () => {
         ]
       `);
 
-      expect(allocator.stats().available).toMatchInlineSnapshot(`40`);
+      expect(allocator.stats().available).toMatchInlineSnapshot(`32`);
     });
 
     test("arrayWrapper array.keys()", () => {
@@ -78,7 +78,7 @@ describe("arrayWrapper tests", () => {
 
       expect([...arrayWrapper.keys()]).toEqual([0, 1, 2]);
 
-      expect(allocator.stats().available).toMatchInlineSnapshot(`40`);
+      expect(allocator.stats().available).toMatchInlineSnapshot(`32`);
     });
 
     test("arrayWrapper array.entries()", () => {
@@ -122,7 +122,7 @@ describe("arrayWrapper tests", () => {
         ]
       `);
 
-      expect(allocator.stats().available).toMatchInlineSnapshot(`40`);
+      expect(allocator.stats().available).toMatchInlineSnapshot(`32`);
     });
 
     test("arrayWrapper array.values() & iterator", () => {
@@ -164,7 +164,7 @@ describe("arrayWrapper tests", () => {
         ]
       `);
 
-      expect(allocator.stats().available).toMatchInlineSnapshot(`40`);
+      expect(allocator.stats().available).toMatchInlineSnapshot(`32`);
     });
 
     test("arrayWrapper set value in bound", () => {
@@ -286,7 +286,7 @@ describe("arrayWrapper tests", () => {
           "new value",
         ]
       `);
-      expect(allocator.stats().available).toMatchInlineSnapshot(`16`);
+      expect(allocator.stats().available).toMatchInlineSnapshot(`8`);
     });
   });
 
@@ -329,7 +329,7 @@ describe("arrayWrapper tests", () => {
       ]
     `);
 
-    expect(allocator.stats().available).toMatchInlineSnapshot(`160`);
+    expect(allocator.stats().available).toMatchInlineSnapshot(`152`);
   });
 
   test("arrayWrapper sort - with comparator", () => {
@@ -391,7 +391,7 @@ describe("arrayWrapper tests", () => {
       ]
     `);
 
-    expect(allocator.stats().available).toMatchInlineSnapshot(`680`);
+    expect(allocator.stats().available).toMatchInlineSnapshot(`672`);
   });
 
   test("arrayWrapper - reverse", () => {
@@ -436,7 +436,7 @@ describe("arrayWrapper tests", () => {
       ]
     `);
 
-    expect(allocator.stats().available).toMatchInlineSnapshot(`168`);
+    expect(allocator.stats().available).toMatchInlineSnapshot(`160`);
   });
 
   test("arrayWrapper - set length", () => {
@@ -498,6 +498,6 @@ describe("arrayWrapper tests", () => {
       arrayWrapper.length = 2.2;
     }).toThrowErrorMatchingInlineSnapshot(`"Invalid array length"`);
 
-    expect(allocator.stats().available).toMatchInlineSnapshot(`168`);
+    expect(allocator.stats().available).toMatchInlineSnapshot(`160`);
   });
 });

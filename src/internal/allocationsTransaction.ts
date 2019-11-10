@@ -1,4 +1,4 @@
-import { IMemPool } from "@bnaya/malloc-temporary-fork";
+import { IMemPool } from "@thi.ng/malloc";
 import { OutOfMemoryError } from "./exceptions";
 
 // extend pool and not monkey patch? need to think about it

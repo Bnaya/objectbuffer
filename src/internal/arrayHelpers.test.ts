@@ -9,7 +9,7 @@ import {
   setValueAtArrayIndex
 } from "./arrayHelpers";
 import { ExternalArgs } from "./interfaces";
-import { MemPool } from "@bnaya/malloc-temporary-fork";
+import { MemPool } from "@thi.ng/malloc";
 import { MEM_POOL_START } from "./consts";
 import { externalArgsApiToExternalArgsApi } from "./utils";
 
@@ -47,11 +47,11 @@ describe("arrayHelpers tests", () => {
         "length": 2,
         "refsCount": 1,
         "type": 9,
-        "value": 40,
+        "value": 48,
       }
     `);
 
-    expect(allocator.stats().available).toMatchInlineSnapshot(`136`);
+    expect(allocator.stats().available).toMatchInlineSnapshot(`128`);
   });
 
   describe("getFinalValueAtArrayIndex", () => {
@@ -82,7 +82,7 @@ describe("arrayHelpers tests", () => {
       );
 
       expect(finalValue).toMatchInlineSnapshot(`1`);
-      expect(allocator.stats().available).toMatchInlineSnapshot(`136`);
+      expect(allocator.stats().available).toMatchInlineSnapshot(`128`);
     });
 
     test("out of bound index", () => {
@@ -112,7 +112,7 @@ describe("arrayHelpers tests", () => {
       );
 
       expect(finalValue).toMatchInlineSnapshot(`undefined`);
-      expect(allocator.stats().available).toMatchInlineSnapshot(`136`);
+      expect(allocator.stats().available).toMatchInlineSnapshot(`128`);
     });
 
     test("array of strings", () => {
@@ -142,7 +142,7 @@ describe("arrayHelpers tests", () => {
       );
 
       expect(finalValue).toMatchInlineSnapshot(`"b"`);
-      expect(allocator.stats().available).toMatchInlineSnapshot(`152`);
+      expect(allocator.stats().available).toMatchInlineSnapshot(`144`);
     });
   });
 
@@ -181,6 +181,6 @@ describe("arrayHelpers tests", () => {
     );
 
     expect(finalValue).toMatchInlineSnapshot(`"im the new value"`);
-    expect(allocator.stats().available).toMatchInlineSnapshot(`128`);
+    expect(allocator.stats().available).toMatchInlineSnapshot(`120`);
   });
 });

@@ -5,7 +5,7 @@ import * as util from "util";
 import { objectSaver } from "./objectSaver";
 import { createObjectWrapper } from "./objectWrapper";
 import { MEM_POOL_START } from "./consts";
-import { MemPool } from "@bnaya/malloc-temporary-fork";
+import { MemPool } from "@thi.ng/malloc";
 import { externalArgsApiToExternalArgsApi } from "./utils";
 
 describe("objectWrapper tests", () => {
@@ -63,7 +63,7 @@ describe("objectWrapper tests", () => {
         ]
       `);
 
-      expect(allocator.stats().top).toMatchInlineSnapshot(`728`);
+      expect(allocator.stats().top).toMatchInlineSnapshot(`736`);
     });
 
     test("ObjectWrapper class 2", () => {
@@ -101,7 +101,7 @@ describe("objectWrapper tests", () => {
       expect(objectWrapper.noneExistsProp).toMatchInlineSnapshot(`undefined`);
       expect(objectWrapper.a).toMatchInlineSnapshot(`6`);
 
-      expect(allocator.stats().top).toMatchInlineSnapshot(`728`);
+      expect(allocator.stats().top).toMatchInlineSnapshot(`736`);
     });
 
     test("ObjectWrapper class set override value", () => {
@@ -150,7 +150,7 @@ describe("objectWrapper tests", () => {
         }
       `);
 
-      expect(allocator.stats().top).toMatchInlineSnapshot(`728`);
+      expect(allocator.stats().top).toMatchInlineSnapshot(`736`);
     });
 
     test("ObjectWrapper class set new prop value", () => {
@@ -200,7 +200,7 @@ describe("objectWrapper tests", () => {
         }
       `);
 
-      expect(allocator.stats().top).toMatchInlineSnapshot(`824`);
+      expect(allocator.stats().top).toMatchInlineSnapshot(`832`);
     });
 
     test("ObjectWrapper class delete", () => {
@@ -248,7 +248,7 @@ describe("objectWrapper tests", () => {
         }
       `);
 
-      expect(allocator.stats().top).toMatchInlineSnapshot(`728`);
+      expect(allocator.stats().top).toMatchInlineSnapshot(`736`);
     });
   });
 });

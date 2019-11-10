@@ -9,7 +9,7 @@ import {
 } from "./utils";
 import { getCacheFor } from "./externalObjectsCache";
 import { INITIAL_ENTRY_POINTER_TO_POINTER, MEM_POOL_START } from "./consts";
-import { MemPool } from "@bnaya/malloc-temporary-fork";
+import { MemPool } from "@thi.ng/malloc";
 
 export interface CreateObjectBufferOptions {
   /**

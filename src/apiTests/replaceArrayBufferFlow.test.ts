@@ -37,7 +37,7 @@ describe("replaceArrayBufferFlow", () => {
 
     replaceUnderlyingArrayBuffer(objectBuffer, newAb);
 
-    expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`800`);
+    expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`792`);
     expect(objectBuffer).toMatchInlineSnapshot(`
       Object {
         "a": 1,

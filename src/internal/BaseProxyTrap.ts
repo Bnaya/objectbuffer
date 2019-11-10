@@ -6,7 +6,7 @@ import {
   ArrayEntry,
   ObjectEntry
 } from "./interfaces";
-import { IMemPool } from "@bnaya/malloc-temporary-fork";
+import { IMemPool } from "@thi.ng/malloc";
 import { incrementRefCount, decrementRefCount, readEntry } from "./store";
 import { WrapperDestroyed } from "./exceptions";
 
