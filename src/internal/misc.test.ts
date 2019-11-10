@@ -4,7 +4,7 @@ import { initializeArrayBuffer } from "./store";
 import * as util from "util";
 import { createArrayWrapper } from "./arrayWrapper";
 import { arraySaver } from "./arraySaver";
-import { MemPool } from "@bnaya/malloc-temporary-fork";
+import { MemPool } from "@thi.ng/malloc";
 import { MEM_POOL_START } from "./consts";
 import { externalArgsApiToExternalArgsApi } from "./utils";
 
@@ -50,16 +50,16 @@ describe("pop it all", () => {
 
     expect(sizeAfterEachPush).toMatchInlineSnapshot(`
       Array [
-        272,
-        248,
-        224,
-        200,
-        176,
-        152,
-        128,
-        104,
-        80,
-        56,
+        264,
+        240,
+        216,
+        192,
+        168,
+        144,
+        120,
+        96,
+        72,
+        48,
       ]
     `);
 
@@ -90,6 +90,6 @@ describe("pop it all", () => {
 
     expect(arrayWrapper).toMatchInlineSnapshot(`Array []`);
     expect(arrayToCompare).toEqual(arrayWrapper);
-    expect(allocator.stats().available).toMatchInlineSnapshot(`56`);
+    expect(allocator.stats().available).toMatchInlineSnapshot(`48`);
   });
 });

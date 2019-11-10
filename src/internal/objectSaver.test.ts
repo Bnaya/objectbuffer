@@ -4,7 +4,7 @@ import { initializeArrayBuffer } from "./store";
 import * as util from "util";
 import { arrayBuffer2HexArray } from "./testUtils";
 import { objectSaver } from "./objectSaver";
-import { MemPool } from "@bnaya/malloc-temporary-fork";
+import { MemPool } from "@thi.ng/malloc";
 import { MEM_POOL_START } from "./consts";
 import { externalArgsApiToExternalArgsApi } from "./utils";
 
@@ -42,10 +42,10 @@ describe("objectSaver tests", () => {
         objectToSave
       );
 
-      expect(saverOutput).toMatchInlineSnapshot(`792`);
+      expect(saverOutput).toMatchInlineSnapshot(`800`);
 
       expect(arrayBuffer2HexArray(arrayBuffer, true)).toMatchSnapshot();
-      expect(allocator.stats().available).toMatchInlineSnapshot(`224`);
+      expect(allocator.stats().available).toMatchInlineSnapshot(`216`);
     });
   });
 });

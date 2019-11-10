@@ -1,7 +1,7 @@
 /* eslint-env jest */
 
 import { arrayBuffer2HexArray, recordAllocations } from "../testUtils";
-import { MemPool } from "@bnaya/malloc-temporary-fork";
+import { MemPool } from "@thi.ng/malloc";
 import { MEM_POOL_START } from "../consts";
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
@@ -39,7 +39,7 @@ describe("LinkedList", () => {
   });
 
   test("linkedList init & add", () => {
-    setABSize(64);
+    setABSize(80);
 
     const linkedListPointer = initLinkedList({ dataView, allocator });
 
@@ -51,7 +51,7 @@ describe("LinkedList", () => {
       7
     );
 
-    expect(itemPointer).toBe(56);
+    expect(itemPointer).toBe(64);
 
     expect(arrayBuffer2HexArray(ab, true)).toMatchSnapshot();
   });
@@ -60,7 +60,7 @@ describe("LinkedList", () => {
     const linkedListPointer = initLinkedList({ dataView, allocator });
     // const copyToCompare = ab.slice(0);
 
-    expect(allocator.stats().available).toMatchInlineSnapshot(`64`);
+    expect(allocator.stats().available).toMatchInlineSnapshot(`56`);
 
     const pointer1 = linkedListItemInsert(
       { dataView, allocator },
@@ -73,10 +73,10 @@ describe("LinkedList", () => {
       8
     );
 
-    expect(allocator.stats().available).toMatchInlineSnapshot(`32`);
+    expect(allocator.stats().available).toMatchInlineSnapshot(`24`);
 
-    expect(pointer1).toBe(56);
-    expect(pointer2).toBe(72);
+    expect(pointer1).toBe(64);
+    expect(pointer2).toBe(80);
 
     linkedListItemRemove({ dataView, allocator }, pointer2);
     linkedListItemRemove({ dataView, allocator }, pointer1);
@@ -103,14 +103,14 @@ describe("LinkedList", () => {
     //   [31m+   \\"80:0x10\\",[39m"
     // `);
 
-    expect(allocator.stats().available).toMatchInlineSnapshot(`64`);
+    expect(allocator.stats().available).toMatchInlineSnapshot(`56`);
   });
 
   test("linkedList linkedListLowLevelIterator test 1", () => {
     setABSize(256);
     const linkedListPointer = initLinkedList({ dataView, allocator });
 
-    expect(allocator.stats().available).toMatchInlineSnapshot(`192`);
+    expect(allocator.stats().available).toMatchInlineSnapshot(`184`);
 
     const itemsPointers = [
       linkedListItemInsert({ dataView, allocator }, linkedListPointer, 7),
@@ -141,20 +141,20 @@ describe("LinkedList", () => {
       ]
     `);
 
-    expect(allocator.stats().available).toMatchInlineSnapshot(`128`);
+    expect(allocator.stats().available).toMatchInlineSnapshot(`120`);
 
     itemsPointers.forEach(p =>
       linkedListItemRemove({ dataView, allocator }, p)
     );
 
-    expect(allocator.stats().available).toMatchInlineSnapshot(`192`);
+    expect(allocator.stats().available).toMatchInlineSnapshot(`184`);
   });
 
   test("linkedList linkedListLowLevelIterator - delete while iteration", () => {
     setABSize(256);
     const linkedListPointer = initLinkedList({ dataView, allocator });
 
-    expect(allocator.stats().available).toMatchInlineSnapshot(`192`);
+    expect(allocator.stats().available).toMatchInlineSnapshot(`184`);
 
     const itemsPointers = [
       linkedListItemInsert({ dataView, allocator }, linkedListPointer, 7),
@@ -192,20 +192,20 @@ describe("LinkedList", () => {
       ]
     `);
 
-    expect(allocator.stats().available).toMatchInlineSnapshot(`160`);
+    expect(allocator.stats().available).toMatchInlineSnapshot(`152`);
 
     itemsPointers.forEach(p =>
       linkedListItemRemove({ dataView, allocator }, p)
     );
 
-    expect(allocator.stats().available).toMatchInlineSnapshot(`192`);
+    expect(allocator.stats().available).toMatchInlineSnapshot(`184`);
   });
 
   test("linkedList linkedListLowLevelIterator - add while iteration", () => {
     setABSize(256);
     const linkedListPointer = initLinkedList({ dataView, allocator });
 
-    expect(allocator.stats().available).toMatchInlineSnapshot(`192`);
+    expect(allocator.stats().available).toMatchInlineSnapshot(`184`);
 
     const itemsPointers = [
       linkedListItemInsert({ dataView, allocator }, linkedListPointer, 7),
@@ -256,7 +256,7 @@ describe("LinkedList", () => {
       ]
     `);
 
-    expect(allocator.stats().available).toMatchInlineSnapshot(`128`);
+    expect(allocator.stats().available).toMatchInlineSnapshot(`120`);
 
     itemsPointers.forEach(p =>
       linkedListItemRemove({ dataView, allocator }, p)
@@ -273,11 +273,11 @@ describe("LinkedList", () => {
       linkedListItemRemove({ dataView, allocator }, iteratorPointer);
     }
 
-    expect(allocator.stats().available).toMatchInlineSnapshot(`192`);
+    expect(allocator.stats().available).toMatchInlineSnapshot(`184`);
   });
 
   test("linkedList linkedListGetPointersToFree", () => {
-    setABSize(128);
+    setABSize(136);
     let linkedListPointer = 0;
     const toAddItems = [8, 9, 10, 11];
     const toAddItemsCopy = toAddItems.slice();
@@ -299,12 +299,12 @@ describe("LinkedList", () => {
     expect(r).toMatchInlineSnapshot(`
       Object {
         "pointers": Array [
-          40,
-          56,
-          72,
-          88,
-          104,
-          120,
+          48,
+          64,
+          80,
+          96,
+          112,
+          128,
         ],
         "valuePointers": Array [
           11,

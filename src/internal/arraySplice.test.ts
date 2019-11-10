@@ -4,7 +4,7 @@ import { initializeArrayBuffer } from "./store";
 import * as util from "util";
 import { createArrayWrapper } from "./arrayWrapper";
 import { arraySaver } from "./arraySaver";
-import { MemPool } from "@bnaya/malloc-temporary-fork";
+import { MemPool } from "@thi.ng/malloc";
 import { MEM_POOL_START } from "./consts";
 import { externalArgsApiToExternalArgsApi } from "./utils";
 
@@ -90,7 +90,7 @@ describe("arraySplice tests", () => {
 
     expect(removedFromPlain).toEqual([...removed]);
 
-    expect(allocator.stats().available).toMatchInlineSnapshot(`40`);
+    expect(allocator.stats().available).toMatchInlineSnapshot(`32`);
   });
 
   test("arrayWrapper splice - Just delete items from the middle", () => {
@@ -145,7 +145,7 @@ describe("arraySplice tests", () => {
 
     expect(plainJSArray).toEqual([...arrayWrapper]);
 
-    expect(allocator.stats().available).toMatchInlineSnapshot(`88`);
+    expect(allocator.stats().available).toMatchInlineSnapshot(`80`);
   });
 
   test("arrayWrapper splice - Just add items in the middle", () => {
@@ -209,7 +209,7 @@ describe("arraySplice tests", () => {
     `);
 
     expect(plainJSArray).toEqual([...arrayWrapper]);
-    expect(allocator.stats().available).toMatchInlineSnapshot(`56`);
+    expect(allocator.stats().available).toMatchInlineSnapshot(`48`);
   });
 
   test("arrayWrapper splice - add + delete - array will get longer", () => {
@@ -291,7 +291,7 @@ describe("arraySplice tests", () => {
 
     expect(removedFromPlain).toEqual([...removed]);
 
-    expect(allocator.stats().available).toMatchInlineSnapshot(`24`);
+    expect(allocator.stats().available).toMatchInlineSnapshot(`16`);
   });
 
   test("arrayWrapper splice - add + delete - array will get shorter", () => {
@@ -374,7 +374,7 @@ describe("arraySplice tests", () => {
 
     expect(removedFromPlain).toEqual([...removed]);
 
-    expect(allocator.stats().available).toMatchInlineSnapshot(`24`);
+    expect(allocator.stats().available).toMatchInlineSnapshot(`16`);
   });
 
   test("arrayWrapper splice - start bigger than array", () => {
@@ -447,7 +447,7 @@ describe("arraySplice tests", () => {
 
     expect(removedFromPlain).toEqual([...removed]);
 
-    expect(allocator.stats().available).toMatchInlineSnapshot(`56`);
+    expect(allocator.stats().available).toMatchInlineSnapshot(`48`);
   });
 
   test("arrayWrapper splice - delete bigger than array", () => {
@@ -526,7 +526,7 @@ describe("arraySplice tests", () => {
 
     expect(removedFromPlain).toEqual([...removed]);
 
-    expect(allocator.stats().available).toMatchInlineSnapshot(`56`);
+    expect(allocator.stats().available).toMatchInlineSnapshot(`48`);
   });
 
   test("arrayWrapper splice - negative start", () => {
@@ -605,7 +605,7 @@ describe("arraySplice tests", () => {
 
     expect(removedFromPlain).toEqual([...removed]);
 
-    expect(allocator.stats().available).toMatchInlineSnapshot(`56`);
+    expect(allocator.stats().available).toMatchInlineSnapshot(`48`);
   });
 
   test("arrayWrapper splice - negative delete", () => {
@@ -678,6 +678,6 @@ describe("arraySplice tests", () => {
 
     expect(removedFromPlain).toEqual([...removed]);
 
-    expect(allocator.stats().available).toMatchInlineSnapshot(`40`);
+    expect(allocator.stats().available).toMatchInlineSnapshot(`32`);
   });
 });

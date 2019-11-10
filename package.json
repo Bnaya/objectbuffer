@@ -84,6 +84,6 @@
     "typescript": "^3.7.2"
   },
   "dependencies": {
-    "@bnaya/malloc-temporary-fork": "^4.0.11-transferable"
+    "@thi.ng/malloc": "^4.1.0"
   }
 }

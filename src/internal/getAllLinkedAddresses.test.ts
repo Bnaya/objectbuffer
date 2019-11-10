@@ -1,7 +1,7 @@
 /* eslint-env jest */
 
 import * as util from "util";
-import { MemPool } from "@bnaya/malloc-temporary-fork";
+import { MemPool } from "@thi.ng/malloc";
 import {
   createObjectBuffer,
   memoryStats,
@@ -50,55 +50,55 @@ describe("getAllLinkedAddresses", () => {
 
       expect(linkedAddresses.slice().sort()).toMatchInlineSnapshot(`
         Array [
-          1000,
-          1016,
-          104,
-          1040,
-          1056,
-          1072,
-          1088,
-          1104,
-          1128,
-          120,
-          136,
-          160,
-          192,
-          208,
-          232,
-          272,
-          288,
-          304,
-          328,
-          344,
-          360,
-          384,
-          40,
-          408,
-          424,
-          440,
-          456,
-          480,
-          496,
-          512,
-          536,
-          560,
-          584,
-          600,
-          624,
-          64,
-          640,
-          664,
-          680,
-          696,
-          800,
-          824,
-          848,
-          872,
-          912,
-          928,
-          944,
-          968,
-          984,
+          1008,
+          1024,
+          1048,
+          1064,
+          1080,
+          1096,
+          1112,
+          112,
+          1136,
+          128,
+          144,
+          168,
+          200,
+          216,
+          240,
+          280,
+          296,
+          312,
+          336,
+          352,
+          368,
+          392,
+          416,
+          432,
+          448,
+          464,
+          48,
+          488,
+          504,
+          520,
+          544,
+          568,
+          592,
+          608,
+          632,
+          648,
+          672,
+          688,
+          704,
+          72,
+          808,
+          832,
+          856,
+          880,
+          920,
+          936,
+          952,
+          976,
+          992,
         ]
       `);
     });
@@ -123,8 +123,8 @@ describe("getAllLinkedAddresses", () => {
 
       expect(memoryStats(objectBuffer)).toMatchInlineSnapshot(`
         Object {
-          "available": 912,
-          "used": 1136,
+          "available": 904,
+          "used": 1144,
         }
       `);
 
@@ -145,8 +145,8 @@ describe("getAllLinkedAddresses", () => {
 
       expect(memoryStats(objectBuffer)).toMatchInlineSnapshot(`
         Object {
-          "available": 1832,
-          "used": 216,
+          "available": 2008,
+          "used": 40,
         }
       `);
     });

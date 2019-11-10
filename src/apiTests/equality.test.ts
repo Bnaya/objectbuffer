@@ -54,6 +54,6 @@ describe("equality.test tests. make sure our cache of proxies works", () => {
       }
     `);
 
-    expect(memoryStats(objectBuffer).used).toMatchInlineSnapshot(`720`);
+    expect(memoryStats(objectBuffer).used).toMatchInlineSnapshot(`728`);
   });
 });

@@ -1,6 +1,6 @@
 import { ENTRY_TYPE } from "./entry-types";
 import { TextDecoder, TextEncoder } from "./textEncoderDecoderTypes";
-import { IMemPool } from "@bnaya/malloc-temporary-fork";
+import { IMemPool } from "@thi.ng/malloc";
 
 export type primitive = string | number | bigint | boolean | undefined | null;
 
@@ -99,7 +99,7 @@ export interface DateEntry {
  */
 export interface DataViewAndAllocatorCarrier {
   dataView: DataView;
-  allocator: import("@bnaya/malloc-temporary-fork").IMemPool;
+  allocator: import("@thi.ng/malloc").IMemPool;
 }
 
 export type ExternalArgs = Readonly<{
