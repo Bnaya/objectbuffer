@@ -1,6 +1,7 @@
 name: General Validity
 
 on: ["push","pull_request"]
+# on: ["pull_request"]
 
 jobs:
   test_and_validate:
@@ -15,26 +16,35 @@ jobs:
     steps:
     - uses: actions/checkout@v1
 
-    - name: yarn install
-      uses: borales/actions-yarn@v2.0.0
+    - name: Cache node modules
+      uses: actions/cache@v1
       with:
-        cmd: install
+        path: node_modules
+        key: ${{ runner.OS }}-build-${{ hashFiles('**/yarn.lock') }}
+        restore-keys: |
+          ${{ runner.OS }}-build-${{ env.cache-name }}-
+          ${{ runner.OS }}-build-
+          ${{ runner.OS }}-
+
+    - name: yarn install
+      run: yarn
+      shell: bash
 
     - name: Lint
-      uses: borales/actions-yarn@v2.0.0
-      with:
-        cmd: lint
+      run: yarn lint
+      shell: bash
 
     - name: test + coverage
-      uses: borales/actions-yarn@v2.0.0
-      with:
-        cmd: test-coverage
+      run: yarn test-coverage
+      shell: bash
 
     - name: Coveralls GitHub Action
       uses: coverallsapp/github-action@v1.0.1
+      # env:
+        # NODE_COVERALLS_DEBUG: 1
       with:
         github-token: ${{ secrets.github_token }}
 
-    - uses: borales/actions-yarn@v2.0.0
-      with:
-        cmd: build
+    - name: build
+      run: yarn build
+      shell: bash
