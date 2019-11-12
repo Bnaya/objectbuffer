@@ -1,50 +1,124 @@
 name: General Validity
 
-on: ["push","pull_request"]
-# on: ["pull_request"]
+on: ["push", "pull_request"]
 
 jobs:
-  test_and_validate:
-
+  lint:
     runs-on: ubuntu-18.04
-  # runs-on: ${{ matrix.os }}
-  # strategy:
-  #   matrix:
-  #     os: [ubuntu-16.04, ubuntu-18.04]
-  #     node: [10, 12]
-
     steps:
-    - uses: actions/checkout@v1
+      - uses: actions/checkout@v1
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 12.x
 
-    - name: Cache node modules
-      uses: actions/cache@v1
-      with:
-        path: node_modules
-        key: ${{ runner.OS }}-build-${{ hashFiles('**/yarn.lock') }}
-        restore-keys: |
-          ${{ runner.OS }}-build-${{ env.cache-name }}-
-          ${{ runner.OS }}-build-
-          ${{ runner.OS }}-
+      - name: Cache node modules
+        uses: actions/cache@v1
+        with:
+          path: node_modules
+          key: ${{ runner.OS }}-build-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.OS }}-build-${{ env.cache-name }}-
+            ${{ runner.OS }}-build-
+            ${{ runner.OS }}-
 
-    - name: yarn install
-      run: yarn
-      shell: bash
+      - name: yarn install
+        run: yarn
+        shell: bash
 
-    - name: Lint
-      run: yarn lint
-      shell: bash
+      - name: Lint
+        run: yarn lint
+        shell: bash
 
-    - name: test + coverage
-      run: yarn test-coverage
-      shell: bash
+  test:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 12.x
 
-    - name: Coveralls GitHub Action
-      uses: coverallsapp/github-action@v1.0.1
-      # env:
-        # NODE_COVERALLS_DEBUG: 1
-      with:
-        github-token: ${{ secrets.github_token }}
+      - name: Cache node modules
+        uses: actions/cache@v1
+        with:
+          path: node_modules
+          key: ${{ runner.OS }}-build-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.OS }}-build-${{ env.cache-name }}-
+            ${{ runner.OS }}-build-
+            ${{ runner.OS }}-
 
-    - name: build
-      run: yarn build
-      shell: bash
+      - name: yarn install
+        run: yarn
+        shell: bash
+
+      - name: test + coverage
+        run: yarn test-coverage
+        shell: bash
+
+      - name: Coveralls GitHub Action
+        uses: coverallsapp/github-action@v1.0.1
+        # env:
+          # NODE_COVERALLS_DEBUG: 1
+        with:
+          github-token: ${{ secrets.github_token }}
+
+  build:
+    runs-on: ubuntu-18.04
+    needs: [lint, test]
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 12.x
+
+      - name: Cache node modules
+        uses: actions/cache@v1
+        with:
+          path: node_modules
+          key: ${{ runner.OS }}-build-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.OS }}-build-${{ env.cache-name }}-
+            ${{ runner.OS }}-build-
+            ${{ runner.OS }}-
+
+      - name: yarn install
+        run: yarn
+        shell: bash
+
+      - name: build
+        run: yarn build
+        shell: bash
+
+  publish_canary:
+    runs-on: ubuntu-18.04
+    needs: [lint, test]
+    if: github.ref != 'refs/heads/master'
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 12.x
+
+      - name: Cache node modules
+        uses: actions/cache@v1
+        with:
+          path: node_modules
+          key: ${{ runner.OS }}-build-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.OS }}-build-${{ env.cache-name }}-
+            ${{ runner.OS }}-build-
+            ${{ runner.OS }}-
+
+      - name: yarn install
+        run: yarn
+        shell: bash
+
+      - name: build
+        run: yarn build
+        shell: bash
+
+      - name: Publish with primer/publish
+        uses: primer/publish@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
