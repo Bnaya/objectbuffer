@@ -4,7 +4,7 @@ import {
   getOurPointerIfApplicable
 } from "./utils";
 import { appendEntry } from "./store";
-import { objectSaver } from "./objectSaver";
+import { objectSaver, mapSaver, setSaver } from "./objectSaver";
 import { arraySaver } from "./arraySaver";
 import { ExternalArgs, DataViewAndAllocatorCarrier } from "./interfaces";
 import { ENTRY_TYPE } from "./entry-types";
@@ -38,6 +38,10 @@ export function saveValue(
       refsCount: 1,
       value: value.getTime()
     });
+  } else if (value instanceof Map) {
+    valuePointer = mapSaver(externalArgs, carrier, referencedPointers, value);
+  } else if (value instanceof Set) {
+    valuePointer = setSaver(externalArgs, carrier, value);
   } else if (typeof value === "object") {
     valuePointer = objectSaver(
       externalArgs,

@@ -9,7 +9,7 @@ import {
 import { ENTRY_TYPE } from "./entry-types";
 import * as util from "util";
 import { arrayBuffer2HexArray } from "./testUtils";
-import { ObjectEntry, ObjectPropEntry, ExternalArgs } from "./interfaces";
+import { ObjectEntry, ExternalArgs } from "./interfaces";
 import { MemPool } from "@thi.ng/malloc";
 import { MEM_POOL_START } from "./consts";
 import { externalArgsApiToExternalArgsApi } from "./utils";
@@ -333,35 +333,6 @@ describe("Store tests readEntry", () => {
         }
       `);
     });
-  });
-
-  test("object property entry", () => {
-    const arrayBuffer = new ArrayBuffer(32);
-    const dataView = new DataView(arrayBuffer);
-
-    const entryToWrite: ObjectPropEntry = {
-      type: ENTRY_TYPE.OBJECT_PROP,
-      value: {
-        key: "imapropkey",
-        value: 0xff,
-        next: 0xffff
-      }
-    };
-
-    writeEntry(externalArgs, dataView, 0, entryToWrite);
-
-    const entry = readEntry(externalArgs, dataView, 0);
-
-    expect(entry).toMatchInlineSnapshot(`
-      Object {
-        "type": 8,
-        "value": Object {
-          "key": "imapropkey",
-          "next": 65535,
-          "value": 255,
-        },
-      }
-    `);
   });
 
   describe("appendEntry - general", () => {

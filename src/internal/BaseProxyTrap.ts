@@ -4,14 +4,17 @@ import {
   InternalAPI,
   DateEntry,
   ArrayEntry,
-  ObjectEntry
+  ObjectEntry,
+  MapEntry,
+  SetEntry
 } from "./interfaces";
 import { IMemPool } from "@thi.ng/malloc";
 import { incrementRefCount, decrementRefCount, readEntry } from "./store";
 import { WrapperDestroyed } from "./exceptions";
 
-export class BaseProxyTrap<T extends ObjectEntry | DateEntry | ArrayEntry>
-  implements InternalAPI {
+export class BaseProxyTrap<
+  T extends ObjectEntry | DateEntry | ArrayEntry | MapEntry | SetEntry
+> implements InternalAPI {
   constructor(
     protected externalArgs: ExternalArgs,
     protected carrier: DataViewAndAllocatorCarrier,

@@ -1,10 +1,5 @@
 import { ENTRY_TYPE, isPrimitiveEntryType } from "./entry-types";
-import {
-  Entry,
-  ObjectPropEntry,
-  primitive,
-  DataViewAndAllocatorCarrier
-} from "./interfaces";
+import { Entry, primitive, DataViewAndAllocatorCarrier } from "./interfaces";
 import {
   arrayBufferCopyTo,
   isPrimitive,
@@ -80,19 +75,9 @@ export function sizeOfEntry(entry: Entry) {
       break;
 
     case ENTRY_TYPE.OBJECT:
+    case ENTRY_TYPE.MAP:
+    case ENTRY_TYPE.SET:
       cursor += Uint8Array.BYTES_PER_ELEMENT;
-      cursor += Uint32Array.BYTES_PER_ELEMENT;
-      break;
-
-    case ENTRY_TYPE.OBJECT_PROP:
-      // key length
-      cursor += Uint16Array.BYTES_PER_ELEMENT;
-
-      // actual key data
-      cursor += strByteLength(entry.value.key);
-
-      cursor += Uint32Array.BYTES_PER_ELEMENT;
-
       cursor += Uint32Array.BYTES_PER_ELEMENT;
       break;
 
@@ -183,29 +168,11 @@ export function writeEntry(
       break;
 
     case ENTRY_TYPE.OBJECT:
+    case ENTRY_TYPE.SET:
+    case ENTRY_TYPE.MAP:
       dataView.setUint8(cursor, entry.refsCount);
       cursor += Uint8Array.BYTES_PER_ELEMENT;
       dataView.setUint32(cursor, entry.value);
-      cursor += Uint32Array.BYTES_PER_ELEMENT;
-      break;
-
-    case ENTRY_TYPE.OBJECT_PROP:
-      // eslint-disable-next-line no-case-declarations
-      const encodedStringKey: Uint8Array = externalArgs.textEncoder.encode(
-        entry.value.key
-      );
-      dataView.setUint16(cursor, encodedStringKey.byteLength);
-      cursor += Uint16Array.BYTES_PER_ELEMENT;
-
-      for (let i = 0; i < encodedStringKey.length; i++) {
-        dataView.setUint8(cursor, encodedStringKey[i]);
-        cursor += Uint8Array.BYTES_PER_ELEMENT;
-      }
-
-      dataView.setUint32(cursor, entry.value.value);
-      cursor += Uint32Array.BYTES_PER_ELEMENT;
-
-      dataView.setUint32(cursor, entry.value.next);
       cursor += Uint32Array.BYTES_PER_ELEMENT;
       break;
 
@@ -318,38 +285,12 @@ export function readEntry(
       break;
 
     case ENTRY_TYPE.OBJECT:
+    case ENTRY_TYPE.MAP:
+    case ENTRY_TYPE.SET:
       entry.refsCount = dataView.getUint8(cursor);
       cursor += Uint8Array.BYTES_PER_ELEMENT;
       entry.value = dataView.getUint32(cursor);
       cursor += Uint32Array.BYTES_PER_ELEMENT;
-      break;
-
-    case ENTRY_TYPE.OBJECT_PROP:
-      // eslint-disable-next-line no-case-declarations
-      const keyStringLength = dataView.getUint16(cursor);
-      cursor += Uint16Array.BYTES_PER_ELEMENT;
-
-      // this wrapping is needed until:
-      // https://github.com/whatwg/encoding/issues/172
-      // eslint-disable-next-line no-case-declarations
-      const tempAB2 = new ArrayBuffer(keyStringLength);
-      arrayBufferCopyTo(dataView.buffer, cursor, keyStringLength, tempAB2, 0);
-
-      // eslint-disable-next-line no-case-declarations
-      const objectPropsValue: ObjectPropEntry["value"] = {
-        key: externalArgs.textDecoder.decode(tempAB2),
-        value: dataView.getUint32(cursor + keyStringLength),
-        next: dataView.getUint32(
-          cursor + keyStringLength + Uint32Array.BYTES_PER_ELEMENT
-        )
-      };
-
-      cursor +=
-        keyStringLength +
-        Uint32Array.BYTES_PER_ELEMENT +
-        Uint32Array.BYTES_PER_ELEMENT;
-
-      entry.value = objectPropsValue;
       break;
 
     case ENTRY_TYPE.ARRAY:

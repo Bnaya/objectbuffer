@@ -290,6 +290,10 @@ export function hashMapDelete(
   return valuePointer;
 }
 
+/**
+ *
+ * return pointer to the next node
+ */
 export function hashMapLowLevelIterator(
   dataView: DataView,
   mapPointer: number,
@@ -460,4 +464,21 @@ function shouldRehash(
   // add proportion check?
   // nodesCount
   return fullBuckets / buckets > loadFactor;
+}
+
+export function* hashmapNodesPointerIterator(
+  dataView: DataView,
+  mapPointer: number
+) {
+  let iteratorToken = 0;
+
+  while (
+    (iteratorToken = hashMapLowLevelIterator(
+      dataView,
+      mapPointer,
+      iteratorToken
+    )) !== 0
+  ) {
+    yield iteratorToken;
+  }
 }
