@@ -103,7 +103,9 @@ export class SetWrapper<K extends string | number>
     }
   }
 
-  [Symbol.toStringTag] = Set.prototype[Symbol.toStringTag];
+  get [Symbol.toStringTag]() {
+    return Set.prototype[Symbol.toStringTag];
+  }
 
   get [INTERNAL_API_SYMBOL](): InternalAPI {
     return this;
