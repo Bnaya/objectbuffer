@@ -13,9 +13,10 @@ export type Entry =
   | BigIntPositiveEntry
   | BigIntNegativeEntry
   | ObjectEntry
-  | ObjectPropEntry
   | ArrayEntry
-  | DateEntry;
+  | DateEntry
+  | MapEntry
+  | SetEntry;
 
 export interface NullEntry {
   type: ENTRY_TYPE.NULL;
@@ -55,27 +56,9 @@ export interface ObjectEntry {
   type: ENTRY_TYPE.OBJECT;
   refsCount: number;
   /**
-   * Pointer to first prop
-   * */
-  value: number;
-}
-
-export interface ObjectPropEntry {
-  type: ENTRY_TYPE.OBJECT_PROP;
-  /**
-   * Location of next element
+   * Pointer to hashmap
    */
-  value: {
-    key: string;
-    /**
-     * Pointer to value entry
-     */
-    value: number;
-    /**
-     * Pointer to next prop
-     */
-    next: number;
-  };
+  value: number;
 }
 
 export interface ArrayEntry {
@@ -91,6 +74,24 @@ export interface ArrayEntry {
 export interface DateEntry {
   type: ENTRY_TYPE.DATE;
   refsCount: number;
+  value: number;
+}
+
+export interface MapEntry {
+  type: ENTRY_TYPE.MAP;
+  refsCount: number;
+  /**
+   * Pointer to hashmap
+   */
+  value: number;
+}
+
+export interface SetEntry {
+  type: ENTRY_TYPE.SET;
+  refsCount: number;
+  /**
+   * Pointer to hashmap
+   */
   value: number;
 }
 

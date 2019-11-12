@@ -9,6 +9,7 @@ export enum ENTRY_TYPE {
   STRING,
   BOOLEAN,
   OBJECT,
+  // deprecated
   OBJECT_PROP,
   ARRAY,
   ARRAY_ITEM,
