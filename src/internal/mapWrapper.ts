@@ -110,7 +110,9 @@ export class MapWrapper<K extends string | number, V>
     }
   }
 
-  [Symbol.toStringTag] = Map.prototype[Symbol.toStringTag];
+  get [Symbol.toStringTag]() {
+    return Map.prototype[Symbol.toStringTag];
+  }
 
   get [INTERNAL_API_SYMBOL](): InternalAPI {
     return this;
