@@ -201,6 +201,65 @@ describe("LinkedList", () => {
     expect(allocator.stats().available).toMatchInlineSnapshot(`184`);
   });
 
+  test.skip("linkedList linkedListLowLevelIterator - delete while iteration - delete current value", () => {
+    setABSize(256);
+    const linkedListPointer = initLinkedList({ dataView, allocator });
+
+    expect(allocator.stats().available).toMatchInlineSnapshot(`184`);
+
+    const regularSet = new Set([7, 6, 5, 4]);
+    const itemsPointers = [
+      linkedListItemInsert({ dataView, allocator }, linkedListPointer, 7),
+      linkedListItemInsert({ dataView, allocator }, linkedListPointer, 6),
+      linkedListItemInsert({ dataView, allocator }, linkedListPointer, 5),
+      linkedListItemInsert({ dataView, allocator }, linkedListPointer, 4)
+    ];
+
+    const linkedLintResults = [];
+
+    let iteratorPointer = 0;
+    while (
+      (iteratorPointer = linkedListLowLevelIterator(
+        dataView,
+        linkedListPointer,
+        iteratorPointer
+      ))
+    ) {
+      linkedLintResults.push(linkedListGetValue(dataView, iteratorPointer));
+      linkedListItemRemove({ dataView, allocator }, iteratorPointer);
+    }
+
+    const regularSetResults: number[] = [];
+    for (const v of regularSet) {
+      regularSetResults.push(v);
+      regularSet.delete(v);
+    }
+
+    expect(regularSetResults).toMatchInlineSnapshot(`
+      Array [
+        7,
+        6,
+        5,
+        4,
+      ]
+    `);
+    expect(linkedLintResults).toMatchInlineSnapshot(`
+      Array [
+        7,
+        5,
+      ]
+    `);
+
+    expect(regularSetResults).toEqual(linkedLintResults);
+    expect(allocator.stats().available).toMatchInlineSnapshot(`152`);
+
+    itemsPointers.forEach(p =>
+      linkedListItemRemove({ dataView, allocator }, p)
+    );
+
+    expect(allocator.stats().available).toMatchInlineSnapshot(`184`);
+  });
+
   test("linkedList linkedListLowLevelIterator - add while iteration", () => {
     setABSize(256);
     const linkedListPointer = initLinkedList({ dataView, allocator });
