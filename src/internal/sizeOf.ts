@@ -85,7 +85,10 @@ export function sizeOfObject(
 
   const objectEntries = Object.entries(objectToSave);
 
-  const r = sizeOfHashmap(externalArgs, objectEntries.map(([key]) => key));
+  const r = sizeOfHashmap(
+    externalArgs,
+    objectEntries.map(([key]) => key)
+  );
 
   memoryAllocated += r.memoryAllocated;
   numberOfAllocations += r.allocations;

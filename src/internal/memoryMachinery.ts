@@ -82,9 +82,10 @@ export function layoutDeclarationToMemoryMap<T extends string>(
   input: LayoutDeclaration<T>
 ): MemoryMap<T> {
   const oldEntries = Object.entries(input);
-  const newObjectEntries: Array<
-    [string, { type: TypedArrayCtor; bytesOffset: number }]
-  > = [];
+  const newObjectEntries: Array<[
+    string,
+    { type: TypedArrayCtor; bytesOffset: number }
+  ]> = [];
 
   for (const [index, [key, type]] of oldEntries.entries()) {
     if (index === 0) {

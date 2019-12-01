@@ -118,13 +118,19 @@ describe("Map", () => {
 
   // bug with deletion during iteration
   test.skip("iterate + delete compare", () => {
-    const nativeMap = new Map([[1, "a"], [2, "b"]]);
+    const nativeMap = new Map([
+      [1, "a"],
+      [2, "b"]
+    ]);
     for (const [key] of nativeMap) {
       nativeMap.delete(key);
     }
 
     const objectBuffer = createObjectBuffer<any>(externalArgs, 1024, {
-      foo: new Map([[1, "a"], [2, "b"]])
+      foo: new Map([
+        [1, "a"],
+        [2, "b"]
+      ])
     });
     for (const [key] of objectBuffer.foo) {
       objectBuffer.foo.delete(key);
