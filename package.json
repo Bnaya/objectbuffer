@@ -1,7 +1,7 @@
 {
   "name": "@bnaya/objectbuffer",
   "description": "Object-like api, backed by an array buffer",
-  "version": "0.10.0",
+  "version": "0.10.1",
   "main": "dist/objectbuffer.cjs.js",
   "module": "dist/objectbuffer.esm.js",
   "types": "dist/index.d.ts",
