@@ -3,7 +3,8 @@
   "description": "Object-like api, backed by an array buffer",
   "version": "0.10.0",
   "main": "dist/objectbuffer.cjs.js",
-  "module": "dist/index.js",
+  "module": "dist/objectbuffer.esm.js",
+  "types": "dist/index.d.ts",
   "author": "Bnaya Peretz <me@bnaya.net>",
   "license": "MIT",
   "repository": {
