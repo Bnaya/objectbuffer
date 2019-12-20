@@ -28,6 +28,8 @@ describe("objectSaver tests", () => {
         a: 6,
         b: "imastringa",
         6: null,
+        10: true,
+        11: false,
         ab: undefined,
         abc: BigInt("100"),
         nestedObject: {
@@ -42,10 +44,10 @@ describe("objectSaver tests", () => {
         objectToSave
       );
 
-      expect(saverOutput).toMatchInlineSnapshot(`768`);
+      expect(saverOutput).toMatchInlineSnapshot(`896`);
 
       expect(arrayBuffer2HexArray(arrayBuffer, true)).toMatchSnapshot();
-      expect(allocator.stats().available).toMatchInlineSnapshot(`248`);
+      expect(allocator.stats().available).toMatchInlineSnapshot(`120`);
     });
   });
 });
