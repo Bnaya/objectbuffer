@@ -118,6 +118,18 @@ export function sizeOfValue(
   externalArgs: ExternalArgs,
   value: any
 ): CheckerResult {
+  if (
+    value === undefined ||
+    value === null ||
+    value === true ||
+    value === false
+  ) {
+    return {
+      memoryAllocated: 0,
+      numberOfAllocations: 0
+    };
+  }
+
   if (isPrimitive(value)) {
     const entry = primitiveValueToEntry(
       externalArgs,

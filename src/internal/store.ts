@@ -38,16 +38,6 @@ export function sizeOfEntry(entry: Entry) {
   cursor += Uint8Array.BYTES_PER_ELEMENT;
 
   switch (entry.type) {
-    case ENTRY_TYPE.UNDEFINED:
-      break;
-
-    case ENTRY_TYPE.NULL:
-      break;
-
-    case ENTRY_TYPE.BOOLEAN:
-      cursor += Uint8Array.BYTES_PER_ELEMENT;
-      break;
-
     case ENTRY_TYPE.NUMBER:
       cursor += Float64Array.BYTES_PER_ELEMENT;
       break;
@@ -118,17 +108,6 @@ export function writeEntry(
   cursor += Uint8Array.BYTES_PER_ELEMENT;
 
   switch (entry.type) {
-    case ENTRY_TYPE.UNDEFINED:
-      break;
-
-    case ENTRY_TYPE.NULL:
-      break;
-
-    case ENTRY_TYPE.BOOLEAN:
-      dataView.setUint8(cursor, entry.value ? 1 : 0);
-      cursor += Uint8Array.BYTES_PER_ELEMENT;
-      break;
-
     case ENTRY_TYPE.NUMBER:
       dataView.setFloat64(cursor, entry.value);
       cursor += Float64Array.BYTES_PER_ELEMENT;
@@ -320,11 +299,6 @@ export function readEntry(
 
 export function canReuseMemoryOfEntry(entryA: Entry, value: primitive) {
   const typeofTheValue = typeof value;
-
-  if (entryA.type === ENTRY_TYPE.BOOLEAN && typeofTheValue === "boolean") {
-    return true;
-  }
-
   // number & bigint 64 are the same size
   if (
     (entryA.type === ENTRY_TYPE.BIGINT_NEGATIVE ||
@@ -339,15 +313,6 @@ export function canReuseMemoryOfEntry(entryA: Entry, value: primitive) {
     entryA.type === ENTRY_TYPE.STRING &&
     typeofTheValue === "string" &&
     entryA.allocatedBytes >= strByteLength(value as string)
-  ) {
-    return true;
-  }
-
-  if (
-    ((entryA.type === ENTRY_TYPE.NULL ||
-      entryA.type === ENTRY_TYPE.UNDEFINED) &&
-      value === undefined) ||
-    value === null
   ) {
     return true;
   }

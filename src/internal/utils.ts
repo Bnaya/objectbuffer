@@ -61,25 +61,6 @@ export function primitiveValueToEntry(
     };
   }
 
-  if (typeof value === "boolean") {
-    return {
-      type: ENTRY_TYPE.BOOLEAN,
-      value
-    };
-  }
-
-  if (typeof value === "undefined") {
-    return {
-      type: ENTRY_TYPE.UNDEFINED
-    };
-  }
-
-  if (value === null) {
-    return {
-      type: ENTRY_TYPE.NULL
-    };
-  }
-
   throw new Error("unexpected");
 }
 

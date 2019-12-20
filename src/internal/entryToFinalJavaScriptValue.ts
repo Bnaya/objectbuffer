@@ -8,6 +8,12 @@ import { decrementRefCount, readEntry } from "./store";
 import { getAllLinkedAddresses } from "./getAllLinkedAddresses";
 import { createMapWrapper } from "./mapWrapper";
 import { createSetWrapper } from "./setWrapper";
+import {
+  UNDEFINED_KNOWN_ADDRESS,
+  NULL_KNOWN_ADDRESS,
+  TRUE_KNOWN_ADDRESS,
+  FALSE_KNOWN_ADDRESS
+} from "./consts";
 
 // declare const FinalizationGroup: any;
 // declare const WeakRef: any;
@@ -25,15 +31,23 @@ export function entryToFinalJavaScriptValue(
   carrier: DataViewAndAllocatorCarrier,
   pointerToEntry: number
 ) {
-  const valueEntry = readEntry(externalArgs, carrier.dataView, pointerToEntry);
+  if (pointerToEntry === UNDEFINED_KNOWN_ADDRESS) {
+    return undefined;
+  }
 
-  if (valueEntry.type === ENTRY_TYPE.NULL) {
+  if (pointerToEntry === NULL_KNOWN_ADDRESS) {
     return null;
   }
 
-  if (valueEntry.type === ENTRY_TYPE.UNDEFINED) {
-    return undefined;
+  if (pointerToEntry === TRUE_KNOWN_ADDRESS) {
+    return true;
   }
+
+  if (pointerToEntry === FALSE_KNOWN_ADDRESS) {
+    return false;
+  }
+
+  const valueEntry = readEntry(externalArgs, carrier.dataView, pointerToEntry);
 
   if (isPrimitiveEntryType(valueEntry.type)) {
     return valueEntry.value;

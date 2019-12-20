@@ -5,9 +5,6 @@ import { IMemPool } from "@thi.ng/malloc";
 export type primitive = string | number | bigint | boolean | undefined | null;
 
 export type Entry =
-  | NullEntry
-  | NullUndefined
-  | BooleanEntry
   | StringEntry
   | NumberEntry
   | BigIntPositiveEntry
@@ -22,10 +19,16 @@ export interface NullEntry {
   type: ENTRY_TYPE.NULL;
 }
 
+/**
+ * @deprecated
+ */
 export interface NullUndefined {
   type: ENTRY_TYPE.UNDEFINED;
 }
 
+/**
+ * @deprecated
+ */
 export interface BooleanEntry {
   type: ENTRY_TYPE.BOOLEAN;
   value: boolean;
