@@ -462,16 +462,6 @@ describe("Store tests readEntry", () => {
         ]
       `);
 
-      const r2 = appendEntry(
-        externalArgs,
-        { dataView, allocator },
-        {
-          type: ENTRY_TYPE.BOOLEAN,
-          value: true
-        }
-      );
-
-      expect(r2).toMatchInlineSnapshot(`72`);
       expect(arrayBuffer2HexArray(arrayBuffer, true)).toMatchInlineSnapshot(`
         Array [
           "0:0x00",
@@ -490,11 +480,11 @@ describe("Store tests readEntry", () => {
           "13:0x00",
           "14:0x00",
           "15:0x00",
-          "16:0x40",
+          "16:0x28",
           "17:0x00",
           "18:0x00",
           "19:0x00",
-          "20:0x50",
+          "20:0x40",
           "21:0x00",
           "22:0x00",
           "23:0x00",
@@ -538,16 +528,16 @@ describe("Store tests readEntry", () => {
           "61:0x69",
           "62:0x6e",
           "63:0x67",
-          "64:0x10",
+          "64:0x00",
           "65:0x00",
           "66:0x00",
           "67:0x00",
-          "68:0x28",
+          "68:0x00",
           "69:0x00",
           "70:0x00",
           "71:0x00",
-          "72:0x06",
-          "73:0x01",
+          "72:0x00",
+          "73:0x00",
           "74:0x00",
           "75:0x00",
           "76:0x00",

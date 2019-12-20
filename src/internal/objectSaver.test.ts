@@ -42,10 +42,10 @@ describe("objectSaver tests", () => {
         objectToSave
       );
 
-      expect(saverOutput).toMatchInlineSnapshot(`800`);
+      expect(saverOutput).toMatchInlineSnapshot(`768`);
 
       expect(arrayBuffer2HexArray(arrayBuffer, true)).toMatchSnapshot();
-      expect(allocator.stats().available).toMatchInlineSnapshot(`216`);
+      expect(allocator.stats().available).toMatchInlineSnapshot(`248`);
     });
   });
 });

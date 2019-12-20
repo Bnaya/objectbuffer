@@ -31,7 +31,7 @@ describe("Set tests", () => {
 
     objectBuffer.foo = new Set(["a"]);
     objectBuffer.foo.add("b");
-    expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`576`);
+    expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`592`);
     expect(objectBuffer.foo).toMatchInlineSnapshot(`
       Set {
         "a",
@@ -54,11 +54,11 @@ describe("Set tests", () => {
 
     objectBuffer.foo = new Set(["a"]);
     objectBuffer.foo.add("b");
-    expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`576`);
+    expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`592`);
 
     objectBuffer.foo.delete(1);
 
-    expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`576`);
+    expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`592`);
 
     expect(objectBuffer.foo).toMatchInlineSnapshot(`
       Set {
@@ -74,7 +74,7 @@ describe("Set tests", () => {
 
     objectBuffer.foo = new Set(["a"]);
     objectBuffer.foo.add("b");
-    expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`576`);
+    expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`592`);
 
     objectBuffer.foo.clear();
 
@@ -94,7 +94,7 @@ describe("Set tests", () => {
     objectBuffer.foo = new Set(["a"]);
     objectBuffer.foo.add("b");
 
-    expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`576`);
+    expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`592`);
 
     expect(objectBuffer.foo).toMatchInlineSnapshot(`
       Set {

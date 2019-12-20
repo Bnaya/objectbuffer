@@ -34,11 +34,11 @@ describe("sizeOf tests", () => {
     expect(r).toMatchInlineSnapshot(`
       Object {
         "calcedSize": 64,
-        "realSize": 48,
+        "realSize": 64,
       }
     `);
     // ???
-    expect(r.calcedSize).toBe(r.realSize + 16);
+    expect(r.calcedSize).toBe(r.realSize);
   });
 
   test("number", () => {
@@ -50,17 +50,17 @@ describe("sizeOf tests", () => {
   });
 
   test("undefined", () => {
-    expect(sizeOf(externalArgs, undefined)).toMatchInlineSnapshot(`16`);
+    expect(sizeOf(externalArgs, undefined)).toMatchInlineSnapshot(`0`);
   });
 
   test("null", () => {
-    expect(sizeOf(externalArgs, null)).toMatchInlineSnapshot(`16`);
+    expect(sizeOf(externalArgs, null)).toMatchInlineSnapshot(`0`);
   });
 
   test("Array", () => {
     expect(
       sizeOf(externalArgs, ["a", { a: "u" }, null, undefined, 1])
-    ).toMatchInlineSnapshot(`388`);
+    ).toMatchInlineSnapshot(`356`);
   });
 
   test("Object", () => {

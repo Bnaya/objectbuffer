@@ -329,7 +329,7 @@ describe("arrayWrapper tests", () => {
       ]
     `);
 
-    expect(allocator.stats().available).toMatchInlineSnapshot(`152`);
+    expect(allocator.stats().available).toMatchInlineSnapshot(`184`);
   });
 
   test("arrayWrapper sort - with comparator", () => {

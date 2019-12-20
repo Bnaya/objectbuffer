@@ -62,23 +62,23 @@ describe("objectWrapperHelpers tests", () => {
         Array [
           Object {
             "key": "5",
-            "valuePointer": 200,
+            "valuePointer": 0,
           },
           Object {
             "key": "a",
-            "valuePointer": 272,
+            "valuePointer": 256,
           },
           Object {
             "key": "kawabanga",
-            "valuePointer": 360,
+            "valuePointer": 1,
           },
           Object {
             "key": "b",
-            "valuePointer": 432,
+            "valuePointer": 400,
           },
           Object {
             "key": "nestedObject",
-            "valuePointer": 712,
+            "valuePointer": 680,
           },
         ]
       `);
@@ -106,7 +106,7 @@ describe("objectWrapperHelpers tests", () => {
         objectToSave
       );
 
-      expect(allocator.stats().available).toMatchInlineSnapshot(`56`);
+      expect(allocator.stats().available).toMatchInlineSnapshot(`88`);
 
       const hashmapPointer = (readEntry(
         externalArgs,
@@ -121,7 +121,7 @@ describe("objectWrapperHelpers tests", () => {
         "a"
       );
 
-      expect(allocator.stats().available).toMatchInlineSnapshot(`136`);
+      expect(allocator.stats().available).toMatchInlineSnapshot(`168`);
 
       const gotEntries = getObjectPropertiesEntries(
         externalArgs,
@@ -137,11 +137,11 @@ describe("objectWrapperHelpers tests", () => {
           },
           Object {
             "key": "c",
-            "valuePointer": 360,
+            "valuePointer": 0,
           },
           Object {
             "key": "d",
-            "valuePointer": 432,
+            "valuePointer": 1,
           },
         ]
       `);
@@ -170,7 +170,7 @@ describe("objectWrapperHelpers tests", () => {
         objectToSave
       );
 
-      expect(allocator.stats().available).toMatchInlineSnapshot(`56`);
+      expect(allocator.stats().available).toMatchInlineSnapshot(`88`);
 
       const hashmapPointer = (readEntry(
         externalArgs,
@@ -198,12 +198,12 @@ describe("objectWrapperHelpers tests", () => {
           },
           Object {
             "key": "c",
-            "valuePointer": 360,
+            "valuePointer": 0,
           },
         ]
       `);
 
-      expect(allocator.stats().available).toMatchInlineSnapshot(`128`);
+      expect(allocator.stats().available).toMatchInlineSnapshot(`144`);
     });
 
     test("deleteObjectPropertyEntryByKey - delete in the middle", () => {
@@ -229,7 +229,7 @@ describe("objectWrapperHelpers tests", () => {
         [],
         objectToSave
       );
-      expect(allocator.stats().available).toMatchInlineSnapshot(`0`);
+      expect(allocator.stats().available).toMatchInlineSnapshot(`8`);
 
       const hashmapPointer = readEntry(
         externalArgs,
@@ -258,16 +258,16 @@ describe("objectWrapperHelpers tests", () => {
           },
           Object {
             "key": "d",
-            "valuePointer": 432,
+            "valuePointer": 1,
           },
           Object {
             "key": "e",
-            "valuePointer": 0,
+            "valuePointer": 472,
           },
         ]
       `);
 
-      expect(allocator.stats().available).toMatchInlineSnapshot(`72`);
+      expect(allocator.stats().available).toMatchInlineSnapshot(`64`);
     });
   });
 });
