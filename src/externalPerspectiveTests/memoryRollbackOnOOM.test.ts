@@ -20,7 +20,7 @@ describe("memoryRollbackOnOOM.test", () => {
 
     const initialFreeSpace = memoryStats(objectBuffer).available;
 
-    expect(initialFreeSpace).toMatchInlineSnapshot(`32`);
+    expect(initialFreeSpace).toMatchInlineSnapshot(`48`);
 
     expect(() => {
       objectBuffer.foo = {
@@ -30,7 +30,7 @@ describe("memoryRollbackOnOOM.test", () => {
       };
     }).toThrowErrorMatchingInlineSnapshot(`"OutOfMemoryError"`);
 
-    expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`32`);
+    expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`48`);
 
     expect(objectBuffer).toMatchInlineSnapshot(`
       Object {

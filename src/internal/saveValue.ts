@@ -8,7 +8,16 @@ import { objectSaver, mapSaver, setSaver } from "./objectSaver";
 import { arraySaver } from "./arraySaver";
 import { ExternalArgs, DataViewAndAllocatorCarrier } from "./interfaces";
 import { ENTRY_TYPE } from "./entry-types";
+import {
+  UNDEFINED_KNOWN_ADDRESS,
+  NULL_KNOWN_ADDRESS,
+  TRUE_KNOWN_ADDRESS,
+  FALSE_KNOWN_ADDRESS
+} from "./consts";
 
+/**
+ * Returns pointer for the value
+ */
 export function saveValue(
   externalArgs: ExternalArgs,
   carrier: DataViewAndAllocatorCarrier,
@@ -17,6 +26,22 @@ export function saveValue(
 ) {
   let valuePointer = 0;
   let maybeOurPointer: number | undefined;
+
+  if (value === undefined) {
+    return UNDEFINED_KNOWN_ADDRESS;
+  }
+
+  if (value === null) {
+    return NULL_KNOWN_ADDRESS;
+  }
+
+  if (value === true) {
+    return TRUE_KNOWN_ADDRESS;
+  }
+
+  if (value === false) {
+    return FALSE_KNOWN_ADDRESS;
+  }
 
   if (isPrimitive(value)) {
     const entry = primitiveValueToEntry(

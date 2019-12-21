@@ -7,3 +7,8 @@ export const INITIAL_ENTRY_POINTER_VALUE =
 
 export const MEM_POOL_START =
   INITIAL_ENTRY_POINTER_VALUE + Uint32Array.BYTES_PER_ELEMENT;
+
+export const UNDEFINED_KNOWN_ADDRESS = 0;
+export const NULL_KNOWN_ADDRESS = 1;
+export const TRUE_KNOWN_ADDRESS = 2;
+export const FALSE_KNOWN_ADDRESS = 3;

@@ -63,7 +63,7 @@ describe("objectWrapper tests", () => {
         ]
       `);
 
-      expect(allocator.stats().top).toMatchInlineSnapshot(`736`);
+      expect(allocator.stats().top).toMatchInlineSnapshot(`704`);
     });
 
     test("ObjectWrapper class 2", () => {
@@ -101,7 +101,7 @@ describe("objectWrapper tests", () => {
       expect(objectWrapper.noneExistsProp).toMatchInlineSnapshot(`undefined`);
       expect(objectWrapper.a).toMatchInlineSnapshot(`6`);
 
-      expect(allocator.stats().top).toMatchInlineSnapshot(`736`);
+      expect(allocator.stats().top).toMatchInlineSnapshot(`704`);
     });
 
     test("ObjectWrapper class set override value", () => {
@@ -150,7 +150,7 @@ describe("objectWrapper tests", () => {
         }
       `);
 
-      expect(allocator.stats().top).toMatchInlineSnapshot(`736`);
+      expect(allocator.stats().top).toMatchInlineSnapshot(`704`);
     });
 
     test("ObjectWrapper class set new prop value", () => {
@@ -200,7 +200,7 @@ describe("objectWrapper tests", () => {
         }
       `);
 
-      expect(allocator.stats().top).toMatchInlineSnapshot(`832`);
+      expect(allocator.stats().top).toMatchInlineSnapshot(`800`);
     });
 
     test("ObjectWrapper class delete", () => {
@@ -248,7 +248,7 @@ describe("objectWrapper tests", () => {
         }
       `);
 
-      expect(allocator.stats().top).toMatchInlineSnapshot(`736`);
+      expect(allocator.stats().top).toMatchInlineSnapshot(`704`);
     });
   });
 });

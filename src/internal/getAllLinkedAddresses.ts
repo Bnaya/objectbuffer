@@ -2,6 +2,12 @@ import { readEntry } from "./store";
 import { ExternalArgs, ObjectEntry } from "./interfaces";
 import { ENTRY_TYPE } from "./entry-types";
 import { hashMapGetPointersToFree } from "./hashmap/hashmap";
+import {
+  UNDEFINED_KNOWN_ADDRESS,
+  NULL_KNOWN_ADDRESS,
+  TRUE_KNOWN_ADDRESS,
+  FALSE_KNOWN_ADDRESS
+} from "./consts";
 
 export function getAllLinkedAddresses(
   externalArgs: ExternalArgs,
@@ -28,16 +34,18 @@ function getAllLinkedAddressesStep(
   entryPointer: number,
   pushTo: number[]
 ) {
-  if (entryPointer === 0) {
+  if (
+    entryPointer === UNDEFINED_KNOWN_ADDRESS ||
+    entryPointer === NULL_KNOWN_ADDRESS ||
+    entryPointer === TRUE_KNOWN_ADDRESS ||
+    entryPointer === FALSE_KNOWN_ADDRESS
+  ) {
     return;
   }
 
   const entry = readEntry(externalArgs, dataView, entryPointer);
 
   switch (entry.type) {
-    case ENTRY_TYPE.UNDEFINED:
-    case ENTRY_TYPE.NULL:
-    case ENTRY_TYPE.BOOLEAN:
     case ENTRY_TYPE.NUMBER:
     case ENTRY_TYPE.STRING:
     case ENTRY_TYPE.BIGINT_NEGATIVE:

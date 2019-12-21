@@ -1,15 +1,26 @@
 import { createKnownTypeGuard } from "./utils";
 
 export enum ENTRY_TYPE {
+  /**
+   * @deprecated
+   */
   UNDEFINED,
+  /**
+   * @deprecated
+   */
   NULL,
   NUMBER,
   BIGINT_POSITIVE,
   BIGINT_NEGATIVE,
   STRING,
+  /**
+   * @deprecated
+   */
   BOOLEAN,
   OBJECT,
-  // deprecated
+  /**
+   * @deprecated
+   */
   OBJECT_PROP,
   ARRAY,
   ARRAY_ITEM,
@@ -19,12 +30,9 @@ export enum ENTRY_TYPE {
 }
 
 export const PRIMITIVE_TYPES = [
-  ENTRY_TYPE.NULL,
-  ENTRY_TYPE.UNDEFINED,
   ENTRY_TYPE.NUMBER,
   ENTRY_TYPE.BIGINT_POSITIVE,
   ENTRY_TYPE.BIGINT_NEGATIVE,
-  ENTRY_TYPE.BOOLEAN,
   ENTRY_TYPE.STRING
 ] as const;
 
