@@ -1,0 +1,48 @@
+# https://github.com/rhysd/github-action-benchmark/blob/master/.github/workflows/benchmarkjs.yml
+name: Benchmark
+
+on: ["push", "pull_request"]
+
+jobs:
+  benchmark:
+    name: Run JavaScript benchmark
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 12.x
+
+      - name: Cache node modules
+        uses: actions/cache@v1
+        with:
+          path: node_modules
+          key: ${{ runner.OS }}-build-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.OS }}-build-${{ env.cache-name }}-
+            ${{ runner.OS }}-build-
+            ${{ runner.OS }}-
+
+      - name: yarn install
+        run: yarn
+        shell: bash
+
+      - name: build
+        run: yarn build
+        shell: bash
+
+      - name: Run benchmark
+        run: node benchmarks/index.js | tee benchmarks/output.txt
+      - name: Store benchmark result
+        uses: bnaya/github-action-benchmark@v1
+        with:
+          name: Benchmark
+          tool: "benchmarkjs"
+          output-file-path: benchmarks/output.txt
+          github-token: ${{ secrets.PERSONAL_GITHUB_TOKEN }}
+          auto-push: true
+          # Show alert with commit comment on detecting possible performance regression
+          alert-threshold: "110%"
+          comment-on-alert: true
+          fail-on-alert: true
+          alert-comment-cc-users: "@bnaya"
