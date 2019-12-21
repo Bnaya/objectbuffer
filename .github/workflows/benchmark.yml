@@ -34,7 +34,7 @@ jobs:
       - name: Run benchmark
         run: node benchmarks/index.js | tee benchmarks/output.txt
       - name: Store benchmark result
-        uses: rhysd/github-action-benchmark@v1
+        uses: bnaya/github-action-benchmark@v1
         with:
           name: Benchmark
           tool: "benchmarkjs"
