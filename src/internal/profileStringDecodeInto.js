@@ -67,4 +67,5 @@ for (let i = 0; i < 1000000; i++) {
   stringEncodeInto(uint8, 0, strInput);
 }
 
+// eslint-disable-next-line no-undef
 console.log("Done");
