@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1577111557232,
+  "lastUpdate": 1577626074426,
   "repoUrl": "https://github.com/Bnaya/objectbuffer",
   "entries": {
     "Benchmark": [
@@ -93,6 +93,37 @@ window.BENCHMARK_DATA = {
             "range": "±1.94%",
             "unit": "ops/sec",
             "extra": "62 samples"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "me@bnaya.net",
+            "name": "Bnaya Peretz",
+            "username": "Bnaya"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "94100ca12e0da51f8c952d7bc281d11ba0e1bfb1",
+          "message": "Merge pull request #59 from Bnaya/string-encoder-decoder\n\nString encoder decoder",
+          "timestamp": "2019-12-29T15:27:11+02:00",
+          "tree_id": "fe16a92d415bfd219efffbbdb63f31cd5d923763",
+          "url": "https://github.com/Bnaya/objectbuffer/commit/94100ca12e0da51f8c952d7bc281d11ba0e1bfb1"
+        },
+        "date": 1577626074069,
+        "tool": "benchmarkjs",
+        "benches": [
+          {
+            "name": "createObjectBuffer with 200 comments",
+            "value": 53.19,
+            "range": "±7.40%",
+            "unit": "ops/sec",
+            "extra": "57 samples"
           }
         ]
       }
