@@ -183,7 +183,6 @@ export function hashMapNodeLookup(
   const mapMachine = MAP_MACHINE.createOperator(dataView, mapPointer);
 
   const keyHashCode = hashCodeExternalValue(
-    externalArgs,
     mapMachine.get("CAPACITY"),
     externalKeyValue
   );

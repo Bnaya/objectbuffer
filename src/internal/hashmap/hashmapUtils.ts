@@ -1,5 +1,5 @@
-import { ExternalArgs } from "../interfaces";
 import { ENTRY_TYPE } from "../entry-types";
+import { stringEncodeInto } from "../stringEncodeInto";
 
 export function hashCodeInPlace(
   dataView: DataView,
@@ -22,19 +22,20 @@ export function hashCodeInPlace(
 }
 
 export function hashCodeExternalValue(
-  externalArgs: ExternalArgs,
   capacity: number,
   value: string | number
 ): number {
-  let dv: DataView;
+  const ab = new ArrayBuffer(typeof value === "string" ? value.length * 3 : 8);
+  const dv = new DataView(ab);
+  let keyBytesLength = ab.byteLength;
 
   if (typeof value === "string") {
-    dv = new DataView(externalArgs.textEncoder.encode(value).buffer);
+    keyBytesLength = stringEncodeInto(new Uint8Array(ab), 0, value);
   } else {
-    dv = new DataView(new ArrayBuffer(8));
     dv.setFloat64(0, value);
   }
-  return hashCodeInPlace(dv, capacity, 0, dv.buffer.byteLength);
+
+  return hashCodeInPlace(dv, capacity, 0, keyBytesLength);
 }
 
 export function hashCodeEntry(
