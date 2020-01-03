@@ -10,7 +10,11 @@ import { ExternalArgs } from "./interfaces";
 import { BigInt64OverflowError } from "./exceptions";
 import {
   INITIAL_ENTRY_POINTER_TO_POINTER,
-  INITIAL_ENTRY_POINTER_VALUE
+  INITIAL_ENTRY_POINTER_VALUE,
+  UNDEFINED_KNOWN_ADDRESS,
+  NULL_KNOWN_ADDRESS,
+  TRUE_KNOWN_ADDRESS,
+  FALSE_KNOWN_ADDRESS
 } from "./consts";
 import { saveValue } from "./saveValue";
 import { getAllLinkedAddresses } from "./getAllLinkedAddresses";
@@ -404,12 +408,64 @@ export function writeValueInPtrToPtrAndHandleMemory(
         existingEntryPointer
       );
 
-      for (const address of addressesToFree) {
+      for (const address of addressesToFree.leafAddresses) {
         carrier.allocator.free(address);
+      }
+
+      for (const address of addressesToFree.arcAddresses) {
+        decrementRefCount(externalArgs, carrier.dataView, address);
       }
     }
   } else {
     carrier.allocator.free(existingEntryPointer);
+  }
+}
+
+export function handleArcForDeletedValuePointer(
+  externalArgs: ExternalArgs,
+  { dataView, allocator }: DataViewAndAllocatorCarrier,
+  deletedValuePointer: number
+): void {
+  // No memory to free/ARC
+  if (
+    deletedValuePointer === UNDEFINED_KNOWN_ADDRESS ||
+    deletedValuePointer === NULL_KNOWN_ADDRESS ||
+    deletedValuePointer === TRUE_KNOWN_ADDRESS ||
+    deletedValuePointer === FALSE_KNOWN_ADDRESS
+  ) {
+    return;
+  }
+
+  const existingValueEntry = readEntry(
+    externalArgs,
+    dataView,
+    deletedValuePointer
+  );
+  if (existingValueEntry && "refsCount" in existingValueEntry) {
+    const newRefCount = decrementRefCount(
+      externalArgs,
+      dataView,
+      deletedValuePointer
+    );
+
+    if (newRefCount === 0) {
+      const addressesToFree = getAllLinkedAddresses(
+        externalArgs,
+        dataView,
+        false,
+        deletedValuePointer
+      );
+
+      for (const address of addressesToFree.leafAddresses) {
+        allocator.free(address);
+      }
+
+      for (const address of addressesToFree.arcAddresses) {
+        decrementRefCount(externalArgs, dataView, address);
+      }
+    }
+  } else {
+    allocator.free(deletedValuePointer);
   }
 }
 
