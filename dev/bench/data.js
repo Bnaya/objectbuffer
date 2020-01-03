@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1578073369988,
+  "lastUpdate": 1578073453131,
   "repoUrl": "https://github.com/Bnaya/objectbuffer",
   "entries": {
     "Benchmark": [
@@ -155,6 +155,37 @@ window.BENCHMARK_DATA = {
             "range": "±2.78%",
             "unit": "ops/sec",
             "extra": "63 samples"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "me@bnaya.net",
+            "name": "Bnaya Peretz",
+            "username": "Bnaya"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "686302d38644568c1237eac7ab9c1904592df1ce",
+          "message": "Merge pull request #62 from Bnaya/arc-refactor\n\nArc refactor",
+          "timestamp": "2020-01-03T19:43:33+02:00",
+          "tree_id": "afa5f7ef339b67ef37be0c1d5e393456fb4e2399",
+          "url": "https://github.com/Bnaya/objectbuffer/commit/686302d38644568c1237eac7ab9c1904592df1ce"
+        },
+        "date": 1578073452773,
+        "tool": "benchmarkjs",
+        "benches": [
+          {
+            "name": "createObjectBuffer with 200 comments",
+            "value": 55.48,
+            "range": "±9.16%",
+            "unit": "ops/sec",
+            "extra": "60 samples"
           }
         ]
       }
