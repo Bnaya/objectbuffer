@@ -1,5 +1,5 @@
 import { readEntry } from "./store";
-import { ExternalArgs, ObjectEntry } from "./interfaces";
+import { ExternalArgs, ObjectEntry, MapEntry, SetEntry } from "./interfaces";
 import { ENTRY_TYPE } from "./entry-types";
 import { hashMapGetPointersToFree } from "./hashmap/hashmap";
 import {
@@ -15,16 +15,19 @@ export function getAllLinkedAddresses(
   ignoreRefCount: boolean,
   entryPointer: number
 ) {
-  const allAddresses: number[] = [];
+  const leafAddresses: number[] = [];
+  const arcAddresses: number[] = [];
+
   getAllLinkedAddressesStep(
     externalArgs,
     dataView,
     ignoreRefCount,
     entryPointer,
-    allAddresses
+    leafAddresses,
+    arcAddresses
   );
 
-  return allAddresses;
+  return { leafAddresses, arcAddresses };
 }
 
 function getAllLinkedAddressesStep(
@@ -32,7 +35,8 @@ function getAllLinkedAddressesStep(
   dataView: DataView,
   ignoreRefCount: boolean,
   entryPointer: number,
-  pushTo: number[]
+  leafAddresses: number[],
+  arcAddresses: number[]
 ) {
   if (
     entryPointer === UNDEFINED_KNOWN_ADDRESS ||
@@ -50,48 +54,57 @@ function getAllLinkedAddressesStep(
     case ENTRY_TYPE.STRING:
     case ENTRY_TYPE.BIGINT_NEGATIVE:
     case ENTRY_TYPE.BIGINT_POSITIVE:
-      pushTo.push(entryPointer);
+      leafAddresses.push(entryPointer);
       break;
 
     case ENTRY_TYPE.OBJECT:
-      if (entry.refsCount < 2 || ignoreRefCount) {
-        pushTo.push(entryPointer);
-        getObjectAddresses(
+    case ENTRY_TYPE.MAP:
+    case ENTRY_TYPE.SET:
+      if (entry.refsCount <= 1 || ignoreRefCount) {
+        leafAddresses.push(entryPointer);
+        getObjectOrMapOrSetAddresses(
           externalArgs,
           dataView,
           ignoreRefCount,
           entry,
-          pushTo
+          leafAddresses,
+          arcAddresses
         );
+      } else {
+        arcAddresses.push(entryPointer);
       }
 
       break;
 
     case ENTRY_TYPE.ARRAY:
-      if (entry.refsCount < 2 || ignoreRefCount) {
-        pushTo.push(entryPointer);
-        pushTo.push(entry.value);
+      if (entry.refsCount <= 1 || ignoreRefCount) {
+        leafAddresses.push(entryPointer);
+        leafAddresses.push(entry.value);
 
         for (let i = 0; i < entry.allocatedLength; i += 1) {
           const valuePointer = dataView.getUint32(
             entry.value + i * Uint32Array.BYTES_PER_ELEMENT
           );
-          if (valuePointer !== 0) {
-            getAllLinkedAddressesStep(
-              externalArgs,
-              dataView,
-              ignoreRefCount,
-              valuePointer,
-              pushTo
-            );
-          }
+
+          getAllLinkedAddressesStep(
+            externalArgs,
+            dataView,
+            ignoreRefCount,
+            valuePointer,
+            leafAddresses,
+            arcAddresses
+          );
         }
+      } else {
+        arcAddresses.push(entryPointer);
       }
       break;
 
     case ENTRY_TYPE.DATE:
-      if (entry.refsCount < 2 || ignoreRefCount) {
-        pushTo.push(entryPointer);
+      if (entry.refsCount <= 1 || ignoreRefCount) {
+        leafAddresses.push(entryPointer);
+      } else {
+        arcAddresses.push(entryPointer);
       }
       break;
 
@@ -102,19 +115,20 @@ function getAllLinkedAddressesStep(
   }
 }
 
-function getObjectAddresses(
+export function getObjectOrMapOrSetAddresses(
   externalArgs: ExternalArgs,
   dataView: DataView,
   ignoreRefCount: boolean,
-  objectEntry: ObjectEntry,
-  pushTo: number[]
+  entry: ObjectEntry | MapEntry | SetEntry,
+  leafAddresses: number[],
+  arcAddresses: number[]
 ) {
   const { pointersToValuePointers, pointers } = hashMapGetPointersToFree(
     dataView,
-    objectEntry.value
+    entry.value
   );
 
-  pushTo.push(...pointers);
+  leafAddresses.push(...pointers);
 
   for (const pointer of pointersToValuePointers) {
     getAllLinkedAddressesStep(
@@ -122,7 +136,8 @@ function getObjectAddresses(
       dataView,
       ignoreRefCount,
       dataView.getUint32(pointer),
-      pushTo
+      leafAddresses,
+      arcAddresses
     );
   }
 }

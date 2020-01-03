@@ -102,7 +102,7 @@ function finalizer(
       memoryAddress
     );
 
-    for (const address of freeUs) {
+    for (const address of freeUs.arcAddresses) {
       carrier.allocator.free(address);
     }
   }

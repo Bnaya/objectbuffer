@@ -2,12 +2,13 @@ import {
   ExternalArgs,
   DataViewAndAllocatorCarrier,
   StringEntry,
-  NumberEntry
+  NumberEntry,
+  MapEntry
 } from "./interfaces";
 import {
   readEntry,
-  decrementRefCount,
-  writeValueInPtrToPtrAndHandleMemory
+  writeValueInPtrToPtrAndHandleMemory,
+  handleArcForDeletedValuePointer
 } from "./store";
 import { entryToFinalJavaScriptValue } from "./entryToFinalJavaScriptValue";
 import {
@@ -17,58 +18,31 @@ import {
   hashMapInsertUpdate,
   hashMapValueLookup
 } from "./hashmap/hashmap";
-import { getAllLinkedAddresses } from "./getAllLinkedAddresses";
+import { getObjectOrMapOrSetAddresses } from "./getAllLinkedAddresses";
 
 export function deleteObjectPropertyEntryByKey(
   externalArgs: ExternalArgs,
-  { dataView, allocator }: DataViewAndAllocatorCarrier,
+  carrier: DataViewAndAllocatorCarrier,
   hashmapPointer: number,
   keyToDeleteBy: string | number
 ): boolean {
   const deletedValuePointerToPointer = hashMapDelete(
     externalArgs,
-    { dataView, allocator },
+    carrier,
     hashmapPointer,
     keyToDeleteBy
   );
 
-  const deletedValuePointer = dataView.getUint32(deletedValuePointerToPointer);
-
-  // Nothing to delete here
-  if (deletedValuePointer === 0) {
+  // no such key
+  if (deletedValuePointerToPointer === 0) {
     return false;
   }
 
-  // handle memory free
-  if (deletedValuePointer !== 0) {
-    const existingValueEntry = readEntry(
-      externalArgs,
-      dataView,
-      deletedValuePointer
-    );
-    if (existingValueEntry && "refsCount" in existingValueEntry) {
-      const newRefCount = decrementRefCount(
-        externalArgs,
-        dataView,
-        deletedValuePointer
-      );
+  const deletedValuePointer = carrier.dataView.getUint32(
+    deletedValuePointerToPointer
+  );
 
-      if (newRefCount === 0) {
-        const addressesToFree = getAllLinkedAddresses(
-          externalArgs,
-          dataView,
-          false,
-          deletedValuePointer
-        );
-
-        for (const address of addressesToFree) {
-          allocator.free(address);
-        }
-      }
-    } else {
-      allocator.free(deletedValuePointer);
-    }
-  }
+  handleArcForDeletedValuePointer(externalArgs, carrier, deletedValuePointer);
 
   return true;
 }
@@ -142,3 +116,26 @@ export function objectGet(
     carrier.dataView.getUint32(valuePointer)
   );
 }
+
+// export function clearMap(
+//   externalArgs: ExternalArgs,
+//   carrier: DataViewAndAllocatorCarrier,
+//   mapPointer: number
+// ) {
+//   const entry: MapEntry = readEntry(
+//     externalArgs,
+//     carrier.dataView,
+//     mapPointer
+//   ) as MapEntry;
+//   const retainedPointers: number[] = [];
+
+//   getObjectOrMapOrSetAddresses(
+//     externalArgs,
+//     carrier.dataView,
+//     false,
+//     entry,
+//     retainedPointers
+//   );
+
+//   handleArcForDeletedValuePointer();
+// }

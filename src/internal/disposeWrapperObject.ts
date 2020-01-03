@@ -1,6 +1,7 @@
 import { getInternalAPI } from "./utils";
 import { getCacheFor } from "./externalObjectsCache";
 import { getAllLinkedAddresses } from "./getAllLinkedAddresses";
+import { decrementRefCount } from "./store";
 
 /**
  *  Dispose the given objectWrapper, and re-claim the memory
@@ -22,8 +23,16 @@ export function disposeWrapperObject(value: any) {
       entryPointer
     );
 
-    for (const address of addressesToFree) {
+    for (const address of addressesToFree.leafAddresses) {
       internalApi.getCarrier().allocator.free(address);
+    }
+
+    for (const address of addressesToFree.arcAddresses) {
+      decrementRefCount(
+        internalApi.getExternalArgs(),
+        internalApi.getCarrier().dataView,
+        address
+      );
     }
 
     return true;

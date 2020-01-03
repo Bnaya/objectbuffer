@@ -34,6 +34,10 @@ describe("getAllLinkedAddresses", () => {
         arr: [new Date(0), "somestring", { a: "6", h: null }]
       });
 
+      // const a = objectBuffer.nestedObject;
+      // getInternalAPI(a).destroy();
+      // // a.toString();
+
       const dataView = new DataView(getUnderlyingArrayBuffer(objectBuffer));
       getInternalAPI(objectBuffer).destroy();
 
@@ -44,11 +48,12 @@ describe("getAllLinkedAddresses", () => {
         allocatedAddresses[allocatedAddresses.length - 1]
       );
 
-      expect(linkedAddresses.slice().sort()).toEqual(
+      expect(linkedAddresses.leafAddresses.slice().sort()).toEqual(
         allocatedAddresses.slice().sort()
       );
 
-      expect(linkedAddresses.slice().sort()).toMatchInlineSnapshot(`
+      expect(linkedAddresses.leafAddresses.slice().sort())
+        .toMatchInlineSnapshot(`
         Array [
           1008,
           1032,
@@ -137,7 +142,7 @@ describe("getAllLinkedAddresses", () => {
         allocatedAddresses[allocatedAddresses.length - 1]
       );
 
-      linkedAddresses.forEach(address => {
+      linkedAddresses.leafAddresses.forEach(address => {
         pool.free(address);
       });
 
