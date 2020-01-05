@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1578224779665,
+  "lastUpdate": 1578224860341,
   "repoUrl": "https://github.com/Bnaya/objectbuffer",
   "entries": {
     "Benchmark": [
@@ -275,6 +275,37 @@ window.BENCHMARK_DATA = {
             "range": "±6.99%",
             "unit": "ops/sec",
             "extra": "63 samples"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "me@bnaya.net",
+            "name": "Bnaya Peretz",
+            "username": "Bnaya"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "66129555bcedb15de57d588b6dd06873b107c698",
+          "message": "Merge pull request #63 from Bnaya/hashmap-clear\n\nBetter Map & Set clear",
+          "timestamp": "2020-01-05T13:47:03+02:00",
+          "tree_id": "30136c62f1ae07af8809daedd3864ff6c5698c32",
+          "url": "https://github.com/Bnaya/objectbuffer/commit/66129555bcedb15de57d588b6dd06873b107c698"
+        },
+        "date": 1578224859961,
+        "tool": "benchmarkjs",
+        "benches": [
+          {
+            "name": "createObjectBuffer with 200 comments",
+            "value": 54.75,
+            "range": "±8.77%",
+            "unit": "ops/sec",
+            "extra": "59 samples"
           }
         ]
       }
