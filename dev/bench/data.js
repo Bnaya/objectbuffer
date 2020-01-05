@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1578073453131,
+  "lastUpdate": 1578188319012,
   "repoUrl": "https://github.com/Bnaya/objectbuffer",
   "entries": {
     "Benchmark": [
@@ -186,6 +186,37 @@ window.BENCHMARK_DATA = {
             "range": "±9.16%",
             "unit": "ops/sec",
             "extra": "60 samples"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "me@bnaya.net",
+            "name": "Bnaya Peretz",
+            "username": "Bnaya"
+          },
+          "committer": {
+            "email": "me@bnaya.net",
+            "name": "Bnaya Peretz",
+            "username": "Bnaya"
+          },
+          "distinct": true,
+          "id": "0f0cc31d3275e8f7fa73ca72616936de00c732c8",
+          "message": "Better Map & Set clear",
+          "timestamp": "2020-01-05T03:39:15+02:00",
+          "tree_id": "88656fcd7c29c7b859bc7ff2a4f534d6e5b4e6e9",
+          "url": "https://github.com/Bnaya/objectbuffer/commit/0f0cc31d3275e8f7fa73ca72616936de00c732c8"
+        },
+        "date": 1578188318679,
+        "tool": "benchmarkjs",
+        "benches": [
+          {
+            "name": "createObjectBuffer with 200 comments",
+            "value": 52.57,
+            "range": "±6.51%",
+            "unit": "ops/sec",
+            "extra": "59 samples"
           }
         ]
       }
