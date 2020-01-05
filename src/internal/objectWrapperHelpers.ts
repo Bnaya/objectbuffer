@@ -3,12 +3,15 @@ import {
   DataViewAndAllocatorCarrier,
   StringEntry,
   NumberEntry,
-  MapEntry
+  MapEntry,
+  SetEntry
 } from "./interfaces";
 import {
   readEntry,
   writeValueInPtrToPtrAndHandleMemory,
-  handleArcForDeletedValuePointer
+  handleArcForDeletedValuePointer,
+  decrementRefCount,
+  writeEntry
 } from "./store";
 import { entryToFinalJavaScriptValue } from "./entryToFinalJavaScriptValue";
 import {
@@ -16,7 +19,8 @@ import {
   hashMapLowLevelIterator,
   hashMapNodePointerToKeyValue,
   hashMapInsertUpdate,
-  hashMapValueLookup
+  hashMapValueLookup,
+  createHashMap
 } from "./hashmap/hashmap";
 import { getObjectOrMapOrSetAddresses } from "./getAllLinkedAddresses";
 
@@ -117,25 +121,44 @@ export function objectGet(
   );
 }
 
-// export function clearMap(
-//   externalArgs: ExternalArgs,
-//   carrier: DataViewAndAllocatorCarrier,
-//   mapPointer: number
-// ) {
-//   const entry: MapEntry = readEntry(
-//     externalArgs,
-//     carrier.dataView,
-//     mapPointer
-//   ) as MapEntry;
-//   const retainedPointers: number[] = [];
+export function hashmapClearFree(
+  externalArgs: ExternalArgs,
+  carrier: DataViewAndAllocatorCarrier,
+  hashmapPointer: number
+) {
+  const leafAddresses: number[] = [];
+  const arcAddresses: number[] = [];
 
-//   getObjectOrMapOrSetAddresses(
-//     externalArgs,
-//     carrier.dataView,
-//     false,
-//     entry,
-//     retainedPointers
-//   );
+  getObjectOrMapOrSetAddresses(
+    externalArgs,
+    carrier.dataView,
+    false,
+    hashmapPointer,
+    leafAddresses,
+    arcAddresses
+  );
 
-//   handleArcForDeletedValuePointer();
-// }
+  for (const address of leafAddresses) {
+    carrier.allocator.free(address);
+  }
+
+  for (const address of arcAddresses) {
+    decrementRefCount(externalArgs, carrier.dataView, address);
+  }
+}
+
+export function mapOrSetClear(
+  externalArgs: ExternalArgs,
+  carrier: DataViewAndAllocatorCarrier,
+  mapOrSetPtr: number
+) {
+  const entry = readEntry(externalArgs, carrier.dataView, mapOrSetPtr) as
+    | MapEntry
+    | SetEntry;
+
+  hashmapClearFree(externalArgs, carrier, entry.value);
+
+  entry.value = createHashMap(carrier, externalArgs.hashMapMinInitialCapacity);
+
+  writeEntry(externalArgs, carrier.dataView, mapOrSetPtr, entry);
+}

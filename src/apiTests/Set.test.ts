@@ -80,11 +80,7 @@ describe("Set tests", () => {
 
     expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`704`);
 
-    expect(objectBuffer.foo).toMatchInlineSnapshot(`
-      Set {
-        "b",
-      }
-    `);
+    expect(objectBuffer.foo).toMatchInlineSnapshot(`Set {}`);
   });
 
   test("iterate", () => {

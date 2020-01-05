@@ -7,7 +7,8 @@ import {
 import {
   deleteObjectPropertyEntryByKey,
   objectGet,
-  objectSet
+  objectSet,
+  mapOrSetClear
 } from "./objectWrapperHelpers";
 
 import { INTERNAL_API_SYMBOL } from "./symbols";
@@ -26,10 +27,7 @@ export class MapWrapper<K extends string | number, V>
   extends BaseProxyTrap<MapEntry>
   implements Map<K, V> {
   clear(): void {
-    // @todo impl using helper function with direct list access
-    for (const key of [...this.keys()]) {
-      this.delete(key);
-    }
+    mapOrSetClear(this.externalArgs, this.carrier, this.entryPointer);
   }
 
   forEach(
