@@ -79,11 +79,7 @@ describe("Map", () => {
 
     expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`704`);
 
-    expect(objectBuffer.foo).toMatchInlineSnapshot(`
-        Map {
-          "2" => "b",
-        }
-      `);
+    expect(objectBuffer.foo).toMatchInlineSnapshot(`Map {}`);
   });
 
   test("iterate", () => {

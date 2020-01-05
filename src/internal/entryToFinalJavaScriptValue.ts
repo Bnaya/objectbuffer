@@ -102,8 +102,12 @@ function finalizer(
       memoryAddress
     );
 
-    for (const address of freeUs.arcAddresses) {
+    for (const address of freeUs.leafAddresses) {
       carrier.allocator.free(address);
+    }
+
+    for (const address of freeUs.arcAddresses) {
+      decrementRefCount(externalArgs, carrier.dataView, address);
     }
   }
 }

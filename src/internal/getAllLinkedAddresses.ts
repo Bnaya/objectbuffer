@@ -1,5 +1,5 @@
 import { readEntry } from "./store";
-import { ExternalArgs, ObjectEntry, MapEntry, SetEntry } from "./interfaces";
+import { ExternalArgs } from "./interfaces";
 import { ENTRY_TYPE } from "./entry-types";
 import { hashMapGetPointersToFree } from "./hashmap/hashmap";
 import {
@@ -66,7 +66,7 @@ function getAllLinkedAddressesStep(
           externalArgs,
           dataView,
           ignoreRefCount,
-          entry,
+          entry.value,
           leafAddresses,
           arcAddresses
         );
@@ -119,13 +119,13 @@ export function getObjectOrMapOrSetAddresses(
   externalArgs: ExternalArgs,
   dataView: DataView,
   ignoreRefCount: boolean,
-  entry: ObjectEntry | MapEntry | SetEntry,
+  internalHashmapPointer: number,
   leafAddresses: number[],
   arcAddresses: number[]
 ) {
   const { pointersToValuePointers, pointers } = hashMapGetPointersToFree(
     dataView,
-    entry.value
+    internalHashmapPointer
   );
 
   leafAddresses.push(...pointers);
