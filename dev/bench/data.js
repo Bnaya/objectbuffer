@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1578324686023,
+  "lastUpdate": 1578325147672,
   "repoUrl": "https://github.com/Bnaya/objectbuffer",
   "entries": {
     "Benchmark": [
@@ -976,6 +976,37 @@ window.BENCHMARK_DATA = {
             "range": "±2.78%",
             "unit": "ops/sec",
             "extra": "65 samples"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "me@bnaya.net",
+            "name": "Bnaya Peretz",
+            "username": "Bnaya"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "453549e09be4ea846e9028192df7a03fdc4fa126",
+          "message": "Merge pull request #65 from Bnaya/string-refactor\n\nString refactor",
+          "timestamp": "2020-01-06T17:38:28+02:00",
+          "tree_id": "246fccaa5bd8f517b02fbb88df8fad02cbe79e2d",
+          "url": "https://github.com/Bnaya/objectbuffer/commit/453549e09be4ea846e9028192df7a03fdc4fa126"
+        },
+        "date": 1578325147396,
+        "tool": "benchmarkjs",
+        "benches": [
+          {
+            "name": "createObjectBuffer with 200 comments",
+            "value": 80.62,
+            "range": "±3.55%",
+            "unit": "ops/sec",
+            "extra": "69 samples"
           }
         ]
       }
