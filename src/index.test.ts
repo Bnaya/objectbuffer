@@ -13,8 +13,7 @@ describe("createObjectBuffer", () => {
   const externalArgs = externalArgsApiToExternalArgsApi({
     textEncoder: new util.TextEncoder(),
     textDecoder: new util.TextDecoder(),
-    arrayAdditionalAllocation: 0,
-    minimumStringAllocation: 0
+    arrayAdditionalAllocation: 0
   });
 
   test("createObjectBuffer simple", () => {
@@ -40,8 +39,7 @@ describe("getUnderlyingArrayBuffer", () => {
   const externalArgs = externalArgsApiToExternalArgsApi({
     textEncoder: new util.TextEncoder(),
     textDecoder: new util.TextDecoder(),
-    arrayAdditionalAllocation: 0,
-    minimumStringAllocation: 0
+    arrayAdditionalAllocation: 0
   });
   test("getUnderlyingArrayBuffer simple", () => {
     const o = createObjectBuffer(externalArgs, 1024, {
@@ -62,8 +60,7 @@ describe("loadObjectBuffer", () => {
   const externalArgs = externalArgsApiToExternalArgsApi({
     textEncoder: new util.TextEncoder(),
     textDecoder: new util.TextDecoder(),
-    arrayAdditionalAllocation: 0,
-    minimumStringAllocation: 0
+    arrayAdditionalAllocation: 0
   });
 
   test("loadObjectBuffer simple", () => {

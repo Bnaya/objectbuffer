@@ -7,6 +7,12 @@ import {
 } from "./interfaces";
 import { ENTRY_TYPE } from "./entry-types";
 import { INTERNAL_API_SYMBOL } from "./symbols";
+import {
+  UNDEFINED_KNOWN_ADDRESS,
+  NULL_KNOWN_ADDRESS,
+  TRUE_KNOWN_ADDRESS,
+  FALSE_KNOWN_ADDRESS
+} from "./consts";
 
 const primitives = [
   "string",
@@ -28,19 +34,12 @@ export function isPrimitive(value: unknown): value is primitive {
   return false;
 }
 
-export function primitiveValueToEntry(
-  externalArgs: ExternalArgs,
-  value: primitive,
-  stringAllocatedBytes: number
-): Entry {
+export function primitiveValueToEntry(value: primitive): Entry {
   if (typeof value === "string") {
     return {
       type: ENTRY_TYPE.STRING,
       value,
-      allocatedBytes: Math.max(
-        externalArgs.textEncoder.encode(value).length,
-        stringAllocatedBytes
-      )
+      allocatedBytes: strByteLength(value)
     };
   }
 
@@ -111,9 +110,6 @@ export function externalArgsApiToExternalArgsApi(
     hashMapLoadFactor: p.hashMapLoadFactor ? p.hashMapLoadFactor : 0.75,
     arrayAdditionalAllocation: p.arrayAdditionalAllocation
       ? p.arrayAdditionalAllocation
-      : 0,
-    minimumStringAllocation: p.minimumStringAllocation
-      ? p.minimumStringAllocation
       : 0
   };
 }
@@ -139,4 +135,13 @@ export function strByteLength(str: string) {
 
 export function align(value: number, alignTo = 8) {
   return Math.ceil(value / alignTo) * alignTo;
+}
+
+export function isKnownAddressValuePointer(entryPointer: number) {
+  return (
+    entryPointer === UNDEFINED_KNOWN_ADDRESS ||
+    entryPointer === NULL_KNOWN_ADDRESS ||
+    entryPointer === TRUE_KNOWN_ADDRESS ||
+    entryPointer === FALSE_KNOWN_ADDRESS
+  );
 }

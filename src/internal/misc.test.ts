@@ -4,9 +4,8 @@ import { initializeArrayBuffer } from "./store";
 import * as util from "util";
 import { createArrayWrapper } from "./arrayWrapper";
 import { arraySaver } from "./arraySaver";
-import { MemPool } from "@thi.ng/malloc";
-import { MEM_POOL_START } from "./consts";
 import { externalArgsApiToExternalArgsApi } from "./utils";
+import { makeCarrier } from "./testUtils";
 
 describe("pop it all", () => {
   const externalArgs = externalArgsApiToExternalArgsApi({
@@ -17,35 +16,22 @@ describe("pop it all", () => {
 
   test("lets 1", () => {
     const arrayBuffer = new ArrayBuffer(512);
-    const dataView = new DataView(arrayBuffer);
     initializeArrayBuffer(arrayBuffer);
-    const allocator = new MemPool({
-      buf: arrayBuffer,
-      start: MEM_POOL_START
-    });
+    const carrier = makeCarrier(arrayBuffer);
 
     const arrayToSave = ["a", "b", -100];
     const arrayToCompare = arrayToSave.slice();
 
-    const saverOutput = arraySaver(
-      externalArgs,
-      { dataView, allocator },
-      [],
-      arrayToSave
-    );
+    const saverOutput = arraySaver(externalArgs, carrier, [], arrayToSave);
 
-    const arrayWrapper = createArrayWrapper(
-      externalArgs,
-      { dataView, allocator },
-      saverOutput
-    );
+    const arrayWrapper = createArrayWrapper(externalArgs, carrier, saverOutput);
 
     const sizeAfterEachPush: number[] = [];
 
     for (let i = 0; i < 10; i += 1) {
       arrayWrapper.push(i);
       arrayToCompare.push(i);
-      sizeAfterEachPush.push(allocator.stats().available);
+      sizeAfterEachPush.push(carrier.allocator.stats().available);
     }
 
     expect(sizeAfterEachPush).toMatchInlineSnapshot(`
@@ -90,6 +76,6 @@ describe("pop it all", () => {
 
     expect(arrayWrapper).toMatchInlineSnapshot(`Array []`);
     expect(arrayToCompare).toEqual(arrayWrapper);
-    expect(allocator.stats().available).toMatchInlineSnapshot(`48`);
+    expect(carrier.allocator.stats().available).toMatchInlineSnapshot(`48`);
   });
 });

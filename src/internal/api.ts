@@ -1,7 +1,7 @@
 import { initializeArrayBuffer } from "./store";
 import { objectSaver } from "./objectSaver";
 import { createObjectWrapper } from "./objectWrapper";
-import { ExternalArgsApi } from "./interfaces";
+import { ExternalArgsApi, DataViewAndAllocatorCarrier } from "./interfaces";
 import {
   arrayBufferCopyTo,
   externalArgsApiToExternalArgsApi,
@@ -42,7 +42,15 @@ export function createObjectBuffer<T = any>(
     start: MEM_POOL_START
   });
 
-  const carrier = { dataView, allocator };
+  const carrier: DataViewAndAllocatorCarrier = {
+    dataView,
+    allocator,
+    uint8: new Uint8Array(arrayBuffer),
+    uint16: new Uint16Array(arrayBuffer),
+    uint32: new Uint32Array(arrayBuffer),
+    float64: new Float64Array(arrayBuffer),
+    bigUint64: new BigUint64Array(arrayBuffer)
+  };
 
   const start = objectSaver(
     externalArgsApiToExternalArgsApi(externalArgs),
@@ -109,9 +117,19 @@ export function loadObjectBuffer<T = any>(
     skipInitialization: true
   });
 
+  const carrier: DataViewAndAllocatorCarrier = {
+    dataView,
+    allocator,
+    uint8: new Uint8Array(arrayBuffer),
+    uint16: new Uint16Array(arrayBuffer),
+    uint32: new Uint32Array(arrayBuffer),
+    float64: new Float64Array(arrayBuffer),
+    bigUint64: new BigUint64Array(arrayBuffer)
+  };
+
   return createObjectWrapper(
     externalArgsApiToExternalArgsApi(externalArgs),
-    { dataView, allocator },
+    carrier,
     dataView.getUint32(INITIAL_ENTRY_POINTER_TO_POINTER)
   );
 }
@@ -146,14 +164,21 @@ export function replaceUnderlyingArrayBuffer(
     skipInitialization: true
   });
 
+  const carrier: DataViewAndAllocatorCarrier = {
+    dataView: new DataView(newArrayBuffer),
+    allocator,
+    uint8: new Uint8Array(newArrayBuffer),
+    uint16: new Uint16Array(newArrayBuffer),
+    uint32: new Uint32Array(newArrayBuffer),
+    float64: new Float64Array(newArrayBuffer),
+    bigUint64: new BigUint64Array(newArrayBuffer)
+  };
+
   // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
   // @ts-ignore
   allocator.end = newArrayBuffer.byteLength;
 
-  getInternalAPI(objectBuffer).replaceCarrierContent(
-    new DataView(newArrayBuffer),
-    allocator
-  );
+  getInternalAPI(objectBuffer).replaceCarrierContent(carrier);
 }
 
 export { sizeOf } from "./sizeOf";

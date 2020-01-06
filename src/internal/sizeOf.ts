@@ -131,11 +131,7 @@ export function sizeOfValue(
   }
 
   if (isPrimitive(value)) {
-    const entry = primitiveValueToEntry(
-      externalArgs,
-      value,
-      externalArgs.minimumStringAllocation
-    );
+    const entry = primitiveValueToEntry(value);
 
     return {
       memoryAllocated: align(sizeOfEntry(entry)),
@@ -188,7 +184,7 @@ function sizeOfHashmap(
     align(NODE_MACHINE.map.SIZE_OF) * keysArray.length;
 
   const hashMapKeysSize = keysArray
-    .map(k => sizeOfEntry(primitiveValueToEntry(externalArgs, k, 0)))
+    .map(k => sizeOfEntry(primitiveValueToEntry(k)))
     .reduce((p, c) => {
       return p + align(c);
     }, 0);

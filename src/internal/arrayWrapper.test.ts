@@ -7,6 +7,7 @@ import { arraySaver } from "./arraySaver";
 import { MemPool } from "@thi.ng/malloc";
 import { MEM_POOL_START } from "./consts";
 import { externalArgsApiToExternalArgsApi } from "./utils";
+import { makeCarrier } from "./testUtils";
 
 describe("arrayWrapper tests", () => {
   const externalArgs = externalArgsApiToExternalArgsApi({
@@ -18,9 +19,8 @@ describe("arrayWrapper tests", () => {
   describe("arrayWrapper - general", () => {
     test("arrayWrapper class 1", () => {
       const arrayBuffer = new ArrayBuffer(256);
-      const dataView = new DataView(arrayBuffer);
+      const carrier = makeCarrier(arrayBuffer);
       initializeArrayBuffer(arrayBuffer);
-
       const allocator = new MemPool({
         buf: arrayBuffer,
         start: MEM_POOL_START
@@ -28,16 +28,11 @@ describe("arrayWrapper tests", () => {
 
       const arrayToSave = ["a", "b", 1];
 
-      const saverOutput = arraySaver(
-        externalArgs,
-        { dataView, allocator },
-        [],
-        arrayToSave
-      );
+      const saverOutput = arraySaver(externalArgs, carrier, [], arrayToSave);
 
       const arrayWrapper: any = createArrayWrapper(
         externalArgs,
-        { dataView, allocator },
+        carrier,
         saverOutput
       );
 
@@ -54,25 +49,19 @@ describe("arrayWrapper tests", () => {
 
     test("arrayWrapper array.keys()", () => {
       const arrayBuffer = new ArrayBuffer(256);
-      const dataView = new DataView(arrayBuffer);
+      const carrier = makeCarrier(arrayBuffer);
       initializeArrayBuffer(arrayBuffer);
       const allocator = new MemPool({
         buf: arrayBuffer,
         start: MEM_POOL_START
       });
-
       const arrayToSave = ["a", "b", 1];
 
-      const saverOutput = arraySaver(
-        externalArgs,
-        { dataView, allocator },
-        [],
-        arrayToSave
-      );
+      const saverOutput = arraySaver(externalArgs, carrier, [], arrayToSave);
 
       const arrayWrapper = createArrayWrapper(
         externalArgs,
-        { dataView, allocator },
+        carrier,
         saverOutput
       );
 
@@ -83,25 +72,19 @@ describe("arrayWrapper tests", () => {
 
     test("arrayWrapper array.entries()", () => {
       const arrayBuffer = new ArrayBuffer(256);
-      const dataView = new DataView(arrayBuffer);
+      const carrier = makeCarrier(arrayBuffer);
       initializeArrayBuffer(arrayBuffer);
       const allocator = new MemPool({
         buf: arrayBuffer,
         start: MEM_POOL_START
       });
-
       const arrayToSave = ["a", "b", 1];
 
-      const saverOutput = arraySaver(
-        externalArgs,
-        { dataView, allocator },
-        [],
-        arrayToSave
-      );
+      const saverOutput = arraySaver(externalArgs, carrier, [], arrayToSave);
 
       const arrayWrapper = createArrayWrapper(
         externalArgs,
-        { dataView, allocator },
+        carrier,
         saverOutput
       );
 
@@ -127,25 +110,19 @@ describe("arrayWrapper tests", () => {
 
     test("arrayWrapper array.values() & iterator", () => {
       const arrayBuffer = new ArrayBuffer(256);
-      const dataView = new DataView(arrayBuffer);
+      const carrier = makeCarrier(arrayBuffer);
       initializeArrayBuffer(arrayBuffer);
       const allocator = new MemPool({
         buf: arrayBuffer,
         start: MEM_POOL_START
       });
-
       const arrayToSave = ["a", "b", 1];
 
-      const saverOutput = arraySaver(
-        externalArgs,
-        { dataView, allocator },
-        [],
-        arrayToSave
-      );
+      const saverOutput = arraySaver(externalArgs, carrier, [], arrayToSave);
 
       const arrayWrapper = createArrayWrapper(
         externalArgs,
-        { dataView, allocator },
+        carrier,
         saverOutput
       );
 
@@ -169,25 +146,15 @@ describe("arrayWrapper tests", () => {
 
     test("arrayWrapper set value in bound", () => {
       const arrayBuffer = new ArrayBuffer(256);
-      const dataView = new DataView(arrayBuffer);
+      const carrier = makeCarrier(arrayBuffer);
       initializeArrayBuffer(arrayBuffer);
-      const allocator = new MemPool({
-        buf: arrayBuffer,
-        start: MEM_POOL_START
-      });
-
       const arrayToSave = ["a", "b", 1];
 
-      const saverOutput = arraySaver(
-        externalArgs,
-        { dataView, allocator },
-        [],
-        arrayToSave
-      );
+      const saverOutput = arraySaver(externalArgs, carrier, [], arrayToSave);
 
       const arrayWrapper: any = createArrayWrapper(
         externalArgs,
-        { dataView, allocator },
+        carrier,
         saverOutput
       );
 
@@ -204,25 +171,20 @@ describe("arrayWrapper tests", () => {
 
     test("arrayWrapper set value out of bound, but inside allocated space", () => {
       const arrayBuffer = new ArrayBuffer(256);
-      const dataView = new DataView(arrayBuffer);
+      const carrier = makeCarrier(arrayBuffer);
       initializeArrayBuffer(arrayBuffer);
-      const allocator = new MemPool({
-        buf: arrayBuffer,
-        start: MEM_POOL_START
-      });
-
       const arrayToSave = ["a", "b", 1];
 
       const saverOutput = arraySaver(
         { ...externalArgs, arrayAdditionalAllocation: 15 },
-        { dataView, allocator },
+        carrier,
         [],
         arrayToSave
       );
 
       const arrayWrapper: any = createArrayWrapper(
         { ...externalArgs, arrayAdditionalAllocation: 15 },
-        { dataView, allocator },
+        carrier,
         saverOutput
       );
 
@@ -247,25 +209,19 @@ describe("arrayWrapper tests", () => {
 
     test("arrayWrapper set value out of bound, but outside allocated space", () => {
       const arrayBuffer = new ArrayBuffer(256);
-      const dataView = new DataView(arrayBuffer);
+      const carrier = makeCarrier(arrayBuffer);
       initializeArrayBuffer(arrayBuffer);
       const allocator = new MemPool({
         buf: arrayBuffer,
         start: MEM_POOL_START
       });
-
       const arrayToSave = ["a", "b", 1];
 
-      const saverOutput = arraySaver(
-        externalArgs,
-        { dataView, allocator },
-        [],
-        arrayToSave
-      );
+      const saverOutput = arraySaver(externalArgs, carrier, [], arrayToSave);
 
       const arrayWrapper: any = createArrayWrapper(
         { ...externalArgs, arrayAdditionalAllocation: 3 },
-        { dataView, allocator },
+        carrier,
         saverOutput
       );
 
@@ -292,7 +248,7 @@ describe("arrayWrapper tests", () => {
 
   test("arrayWrapper sort - no comparator", () => {
     const arrayBuffer = new ArrayBuffer(512);
-    const dataView = new DataView(arrayBuffer);
+    const carrier = makeCarrier(arrayBuffer);
     initializeArrayBuffer(arrayBuffer);
     const allocator = new MemPool({
       buf: arrayBuffer,
@@ -301,16 +257,11 @@ describe("arrayWrapper tests", () => {
 
     const arrayToSave = [2, 1, null, 3, 10, undefined, 6, 77];
 
-    const saverOutput = arraySaver(
-      externalArgs,
-      { dataView, allocator },
-      [],
-      arrayToSave
-    );
+    const saverOutput = arraySaver(externalArgs, carrier, [], arrayToSave);
 
     const arrayWrapper = createArrayWrapper(
       { ...externalArgs, arrayAdditionalAllocation: 3 },
-      { dataView, allocator },
+      carrier,
       saverOutput
     );
 
@@ -334,7 +285,7 @@ describe("arrayWrapper tests", () => {
 
   test("arrayWrapper sort - with comparator", () => {
     const arrayBuffer = new ArrayBuffer(2048);
-    const dataView = new DataView(arrayBuffer);
+    const carrier = makeCarrier(arrayBuffer);
     initializeArrayBuffer(arrayBuffer);
     const allocator = new MemPool({
       buf: arrayBuffer,
@@ -345,16 +296,11 @@ describe("arrayWrapper tests", () => {
       value
     }));
 
-    const saverOutput = arraySaver(
-      externalArgs,
-      { dataView, allocator },
-      [],
-      arrayToSave
-    );
+    const saverOutput = arraySaver(externalArgs, carrier, [], arrayToSave);
 
     const arrayWrapper = createArrayWrapper(
       { ...externalArgs, arrayAdditionalAllocation: 3 },
-      { dataView, allocator },
+      carrier,
       saverOutput
     );
 
@@ -396,7 +342,7 @@ describe("arrayWrapper tests", () => {
 
   test("arrayWrapper - reverse", () => {
     const arrayBuffer = new ArrayBuffer(512);
-    const dataView = new DataView(arrayBuffer);
+    const carrier = makeCarrier(arrayBuffer);
     initializeArrayBuffer(arrayBuffer);
     const allocator = new MemPool({
       buf: arrayBuffer,
@@ -405,16 +351,11 @@ describe("arrayWrapper tests", () => {
 
     const arrayToSave = [1, 2, 3, 4, 5, 6, 7];
 
-    const saverOutput = arraySaver(
-      externalArgs,
-      { dataView, allocator },
-      [],
-      arrayToSave
-    );
+    const saverOutput = arraySaver(externalArgs, carrier, [], arrayToSave);
 
     const arrayWrapper = createArrayWrapper(
       { ...externalArgs, arrayAdditionalAllocation: 3 },
-      { dataView, allocator },
+      carrier,
       saverOutput
     );
 
@@ -441,7 +382,7 @@ describe("arrayWrapper tests", () => {
 
   test("arrayWrapper - set length", () => {
     const arrayBuffer = new ArrayBuffer(512);
-    const dataView = new DataView(arrayBuffer);
+    const carrier = makeCarrier(arrayBuffer);
     initializeArrayBuffer(arrayBuffer);
     const allocator = new MemPool({
       buf: arrayBuffer,
@@ -450,16 +391,11 @@ describe("arrayWrapper tests", () => {
 
     const arrayToSave = [1, 2, 3, 4, 5, 6, 7];
 
-    const saverOutput = arraySaver(
-      externalArgs,
-      { dataView, allocator },
-      [],
-      arrayToSave
-    );
+    const saverOutput = arraySaver(externalArgs, carrier, [], arrayToSave);
 
     const arrayWrapper = createArrayWrapper(
       { ...externalArgs, arrayAdditionalAllocation: 3 },
-      { dataView, allocator },
+      carrier,
       saverOutput
     );
 

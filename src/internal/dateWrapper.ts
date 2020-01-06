@@ -108,17 +108,13 @@ export class DateWrapper extends BaseProxyTrap<DateEntry>
   }
 
   private updateDateObjectForReuse() {
-    const entry = readEntry(
-      this.externalArgs,
-      this.carrier.dataView,
-      this.entryPointer
-    ) as DateEntry;
+    const entry = readEntry(this.carrier, this.entryPointer) as DateEntry;
 
     this.dateObjectForReuse.setTime(entry.value);
   }
 
   private persistDateObject() {
-    writeEntry(this.externalArgs, this.carrier.dataView, this.entryPointer, {
+    writeEntry(this.carrier, this.entryPointer, {
       type: ENTRY_TYPE.DATE,
       refsCount: this.entry.refsCount,
       value: this.dateObjectForReuse.getTime()

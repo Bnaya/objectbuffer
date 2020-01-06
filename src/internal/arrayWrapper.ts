@@ -34,11 +34,7 @@ export class ArrayWrapper extends BaseProxyTrap<ArrayEntry>
     }
 
     if (p === "length") {
-      return arrayGetMetadata(
-        this.externalArgs,
-        this.carrier.dataView,
-        this.entryPointer
-      ).length;
+      return arrayGetMetadata(this.carrier, this.entryPointer).length;
     }
 
     if (typeof p === "string" || typeof p === "number") {
@@ -70,11 +66,7 @@ export class ArrayWrapper extends BaseProxyTrap<ArrayEntry>
   }
 
   public ownKeys(): PropertyKey[] {
-    const length = arrayGetMetadata(
-      this.externalArgs,
-      this.carrier.dataView,
-      this.entryPointer
-    ).length;
+    const length = arrayGetMetadata(this.carrier, this.entryPointer).length;
 
     return [...new Array(length).keys(), "length"];
   }
@@ -96,11 +88,7 @@ export class ArrayWrapper extends BaseProxyTrap<ArrayEntry>
       return true;
     }
 
-    const length = arrayGetMetadata(
-      this.externalArgs,
-      this.carrier.dataView,
-      this.entryPointer
-    ).length;
+    const length = arrayGetMetadata(this.carrier, this.entryPointer).length;
 
     if (typeof p === "number") {
       return length - 1 >= p;
@@ -121,11 +109,8 @@ export class ArrayWrapper extends BaseProxyTrap<ArrayEntry>
         throw new RangeError("Invalid array length");
       }
 
-      const currentLength = arrayGetMetadata(
-        this.externalArgs,
-        this.carrier.dataView,
-        this.entryPointer
-      ).length;
+      const currentLength = arrayGetMetadata(this.carrier, this.entryPointer)
+        .length;
 
       if (currentLength === value) {
         return true;
@@ -192,11 +177,7 @@ export class ArrayWrapper extends BaseProxyTrap<ArrayEntry>
 
       index += 1;
 
-      length = arrayGetMetadata(
-        this.externalArgs,
-        this.carrier.dataView,
-        this.entryPointer
-      ).length;
+      length = arrayGetMetadata(this.carrier, this.entryPointer).length;
     } while (index < length);
   }
 
@@ -209,11 +190,7 @@ export class ArrayWrapper extends BaseProxyTrap<ArrayEntry>
 
       index += 1;
 
-      length = arrayGetMetadata(
-        this.externalArgs,
-        this.carrier.dataView,
-        this.entryPointer
-      ).length;
+      length = arrayGetMetadata(this.carrier, this.entryPointer).length;
     } while (index < length);
   }
 
@@ -231,11 +208,7 @@ export class ArrayWrapper extends BaseProxyTrap<ArrayEntry>
 
       index += 1;
 
-      length = arrayGetMetadata(
-        this.externalArgs,
-        this.carrier.dataView,
-        this.entryPointer
-      ).length;
+      length = arrayGetMetadata(this.carrier, this.entryPointer).length;
     } while (index < length);
   }
 
@@ -259,7 +232,7 @@ export class ArrayWrapper extends BaseProxyTrap<ArrayEntry>
   }
 
   public reverse() {
-    arrayReverse(this.externalArgs, this.carrier.dataView, this.entryPointer);
+    arrayReverse(this.externalArgs, this.carrier, this.entryPointer);
     return this;
   }
 
@@ -276,11 +249,7 @@ export class ArrayWrapper extends BaseProxyTrap<ArrayEntry>
   public unshift(...elements: any) {
     this.splice(0, 0, ...elements);
 
-    return arrayGetMetadata(
-      this.externalArgs,
-      this.carrier.dataView,
-      this.entryPointer
-    ).length;
+    return arrayGetMetadata(this.carrier, this.entryPointer).length;
   }
 
   public getDataView() {

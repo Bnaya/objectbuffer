@@ -7,6 +7,7 @@ import { arraySaver } from "./arraySaver";
 import { MemPool } from "@thi.ng/malloc";
 import { MEM_POOL_START } from "./consts";
 import { externalArgsApiToExternalArgsApi } from "./utils";
+import { makeCarrier } from "./testUtils";
 
 describe("arraySplice tests", () => {
   const externalArgs = externalArgsApiToExternalArgsApi({
@@ -17,7 +18,7 @@ describe("arraySplice tests", () => {
 
   test("arrayWrapper splice - add + delete - array stay in same length", () => {
     const arrayBuffer = new ArrayBuffer(512);
-    const dataView = new DataView(arrayBuffer);
+    const carrier = makeCarrier(arrayBuffer);
     initializeArrayBuffer(arrayBuffer);
     const allocator = new MemPool({
       buf: arrayBuffer,
@@ -26,16 +27,11 @@ describe("arraySplice tests", () => {
 
     const plainJSArray: any[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
-    const saverOutput = arraySaver(
-      externalArgs,
-      { dataView, allocator },
-      [],
-      plainJSArray
-    );
+    const saverOutput = arraySaver(externalArgs, carrier, [], plainJSArray);
 
     const arrayWrapper = createArrayWrapper(
       { ...externalArgs, arrayAdditionalAllocation: 3 },
-      { dataView, allocator },
+      carrier,
       saverOutput
     );
 
@@ -95,7 +91,7 @@ describe("arraySplice tests", () => {
 
   test("arrayWrapper splice - Just delete items from the middle", () => {
     const arrayBuffer = new ArrayBuffer(512);
-    const dataView = new DataView(arrayBuffer);
+    const carrier = makeCarrier(arrayBuffer);
     initializeArrayBuffer(arrayBuffer);
     const allocator = new MemPool({
       buf: arrayBuffer,
@@ -104,16 +100,11 @@ describe("arraySplice tests", () => {
 
     const plainJSArray: any[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
-    const saverOutput = arraySaver(
-      externalArgs,
-      { dataView, allocator },
-      [],
-      plainJSArray
-    );
+    const saverOutput = arraySaver(externalArgs, carrier, [], plainJSArray);
 
     const arrayWrapper = createArrayWrapper(
       { ...externalArgs, arrayAdditionalAllocation: 3 },
-      { dataView, allocator },
+      carrier,
       saverOutput
     );
 
@@ -150,7 +141,7 @@ describe("arraySplice tests", () => {
 
   test("arrayWrapper splice - Just add items in the middle", () => {
     const arrayBuffer = new ArrayBuffer(512);
-    const dataView = new DataView(arrayBuffer);
+    const carrier = makeCarrier(arrayBuffer);
     initializeArrayBuffer(arrayBuffer);
     const allocator = new MemPool({
       buf: arrayBuffer,
@@ -159,16 +150,11 @@ describe("arraySplice tests", () => {
 
     const plainJSArray: any[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
-    const saverOutput = arraySaver(
-      externalArgs,
-      { dataView, allocator },
-      [],
-      plainJSArray
-    );
+    const saverOutput = arraySaver(externalArgs, carrier, [], plainJSArray);
 
     const arrayWrapper = createArrayWrapper(
       { ...externalArgs, arrayAdditionalAllocation: 3 },
-      { dataView, allocator },
+      carrier,
       saverOutput
     );
 
@@ -214,7 +200,7 @@ describe("arraySplice tests", () => {
 
   test("arrayWrapper splice - add + delete - array will get longer", () => {
     const arrayBuffer = new ArrayBuffer(512);
-    const dataView = new DataView(arrayBuffer);
+    const carrier = makeCarrier(arrayBuffer);
     initializeArrayBuffer(arrayBuffer);
     const allocator = new MemPool({
       buf: arrayBuffer,
@@ -223,16 +209,11 @@ describe("arraySplice tests", () => {
 
     const plainJSArray: any[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
-    const saverOutput = arraySaver(
-      externalArgs,
-      { dataView, allocator },
-      [],
-      plainJSArray
-    );
+    const saverOutput = arraySaver(externalArgs, carrier, [], plainJSArray);
 
     const arrayWrapper = createArrayWrapper(
       { ...externalArgs, arrayAdditionalAllocation: 3 },
-      { dataView, allocator },
+      carrier,
       saverOutput
     );
 
@@ -296,7 +277,7 @@ describe("arraySplice tests", () => {
 
   test("arrayWrapper splice - add + delete - array will get shorter", () => {
     const arrayBuffer = new ArrayBuffer(512);
-    const dataView = new DataView(arrayBuffer);
+    const carrier = makeCarrier(arrayBuffer);
     initializeArrayBuffer(arrayBuffer);
     const allocator = new MemPool({
       buf: arrayBuffer,
@@ -305,16 +286,11 @@ describe("arraySplice tests", () => {
 
     const plainJSArray: any[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
-    const saverOutput = arraySaver(
-      externalArgs,
-      { dataView, allocator },
-      [],
-      plainJSArray
-    );
+    const saverOutput = arraySaver(externalArgs, carrier, [], plainJSArray);
 
     const arrayWrapper = createArrayWrapper(
       { ...externalArgs, arrayAdditionalAllocation: 3 },
-      { dataView, allocator },
+      carrier,
       saverOutput
     );
 
@@ -379,7 +355,7 @@ describe("arraySplice tests", () => {
 
   test("arrayWrapper splice - start bigger than array", () => {
     const arrayBuffer = new ArrayBuffer(512);
-    const dataView = new DataView(arrayBuffer);
+    const carrier = makeCarrier(arrayBuffer);
     initializeArrayBuffer(arrayBuffer);
     const allocator = new MemPool({
       buf: arrayBuffer,
@@ -388,16 +364,11 @@ describe("arraySplice tests", () => {
 
     const plainJSArray: any[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
-    const saverOutput = arraySaver(
-      externalArgs,
-      { dataView, allocator },
-      [],
-      plainJSArray
-    );
+    const saverOutput = arraySaver(externalArgs, carrier, [], plainJSArray);
 
     const arrayWrapper = createArrayWrapper(
       { ...externalArgs, arrayAdditionalAllocation: 3 },
-      { dataView, allocator },
+      carrier,
       saverOutput
     );
 
@@ -452,7 +423,7 @@ describe("arraySplice tests", () => {
 
   test("arrayWrapper splice - delete bigger than array", () => {
     const arrayBuffer = new ArrayBuffer(512);
-    const dataView = new DataView(arrayBuffer);
+    const carrier = makeCarrier(arrayBuffer);
     initializeArrayBuffer(arrayBuffer);
     const allocator = new MemPool({
       buf: arrayBuffer,
@@ -461,16 +432,11 @@ describe("arraySplice tests", () => {
 
     const plainJSArray: any[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
-    const saverOutput = arraySaver(
-      externalArgs,
-      { dataView, allocator },
-      [],
-      plainJSArray
-    );
+    const saverOutput = arraySaver(externalArgs, carrier, [], plainJSArray);
 
     const arrayWrapper = createArrayWrapper(
       { ...externalArgs, arrayAdditionalAllocation: 3 },
-      { dataView, allocator },
+      carrier,
       saverOutput
     );
 
@@ -531,7 +497,7 @@ describe("arraySplice tests", () => {
 
   test("arrayWrapper splice - negative start", () => {
     const arrayBuffer = new ArrayBuffer(512);
-    const dataView = new DataView(arrayBuffer);
+    const carrier = makeCarrier(arrayBuffer);
     initializeArrayBuffer(arrayBuffer);
     const allocator = new MemPool({
       buf: arrayBuffer,
@@ -540,16 +506,11 @@ describe("arraySplice tests", () => {
 
     const plainJSArray: any[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
-    const saverOutput = arraySaver(
-      externalArgs,
-      { dataView, allocator },
-      [],
-      plainJSArray
-    );
+    const saverOutput = arraySaver(externalArgs, carrier, [], plainJSArray);
 
     const arrayWrapper = createArrayWrapper(
       { ...externalArgs, arrayAdditionalAllocation: 3 },
-      { dataView, allocator },
+      carrier,
       saverOutput
     );
 
@@ -610,7 +571,7 @@ describe("arraySplice tests", () => {
 
   test("arrayWrapper splice - negative delete", () => {
     const arrayBuffer = new ArrayBuffer(512);
-    const dataView = new DataView(arrayBuffer);
+    const carrier = makeCarrier(arrayBuffer);
     initializeArrayBuffer(arrayBuffer);
     const allocator = new MemPool({
       buf: arrayBuffer,
@@ -619,16 +580,11 @@ describe("arraySplice tests", () => {
 
     const plainJSArray = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
-    const saverOutput = arraySaver(
-      externalArgs,
-      { dataView, allocator },
-      [],
-      plainJSArray
-    );
+    const saverOutput = arraySaver(externalArgs, carrier, [], plainJSArray);
 
     const arrayWrapper = createArrayWrapper(
       { ...externalArgs, arrayAdditionalAllocation: 3 },
-      { dataView, allocator },
+      carrier,
       saverOutput
     );
 

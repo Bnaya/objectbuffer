@@ -2,10 +2,8 @@
 
 import { initializeArrayBuffer } from "./store";
 import * as util from "util";
-import { arrayBuffer2HexArray } from "./testUtils";
+import { arrayBuffer2HexArray, makeCarrier } from "./testUtils";
 import { arraySaver } from "./arraySaver";
-import { MemPool } from "@thi.ng/malloc";
-import { MEM_POOL_START } from "./consts";
 import { externalArgsApiToExternalArgsApi } from "./utils";
 
 describe("arraySaver tests", () => {
@@ -19,21 +17,12 @@ describe("arraySaver tests", () => {
     test("arraySaver", () => {
       const arrayBuffer = new ArrayBuffer(256);
 
-      const dataView = new DataView(arrayBuffer);
+      const carrier = makeCarrier(arrayBuffer);
       initializeArrayBuffer(arrayBuffer);
-      const allocator = new MemPool({
-        buf: arrayBuffer,
-        start: MEM_POOL_START
-      });
 
       const arrayToSave = [1, 2, 3];
 
-      const saverOutput = arraySaver(
-        externalArgs,
-        { dataView, allocator },
-        [],
-        arrayToSave
-      );
+      const saverOutput = arraySaver(externalArgs, carrier, [], arrayToSave);
 
       expect(saverOutput).toMatchInlineSnapshot(`224`);
 

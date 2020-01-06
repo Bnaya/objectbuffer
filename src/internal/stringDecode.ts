@@ -35,15 +35,18 @@ export function stringDecode(
   from: number,
   bytesLength: number
 ) {
+  const finalUint8 = uint8.subarray(from, from + bytesLength);
+
   let resultingString = "";
+
   for (
-    let index = from, len = bytesLength | 0;
+    let index = 0, len = finalUint8.length | 0;
     index < len;
     index = (index + 32768) | 0
   ) {
     resultingString += fromCharCode.apply(
       0,
-      uint8.subarray(index, (index + 32768) | 0) as any
+      finalUint8.subarray(index, (index + 32768) | 0) as any
     );
   }
 

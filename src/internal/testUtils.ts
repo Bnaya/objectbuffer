@@ -20,8 +20,10 @@ export function wait(time: number) {
   });
 }
 
-import { IMemPool } from "@thi.ng/malloc";
+import { IMemPool, MemPool } from "@thi.ng/malloc";
 import { OutOfMemoryError } from "./exceptions";
+import { DataViewAndAllocatorCarrier } from "./interfaces";
+import { MEM_POOL_START } from "./consts";
 
 // extend pool and not monkey patch? need to think about it
 export function recordAllocations(operation: () => void, pool: IMemPool) {
@@ -91,4 +93,23 @@ export function recordAllocations(operation: () => void, pool: IMemPool) {
   pool.free = originalFree;
 
   return { allocations: [...allocations], deallocations: [...deallocations] };
+}
+
+export function makeCarrier(arrayBuffer: ArrayBuffer) {
+  const allocator = new MemPool({
+    buf: arrayBuffer,
+    start: MEM_POOL_START
+  });
+
+  const carrier: DataViewAndAllocatorCarrier = {
+    dataView: new DataView(arrayBuffer),
+    allocator,
+    uint8: new Uint8Array(arrayBuffer),
+    uint16: new Uint16Array(arrayBuffer),
+    uint32: new Uint32Array(arrayBuffer),
+    float64: new Float64Array(arrayBuffer),
+    bigUint64: new BigUint64Array(arrayBuffer)
+  };
+
+  return carrier;
 }

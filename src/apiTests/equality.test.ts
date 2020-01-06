@@ -10,8 +10,7 @@ describe("equality.test tests. make sure our cache of proxies works", () => {
   const externalArgs = externalArgsApiToExternalArgsApi({
     textEncoder: new util.TextEncoder(),
     textDecoder: new util.TextDecoder(),
-    arrayAdditionalAllocation: 0,
-    minimumStringAllocation: 0
+    arrayAdditionalAllocation: 0
   });
 
   test("equality.test tests", () => {

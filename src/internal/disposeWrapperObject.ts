@@ -17,8 +17,7 @@ export function disposeWrapperObject(value: any) {
 
   if (newRefCount === 0) {
     const addressesToFree = getAllLinkedAddresses(
-      internalApi.getExternalArgs(),
-      internalApi.getCarrier().dataView,
+      internalApi.getCarrier(),
       false,
       entryPointer
     );
@@ -30,7 +29,7 @@ export function disposeWrapperObject(value: any) {
     for (const address of addressesToFree.arcAddresses) {
       decrementRefCount(
         internalApi.getExternalArgs(),
-        internalApi.getCarrier().dataView,
+        internalApi.getCarrier(),
         address
       );
     }

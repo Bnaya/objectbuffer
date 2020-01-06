@@ -42,4 +42,16 @@ describe("stringEncodeInto", () => {
       stringDecoder.decode(uint8.slice(3, bytesLength + fromPos))
     ).toMatchInlineSnapshot(`"אבגד"`);
   });
+
+  test("stringEncodeInto from - another test", () => {
+    const input = "abc";
+    const fromPos = 54;
+
+    const bytesLength = stringEncodeInto(uint8, fromPos, input);
+
+    expect(bytesLength).toMatchInlineSnapshot(`3`);
+    expect(
+      stringDecoder.decode(uint8.slice(fromPos, bytesLength + fromPos))
+    ).toMatchInlineSnapshot(`"abc"`);
+  });
 });

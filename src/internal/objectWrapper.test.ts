@@ -4,9 +4,8 @@ import { initializeArrayBuffer } from "./store";
 import * as util from "util";
 import { objectSaver } from "./objectSaver";
 import { createObjectWrapper } from "./objectWrapper";
-import { MEM_POOL_START } from "./consts";
-import { MemPool } from "@thi.ng/malloc";
 import { externalArgsApiToExternalArgsApi } from "./utils";
+import { makeCarrier } from "./testUtils";
 
 describe("objectWrapper tests", () => {
   const externalArgs = externalArgsApiToExternalArgsApi({
@@ -17,12 +16,8 @@ describe("objectWrapper tests", () => {
   describe("objectWrapper - general", () => {
     test("ObjectWrapper class 1", () => {
       const arrayBuffer = new ArrayBuffer(1024);
-      const dataView = new DataView(arrayBuffer);
       initializeArrayBuffer(arrayBuffer);
-      const allocator = new MemPool({
-        buf: arrayBuffer,
-        start: MEM_POOL_START
-      });
+      const carrier = makeCarrier(arrayBuffer);
 
       const objectToSave = {
         a: 6,
@@ -34,16 +29,11 @@ describe("objectWrapper tests", () => {
         }
       };
 
-      const saverOutput = objectSaver(
-        externalArgs,
-        { dataView, allocator },
-        [],
-        objectToSave
-      );
+      const saverOutput = objectSaver(externalArgs, carrier, [], objectToSave);
 
       const objectWrapper: any = createObjectWrapper(
         externalArgs,
-        { dataView, allocator },
+        carrier,
         saverOutput
       );
 
@@ -63,17 +53,14 @@ describe("objectWrapper tests", () => {
         ]
       `);
 
-      expect(allocator.stats().top).toMatchInlineSnapshot(`704`);
+      expect(carrier.allocator.stats().top).toMatchInlineSnapshot(`704`);
     });
 
     test("ObjectWrapper class 2", () => {
       const arrayBuffer = new ArrayBuffer(1024);
-      const dataView = new DataView(arrayBuffer);
       initializeArrayBuffer(arrayBuffer);
-      const allocator = new MemPool({
-        buf: arrayBuffer,
-        start: MEM_POOL_START
-      });
+
+      const carrier = makeCarrier(arrayBuffer);
 
       const objectToSave = {
         a: 6,
@@ -85,33 +72,25 @@ describe("objectWrapper tests", () => {
         }
       };
 
-      const saverOutput = objectSaver(
-        externalArgs,
-        { dataView, allocator },
-        [],
-        objectToSave
-      );
+      const saverOutput = objectSaver(externalArgs, carrier, [], objectToSave);
 
       const objectWrapper: any = createObjectWrapper(
         externalArgs,
-        { dataView, allocator },
+        carrier,
         saverOutput
       );
 
       expect(objectWrapper.noneExistsProp).toMatchInlineSnapshot(`undefined`);
       expect(objectWrapper.a).toMatchInlineSnapshot(`6`);
 
-      expect(allocator.stats().top).toMatchInlineSnapshot(`704`);
+      expect(carrier.allocator.stats().top).toMatchInlineSnapshot(`704`);
     });
 
     test("ObjectWrapper class set override value", () => {
       const arrayBuffer = new ArrayBuffer(1024);
-      const dataView = new DataView(arrayBuffer);
       initializeArrayBuffer(arrayBuffer);
-      const allocator = new MemPool({
-        buf: arrayBuffer,
-        start: MEM_POOL_START
-      });
+
+      const carrier = makeCarrier(arrayBuffer);
 
       const objectToSave = {
         a: 6,
@@ -123,16 +102,11 @@ describe("objectWrapper tests", () => {
         }
       };
 
-      const saverOutput = objectSaver(
-        externalArgs,
-        { dataView, allocator },
-        [],
-        objectToSave
-      );
+      const saverOutput = objectSaver(externalArgs, carrier, [], objectToSave);
 
       const objectWrapper = createObjectWrapper(
         externalArgs,
-        { dataView, allocator },
+        carrier,
         saverOutput
       );
 
@@ -150,17 +124,14 @@ describe("objectWrapper tests", () => {
         }
       `);
 
-      expect(allocator.stats().top).toMatchInlineSnapshot(`704`);
+      expect(carrier.allocator.stats().top).toMatchInlineSnapshot(`728`);
     });
 
     test("ObjectWrapper class set new prop value", () => {
       const arrayBuffer = new ArrayBuffer(1024);
-      const dataView = new DataView(arrayBuffer);
       initializeArrayBuffer(arrayBuffer);
-      const allocator = new MemPool({
-        buf: arrayBuffer,
-        start: MEM_POOL_START
-      });
+
+      const carrier = makeCarrier(arrayBuffer);
 
       const objectToSave = {
         a: 6,
@@ -172,16 +143,11 @@ describe("objectWrapper tests", () => {
         }
       };
 
-      const saverOutput = objectSaver(
-        externalArgs,
-        { dataView, allocator },
-        [],
-        objectToSave
-      );
+      const saverOutput = objectSaver(externalArgs, carrier, [], objectToSave);
 
       const objectWrapper = createObjectWrapper(
         externalArgs,
-        { dataView, allocator },
+        carrier,
         saverOutput
       );
 
@@ -200,17 +166,14 @@ describe("objectWrapper tests", () => {
         }
       `);
 
-      expect(allocator.stats().top).toMatchInlineSnapshot(`800`);
+      expect(carrier.allocator.stats().top).toMatchInlineSnapshot(`800`);
     });
 
     test("ObjectWrapper class delete", () => {
       const arrayBuffer = new ArrayBuffer(1024);
-      const dataView = new DataView(arrayBuffer);
       initializeArrayBuffer(arrayBuffer);
-      const allocator = new MemPool({
-        buf: arrayBuffer,
-        start: MEM_POOL_START
-      });
+
+      const carrier = makeCarrier(arrayBuffer);
 
       const objectToSave = {
         a: 6,
@@ -222,16 +185,11 @@ describe("objectWrapper tests", () => {
         }
       };
 
-      const saverOutput = objectSaver(
-        externalArgs,
-        { dataView, allocator },
-        [],
-        objectToSave
-      );
+      const saverOutput = objectSaver(externalArgs, carrier, [], objectToSave);
 
       const objectWrapper = createObjectWrapper(
         externalArgs,
-        { dataView, allocator },
+        carrier,
         saverOutput
       );
 
@@ -248,7 +206,7 @@ describe("objectWrapper tests", () => {
         }
       `);
 
-      expect(allocator.stats().top).toMatchInlineSnapshot(`704`);
+      expect(carrier.allocator.stats().top).toMatchInlineSnapshot(`704`);
     });
   });
 });

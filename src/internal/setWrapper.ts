@@ -118,14 +118,7 @@ export class SetWrapper<K extends string | number>
       return false;
     }
 
-    return (
-      hashMapNodeLookup(
-        this.externalArgs,
-        this.carrier.dataView,
-        this.entry.value,
-        p
-      ) !== 0
-    );
+    return hashMapNodeLookup(this.carrier, this.entry.value, p) !== 0;
   }
 
   public add(p: string | number) {

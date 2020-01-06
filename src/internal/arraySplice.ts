@@ -19,11 +19,7 @@ export function arraySplice(
   deleteCountArg?: number,
   ...itemsToAddArg: Array<any>
 ) {
-  const metadata = arrayGetMetadata(
-    externalArgs,
-    dataViewCarrier.dataView,
-    pointerToArrayEntry
-  );
+  const metadata = arrayGetMetadata(dataViewCarrier, pointerToArrayEntry);
 
   const calcedStart = calculateSpliceStart(metadata.length, startArg);
 
@@ -74,8 +70,7 @@ export function arraySplice(
       writeValueToIndex -= 1
     ) {
       const valueToCopyPointers = arrayGetPointersToValueInIndex(
-        externalArgs,
-        dataViewCarrier.dataView,
+        dataViewCarrier,
         pointerToArrayEntry,
         writeValueToIndex - itemCountChange
       );
@@ -83,8 +78,7 @@ export function arraySplice(
       assertNonNull(valueToCopyPointers);
 
       setValuePointerAtArrayIndex(
-        externalArgs,
-        dataViewCarrier.dataView,
+        dataViewCarrier,
         pointerToArrayEntry,
         writeValueToIndex,
         valueToCopyPointers.pointer
@@ -109,8 +103,7 @@ export function arraySplice(
       writeValueToIndex += 1
     ) {
       const valueToCopyPointers = arrayGetPointersToValueInIndex(
-        externalArgs,
-        dataViewCarrier.dataView,
+        dataViewCarrier,
         pointerToArrayEntry,
         writeValueToIndex - itemCountChange
       );
@@ -118,8 +111,7 @@ export function arraySplice(
       assertNonNull(valueToCopyPointers);
 
       setValuePointerAtArrayIndex(
-        externalArgs,
-        dataViewCarrier.dataView,
+        dataViewCarrier,
         pointerToArrayEntry,
         writeValueToIndex,
         valueToCopyPointers.pointer
@@ -146,8 +138,7 @@ export function arraySplice(
 
   for (let i = 0; i < itemsToAddArg.length; i += 1) {
     const valueToSetPointers = arrayGetPointersToValueInIndex(
-      externalArgs,
-      dataViewCarrier.dataView,
+      dataViewCarrier,
       pointerToArrayEntry,
       calcedStart + i
     );
@@ -163,12 +154,7 @@ export function arraySplice(
   }
 
   if (newLength < metadata.length) {
-    shrinkArray(
-      externalArgs,
-      dataViewCarrier.dataView,
-      pointerToArrayEntry,
-      newLength
-    );
+    shrinkArray(externalArgs, dataViewCarrier, pointerToArrayEntry, newLength);
   }
 
   return deletedItemsToReturn;

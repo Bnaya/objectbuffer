@@ -1,6 +1,5 @@
 import { ENTRY_TYPE } from "./entry-types";
 import { TextDecoder, TextEncoder } from "./textEncoderDecoderTypes";
-import { IMemPool } from "@thi.ng/malloc";
 
 export type primitive = string | number | bigint | boolean | undefined | null;
 
@@ -14,25 +13,6 @@ export type Entry =
   | DateEntry
   | MapEntry
   | SetEntry;
-
-export interface NullEntry {
-  type: ENTRY_TYPE.NULL;
-}
-
-/**
- * @deprecated
- */
-export interface NullUndefined {
-  type: ENTRY_TYPE.UNDEFINED;
-}
-
-/**
- * @deprecated
- */
-export interface BooleanEntry {
-  type: ENTRY_TYPE.BOOLEAN;
-  value: boolean;
-}
 
 export interface StringEntry {
   type: ENTRY_TYPE.STRING;
@@ -103,6 +83,11 @@ export interface SetEntry {
  */
 export interface DataViewAndAllocatorCarrier {
   dataView: DataView;
+  uint8: Uint8Array;
+  uint16: Uint16Array;
+  uint32: Uint32Array;
+  float64: Float64Array;
+  bigUint64: BigUint64Array;
   allocator: import("@thi.ng/malloc").IMemPool;
 }
 
@@ -110,7 +95,6 @@ export type ExternalArgs = Readonly<{
   hashMapLoadFactor: number;
   hashMapMinInitialCapacity: number;
   arrayAdditionalAllocation: number;
-  minimumStringAllocation: number;
   textDecoder: TextDecoder;
   textEncoder: TextEncoder;
 }>;
@@ -119,7 +103,6 @@ export type ExternalArgsApi = Readonly<{
   hashMapLoadFactor?: number;
   hashMapMinInitialCapacity?: number;
   arrayAdditionalAllocation?: number;
-  minimumStringAllocation?: number;
   textDecoder: TextDecoder;
   textEncoder: TextEncoder;
 }>;
@@ -127,7 +110,7 @@ export type ExternalArgsApi = Readonly<{
 export interface InternalAPI {
   getExternalArgs(): ExternalArgs;
   getCarrier(): Readonly<DataViewAndAllocatorCarrier>;
-  replaceCarrierContent(dataView: DataView, pool: IMemPool): void;
+  replaceCarrierContent(carrier: DataViewAndAllocatorCarrier): void;
   getEntryPointer(): number;
   destroy(): number;
 }

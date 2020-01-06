@@ -14,7 +14,7 @@ const externalArgs = {
   textDecoder: new TextDecoder(),
   textEncoder: new TextEncoder(),
   arrayAdditionalAllocation: 0,
-  minimumStringAllocation: 0
+  
 };
 
 const o = objectbufferModules.createObjectBuffer(

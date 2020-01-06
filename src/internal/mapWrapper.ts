@@ -146,14 +146,7 @@ export class MapWrapper<K extends string | number, V>
       return false;
     }
 
-    return (
-      hashMapNodeLookup(
-        this.externalArgs,
-        this.carrier.dataView,
-        this.entry.value,
-        p
-      ) !== 0
-    );
+    return hashMapNodeLookup(this.carrier, this.entry.value, p) !== 0;
   }
 
   public set(p: string | number, value: any) {

@@ -48,8 +48,7 @@ export class ObjectWrapper extends BaseProxyTrap<ObjectEntry>
 
   public enumerate(): PropertyKey[] {
     const gotEntries = getObjectPropertiesEntries(
-      this.externalArgs,
-      this.carrier.dataView,
+      this.carrier,
       this.entry.value
     );
 
@@ -58,8 +57,7 @@ export class ObjectWrapper extends BaseProxyTrap<ObjectEntry>
 
   public ownKeys(): PropertyKey[] {
     const gotEntries = getObjectPropertiesEntries(
-      this.externalArgs,
-      this.carrier.dataView,
+      this.carrier,
       this.entry.value
     );
 
@@ -83,14 +81,7 @@ export class ObjectWrapper extends BaseProxyTrap<ObjectEntry>
       return false;
     }
 
-    return (
-      hashMapNodeLookup(
-        this.externalArgs,
-        this.carrier.dataView,
-        this.entry.value,
-        p
-      ) !== 0
-    );
+    return hashMapNodeLookup(this.carrier, this.entry.value, p) !== 0;
   }
 
   public set(target: {}, p: PropertyKey, value: any): boolean {

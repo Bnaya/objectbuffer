@@ -8,7 +8,6 @@ import {
   MapEntry,
   SetEntry
 } from "./interfaces";
-import { IMemPool } from "@thi.ng/malloc";
 import { incrementRefCount, decrementRefCount, readEntry } from "./store";
 import { WrapperDestroyed } from "./exceptions";
 
@@ -20,17 +19,13 @@ export class BaseProxyTrap<
     protected carrier: DataViewAndAllocatorCarrier,
     protected _entryPointer: number
   ) {
-    incrementRefCount(
-      this.externalArgs,
-      this.carrier.dataView,
-      this.entryPointer
-    );
+    incrementRefCount(this.externalArgs, this.carrier, this.entryPointer);
   }
 
   public destroy() {
     const newRefCount = decrementRefCount(
       this.externalArgs,
-      this.carrier.dataView,
+      this.carrier,
       this.entryPointer
     );
     this._entryPointer = 0;
@@ -42,9 +37,8 @@ export class BaseProxyTrap<
     return this.carrier;
   }
 
-  public replaceCarrierContent(dataView: DataView, allocator: IMemPool) {
-    this.carrier.dataView = dataView;
-    this.carrier.allocator = allocator;
+  public replaceCarrierContent(newCarrierContent: DataViewAndAllocatorCarrier) {
+    Object.assign(this.carrier, newCarrierContent);
   }
 
   public getEntryPointer() {
@@ -64,10 +58,6 @@ export class BaseProxyTrap<
   }
 
   protected get entry(): T {
-    return readEntry(
-      this.externalArgs,
-      this.carrier.dataView,
-      this.entryPointer
-    ) as T;
+    return readEntry(this.carrier, this.entryPointer) as T;
   }
 }
