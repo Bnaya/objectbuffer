@@ -11,8 +11,7 @@ describe("Runtime errors", () => {
   const externalArgs = externalArgsApiToExternalArgsApi({
     textEncoder: new util.TextEncoder(),
     textDecoder: new util.TextDecoder(),
-    arrayAdditionalAllocation: 0,
-    minimumStringAllocation: 0
+    arrayAdditionalAllocation: 0
   });
 
   test("Fail to create when not enough memory", () => {

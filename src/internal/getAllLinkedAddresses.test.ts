@@ -2,11 +2,7 @@
 
 import * as util from "util";
 import { MemPool } from "@thi.ng/malloc";
-import {
-  createObjectBuffer,
-  memoryStats,
-  getUnderlyingArrayBuffer
-} from "./api";
+import { createObjectBuffer, memoryStats } from "./api";
 import { getAllLinkedAddresses } from "./getAllLinkedAddresses";
 import { getInternalAPI, externalArgsApiToExternalArgsApi } from "./utils";
 
@@ -38,12 +34,12 @@ describe("getAllLinkedAddresses", () => {
       // getInternalAPI(a).destroy();
       // // a.toString();
 
-      const dataView = new DataView(getUnderlyingArrayBuffer(objectBuffer));
+      const carrier = getInternalAPI(objectBuffer).getCarrier();
+
       getInternalAPI(objectBuffer).destroy();
 
       const linkedAddresses = getAllLinkedAddresses(
-        externalArgs,
-        dataView,
+        carrier,
         false,
         allocatedAddresses[allocatedAddresses.length - 1]
       );
@@ -131,13 +127,12 @@ describe("getAllLinkedAddresses", () => {
         }
       `);
 
-      const dataView = new DataView(getUnderlyingArrayBuffer(objectBuffer));
+      const carrier = getInternalAPI(objectBuffer).getCarrier();
 
       getInternalAPI(objectBuffer).destroy();
 
       const linkedAddresses = getAllLinkedAddresses(
-        externalArgs,
-        dataView,
+        carrier,
         false,
         allocatedAddresses[allocatedAddresses.length - 1]
       );

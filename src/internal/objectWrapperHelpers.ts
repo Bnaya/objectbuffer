@@ -31,7 +31,6 @@ export function deleteObjectPropertyEntryByKey(
   keyToDeleteBy: string | number
 ): boolean {
   const deletedValuePointerToPointer = hashMapDelete(
-    externalArgs,
     carrier,
     hashmapPointer,
     keyToDeleteBy
@@ -52,27 +51,30 @@ export function deleteObjectPropertyEntryByKey(
 }
 
 export function getObjectPropertiesEntries(
-  externalArgs: ExternalArgs,
-  dataView: DataView,
+  carrier: DataViewAndAllocatorCarrier,
   hashmapPointer: number
 ): Array<{ key: string | number; valuePointer: number }> {
   let iterator = 0;
   const foundValues: Array<{ key: string | number; valuePointer: number }> = [];
 
   while (
-    (iterator = hashMapLowLevelIterator(dataView, hashmapPointer, iterator))
+    (iterator = hashMapLowLevelIterator(
+      carrier.dataView,
+      hashmapPointer,
+      iterator
+    ))
   ) {
     const { valuePointer, keyPointer } = hashMapNodePointerToKeyValue(
-      dataView,
+      carrier.dataView,
       iterator
     );
 
-    const keyEntry = readEntry(externalArgs, dataView, keyPointer) as
+    const keyEntry = readEntry(carrier, keyPointer) as
       | StringEntry
       | NumberEntry;
 
     foundValues.push({
-      valuePointer: dataView.getUint32(valuePointer),
+      valuePointer: carrier.dataView.getUint32(valuePointer),
       key: keyEntry.value
     });
   }
@@ -103,12 +105,7 @@ export function objectGet(
   entryPointer: number,
   key: string | number
 ) {
-  const valuePointer = hashMapValueLookup(
-    externalArgs,
-    carrier.dataView,
-    entryPointer,
-    key
-  );
+  const valuePointer = hashMapValueLookup(carrier, entryPointer, key);
 
   if (valuePointer === 0) {
     return undefined;
@@ -130,8 +127,7 @@ export function hashmapClearFree(
   const arcAddresses: number[] = [];
 
   getObjectOrMapOrSetAddresses(
-    externalArgs,
-    carrier.dataView,
+    carrier,
     false,
     hashmapPointer,
     leafAddresses,
@@ -143,7 +139,7 @@ export function hashmapClearFree(
   }
 
   for (const address of arcAddresses) {
-    decrementRefCount(externalArgs, carrier.dataView, address);
+    decrementRefCount(externalArgs, carrier, address);
   }
 }
 
@@ -152,13 +148,11 @@ export function mapOrSetClear(
   carrier: DataViewAndAllocatorCarrier,
   mapOrSetPtr: number
 ) {
-  const entry = readEntry(externalArgs, carrier.dataView, mapOrSetPtr) as
-    | MapEntry
-    | SetEntry;
+  const entry = readEntry(carrier, mapOrSetPtr) as MapEntry | SetEntry;
 
   hashmapClearFree(externalArgs, carrier, entry.value);
 
   entry.value = createHashMap(carrier, externalArgs.hashMapMinInitialCapacity);
 
-  writeEntry(externalArgs, carrier.dataView, mapOrSetPtr, entry);
+  writeEntry(carrier, mapOrSetPtr, entry);
 }

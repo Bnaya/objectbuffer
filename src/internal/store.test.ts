@@ -8,18 +8,17 @@ import {
 } from "./store";
 import { ENTRY_TYPE } from "./entry-types";
 import * as util from "util";
-import { arrayBuffer2HexArray } from "./testUtils";
-import { ObjectEntry, ExternalArgs } from "./interfaces";
-import { MemPool } from "@thi.ng/malloc";
-import { MEM_POOL_START } from "./consts";
+import { arrayBuffer2HexArray, makeCarrier } from "./testUtils";
+import { ObjectEntry } from "./interfaces";
 import { externalArgsApiToExternalArgsApi } from "./utils";
 
 describe("Store tests - Misc", () => {
   test("initializeArrayBuffer", () => {
-    const arrayBuffer = new ArrayBuffer(20);
+    const arrayBuffer = new ArrayBuffer(64);
 
     initializeArrayBuffer(arrayBuffer);
-    expect(arrayBuffer2HexArray(arrayBuffer, true)).toMatchInlineSnapshot(`
+    expect(arrayBuffer2HexArray(arrayBuffer.slice(0, 20), true))
+      .toMatchInlineSnapshot(`
       Array [
         "0:0x00",
         "1:0x00",
@@ -47,29 +46,17 @@ describe("Store tests - Misc", () => {
 });
 
 describe("Store tests writeEntry", () => {
-  const externalArgs = externalArgsApiToExternalArgsApi({
-    textEncoder: new util.TextEncoder(),
-    textDecoder: new util.TextDecoder(),
-    arrayAdditionalAllocation: 20
-  });
-
   test("writeEntry max number", () => {
-    const externalArgs: ExternalArgs = externalArgsApiToExternalArgsApi({
-      textEncoder: new util.TextEncoder(),
-      textDecoder: new util.TextDecoder(),
-      arrayAdditionalAllocation: 0,
-      minimumStringAllocation: 0
-    });
+    const arrayBuffer = new ArrayBuffer(64);
+    const carrier = makeCarrier(arrayBuffer);
 
-    const arrayBuffer = new ArrayBuffer(17);
-    const dataView = new DataView(arrayBuffer);
-
-    writeEntry(externalArgs, dataView, 8, {
+    writeEntry(carrier, 8, {
       type: ENTRY_TYPE.NUMBER,
       value: Number.MAX_VALUE
     });
 
-    expect(arrayBuffer2HexArray(arrayBuffer)).toMatchInlineSnapshot(`
+    expect(arrayBuffer2HexArray(arrayBuffer.slice(0, 17)))
+      .toMatchInlineSnapshot(`
       Array [
         "0x00",
         "0x00",
@@ -92,15 +79,16 @@ describe("Store tests writeEntry", () => {
     `);
   });
   test("writeEntry min number", () => {
-    const arrayBuffer = new ArrayBuffer(17);
-    const dataView = new DataView(arrayBuffer);
+    const arrayBuffer = new ArrayBuffer(64);
+    const carrier = makeCarrier(arrayBuffer);
 
-    writeEntry(externalArgs, dataView, 8, {
+    writeEntry(carrier, 8, {
       type: ENTRY_TYPE.NUMBER,
       value: Number.MIN_VALUE
     });
 
-    expect(arrayBuffer2HexArray(arrayBuffer)).toMatchInlineSnapshot(`
+    expect(arrayBuffer2HexArray(arrayBuffer.slice(0, 17)))
+      .toMatchInlineSnapshot(`
       Array [
         "0x00",
         "0x00",
@@ -124,16 +112,17 @@ describe("Store tests writeEntry", () => {
   });
 
   test("writeEntry string", () => {
-    const arrayBuffer = new ArrayBuffer(19);
-    const dataView = new DataView(arrayBuffer);
+    const arrayBuffer = new ArrayBuffer(64);
+    const carrier = makeCarrier(arrayBuffer);
 
-    writeEntry(externalArgs, dataView, 8, {
+    writeEntry(carrier, 8, {
       type: ENTRY_TYPE.STRING,
       value: "aא弟",
-      allocatedBytes: 0
+      allocatedBytes: 6
     });
 
-    expect(arrayBuffer2HexArray(arrayBuffer)).toMatchInlineSnapshot(`
+    expect(arrayBuffer2HexArray(arrayBuffer.slice(0, 19)))
+      .toMatchInlineSnapshot(`
       Array [
         "0x00",
         "0x00",
@@ -147,7 +136,7 @@ describe("Store tests writeEntry", () => {
         "0x00",
         "0x06",
         "0x00",
-        "0x00",
+        "0x06",
         "0x61",
         "0xd7",
         "0x90",
@@ -167,15 +156,15 @@ describe("Store tests readEntry", () => {
   });
 
   test("readEntry max number", () => {
-    const arrayBuffer = new ArrayBuffer(17);
-    const dataView = new DataView(arrayBuffer);
+    const arrayBuffer = new ArrayBuffer(64);
+    const carrier = makeCarrier(arrayBuffer);
 
-    writeEntry(externalArgs, dataView, 8, {
+    writeEntry(carrier, 8, {
       type: ENTRY_TYPE.NUMBER,
       value: Number.MAX_VALUE
     });
 
-    const redEntry = readEntry(externalArgs, dataView, 8);
+    const redEntry = readEntry(carrier, 8);
 
     // expect(redBytesLength).toBe(writtenLength);
 
@@ -188,15 +177,15 @@ describe("Store tests readEntry", () => {
   });
 
   test("readEntry min number", () => {
-    const arrayBuffer = new ArrayBuffer(17);
-    const dataView = new DataView(arrayBuffer);
+    const arrayBuffer = new ArrayBuffer(64);
+    const carrier = makeCarrier(arrayBuffer);
 
-    writeEntry(externalArgs, dataView, 8, {
+    writeEntry(carrier, 8, {
       type: ENTRY_TYPE.NUMBER,
       value: Number.MIN_VALUE
     });
 
-    const redEntry = readEntry(externalArgs, dataView, 8);
+    const redEntry = readEntry(carrier, 8);
 
     expect(redEntry).toMatchInlineSnapshot(`
       Object {
@@ -207,20 +196,20 @@ describe("Store tests readEntry", () => {
   });
 
   test("readEntry string", () => {
-    const arrayBuffer = new ArrayBuffer(12);
-    const dataView = new DataView(arrayBuffer);
+    const arrayBuffer = new ArrayBuffer(64);
+    const carrier = makeCarrier(arrayBuffer);
 
-    writeEntry(externalArgs, dataView, 0, {
+    writeEntry(carrier, 0, {
       type: ENTRY_TYPE.STRING,
       value: "aא弟",
-      allocatedBytes: 0
+      allocatedBytes: 6
     });
 
-    const entry = readEntry(externalArgs, dataView, 0);
+    const entry = readEntry(carrier, 0);
 
     expect(entry).toMatchInlineSnapshot(`
       Object {
-        "allocatedBytes": 0,
+        "allocatedBytes": 6,
         "type": 5,
         "value": "aא弟",
       }
@@ -228,15 +217,15 @@ describe("Store tests readEntry", () => {
   });
 
   test("readEntry BigInt", () => {
-    const arrayBuffer = new ArrayBuffer(20);
-    const dataView = new DataView(arrayBuffer);
+    const arrayBuffer = new ArrayBuffer(64);
+    const carrier = makeCarrier(arrayBuffer);
 
-    writeEntry(externalArgs, dataView, 0, {
+    writeEntry(carrier, 0, {
       type: ENTRY_TYPE.BIGINT_POSITIVE,
       value: BigInt("0b0" + "1".repeat(63))
     });
 
-    const entry = readEntry(externalArgs, dataView, 0);
+    const entry = readEntry(carrier, 0);
 
     expect(entry).toMatchInlineSnapshot(`
       Object {
@@ -247,15 +236,15 @@ describe("Store tests readEntry", () => {
   });
 
   test("readEntry UBigInt", () => {
-    const arrayBuffer = new ArrayBuffer(16);
-    const dataView = new DataView(arrayBuffer);
+    const arrayBuffer = new ArrayBuffer(64);
+    const carrier = makeCarrier(arrayBuffer);
 
-    writeEntry(externalArgs, dataView, 0, {
+    writeEntry(carrier, 0, {
       type: ENTRY_TYPE.BIGINT_POSITIVE,
       value: BigInt("0b" + "1".repeat(64))
     });
 
-    const entry = readEntry(externalArgs, dataView, 0);
+    const entry = readEntry(carrier, 0);
 
     expect(entry).toMatchInlineSnapshot(`
       Object {
@@ -265,15 +254,15 @@ describe("Store tests readEntry", () => {
     `);
   });
   test("ENTRY_TYPE.BIGINT_POSITIVE max value", () => {
-    const arrayBuffer = new ArrayBuffer(16);
-    const dataView = new DataView(arrayBuffer);
+    const arrayBuffer = new ArrayBuffer(64);
+    const carrier = makeCarrier(arrayBuffer);
 
-    writeEntry(externalArgs, dataView, 0, {
+    writeEntry(carrier, 0, {
       type: ENTRY_TYPE.BIGINT_POSITIVE,
       value: BigInt("0b" + "1".repeat(64))
     });
 
-    expect(readEntry(externalArgs, dataView, 0)).toMatchInlineSnapshot(`
+    expect(readEntry(carrier, 0)).toMatchInlineSnapshot(`
       Object {
         "type": 3,
         "value": 18446744073709551615n,
@@ -282,15 +271,15 @@ describe("Store tests readEntry", () => {
   });
 
   test("ENTRY_TYPE.BIGINT_NEGATIVE min value", () => {
-    const arrayBuffer = new ArrayBuffer(16);
-    const dataView = new DataView(arrayBuffer);
+    const arrayBuffer = new ArrayBuffer(64);
+    const carrier = makeCarrier(arrayBuffer);
 
-    writeEntry(externalArgs, dataView, 0, {
+    writeEntry(carrier, 0, {
       type: ENTRY_TYPE.BIGINT_NEGATIVE,
       value: -BigInt("0b" + "1".repeat(64))
     });
 
-    expect(readEntry(externalArgs, dataView, 0)).toMatchInlineSnapshot(`
+    expect(readEntry(carrier, 0)).toMatchInlineSnapshot(`
       Object {
         "type": 4,
         "value": -18446744073709551615n,
@@ -299,11 +288,11 @@ describe("Store tests readEntry", () => {
   });
 
   test("BigInt64 overflow error", () => {
-    const arrayBuffer = new ArrayBuffer(16);
-    const dataView = new DataView(arrayBuffer);
+    const arrayBuffer = new ArrayBuffer(64);
+    const carrier = makeCarrier(arrayBuffer);
 
     expect(() => {
-      writeEntry(externalArgs, dataView, 0, {
+      writeEntry(carrier, 0, {
         type: ENTRY_TYPE.BIGINT_POSITIVE,
         value: BigInt("0b" + "1".repeat(65))
       });
@@ -312,8 +301,8 @@ describe("Store tests readEntry", () => {
 
   describe("Store tests write/read entry", () => {
     test("object entry", () => {
-      const arrayBuffer = new ArrayBuffer(8);
-      const dataView = new DataView(arrayBuffer);
+      const arrayBuffer = new ArrayBuffer(64);
+      const carrier = makeCarrier(arrayBuffer);
 
       const entryToWrite: ObjectEntry = {
         type: ENTRY_TYPE.OBJECT,
@@ -321,9 +310,9 @@ describe("Store tests readEntry", () => {
         value: 10
       };
 
-      writeEntry(externalArgs, dataView, 0, entryToWrite);
+      writeEntry(carrier, 0, entryToWrite);
 
-      const entry = readEntry(externalArgs, dataView, 0);
+      const entry = readEntry(carrier, 0);
 
       expect(entry).toMatchInlineSnapshot(`
         Object {
@@ -337,23 +326,16 @@ describe("Store tests readEntry", () => {
 
   describe("appendEntry - general", () => {
     test("appendEntry", () => {
-      const arrayBuffer = new ArrayBuffer(100);
-      const dataView = new DataView(arrayBuffer);
+      const arrayBuffer = new ArrayBuffer(96);
       initializeArrayBuffer(arrayBuffer);
-      const allocator = new MemPool({
-        buf: arrayBuffer,
-        start: MEM_POOL_START
-      });
 
-      const r1 = appendEntry(
-        externalArgs,
-        { dataView, allocator },
-        {
-          type: ENTRY_TYPE.STRING,
-          value: "im a string",
-          allocatedBytes: 0
-        }
-      );
+      const carrier = makeCarrier(arrayBuffer);
+
+      const r1 = appendEntry(externalArgs, carrier, {
+        type: ENTRY_TYPE.STRING,
+        value: "im a string",
+        allocatedBytes: 11
+      });
 
       expect(r1).toMatchInlineSnapshot(`48`);
 
@@ -383,7 +365,7 @@ describe("Store tests readEntry", () => {
           "21:0x00",
           "22:0x00",
           "23:0x00",
-          "24:0x64",
+          "24:0x60",
           "25:0x00",
           "26:0x00",
           "27:0x00",
@@ -411,7 +393,7 @@ describe("Store tests readEntry", () => {
           "49:0x00",
           "50:0x0b",
           "51:0x00",
-          "52:0x00",
+          "52:0x0b",
           "53:0x69",
           "54:0x6d",
           "55:0x20",
@@ -455,10 +437,6 @@ describe("Store tests readEntry", () => {
           "93:0x00",
           "94:0x00",
           "95:0x00",
-          "96:0x00",
-          "97:0x00",
-          "98:0x00",
-          "99:0x00",
         ]
       `);
 
@@ -488,7 +466,7 @@ describe("Store tests readEntry", () => {
           "21:0x00",
           "22:0x00",
           "23:0x00",
-          "24:0x64",
+          "24:0x60",
           "25:0x00",
           "26:0x00",
           "27:0x00",
@@ -516,7 +494,7 @@ describe("Store tests readEntry", () => {
           "49:0x00",
           "50:0x0b",
           "51:0x00",
-          "52:0x00",
+          "52:0x0b",
           "53:0x69",
           "54:0x6d",
           "55:0x20",
@@ -560,10 +538,6 @@ describe("Store tests readEntry", () => {
           "93:0x00",
           "94:0x00",
           "95:0x00",
-          "96:0x00",
-          "97:0x00",
-          "98:0x00",
-          "99:0x00",
         ]
       `);
     });

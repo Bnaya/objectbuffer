@@ -47,7 +47,7 @@ export function entryToFinalJavaScriptValue(
     return false;
   }
 
-  const valueEntry = readEntry(externalArgs, carrier.dataView, pointerToEntry);
+  const valueEntry = readEntry(carrier, pointerToEntry);
 
   if (isPrimitiveEntryType(valueEntry.type)) {
     return valueEntry.value;
@@ -88,26 +88,17 @@ function finalizer(
   carrier: DataViewAndAllocatorCarrier,
   externalArgs: ExternalArgs
 ) {
-  const newRefsCount = decrementRefCount(
-    externalArgs,
-    carrier.dataView,
-    memoryAddress
-  );
+  const newRefsCount = decrementRefCount(externalArgs, carrier, memoryAddress);
 
   if (newRefsCount === 0) {
-    const freeUs = getAllLinkedAddresses(
-      externalArgs,
-      carrier.dataView,
-      false,
-      memoryAddress
-    );
+    const freeUs = getAllLinkedAddresses(carrier, false, memoryAddress);
 
     for (const address of freeUs.leafAddresses) {
       carrier.allocator.free(address);
     }
 
     for (const address of freeUs.arcAddresses) {
-      decrementRefCount(externalArgs, carrier.dataView, address);
+      decrementRefCount(externalArgs, carrier, address);
     }
   }
 }

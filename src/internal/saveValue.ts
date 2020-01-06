@@ -44,11 +44,7 @@ export function saveValue(
   }
 
   if (isPrimitive(value)) {
-    const entry = primitiveValueToEntry(
-      externalArgs,
-      value,
-      externalArgs.minimumStringAllocation
-    );
+    const entry = primitiveValueToEntry(value);
     valuePointer = appendEntry(externalArgs, carrier, entry);
   } else if (
     (maybeOurPointer = getOurPointerIfApplicable(value, carrier.dataView))

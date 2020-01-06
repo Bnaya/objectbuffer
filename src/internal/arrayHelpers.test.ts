@@ -12,34 +12,25 @@ import { ExternalArgs } from "./interfaces";
 import { MemPool } from "@thi.ng/malloc";
 import { MEM_POOL_START } from "./consts";
 import { externalArgsApiToExternalArgsApi } from "./utils";
+import { makeCarrier } from "./testUtils";
 
 const externalArgs: ExternalArgs = externalArgsApiToExternalArgsApi({
   textEncoder: new util.TextEncoder(),
   textDecoder: new util.TextDecoder(),
-  arrayAdditionalAllocation: 0,
-  minimumStringAllocation: 0
+  arrayAdditionalAllocation: 0
 });
 
 describe("arrayHelpers tests", () => {
   test("arrayGetMetadata", () => {
     const arrayBuffer = new ArrayBuffer(256);
-    const dataView = new DataView(arrayBuffer);
+    const carrier = makeCarrier(arrayBuffer);
     initializeArrayBuffer(arrayBuffer);
-    const allocator = new MemPool({
-      buf: arrayBuffer,
-      start: MEM_POOL_START
-    });
 
     const arrayToSave = [1, 2];
 
-    const saverOutput = arraySaver(
-      externalArgs,
-      { dataView, allocator },
-      [],
-      arrayToSave
-    );
+    const saverOutput = arraySaver(externalArgs, carrier, [], arrayToSave);
 
-    const metadata = arrayGetMetadata(externalArgs, dataView, saverOutput);
+    const metadata = arrayGetMetadata(carrier, saverOutput);
 
     expect(metadata).toMatchInlineSnapshot(`
       Object {
@@ -51,14 +42,14 @@ describe("arrayHelpers tests", () => {
       }
     `);
 
-    expect(allocator.stats().available).toMatchInlineSnapshot(`128`);
+    expect(carrier.allocator.stats().available).toMatchInlineSnapshot(`128`);
   });
 
   describe("getFinalValueAtArrayIndex", () => {
     test("in bound index", () => {
       const arrayBuffer = new ArrayBuffer(256);
 
-      const dataView = new DataView(arrayBuffer);
+      const carrier = makeCarrier(arrayBuffer);
       initializeArrayBuffer(arrayBuffer);
       const allocator = new MemPool({
         buf: arrayBuffer,
@@ -67,16 +58,11 @@ describe("arrayHelpers tests", () => {
 
       const arrayToSave = [1, 2];
 
-      const saverOutput = arraySaver(
-        externalArgs,
-        { dataView, allocator },
-        [],
-        arrayToSave
-      );
+      const saverOutput = arraySaver(externalArgs, carrier, [], arrayToSave);
 
       const finalValue = getFinalValueAtArrayIndex(
         externalArgs,
-        { dataView, allocator },
+        carrier,
         saverOutput,
         0
       );
@@ -88,7 +74,7 @@ describe("arrayHelpers tests", () => {
     test("out of bound index", () => {
       const arrayBuffer = new ArrayBuffer(256);
 
-      const dataView = new DataView(arrayBuffer);
+      const carrier = makeCarrier(arrayBuffer);
       initializeArrayBuffer(arrayBuffer);
       const allocator = new MemPool({
         buf: arrayBuffer,
@@ -97,16 +83,11 @@ describe("arrayHelpers tests", () => {
 
       const arrayToSave = [1, 2];
 
-      const saverOutput = arraySaver(
-        externalArgs,
-        { dataView, allocator },
-        [],
-        arrayToSave
-      );
+      const saverOutput = arraySaver(externalArgs, carrier, [], arrayToSave);
 
       const finalValue = getFinalValueAtArrayIndex(
         externalArgs,
-        { dataView, allocator },
+        carrier,
         saverOutput,
         10
       );
@@ -118,7 +99,7 @@ describe("arrayHelpers tests", () => {
     test("array of strings", () => {
       const arrayBuffer = new ArrayBuffer(256);
 
-      const dataView = new DataView(arrayBuffer);
+      const carrier = makeCarrier(arrayBuffer);
       initializeArrayBuffer(arrayBuffer);
       const allocator = new MemPool({
         buf: arrayBuffer,
@@ -127,16 +108,11 @@ describe("arrayHelpers tests", () => {
 
       const arrayToSave = ["a", "b"];
 
-      const saverOutput = arraySaver(
-        externalArgs,
-        { dataView, allocator },
-        [],
-        arrayToSave
-      );
+      const saverOutput = arraySaver(externalArgs, carrier, [], arrayToSave);
 
       const finalValue = getFinalValueAtArrayIndex(
         externalArgs,
-        { dataView, allocator },
+        carrier,
         saverOutput,
         1
       );
@@ -149,7 +125,7 @@ describe("arrayHelpers tests", () => {
   test("setValueAtArrayIndex basic", () => {
     const arrayBuffer = new ArrayBuffer(256);
 
-    const dataView = new DataView(arrayBuffer);
+    const carrier = makeCarrier(arrayBuffer);
     initializeArrayBuffer(arrayBuffer);
     const allocator = new MemPool({
       buf: arrayBuffer,
@@ -158,16 +134,11 @@ describe("arrayHelpers tests", () => {
 
     const arrayToSave = [1, 2];
 
-    const saverOutput = arraySaver(
-      externalArgs,
-      { dataView, allocator },
-      [],
-      arrayToSave
-    );
+    const saverOutput = arraySaver(externalArgs, carrier, [], arrayToSave);
 
     setValueAtArrayIndex(
       externalArgs,
-      { dataView, allocator },
+      carrier,
       saverOutput,
       1,
       "im the new value"
@@ -175,7 +146,7 @@ describe("arrayHelpers tests", () => {
 
     const finalValue = getFinalValueAtArrayIndex(
       externalArgs,
-      { dataView, allocator },
+      carrier,
       saverOutput,
       1
     );

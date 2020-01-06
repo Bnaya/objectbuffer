@@ -1,17 +1,11 @@
 import { readEntry } from "./store";
-import { ExternalArgs } from "./interfaces";
+import { DataViewAndAllocatorCarrier } from "./interfaces";
 import { ENTRY_TYPE } from "./entry-types";
 import { hashMapGetPointersToFree } from "./hashmap/hashmap";
-import {
-  UNDEFINED_KNOWN_ADDRESS,
-  NULL_KNOWN_ADDRESS,
-  TRUE_KNOWN_ADDRESS,
-  FALSE_KNOWN_ADDRESS
-} from "./consts";
+import { isKnownAddressValuePointer } from "./utils";
 
 export function getAllLinkedAddresses(
-  externalArgs: ExternalArgs,
-  dataView: DataView,
+  carrier: DataViewAndAllocatorCarrier,
   ignoreRefCount: boolean,
   entryPointer: number
 ) {
@@ -19,8 +13,7 @@ export function getAllLinkedAddresses(
   const arcAddresses: number[] = [];
 
   getAllLinkedAddressesStep(
-    externalArgs,
-    dataView,
+    carrier,
     ignoreRefCount,
     entryPointer,
     leafAddresses,
@@ -31,23 +24,17 @@ export function getAllLinkedAddresses(
 }
 
 function getAllLinkedAddressesStep(
-  externalArgs: ExternalArgs,
-  dataView: DataView,
+  carrier: DataViewAndAllocatorCarrier,
   ignoreRefCount: boolean,
   entryPointer: number,
   leafAddresses: number[],
   arcAddresses: number[]
 ) {
-  if (
-    entryPointer === UNDEFINED_KNOWN_ADDRESS ||
-    entryPointer === NULL_KNOWN_ADDRESS ||
-    entryPointer === TRUE_KNOWN_ADDRESS ||
-    entryPointer === FALSE_KNOWN_ADDRESS
-  ) {
+  if (isKnownAddressValuePointer(entryPointer)) {
     return;
   }
 
-  const entry = readEntry(externalArgs, dataView, entryPointer);
+  const entry = readEntry(carrier, entryPointer);
 
   switch (entry.type) {
     case ENTRY_TYPE.NUMBER:
@@ -63,8 +50,7 @@ function getAllLinkedAddressesStep(
       if (entry.refsCount <= 1 || ignoreRefCount) {
         leafAddresses.push(entryPointer);
         getObjectOrMapOrSetAddresses(
-          externalArgs,
-          dataView,
+          carrier,
           ignoreRefCount,
           entry.value,
           leafAddresses,
@@ -82,13 +68,12 @@ function getAllLinkedAddressesStep(
         leafAddresses.push(entry.value);
 
         for (let i = 0; i < entry.allocatedLength; i += 1) {
-          const valuePointer = dataView.getUint32(
+          const valuePointer = carrier.dataView.getUint32(
             entry.value + i * Uint32Array.BYTES_PER_ELEMENT
           );
 
           getAllLinkedAddressesStep(
-            externalArgs,
-            dataView,
+            carrier,
             ignoreRefCount,
             valuePointer,
             leafAddresses,
@@ -116,15 +101,14 @@ function getAllLinkedAddressesStep(
 }
 
 export function getObjectOrMapOrSetAddresses(
-  externalArgs: ExternalArgs,
-  dataView: DataView,
+  carrier: DataViewAndAllocatorCarrier,
   ignoreRefCount: boolean,
   internalHashmapPointer: number,
   leafAddresses: number[],
   arcAddresses: number[]
 ) {
   const { pointersToValuePointers, pointers } = hashMapGetPointersToFree(
-    dataView,
+    carrier.dataView,
     internalHashmapPointer
   );
 
@@ -132,10 +116,9 @@ export function getObjectOrMapOrSetAddresses(
 
   for (const pointer of pointersToValuePointers) {
     getAllLinkedAddressesStep(
-      externalArgs,
-      dataView,
+      carrier,
       ignoreRefCount,
-      dataView.getUint32(pointer),
+      carrier.dataView.getUint32(pointer),
       leafAddresses,
       arcAddresses
     );

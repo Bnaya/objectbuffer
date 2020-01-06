@@ -27,7 +27,7 @@ describe.skip("memoryGCTest.test", () => {
     textEncoder: new util.TextEncoder(),
     textDecoder: new util.TextDecoder(),
     arrayAdditionalAllocation: 0,
-    minimumStringAllocation: 0
+    
   });
 
   test("internal ArrayBuffer GC", async () => {

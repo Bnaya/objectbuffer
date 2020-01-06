@@ -42,4 +42,10 @@ describe("stringDecode", () => {
       stringDecode(uint8.subarray(3, bytesLength + fromPos), 0, bytesLength)
     ).toMatchInlineSnapshot(`"אבגד"`);
   });
+
+  test("stringDecode abc", () => {
+    const uint8 = new Uint8Array([0, 0, 97, 98, 99]);
+
+    expect(stringDecode(uint8, 2, 3)).toMatchInlineSnapshot(`"abc"`);
+  });
 });

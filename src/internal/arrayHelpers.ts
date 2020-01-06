@@ -13,30 +13,20 @@ import { ENTRY_TYPE } from "./entry-types";
 import { assertNonNull } from "./assertNonNull";
 
 export function arrayGetMetadata(
-  externalArgs: ExternalArgs,
-  dataView: DataView,
+  carrier: DataViewAndAllocatorCarrier,
   pointerToArrayEntry: number
 ) {
-  const arrayEntry = readEntry(
-    externalArgs,
-    dataView,
-    pointerToArrayEntry
-  ) as ArrayEntry;
+  const arrayEntry = readEntry(carrier, pointerToArrayEntry) as ArrayEntry;
 
   return arrayEntry;
 }
 
 export function arrayGetPointersToValueInIndex(
-  externalArgs: ExternalArgs,
-  dataView: DataView,
+  carrier: DataViewAndAllocatorCarrier,
   pointerToArrayEntry: number,
   indexToGet: number
 ) {
-  const metadata = arrayGetMetadata(
-    externalArgs,
-    dataView,
-    pointerToArrayEntry
-  );
+  const metadata = arrayGetMetadata(carrier, pointerToArrayEntry);
 
   // out of bound
   if (indexToGet >= metadata.length) {
@@ -46,7 +36,7 @@ export function arrayGetPointersToValueInIndex(
   const pointerToThePointer =
     metadata.value + indexToGet * Uint32Array.BYTES_PER_ELEMENT;
 
-  const pointer = dataView.getUint32(pointerToThePointer);
+  const pointer = carrier.dataView.getUint32(pointerToThePointer);
 
   return {
     pointer,
@@ -61,8 +51,7 @@ export function getFinalValueAtArrayIndex(
   indexToGet: number
 ) {
   const pointers = arrayGetPointersToValueInIndex(
-    externalArgs,
-    dataViewCarrier.dataView,
+    dataViewCarrier,
     pointerToArrayEntry,
     indexToGet
   );
@@ -79,22 +68,20 @@ export function getFinalValueAtArrayIndex(
 }
 
 export function setValuePointerAtArrayIndex(
-  externalArgs: ExternalArgs,
-  dataView: DataView,
+  carrier: DataViewAndAllocatorCarrier,
   pointerToArrayEntry: number,
   indexToSet: number,
   pointerToEntry: number
 ) {
   const pointers = arrayGetPointersToValueInIndex(
-    externalArgs,
-    dataView,
+    carrier,
     pointerToArrayEntry,
     indexToSet
   );
 
   assertNonNull(pointers);
 
-  dataView.setUint32(pointers.pointerToThePointer, pointerToEntry);
+  carrier.dataView.setUint32(pointers.pointerToThePointer, pointerToEntry);
 }
 
 export function setValueAtArrayIndex(
@@ -106,8 +93,7 @@ export function setValueAtArrayIndex(
 ) {
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const pointers = arrayGetPointersToValueInIndex(
-    externalArgs,
-    carrier.dataView,
+    carrier,
     pointerToArrayEntry,
     indexToSet
   )!;
@@ -129,11 +115,7 @@ export function extendArrayIfNeeded(
   pointerToArrayEntry: number,
   wishedLength: number
 ) {
-  const metadata = arrayGetMetadata(
-    externalArgs,
-    carrier.dataView,
-    pointerToArrayEntry
-  );
+  const metadata = arrayGetMetadata(carrier, pointerToArrayEntry);
 
   if (wishedLength > metadata.length) {
     if (wishedLength > metadata.allocatedLength) {
@@ -146,7 +128,7 @@ export function extendArrayIfNeeded(
       );
     } else {
       // no need to re-allocated, just push the length forward
-      writeEntry(externalArgs, carrier.dataView, pointerToArrayEntry, {
+      writeEntry(carrier, pointerToArrayEntry, {
         type: ENTRY_TYPE.ARRAY,
         refsCount: metadata.refsCount,
         value: metadata.value,
@@ -162,17 +144,13 @@ export function extendArrayIfNeeded(
  */
 export function shrinkArray(
   externalArgs: ExternalArgs,
-  dataView: DataView,
+  carrier: DataViewAndAllocatorCarrier,
   pointerToArrayEntry: number,
   wishedLength: number
 ) {
-  const metadata = arrayGetMetadata(
-    externalArgs,
-    dataView,
-    pointerToArrayEntry
-  );
+  const metadata = arrayGetMetadata(carrier, pointerToArrayEntry);
 
-  writeEntry(externalArgs, dataView, pointerToArrayEntry, {
+  writeEntry(carrier, pointerToArrayEntry, {
     type: ENTRY_TYPE.ARRAY,
     refsCount: metadata.refsCount,
     value: metadata.value,
@@ -188,11 +166,7 @@ function reallocateArray(
   newAllocatedLength: number,
   newLength: number
 ) {
-  const metadata = arrayGetMetadata(
-    externalArgs,
-    carrier.dataView,
-    pointerToArrayEntry
-  );
+  const metadata = arrayGetMetadata(carrier, pointerToArrayEntry);
 
   const newArrayValueLocation = carrier.allocator.realloc(
     metadata.value,
@@ -212,7 +186,7 @@ function reallocateArray(
   //   );
   // }
 
-  writeEntry(externalArgs, carrier.dataView, pointerToArrayEntry, {
+  writeEntry(carrier, pointerToArrayEntry, {
     type: ENTRY_TYPE.ARRAY,
     refsCount: metadata.refsCount,
     value: newArrayValueLocation,
@@ -227,11 +201,7 @@ export function arraySort(
   pointerToArrayEntry: number,
   sortComparator: (a: any, b: any) => 1 | -1 | 0 = defaultCompareFunction
 ) {
-  const metadata = arrayGetMetadata(
-    externalArgs,
-    dataViewCarrier.dataView,
-    pointerToArrayEntry
-  );
+  const metadata = arrayGetMetadata(dataViewCarrier, pointerToArrayEntry);
   const pointersToValues = [...new Array(metadata.length).keys()]
     .map(index => metadata.value + index * Uint32Array.BYTES_PER_ELEMENT)
     .map(pointerToPointer =>
@@ -296,45 +266,28 @@ function toString(obj: any) {
 
 export function arrayReverse(
   externalArgs: ExternalArgs,
-  dataView: DataView,
+  carrier: DataViewAndAllocatorCarrier,
   pointerToArrayEntry: number
 ) {
-  const metadata = arrayGetMetadata(
-    externalArgs,
-    dataView,
-    pointerToArrayEntry
-  );
+  const metadata = arrayGetMetadata(carrier, pointerToArrayEntry);
 
   for (let i = 0; i < Math.floor(metadata.length / 2); i += 1) {
     const theOtherIndex = metadata.length - i - 1;
 
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const a = arrayGetPointersToValueInIndex(
-      externalArgs,
-      dataView,
-      pointerToArrayEntry,
-      i
-    )!;
+    const a = arrayGetPointersToValueInIndex(carrier, pointerToArrayEntry, i)!;
 
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const b = arrayGetPointersToValueInIndex(
-      externalArgs,
-      dataView,
+      carrier,
       pointerToArrayEntry,
       theOtherIndex
     )!;
 
-    setValuePointerAtArrayIndex(
-      externalArgs,
-      dataView,
-      pointerToArrayEntry,
-      i,
-      b.pointer
-    );
+    setValuePointerAtArrayIndex(carrier, pointerToArrayEntry, i, b.pointer);
 
     setValuePointerAtArrayIndex(
-      externalArgs,
-      dataView,
+      carrier,
       pointerToArrayEntry,
       theOtherIndex,
       a.pointer
