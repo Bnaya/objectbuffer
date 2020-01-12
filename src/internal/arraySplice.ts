@@ -7,13 +7,13 @@ import {
   setValuePointerAtArrayIndex
 } from "./arrayHelpers";
 import { assertNonNull } from "./assertNonNull";
-import { ExternalArgs, DataViewAndAllocatorCarrier } from "./interfaces";
+import { ExternalArgs, GlobalCarrier } from "./interfaces";
 import { writeValueInPtrToPtr } from "./store";
 
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/splice#Syntax
 export function arraySplice(
   externalArgs: ExternalArgs,
-  dataViewCarrier: DataViewAndAllocatorCarrier,
+  dataViewCarrier: GlobalCarrier,
   pointerToArrayEntry: number,
   startArg: number,
   deleteCountArg?: number,

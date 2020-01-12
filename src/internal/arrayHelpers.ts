@@ -3,17 +3,13 @@ import {
   writeEntry,
   writeValueInPtrToPtrAndHandleMemory
 } from "./store";
-import {
-  ArrayEntry,
-  ExternalArgs,
-  DataViewAndAllocatorCarrier
-} from "./interfaces";
+import { ArrayEntry, ExternalArgs, GlobalCarrier } from "./interfaces";
 import { entryToFinalJavaScriptValue } from "./entryToFinalJavaScriptValue";
 import { ENTRY_TYPE } from "./entry-types";
 import { assertNonNull } from "./assertNonNull";
 
 export function arrayGetMetadata(
-  carrier: DataViewAndAllocatorCarrier,
+  carrier: GlobalCarrier,
   pointerToArrayEntry: number
 ) {
   const arrayEntry = readEntry(carrier, pointerToArrayEntry) as ArrayEntry;
@@ -22,7 +18,7 @@ export function arrayGetMetadata(
 }
 
 export function arrayGetPointersToValueInIndex(
-  carrier: DataViewAndAllocatorCarrier,
+  carrier: GlobalCarrier,
   pointerToArrayEntry: number,
   indexToGet: number
 ) {
@@ -46,7 +42,7 @@ export function arrayGetPointersToValueInIndex(
 
 export function getFinalValueAtArrayIndex(
   externalArgs: ExternalArgs,
-  dataViewCarrier: DataViewAndAllocatorCarrier,
+  dataViewCarrier: GlobalCarrier,
   pointerToArrayEntry: number,
   indexToGet: number
 ) {
@@ -68,7 +64,7 @@ export function getFinalValueAtArrayIndex(
 }
 
 export function setValuePointerAtArrayIndex(
-  carrier: DataViewAndAllocatorCarrier,
+  carrier: GlobalCarrier,
   pointerToArrayEntry: number,
   indexToSet: number,
   pointerToEntry: number
@@ -86,7 +82,7 @@ export function setValuePointerAtArrayIndex(
 
 export function setValueAtArrayIndex(
   externalArgs: ExternalArgs,
-  carrier: DataViewAndAllocatorCarrier,
+  carrier: GlobalCarrier,
   pointerToArrayEntry: number,
   indexToSet: number,
   value: any
@@ -111,7 +107,7 @@ export function setValueAtArrayIndex(
  */
 export function extendArrayIfNeeded(
   externalArgs: ExternalArgs,
-  carrier: DataViewAndAllocatorCarrier,
+  carrier: GlobalCarrier,
   pointerToArrayEntry: number,
   wishedLength: number
 ) {
@@ -144,7 +140,7 @@ export function extendArrayIfNeeded(
  */
 export function shrinkArray(
   externalArgs: ExternalArgs,
-  carrier: DataViewAndAllocatorCarrier,
+  carrier: GlobalCarrier,
   pointerToArrayEntry: number,
   wishedLength: number
 ) {
@@ -161,7 +157,7 @@ export function shrinkArray(
 
 function reallocateArray(
   externalArgs: ExternalArgs,
-  carrier: DataViewAndAllocatorCarrier,
+  carrier: GlobalCarrier,
   pointerToArrayEntry: number,
   newAllocatedLength: number,
   newLength: number
@@ -197,7 +193,7 @@ function reallocateArray(
 
 export function arraySort(
   externalArgs: ExternalArgs,
-  dataViewCarrier: DataViewAndAllocatorCarrier,
+  dataViewCarrier: GlobalCarrier,
   pointerToArrayEntry: number,
   sortComparator: (a: any, b: any) => 1 | -1 | 0 = defaultCompareFunction
 ) {
@@ -266,7 +262,7 @@ function toString(obj: any) {
 
 export function arrayReverse(
   externalArgs: ExternalArgs,
-  carrier: DataViewAndAllocatorCarrier,
+  carrier: GlobalCarrier,
   pointerToArrayEntry: number
 ) {
   const metadata = arrayGetMetadata(carrier, pointerToArrayEntry);

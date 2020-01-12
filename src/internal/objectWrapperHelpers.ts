@@ -1,6 +1,6 @@
 import {
   ExternalArgs,
-  DataViewAndAllocatorCarrier,
+  GlobalCarrier,
   StringEntry,
   NumberEntry,
   MapEntry,
@@ -26,7 +26,7 @@ import { getObjectOrMapOrSetAddresses } from "./getAllLinkedAddresses";
 
 export function deleteObjectPropertyEntryByKey(
   externalArgs: ExternalArgs,
-  carrier: DataViewAndAllocatorCarrier,
+  carrier: GlobalCarrier,
   hashmapPointer: number,
   keyToDeleteBy: string | number
 ): boolean {
@@ -51,7 +51,7 @@ export function deleteObjectPropertyEntryByKey(
 }
 
 export function getObjectPropertiesEntries(
-  carrier: DataViewAndAllocatorCarrier,
+  carrier: GlobalCarrier,
   hashmapPointer: number
 ): Array<{ key: string | number; valuePointer: number }> {
   let iterator = 0;
@@ -84,7 +84,7 @@ export function getObjectPropertiesEntries(
 
 export function objectSet(
   externalArgs: ExternalArgs,
-  carrier: DataViewAndAllocatorCarrier,
+  carrier: GlobalCarrier,
   hashMapPointer: number,
   p: string | number,
   value: any
@@ -101,7 +101,7 @@ export function objectSet(
 
 export function objectGet(
   externalArgs: ExternalArgs,
-  carrier: DataViewAndAllocatorCarrier,
+  carrier: GlobalCarrier,
   entryPointer: number,
   key: string | number
 ) {
@@ -120,7 +120,7 @@ export function objectGet(
 
 export function hashmapClearFree(
   externalArgs: ExternalArgs,
-  carrier: DataViewAndAllocatorCarrier,
+  carrier: GlobalCarrier,
   hashmapPointer: number
 ) {
   const leafAddresses: number[] = [];
@@ -145,7 +145,7 @@ export function hashmapClearFree(
 
 export function mapOrSetClear(
   externalArgs: ExternalArgs,
-  carrier: DataViewAndAllocatorCarrier,
+  carrier: GlobalCarrier,
   mapOrSetPtr: number
 ) {
   const entry = readEntry(carrier, mapOrSetPtr) as MapEntry | SetEntry;

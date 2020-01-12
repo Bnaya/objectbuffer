@@ -1,7 +1,7 @@
 import { initializeArrayBuffer } from "./store";
 import { objectSaver } from "./objectSaver";
 import { createObjectWrapper } from "./objectWrapper";
-import { ExternalArgsApi, DataViewAndAllocatorCarrier } from "./interfaces";
+import { ExternalArgsApi, GlobalCarrier } from "./interfaces";
 import {
   arrayBufferCopyTo,
   externalArgsApiToExternalArgsApi,
@@ -42,7 +42,7 @@ export function createObjectBuffer<T = any>(
     start: MEM_POOL_START
   });
 
-  const carrier: DataViewAndAllocatorCarrier = {
+  const carrier: GlobalCarrier = {
     dataView,
     allocator,
     uint8: new Uint8Array(arrayBuffer),
@@ -117,7 +117,7 @@ export function loadObjectBuffer<T = any>(
     skipInitialization: true
   });
 
-  const carrier: DataViewAndAllocatorCarrier = {
+  const carrier: GlobalCarrier = {
     dataView,
     allocator,
     uint8: new Uint8Array(arrayBuffer),
@@ -164,7 +164,7 @@ export function replaceUnderlyingArrayBuffer(
     skipInitialization: true
   });
 
-  const carrier: DataViewAndAllocatorCarrier = {
+  const carrier: GlobalCarrier = {
     dataView: new DataView(newArrayBuffer),
     allocator,
     uint8: new Uint8Array(newArrayBuffer),

@@ -22,7 +22,7 @@ export function wait(time: number) {
 
 import { IMemPool, MemPool } from "@thi.ng/malloc";
 import { OutOfMemoryError } from "./exceptions";
-import { DataViewAndAllocatorCarrier } from "./interfaces";
+import { GlobalCarrier } from "./interfaces";
 import { MEM_POOL_START } from "./consts";
 
 // extend pool and not monkey patch? need to think about it
@@ -101,7 +101,7 @@ export function makeCarrier(arrayBuffer: ArrayBuffer) {
     start: MEM_POOL_START
   });
 
-  const carrier: DataViewAndAllocatorCarrier = {
+  const carrier: GlobalCarrier = {
     dataView: new DataView(arrayBuffer),
     allocator,
     uint8: new Uint8Array(arrayBuffer),

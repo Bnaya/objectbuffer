@@ -3,7 +3,7 @@ import { ENTRY_TYPE } from "./entry-types";
 import {
   ObjectEntry,
   ExternalArgs,
-  DataViewAndAllocatorCarrier,
+  GlobalCarrier,
   MapEntry,
   SetEntry
 } from "./interfaces";
@@ -12,7 +12,7 @@ import { createHashMap, hashMapInsertUpdate } from "./hashmap/hashmap";
 
 export function objectSaver(
   externalArgs: ExternalArgs,
-  carrier: DataViewAndAllocatorCarrier,
+  carrier: GlobalCarrier,
   referencedPointers: number[],
   objectToSave: any
 ) {
@@ -52,7 +52,7 @@ export function objectSaver(
 
 export function mapSaver(
   externalArgs: ExternalArgs,
-  carrier: DataViewAndAllocatorCarrier,
+  carrier: GlobalCarrier,
   referencedPointers: number[],
   mapToSave: Map<string | number, any>
 ) {
@@ -90,7 +90,7 @@ export function mapSaver(
 
 export function setSaver(
   externalArgs: ExternalArgs,
-  carrier: DataViewAndAllocatorCarrier,
+  carrier: GlobalCarrier,
   setToSave: Set<string | number>
 ) {
   const hashMapPointer = createHashMap(

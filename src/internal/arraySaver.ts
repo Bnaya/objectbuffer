@@ -1,15 +1,11 @@
 import { appendEntry } from "./store";
 import { ENTRY_TYPE } from "./entry-types";
-import {
-  ArrayEntry,
-  ExternalArgs,
-  DataViewAndAllocatorCarrier
-} from "./interfaces";
+import { ArrayEntry, ExternalArgs, GlobalCarrier } from "./interfaces";
 import { saveValue } from "./saveValue";
 
 export function arraySaver(
   externalArgs: ExternalArgs,
-  carrier: DataViewAndAllocatorCarrier,
+  carrier: GlobalCarrier,
   referencedPointers: number[],
   arrayToSave: Array<any>
 ) {

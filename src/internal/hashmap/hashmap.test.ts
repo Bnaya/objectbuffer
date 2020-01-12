@@ -15,7 +15,7 @@ import {
   hashMapDelete,
   hashMapGetPointersToFree
 } from "./hashmap";
-import { DataViewAndAllocatorCarrier, StringEntry } from "../interfaces";
+import { GlobalCarrier, StringEntry } from "../interfaces";
 import { readEntry } from "../store";
 import { externalArgsApiToExternalArgsApi } from "../utils";
 
@@ -27,7 +27,7 @@ describe("hashmap", () => {
   });
 
   let ab = new ArrayBuffer(128);
-  let carrier: DataViewAndAllocatorCarrier = makeCarrier(ab);
+  let carrier: GlobalCarrier = makeCarrier(ab);
 
   function setABSize(size: number) {
     ab = new ArrayBuffer(size);

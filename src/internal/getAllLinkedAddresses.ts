@@ -1,11 +1,11 @@
 import { readEntry } from "./store";
-import { DataViewAndAllocatorCarrier } from "./interfaces";
+import { GlobalCarrier } from "./interfaces";
 import { ENTRY_TYPE } from "./entry-types";
 import { hashMapGetPointersToFree } from "./hashmap/hashmap";
 import { isKnownAddressValuePointer } from "./utils";
 
 export function getAllLinkedAddresses(
-  carrier: DataViewAndAllocatorCarrier,
+  carrier: GlobalCarrier,
   ignoreRefCount: boolean,
   entryPointer: number
 ) {
@@ -24,7 +24,7 @@ export function getAllLinkedAddresses(
 }
 
 function getAllLinkedAddressesStep(
-  carrier: DataViewAndAllocatorCarrier,
+  carrier: GlobalCarrier,
   ignoreRefCount: boolean,
   entryPointer: number,
   leafAddresses: number[],
@@ -101,7 +101,7 @@ function getAllLinkedAddressesStep(
 }
 
 export function getObjectOrMapOrSetAddresses(
-  carrier: DataViewAndAllocatorCarrier,
+  carrier: GlobalCarrier,
   ignoreRefCount: boolean,
   internalHashmapPointer: number,
   leafAddresses: number[],

@@ -1,5 +1,5 @@
 import { ENTRY_TYPE, isPrimitiveEntryType } from "./entry-types";
-import { Entry, primitive, DataViewAndAllocatorCarrier } from "./interfaces";
+import { Entry, primitive, GlobalCarrier } from "./interfaces";
 import {
   isPrimitive,
   primitiveValueToEntry,
@@ -94,7 +94,7 @@ export function sizeOfEntry(entry: Entry) {
 }
 
 export function writeEntry(
-  { dataView, uint8 }: DataViewAndAllocatorCarrier,
+  { dataView, uint8 }: GlobalCarrier,
   startingCursor: number,
   entry: Entry
 ) {
@@ -188,7 +188,7 @@ export function writeEntry(
 
 export function appendEntry(
   externalArgs: ExternalArgs,
-  carrier: DataViewAndAllocatorCarrier,
+  carrier: GlobalCarrier,
   entry: Entry
 ) {
   const size = sizeOfEntry(entry);
@@ -201,7 +201,7 @@ export function appendEntry(
 }
 
 export function readEntry(
-  carrier: DataViewAndAllocatorCarrier,
+  carrier: GlobalCarrier,
   startingCursor: number
 ): Entry {
   let cursor = startingCursor;
@@ -328,7 +328,7 @@ export function canReuseMemoryOfEntry(entryA: Entry, value: primitive) {
 
 export function writeValueInPtrToPtr(
   externalArgs: ExternalArgs,
-  carrier: DataViewAndAllocatorCarrier,
+  carrier: GlobalCarrier,
   ptrToPtr: number,
   value: any
 ) {
@@ -366,7 +366,7 @@ export function writeValueInPtrToPtr(
 
 export function writeValueInPtrToPtrAndHandleMemory(
   externalArgs: ExternalArgs,
-  carrier: DataViewAndAllocatorCarrier,
+  carrier: GlobalCarrier,
   ptrToPtr: number,
   value: any
 ) {
@@ -411,7 +411,7 @@ export function writeValueInPtrToPtrAndHandleMemory(
 
 export function handleArcForDeletedValuePointer(
   externalArgs: ExternalArgs,
-  carrier: DataViewAndAllocatorCarrier,
+  carrier: GlobalCarrier,
   deletedValuePointer: number
 ): void {
   // No memory to free/ARC
@@ -449,7 +449,7 @@ export function handleArcForDeletedValuePointer(
 
 export function incrementRefCount(
   externalArgs: ExternalArgs,
-  carrier: DataViewAndAllocatorCarrier,
+  carrier: GlobalCarrier,
   entryPointer: number
 ) {
   const entry = readEntry(carrier, entryPointer);
@@ -466,7 +466,7 @@ export function incrementRefCount(
 
 export function decrementRefCount(
   externalArgs: ExternalArgs,
-  carrier: DataViewAndAllocatorCarrier,
+  carrier: GlobalCarrier,
   entryPointer: number
 ) {
   const entry = readEntry(carrier, entryPointer);
@@ -482,7 +482,7 @@ export function decrementRefCount(
 }
 
 export function getObjectPropPtrToPtr(
-  { dataView }: DataViewAndAllocatorCarrier,
+  { dataView }: GlobalCarrier,
   pointerToEntry: number
 ) {
   const keyStringLength = dataView.getUint16(pointerToEntry + 1);

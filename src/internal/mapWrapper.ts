@@ -1,6 +1,6 @@
 import {
   ExternalArgs,
-  DataViewAndAllocatorCarrier,
+  GlobalCarrier,
   MapEntry,
   InternalAPI
 } from "./interfaces";
@@ -164,7 +164,7 @@ export class MapWrapper<K extends string | number, V>
 
 export function createMapWrapper<K extends string | number, V>(
   externalArgs: ExternalArgs,
-  dataViewCarrier: DataViewAndAllocatorCarrier,
+  dataViewCarrier: GlobalCarrier,
   entryPointer: number
 ): Map<K, V> {
   return new MapWrapper<K, V>(externalArgs, dataViewCarrier, entryPointer);

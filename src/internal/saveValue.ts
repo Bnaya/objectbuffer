@@ -6,7 +6,7 @@ import {
 import { appendEntry } from "./store";
 import { objectSaver, mapSaver, setSaver } from "./objectSaver";
 import { arraySaver } from "./arraySaver";
-import { ExternalArgs, DataViewAndAllocatorCarrier } from "./interfaces";
+import { ExternalArgs, GlobalCarrier } from "./interfaces";
 import { ENTRY_TYPE } from "./entry-types";
 import {
   UNDEFINED_KNOWN_ADDRESS,
@@ -20,7 +20,7 @@ import {
  */
 export function saveValue(
   externalArgs: ExternalArgs,
-  carrier: DataViewAndAllocatorCarrier,
+  carrier: GlobalCarrier,
   referencedPointers: number[],
   value: any
 ) {

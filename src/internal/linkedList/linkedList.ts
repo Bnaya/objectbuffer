@@ -1,5 +1,5 @@
 import { createMemoryMachine } from "../memoryMachinery";
-import { DataViewAndAllocatorCarrier } from "../interfaces";
+import { GlobalCarrier } from "../interfaces";
 
 /*
 
@@ -33,10 +33,7 @@ export type LinkedListMachineType = ReturnType<
   typeof LINKED_LIST_MACHINE.createOperator
 >;
 
-export function initLinkedList({
-  dataView,
-  allocator
-}: DataViewAndAllocatorCarrier) {
+export function initLinkedList({ dataView, allocator }: GlobalCarrier) {
   const memoryForLinkedList = allocator.calloc(LINKED_LIST_MACHINE.map.SIZE_OF);
   const memoryForEndMarkerItem = allocator.calloc(
     LINKED_LIST_ITEM_MACHINE.map.SIZE_OF
@@ -54,7 +51,7 @@ export function initLinkedList({
 }
 
 export function linkedListItemInsert(
-  { dataView, allocator }: DataViewAndAllocatorCarrier,
+  { dataView, allocator }: GlobalCarrier,
   linkedListPointer: number,
   nodeValuePointer: number
 ) {
@@ -90,7 +87,7 @@ export function linkedListItemInsert(
 }
 
 export function linkedListItemRemove(
-  { dataView, allocator }: DataViewAndAllocatorCarrier,
+  { dataView, allocator }: GlobalCarrier,
   itemPointer: number
 ) {
   const itemToOverwrite = LINKED_LIST_ITEM_MACHINE.createOperator(

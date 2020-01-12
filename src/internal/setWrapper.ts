@@ -1,6 +1,6 @@
 import {
   ExternalArgs,
-  DataViewAndAllocatorCarrier,
+  GlobalCarrier,
   MapEntry,
   InternalAPI
 } from "./interfaces";
@@ -155,7 +155,7 @@ export class SetWrapper<K extends string | number>
 
 export function createSetWrapper<K extends string | number>(
   externalArgs: ExternalArgs,
-  dataViewCarrier: DataViewAndAllocatorCarrier,
+  dataViewCarrier: GlobalCarrier,
   entryPointer: number
 ): Set<K> {
   return new SetWrapper<K>(externalArgs, dataViewCarrier, entryPointer);

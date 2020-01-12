@@ -1,6 +1,6 @@
 import { MAP_MACHINE, NODE_MACHINE } from "./memoryLayout";
 import {
-  DataViewAndAllocatorCarrier,
+  GlobalCarrier,
   ExternalArgs,
   NumberEntry,
   StringEntry
@@ -30,7 +30,7 @@ import {
 import { MemoryOperator } from "../memoryMachinery";
 
 export function createHashMap(
-  carrier: DataViewAndAllocatorCarrier,
+  carrier: GlobalCarrier,
   /**
    * number of buckets
    */
@@ -62,7 +62,7 @@ export function createHashMap(
  */
 export function hashMapInsertUpdate(
   externalArgs: ExternalArgs,
-  carrier: DataViewAndAllocatorCarrier,
+  carrier: GlobalCarrier,
   mapPointer: number,
   externalKeyValue: number | string
 ) {
@@ -169,7 +169,7 @@ export function hashMapInsertUpdate(
  * @returns pointer of the pointer to the found node
  */
 export function hashMapNodeLookup(
-  carrier: DataViewAndAllocatorCarrier,
+  carrier: GlobalCarrier,
   mapPointer: number,
   externalKeyValue: number | string
 ) {
@@ -206,7 +206,7 @@ export function hashMapNodeLookup(
 }
 
 export function hashMapValueLookup(
-  carrier: DataViewAndAllocatorCarrier,
+  carrier: GlobalCarrier,
   mapPointer: number,
   externalKeyValue: number | string
 ) {
@@ -228,7 +228,7 @@ export function hashMapValueLookup(
  * @returns the value pointer of the deleted key
  */
 export function hashMapDelete(
-  carrier: DataViewAndAllocatorCarrier,
+  carrier: GlobalCarrier,
   mapPointer: number,
   externalKeyValue: number | string
 ) {
@@ -351,7 +351,7 @@ export function hashMapGetPointersToFree(
 }
 
 function hashMapRehash(
-  carrier: DataViewAndAllocatorCarrier,
+  carrier: GlobalCarrier,
   mapOperator: MemoryOperator<
     | "CAPACITY"
     | "USED_CAPACITY"
@@ -400,7 +400,7 @@ function hashMapRehash(
 }
 
 function hashMapRehashInsert(
-  carrier: DataViewAndAllocatorCarrier,
+  carrier: GlobalCarrier,
   bucketsArrayPointer: number,
   arraySize: number,
   nodePointer: number
