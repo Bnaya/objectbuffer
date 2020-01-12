@@ -85,9 +85,7 @@ export function arrayBufferCopyTo(
   const copyFrom = new Uint8Array(origin);
   const copyTo = new Uint8Array(target);
 
-  for (let i = 0; i < length; i += 1) {
-    copyTo[toTargetByte + i] = copyFrom[startByte + i];
-  }
+  copyTo.set(copyFrom.subarray(startByte, startByte + length), toTargetByte);
 }
 
 export function getOurPointerIfApplicable(value: any, ourDateView: DataView) {
