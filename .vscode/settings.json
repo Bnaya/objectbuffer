@@ -17,26 +17,20 @@
   //   "src/**/*.js": false,
   //   "src/**/*.js.map": true
   // },
-  "cSpell.words": [
-    "objectbuffer",
-    "ormconfig",
-    "phin",
-    "pubsub",
-    "typedoc"
-  ],
-  "eslint.autoFixOnSave": true,
-  "eslint.validate": [
-    "javascript",
-    "javascriptreact",
-    {
-      "language": "typescript",
-      "autoFix": true
-    },
-    {
-      "language": "typescriptreact",
-      "autoFix": true
-    }
-  ],
+  "cSpell.words": ["objectbuffer", "ormconfig", "phin", "pubsub", "typedoc"],
+  // "eslint.autoFixOnSave": true,
+  // "eslint.validate": [
+  //   "javascript",
+  //   "javascriptreact",
+  //   {
+  //     "language": "typescript",
+  //     "autoFix": true
+  //   },
+  //   {
+  //     "language": "typescriptreact",
+  //     "autoFix": true
+  //   }
+  // ],
   "editor.formatOnSave": true,
   "[javascript]": {
     "editor.formatOnSave": false
@@ -51,18 +45,9 @@
     "editor.formatOnSave": false
   },
   "jest.autoEnable": false,
-  "jest.debugCodeLens.showWhenTestStateIn": [
-    "fail",
-    "unknown",
-    "pass",
-    "skip"
-  ],
+  "jest.debugCodeLens.showWhenTestStateIn": ["fail", "unknown", "pass", "skip"],
   "jest.enableSnapshotUpdateMessages": true,
-  "editor.rulers": [
-    80,
-    120,
-    140
-  ],
+  "editor.rulers": [80, 120, 140],
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": true
   }
