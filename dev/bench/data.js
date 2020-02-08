@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1581169826748,
+  "lastUpdate": 1581169837610,
   "repoUrl": "https://github.com/Bnaya/objectbuffer",
   "entries": {
     "Benchmark": [
@@ -1158,6 +1158,33 @@ window.BENCHMARK_DATA = {
             "range": "±2.28%",
             "unit": "ops/sec",
             "extra": "67 samples"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "name": "Bnaya",
+            "username": "Bnaya"
+          },
+          "committer": {
+            "name": "Bnaya",
+            "username": "Bnaya"
+          },
+          "id": "35bbc1fdadbfd702f07e57cd74be82aef02058a7",
+          "message": "Remove DataView useage  / Alignment iteration",
+          "timestamp": "2020-02-08T13:48:44Z",
+          "url": "https://github.com/Bnaya/objectbuffer/pull/67/commits/35bbc1fdadbfd702f07e57cd74be82aef02058a7"
+        },
+        "date": 1581169837216,
+        "tool": "benchmarkjs",
+        "benches": [
+          {
+            "name": "createObjectBuffer with 200 comments",
+            "value": 83,
+            "range": "±2.37%",
+            "unit": "ops/sec",
+            "extra": "71 samples"
           }
         ]
       }
