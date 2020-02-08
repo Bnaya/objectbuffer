@@ -25,10 +25,6 @@ export function initializeArrayBuffer(arrayBuffer: ArrayBuffer) {
   uint32[
     INITIAL_ENTRY_POINTER_TO_POINTER / Uint32Array.BYTES_PER_ELEMENT
   ] = INITIAL_ENTRY_POINTER_VALUE;
-
-  const dataView = new DataView(arrayBuffer);
-
-  return dataView;
 }
 
 export function sizeOfEntry(entry: Entry) {

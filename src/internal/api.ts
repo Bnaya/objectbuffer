@@ -35,7 +35,7 @@ export function createObjectBuffer<T = any>(
   const arrayBuffer = new (options.useSharedArrayBuffer
     ? SharedArrayBuffer
     : ArrayBuffer)(size);
-  const dataView = initializeArrayBuffer(arrayBuffer);
+  initializeArrayBuffer(arrayBuffer);
 
   const allocator = new MemPool({
     align: 8,
