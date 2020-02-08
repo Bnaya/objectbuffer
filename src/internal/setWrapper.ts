@@ -146,8 +146,8 @@ export class SetWrapper<K extends string | number>
 
 export function createSetWrapper<K extends string | number>(
   externalArgs: ExternalArgs,
-  dataViewCarrier: GlobalCarrier,
+  globalCarrier: GlobalCarrier,
   entryPointer: number
 ): Set<K> {
-  return new SetWrapper<K>(externalArgs, dataViewCarrier, entryPointer);
+  return new SetWrapper<K>(externalArgs, globalCarrier, entryPointer);
 }

@@ -20,7 +20,10 @@ export function objectSaver(
 
   const hashMapPointer = createHashMap(
     carrier,
-    Math.max(externalArgs.hashMapMinInitialCapacity, objectEntries.length * 1.3)
+    Math.max(
+      externalArgs.hashMapMinInitialCapacity,
+      Math.ceil(objectEntries.length * 1.3)
+    )
   );
 
   for (const [key, value] of objectEntries) {
@@ -58,7 +61,10 @@ export function mapSaver(
 ) {
   const hashMapPointer = createHashMap(
     carrier,
-    Math.max(externalArgs.hashMapMinInitialCapacity, mapToSave.size * 1.3)
+    Math.max(
+      externalArgs.hashMapMinInitialCapacity,
+      Math.ceil(mapToSave.size * 1.3)
+    )
   );
 
   for (const [key, value] of mapToSave.entries()) {
@@ -95,7 +101,10 @@ export function setSaver(
 ) {
   const hashMapPointer = createHashMap(
     carrier,
-    Math.max(externalArgs.hashMapMinInitialCapacity, setToSave.size * 1.3)
+    Math.max(
+      externalArgs.hashMapMinInitialCapacity,
+      Math.ceil(setToSave.size * 1.3)
+    )
   );
 
   for (const key of setToSave.keys()) {

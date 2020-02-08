@@ -5,11 +5,13 @@ import { ExternalArgsApi, GlobalCarrier } from "./interfaces";
 import {
   arrayBufferCopyTo,
   externalArgsApiToExternalArgsApi,
-  getInternalAPI
+  getInternalAPI,
+  isPrimitive
 } from "./utils";
 import { getCacheFor } from "./externalObjectsCache";
 import { INITIAL_ENTRY_POINTER_TO_POINTER, MEM_POOL_START } from "./consts";
 import { MemPool } from "@thi.ng/malloc";
+import { UnsupportedOperationError } from "./exceptions";
 
 export interface CreateObjectBufferOptions {
   /**
@@ -32,6 +34,16 @@ export function createObjectBuffer<T = any>(
   initialValue: T,
   options: CreateObjectBufferOptions = {}
 ): T {
+  if (
+    Array.isArray(initialValue) ||
+    initialValue instanceof Date ||
+    initialValue instanceof Map ||
+    initialValue instanceof Set ||
+    isPrimitive(initialValue)
+  ) {
+    throw new UnsupportedOperationError();
+  }
+
   const arrayBuffer = new (options.useSharedArrayBuffer
     ? SharedArrayBuffer
     : ArrayBuffer)(size);

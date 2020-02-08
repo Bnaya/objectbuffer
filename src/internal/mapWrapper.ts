@@ -161,8 +161,8 @@ export class MapWrapper<K extends string | number, V>
 
 export function createMapWrapper<K extends string | number, V>(
   externalArgs: ExternalArgs,
-  dataViewCarrier: GlobalCarrier,
+  globalCarrier: GlobalCarrier,
   entryPointer: number
 ): Map<K, V> {
-  return new MapWrapper<K, V>(externalArgs, dataViewCarrier, entryPointer);
+  return new MapWrapper<K, V>(externalArgs, globalCarrier, entryPointer);
 }

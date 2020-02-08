@@ -288,11 +288,11 @@ export class ArrayWrapper extends BaseProxyTrap<ArrayEntry>
 
 export function createArrayWrapper(
   externalArgs: ExternalArgs,
-  dataViewCarrier: GlobalCarrier,
+  globalCarrier: GlobalCarrier,
   entryPointer: number
 ): Array<any> {
   return new Proxy(
     [],
-    new ArrayWrapper(externalArgs, dataViewCarrier, entryPointer)
+    new ArrayWrapper(externalArgs, globalCarrier, entryPointer)
   ) as any;
 }

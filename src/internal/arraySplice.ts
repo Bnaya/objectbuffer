@@ -13,13 +13,13 @@ import { writeValueInPtrToPtr } from "./store";
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/splice#Syntax
 export function arraySplice(
   externalArgs: ExternalArgs,
-  dataViewCarrier: GlobalCarrier,
+  globalCarrier: GlobalCarrier,
   pointerToArrayEntry: number,
   startArg: number,
   deleteCountArg?: number,
   ...itemsToAddArg: Array<any>
 ) {
-  const metadata = arrayGetMetadata(dataViewCarrier, pointerToArrayEntry);
+  const metadata = arrayGetMetadata(globalCarrier, pointerToArrayEntry);
 
   const calcedStart = calculateSpliceStart(metadata.length, startArg);
 
@@ -33,7 +33,7 @@ export function arraySplice(
 
   extendArrayIfNeeded(
     externalArgs,
-    dataViewCarrier,
+    globalCarrier,
     pointerToArrayEntry,
     newLength
   );
@@ -50,7 +50,7 @@ export function arraySplice(
     deletedItemsToReturn.push(
       getFinalValueAtArrayIndex(
         externalArgs,
-        dataViewCarrier,
+        globalCarrier,
         pointerToArrayEntry,
         deletedItemIndexToSave
       )
@@ -70,7 +70,7 @@ export function arraySplice(
       writeValueToIndex -= 1
     ) {
       const valueToCopyPointers = arrayGetPointersToValueInIndex(
-        dataViewCarrier,
+        globalCarrier,
         pointerToArrayEntry,
         writeValueToIndex - itemCountChange
       );
@@ -78,13 +78,13 @@ export function arraySplice(
       assertNonNull(valueToCopyPointers);
 
       setValuePointerAtArrayIndex(
-        dataViewCarrier,
+        globalCarrier,
         pointerToArrayEntry,
         writeValueToIndex,
         valueToCopyPointers.pointer
       );
 
-      dataViewCarrier.uint32[
+      globalCarrier.uint32[
         valueToCopyPointers.pointerToThePointer / Uint32Array.BYTES_PER_ELEMENT
       ] = 0;
     }
@@ -102,7 +102,7 @@ export function arraySplice(
       writeValueToIndex += 1
     ) {
       const valueToCopyPointers = arrayGetPointersToValueInIndex(
-        dataViewCarrier,
+        globalCarrier,
         pointerToArrayEntry,
         writeValueToIndex - itemCountChange
       );
@@ -110,7 +110,7 @@ export function arraySplice(
       assertNonNull(valueToCopyPointers);
 
       setValuePointerAtArrayIndex(
-        dataViewCarrier,
+        globalCarrier,
         pointerToArrayEntry,
         writeValueToIndex,
         valueToCopyPointers.pointer
@@ -118,7 +118,7 @@ export function arraySplice(
 
       // empty old array index, its still allocated!
 
-      dataViewCarrier.uint32[
+      globalCarrier.uint32[
         valueToCopyPointers.pointerToThePointer / Uint32Array.BYTES_PER_ELEMENT
       ] = 0;
 
@@ -137,7 +137,7 @@ export function arraySplice(
 
   for (let i = 0; i < itemsToAddArg.length; i += 1) {
     const valueToSetPointers = arrayGetPointersToValueInIndex(
-      dataViewCarrier,
+      globalCarrier,
       pointerToArrayEntry,
       calcedStart + i
     );
@@ -146,14 +146,14 @@ export function arraySplice(
 
     writeValueInPtrToPtr(
       externalArgs,
-      dataViewCarrier,
+      globalCarrier,
       valueToSetPointers.pointerToThePointer,
       itemsToAddArg[i]
     );
   }
 
   if (newLength < metadata.length) {
-    shrinkArray(externalArgs, dataViewCarrier, pointerToArrayEntry, newLength);
+    shrinkArray(externalArgs, globalCarrier, pointerToArrayEntry, newLength);
   }
 
   return deletedItemsToReturn;

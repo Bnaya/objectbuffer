@@ -124,11 +124,11 @@ export class ObjectWrapper extends BaseProxyTrap<ObjectEntry>
 
 export function createObjectWrapper<T = any>(
   externalArgs: ExternalArgs,
-  dataViewCarrier: GlobalCarrier,
+  globalCarrier: GlobalCarrier,
   entryPointer: number
 ): T {
   return new Proxy(
     { objectBufferWrapper: "objectBufferWrapper" },
-    new ObjectWrapper(externalArgs, dataViewCarrier, entryPointer)
+    new ObjectWrapper(externalArgs, globalCarrier, entryPointer)
   ) as any;
 }
