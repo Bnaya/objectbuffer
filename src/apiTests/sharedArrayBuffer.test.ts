@@ -34,7 +34,7 @@ describe("SharedArrayBuffer tests", () => {
       }
     `);
 
-    expect(memoryStats(objectBuffer).used).toMatchInlineSnapshot(`440`);
+    expect(memoryStats(objectBuffer).used).toMatchInlineSnapshot(`480`);
   });
 
   test("basic 2", () => {
@@ -83,6 +83,6 @@ describe("SharedArrayBuffer tests", () => {
       }
     `);
 
-    expect(memoryStats(objectBuffer).used).toMatchInlineSnapshot(`608`);
+    expect(memoryStats(objectBuffer).used).toMatchInlineSnapshot(`664`);
   });
 });

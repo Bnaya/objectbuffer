@@ -53,11 +53,15 @@ describe("getAllLinkedAddresses", () => {
         Array [
           1008,
           1032,
-          1048,
-          1064,
-          1080,
-          1104,
+          1056,
+          1072,
+          1096,
           112,
+          1120,
+          1144,
+          1160,
+          1184,
+          1216,
           128,
           144,
           168,
@@ -68,34 +72,30 @@ describe("getAllLinkedAddresses", () => {
           296,
           312,
           336,
-          352,
-          368,
-          392,
-          416,
-          432,
+          360,
+          376,
+          400,
+          424,
           448,
-          472,
+          464,
           48,
           488,
-          504,
+          512,
           528,
-          552,
-          576,
-          592,
+          560,
+          584,
           616,
           632,
           656,
-          672,
-          688,
+          680,
+          704,
           72,
-          792,
-          816,
-          840,
-          864,
-          904,
-          920,
+          728,
+          744,
+          848,
+          880,
+          912,
           936,
-          960,
           976,
           992,
         ]
@@ -121,11 +121,11 @@ describe("getAllLinkedAddresses", () => {
       });
 
       expect(memoryStats(objectBuffer)).toMatchInlineSnapshot(`
-        Object {
-          "available": 936,
-          "used": 1112,
-        }
-      `);
+Object {
+  "available": 816,
+  "used": 1232,
+}
+`);
 
       const carrier = getInternalAPI(objectBuffer).getCarrier();
 

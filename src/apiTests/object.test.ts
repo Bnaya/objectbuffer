@@ -14,14 +14,14 @@ describe("object tests", () => {
 
   test("delete object prop", () => {
     const objectBuffer = createObjectBuffer<any>(externalArgs, 1024, {});
-    expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`872`);
+    expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`864`);
 
     objectBuffer.foo = "a";
-    expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`800`);
+    expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`776`);
 
     delete objectBuffer.foo;
 
-    expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`872`);
+    expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`864`);
     expect(objectBuffer).toMatchInlineSnapshot(`Object {}`);
   });
 
@@ -35,8 +35,8 @@ describe("object tests", () => {
       foo: { a: 1, b: true, c: false, d: null, e: undefined }
     };
 
-    const objectBuffer = createObjectBuffer<any>(externalArgs, 1024, input);
-    expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`96`);
+    const objectBuffer = createObjectBuffer<any>(externalArgs, 2048, input);
+    expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`1016`);
     expect(input).toEqual(objectBuffer);
     expect(objectBuffer).toMatchInlineSnapshot(`
       Object {

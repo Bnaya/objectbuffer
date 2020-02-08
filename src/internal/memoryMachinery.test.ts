@@ -4,7 +4,7 @@ import {
   createMemoryOperator,
   _buildMemoryLayout
 } from "./memoryMachinery";
-import { arrayBuffer2HexArray } from "./testUtils";
+import { arrayBuffer2HexArray, makeCarrier } from "./testUtils";
 
 describe("memory manifest", () => {
   test("LayoutDeclarationToMemoryMap", () => {
@@ -48,52 +48,152 @@ describe("memory manifest", () => {
   test("createMemoryOperator.set", () => {
     const memoryMap = layoutDeclarationToMemoryMap({
       POINTER_TO_NODE: Uint32Array,
-      LENGTH_OF_KEY: Uint16Array
+      LENGTH_OF_KEY: Uint32Array
     });
 
-    const ab = new ArrayBuffer(memoryMap.SIZE_OF);
-    const dataView = new DataView(ab);
+    const ab = new ArrayBuffer(memoryMap.SIZE_OF + 48);
+    const carrier = makeCarrier(ab);
 
-    const operator = createMemoryOperator(memoryMap, dataView, 0);
+    const operator = createMemoryOperator(memoryMap, carrier, 0);
 
     operator.set("POINTER_TO_NODE", 9);
     operator.set("LENGTH_OF_KEY", 5);
 
     expect(arrayBuffer2HexArray(ab)).toMatchInlineSnapshot(`
       Array [
-        "0x00",
-        "0x00",
-        "0x00",
         "0x09",
         "0x00",
+        "0x00",
+        "0x00",
         "0x05",
+        "0x00",
+        "0x00",
+        "0x00",
+        "0x00",
+        "0x00",
+        "0x00",
+        "0x00",
+        "0x00",
+        "0x00",
+        "0x00",
+        "0x00",
+        "0x00",
+        "0x00",
+        "0x00",
+        "0x00",
+        "0x28",
+        "0x00",
+        "0x00",
+        "0x00",
+        "0x38",
+        "0x00",
+        "0x00",
+        "0x00",
+        "0x08",
+        "0x00",
+        "0x00",
+        "0x00",
+        "0x03",
+        "0x00",
+        "0x00",
+        "0x00",
+        "0x10",
+        "0x00",
+        "0x00",
+        "0x00",
+        "0x00",
+        "0x00",
+        "0x00",
+        "0x00",
+        "0x00",
+        "0x00",
+        "0x00",
+        "0x00",
+        "0x00",
+        "0x00",
+        "0x00",
+        "0x00",
+        "0x00",
+        "0x00",
+        "0x00",
+        "0x00",
       ]
     `);
 
     operator.set("POINTER_TO_NODE", 0);
 
     expect(arrayBuffer2HexArray(ab)).toMatchInlineSnapshot(`
-      Array [
-        "0x00",
-        "0x00",
-        "0x00",
-        "0x00",
-        "0x00",
-        "0x05",
-      ]
-    `);
+Array [
+  "0x00",
+  "0x00",
+  "0x00",
+  "0x00",
+  "0x05",
+  "0x00",
+  "0x00",
+  "0x00",
+  "0x00",
+  "0x00",
+  "0x00",
+  "0x00",
+  "0x00",
+  "0x00",
+  "0x00",
+  "0x00",
+  "0x00",
+  "0x00",
+  "0x00",
+  "0x00",
+  "0x28",
+  "0x00",
+  "0x00",
+  "0x00",
+  "0x38",
+  "0x00",
+  "0x00",
+  "0x00",
+  "0x08",
+  "0x00",
+  "0x00",
+  "0x00",
+  "0x03",
+  "0x00",
+  "0x00",
+  "0x00",
+  "0x10",
+  "0x00",
+  "0x00",
+  "0x00",
+  "0x00",
+  "0x00",
+  "0x00",
+  "0x00",
+  "0x00",
+  "0x00",
+  "0x00",
+  "0x00",
+  "0x00",
+  "0x00",
+  "0x00",
+  "0x00",
+  "0x00",
+  "0x00",
+  "0x00",
+  "0x00",
+]
+`);
   });
 
   test("createMemoryOperator.get", () => {
     const memoryMap = layoutDeclarationToMemoryMap({
       POINTER_TO_NODE: Uint32Array,
-      LENGTH_OF_KEY: Uint16Array
+      LENGTH_OF_KEY: Uint32Array
     });
 
-    const ab = new ArrayBuffer(memoryMap.SIZE_OF);
-    const dataView = new DataView(ab);
+    const ab = new ArrayBuffer(memoryMap.SIZE_OF + 48);
+    const carrier = makeCarrier(ab);
 
-    const operator = createMemoryOperator(memoryMap, dataView, 0);
+    const operator = createMemoryOperator(memoryMap, carrier, 0);
 
     operator.set("POINTER_TO_NODE", 9);
     operator.set("LENGTH_OF_KEY", 1000);
