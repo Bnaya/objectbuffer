@@ -23,11 +23,9 @@ const suite = new Benchmark.Suite();
 
 suite
   .add(`createObjectBuffer with ${ARR_SIZE} comments`, () => {
-    objectBuffer.createObjectBuffer(
-      globalThis.externalArgs,
-      1e6,
+    objectBuffer.createObjectBuffer(globalThis.externalArgs, 1e7, {
       arrOfComments
-    );
+    });
   })
   .on("cycle", event => {
     console.log(String(event.target));
