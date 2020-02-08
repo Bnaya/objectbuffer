@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1581170412077,
+  "lastUpdate": 1581175516642,
   "repoUrl": "https://github.com/Bnaya/objectbuffer",
   "entries": {
     "Benchmark": [
@@ -1243,6 +1243,37 @@ window.BENCHMARK_DATA = {
             "range": "±2.48%",
             "unit": "ops/sec",
             "extra": "67 samples"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "me@bnaya.net",
+            "name": "Bnaya Peretz",
+            "username": "Bnaya"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "8cc1a40218b9e5dec97a18334f396e33b34c6e32",
+          "message": "Merge pull request #67 from Bnaya/alignment-iteration\n\nRemove DataView useage  / Alignment iteration",
+          "timestamp": "2020-02-08T17:24:11+02:00",
+          "tree_id": "c5a1612fc186634a4a1f3dd3d5ae8934512ddb14",
+          "url": "https://github.com/Bnaya/objectbuffer/commit/8cc1a40218b9e5dec97a18334f396e33b34c6e32"
+        },
+        "date": 1581175516287,
+        "tool": "benchmarkjs",
+        "benches": [
+          {
+            "name": "createObjectBuffer with 200 comments",
+            "value": 88.68,
+            "range": "±2.70%",
+            "unit": "ops/sec",
+            "extra": "65 samples"
           }
         ]
       }
