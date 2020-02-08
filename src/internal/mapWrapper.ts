@@ -40,7 +40,7 @@ export class MapWrapper<K extends string | number, V>
   }
 
   get size(): number {
-    return hashMapSize(this.carrier.dataView, this.entry.value);
+    return hashMapSize(this.carrier, this.entry.value);
   }
 
   [Symbol.iterator](): IterableIterator<[K, V]> {
@@ -49,11 +49,11 @@ export class MapWrapper<K extends string | number, V>
 
   *entries(): IterableIterator<[K, V]> {
     for (const nodePointer of hashmapNodesPointerIterator(
-      this.carrier.dataView,
+      this.carrier,
       this.entry.value
     )) {
       const { valuePointer, keyPointer } = hashMapNodePointerToKeyValue(
-        this.carrier.dataView,
+        this.carrier,
         nodePointer
       );
 
@@ -66,7 +66,7 @@ export class MapWrapper<K extends string | number, V>
         entryToFinalJavaScriptValue(
           this.externalArgs,
           this.carrier,
-          this.carrier.dataView.getUint32(valuePointer)
+          this.carrier.uint32[valuePointer / Uint32Array.BYTES_PER_ELEMENT]
         )
       ];
     }
@@ -74,13 +74,10 @@ export class MapWrapper<K extends string | number, V>
 
   *keys(): IterableIterator<K> {
     for (const nodePointer of hashmapNodesPointerIterator(
-      this.carrier.dataView,
+      this.carrier,
       this.entry.value
     )) {
-      const t = hashMapNodePointerToKeyValue(
-        this.carrier.dataView,
-        nodePointer
-      );
+      const t = hashMapNodePointerToKeyValue(this.carrier, nodePointer);
 
       yield entryToFinalJavaScriptValue(
         this.externalArgs,
@@ -92,18 +89,18 @@ export class MapWrapper<K extends string | number, V>
 
   *values(): IterableIterator<V> {
     for (const nodePointer of hashmapNodesPointerIterator(
-      this.carrier.dataView,
+      this.carrier,
       this.entry.value
     )) {
       const { valuePointer } = hashMapNodePointerToKeyValue(
-        this.carrier.dataView,
+        this.carrier,
         nodePointer
       );
 
       yield entryToFinalJavaScriptValue(
         this.externalArgs,
         this.carrier,
-        this.carrier.dataView.getUint32(valuePointer)
+        this.carrier.uint32[valuePointer / Uint32Array.BYTES_PER_ELEMENT]
       );
     }
   }

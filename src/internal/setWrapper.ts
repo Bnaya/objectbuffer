@@ -39,7 +39,7 @@ export class SetWrapper<K extends string | number>
   }
 
   get size(): number {
-    return hashMapSize(this.carrier.dataView, this.entry.value);
+    return hashMapSize(this.carrier, this.entry.value);
   }
 
   [Symbol.iterator](): IterableIterator<K> {
@@ -48,13 +48,10 @@ export class SetWrapper<K extends string | number>
 
   *entries(): IterableIterator<[K, K]> {
     for (const nodePointer of hashmapNodesPointerIterator(
-      this.carrier.dataView,
+      this.carrier,
       this.entry.value
     )) {
-      const t = hashMapNodePointerToKeyValue(
-        this.carrier.dataView,
-        nodePointer
-      );
+      const t = hashMapNodePointerToKeyValue(this.carrier, nodePointer);
 
       const key = entryToFinalJavaScriptValue(
         this.externalArgs,
@@ -68,13 +65,10 @@ export class SetWrapper<K extends string | number>
 
   *keys(): IterableIterator<K> {
     for (const nodePointer of hashmapNodesPointerIterator(
-      this.carrier.dataView,
+      this.carrier,
       this.entry.value
     )) {
-      const t = hashMapNodePointerToKeyValue(
-        this.carrier.dataView,
-        nodePointer
-      );
+      const t = hashMapNodePointerToKeyValue(this.carrier, nodePointer);
 
       yield entryToFinalJavaScriptValue(
         this.externalArgs,
@@ -85,13 +79,10 @@ export class SetWrapper<K extends string | number>
   }
   *values(): IterableIterator<K> {
     for (const nodePointer of hashmapNodesPointerIterator(
-      this.carrier.dataView,
+      this.carrier,
       this.entry.value
     )) {
-      const t = hashMapNodePointerToKeyValue(
-        this.carrier.dataView,
-        nodePointer
-      );
+      const t = hashMapNodePointerToKeyValue(this.carrier, nodePointer);
 
       yield entryToFinalJavaScriptValue(
         this.externalArgs,

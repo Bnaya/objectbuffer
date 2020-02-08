@@ -47,7 +47,7 @@ export function saveValue(
     const entry = primitiveValueToEntry(value);
     valuePointer = appendEntry(externalArgs, carrier, entry);
   } else if (
-    (maybeOurPointer = getOurPointerIfApplicable(value, carrier.dataView))
+    (maybeOurPointer = getOurPointerIfApplicable(value, carrier.allocator))
   ) {
     valuePointer = maybeOurPointer;
     referencedPointers.push(valuePointer);

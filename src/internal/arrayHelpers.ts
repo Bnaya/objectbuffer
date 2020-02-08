@@ -32,7 +32,8 @@ export function arrayGetPointersToValueInIndex(
   const pointerToThePointer =
     metadata.value + indexToGet * Uint32Array.BYTES_PER_ELEMENT;
 
-  const pointer = carrier.dataView.getUint32(pointerToThePointer);
+  const pointer =
+    carrier.uint32[pointerToThePointer / Uint32Array.BYTES_PER_ELEMENT];
 
   return {
     pointer,
@@ -76,8 +77,9 @@ export function setValuePointerAtArrayIndex(
   );
 
   assertNonNull(pointers);
-
-  carrier.dataView.setUint32(pointers.pointerToThePointer, pointerToEntry);
+  carrier.uint32[
+    pointers.pointerToThePointer / Uint32Array.BYTES_PER_ELEMENT
+  ] = pointerToEntry;
 }
 
 export function setValueAtArrayIndex(
@@ -200,8 +202,9 @@ export function arraySort(
   const metadata = arrayGetMetadata(dataViewCarrier, pointerToArrayEntry);
   const pointersToValues = [...new Array(metadata.length).keys()]
     .map(index => metadata.value + index * Uint32Array.BYTES_PER_ELEMENT)
-    .map(pointerToPointer =>
-      dataViewCarrier.dataView.getUint32(pointerToPointer)
+    .map(
+      pointerToPointer =>
+        dataViewCarrier.uint32[pointerToPointer / Uint32Array.BYTES_PER_ELEMENT]
     );
 
   const sortMe = pointersToValues.map(pointer => {
@@ -216,10 +219,10 @@ export function arraySort(
   });
 
   for (let i = 0; i < sortMe.length; i += 1) {
-    dataViewCarrier.dataView.setUint32(
-      metadata.value + i * Uint32Array.BYTES_PER_ELEMENT,
-      sortMe[i][0]
-    );
+    dataViewCarrier.uint32[
+      (metadata.value + i * Uint32Array.BYTES_PER_ELEMENT) /
+        Uint32Array.BYTES_PER_ELEMENT
+    ] = sortMe[i][0];
   }
 }
 

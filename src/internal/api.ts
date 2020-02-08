@@ -38,12 +38,13 @@ export function createObjectBuffer<T = any>(
   const dataView = initializeArrayBuffer(arrayBuffer);
 
   const allocator = new MemPool({
+    align: 8,
     buf: arrayBuffer,
     start: MEM_POOL_START
   });
 
   const carrier: GlobalCarrier = {
-    dataView,
+    // dataView,
     allocator,
     uint8: new Uint8Array(arrayBuffer),
     uint16: new Uint16Array(arrayBuffer),
@@ -59,7 +60,9 @@ export function createObjectBuffer<T = any>(
     initialValue
   );
 
-  dataView.setUint32(INITIAL_ENTRY_POINTER_TO_POINTER, start);
+  carrier.uint32[
+    INITIAL_ENTRY_POINTER_TO_POINTER / Uint32Array.BYTES_PER_ELEMENT
+  ] = start;
 
   return createObjectWrapper(
     externalArgsApiToExternalArgsApi(externalArgs),
@@ -94,7 +97,7 @@ export function resizeObjectBuffer(objectBuffer: any, newSize: number) {
 export function getUnderlyingArrayBuffer(
   objectBuffer: any
 ): ArrayBuffer | SharedArrayBuffer {
-  return getInternalAPI(objectBuffer).getCarrier().dataView.buffer;
+  return getInternalAPI(objectBuffer).getCarrier().uint8.buffer;
 }
 
 /**
@@ -110,15 +113,16 @@ export function loadObjectBuffer<T = any>(
   externalArgs: ExternalArgsApi,
   arrayBuffer: ArrayBuffer | SharedArrayBuffer
 ): T {
-  const dataView = new DataView(arrayBuffer);
+  // const dataView = new DataView(arrayBuffer);
   const allocator = new MemPool({
+    align: 8,
     buf: arrayBuffer,
     start: MEM_POOL_START,
     skipInitialization: true
   });
 
   const carrier: GlobalCarrier = {
-    dataView,
+    // dataView,
     allocator,
     uint8: new Uint8Array(arrayBuffer),
     uint16: new Uint16Array(arrayBuffer),
@@ -130,7 +134,9 @@ export function loadObjectBuffer<T = any>(
   return createObjectWrapper(
     externalArgsApiToExternalArgsApi(externalArgs),
     carrier,
-    dataView.getUint32(INITIAL_ENTRY_POINTER_TO_POINTER)
+    carrier.uint32[
+      INITIAL_ENTRY_POINTER_TO_POINTER / Uint32Array.BYTES_PER_ELEMENT
+    ]
   );
 }
 
@@ -159,13 +165,14 @@ export function replaceUnderlyingArrayBuffer(
   }
 
   const allocator = new MemPool({
+    align: 8,
     buf: newArrayBuffer,
     start: MEM_POOL_START,
     skipInitialization: true
   });
 
   const carrier: GlobalCarrier = {
-    dataView: new DataView(newArrayBuffer),
+    // dataView: new DataView(newArrayBuffer),
     allocator,
     uint8: new Uint8Array(newArrayBuffer),
     uint16: new Uint16Array(newArrayBuffer),
@@ -190,6 +197,7 @@ export function memoryStats(objectBuffer: any) {
   const buf = getUnderlyingArrayBuffer(objectBuffer);
 
   const pool = new MemPool({
+    align: 8,
     buf,
     skipInitialization: true,
     start: MEM_POOL_START

@@ -84,10 +84,9 @@ export function arraySplice(
         valueToCopyPointers.pointer
       );
 
-      dataViewCarrier.dataView.setUint32(
-        valueToCopyPointers.pointerToThePointer,
-        0
-      );
+      dataViewCarrier.uint32[
+        valueToCopyPointers.pointerToThePointer / Uint32Array.BYTES_PER_ELEMENT
+      ] = 0;
     }
   }
   // copy-down items
@@ -118,10 +117,10 @@ export function arraySplice(
       );
 
       // empty old array index, its still allocated!
-      dataViewCarrier.dataView.setUint32(
-        valueToCopyPointers.pointerToThePointer,
-        0
-      );
+
+      dataViewCarrier.uint32[
+        valueToCopyPointers.pointerToThePointer / Uint32Array.BYTES_PER_ELEMENT
+      ] = 0;
 
       // using that is wastefull
       // setValueAtArrayIndex(

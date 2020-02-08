@@ -1,3 +1,5 @@
+import { GlobalCarrier } from "./interfaces";
+
 const ALLOWS_TYPED_ARRAYS_CTORS = [
   Uint8Array,
   Uint32Array,
@@ -19,21 +21,30 @@ export type MemoryMap<T extends string> = {
 } & { SIZE_OF: number };
 
 // DataView.prototype is any, ts thing. this is a workaround for better types.
-let dataViewInstance = new DataView(new ArrayBuffer(0));
+// let dataViewInstance = new DataView(new ArrayBuffer(0));
 
-const READ_WRITE_MAPS = [
-  [Uint8Array, dataViewInstance.getUint8, dataViewInstance.setUint8],
-  [Uint32Array, dataViewInstance.getUint32, dataViewInstance.setUint32],
+// const READ_WRITE_MAPS = [
+//   [Uint8Array, dataViewInstance.getUint8, dataViewInstance.setUint8],
+//   [Uint32Array, dataViewInstance.getUint32, dataViewInstance.setUint32],
+//   // [BigUint64Array, dataViewInstance.getBigUint64, dataViewInstance.setBigUint64],
+//   [Uint16Array, dataViewInstance.getUint16, dataViewInstance.setUint16]
+// ] as const;
+
+const READ_WRITE_MAPS_V2 = [
+  [Uint8Array, "uint8"],
+  [Uint32Array, "uint32"],
   // [BigUint64Array, dataViewInstance.getBigUint64, dataViewInstance.setBigUint64],
-  [Uint16Array, dataViewInstance.getUint16, dataViewInstance.setUint16]
+  [Uint16Array, "uint16"]
 ] as const;
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
 // @ts-ignore
-dataViewInstance = undefined;
+// dataViewInstance = undefined;
 
-const READ_MAP = new Map(READ_WRITE_MAPS.map(e => [e[0], e[1]]));
-const WRITE_MAP = new Map(READ_WRITE_MAPS.map(e => [e[0], e[2]]));
+// const READ_MAP = new Map(READ_WRITE_MAPS.map(e => [e[0], e[1]]));
+// const WRITE_MAP = new Map(READ_WRITE_MAPS.map(e => [e[0], e[2]]));
+
+const READ_WRITE_MAP_V2 = new Map(READ_WRITE_MAPS_V2.map(e => [e[0], e[1]]));
 
 export interface MemoryOperator<T extends string> {
   set(key: T, value: number): void;
@@ -45,25 +56,27 @@ export interface MemoryOperator<T extends string> {
 
 export function createMemoryOperator<T extends string>(
   memoryMap: MemoryMap<T>,
-  dataView: DataView,
+  carrier: GlobalCarrier,
   startAddress: number
 ): MemoryOperator<T> {
   return {
     set(key: T, value: number) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const func = WRITE_MAP.get(memoryMap[key].type)!;
+      const func = READ_WRITE_MAP_V2.get(memoryMap[key].type)!;
 
-      return func.call(
-        dataView,
-        startAddress + memoryMap[key].bytesOffset,
-        value
-      );
+      return (carrier[func][
+        (startAddress + memoryMap[key].bytesOffset) /
+          memoryMap[key].type.BYTES_PER_ELEMENT
+      ] = value);
     },
     get(key: T): number {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const func = READ_MAP.get(memoryMap[key].type)!;
+      const func = READ_WRITE_MAP_V2.get(memoryMap[key].type)!;
 
-      return func.call(dataView, startAddress + memoryMap[key].bytesOffset);
+      return carrier[func][
+        (startAddress + memoryMap[key].bytesOffset) /
+          memoryMap[key].type.BYTES_PER_ELEMENT
+      ];
     },
     pointerTo(key: T): number {
       return startAddress + memoryMap[key].bytesOffset;
@@ -121,7 +134,7 @@ export function createMemoryMachine<T extends string>(
   return {
     map,
     createOperator: createMemoryOperator.bind(null, map) as (
-      dataView: DataView,
+      carrier: GlobalCarrier,
       address: number
     ) => MemoryOperator<T>
   };

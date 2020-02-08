@@ -41,9 +41,10 @@ export function deleteObjectPropertyEntryByKey(
     return false;
   }
 
-  const deletedValuePointer = carrier.dataView.getUint32(
-    deletedValuePointerToPointer
-  );
+  const deletedValuePointer =
+    carrier.uint32[
+      deletedValuePointerToPointer / Uint32Array.BYTES_PER_ELEMENT
+    ];
 
   handleArcForDeletedValuePointer(externalArgs, carrier, deletedValuePointer);
 
@@ -58,14 +59,10 @@ export function getObjectPropertiesEntries(
   const foundValues: Array<{ key: string | number; valuePointer: number }> = [];
 
   while (
-    (iterator = hashMapLowLevelIterator(
-      carrier.dataView,
-      hashmapPointer,
-      iterator
-    ))
+    (iterator = hashMapLowLevelIterator(carrier, hashmapPointer, iterator))
   ) {
     const { valuePointer, keyPointer } = hashMapNodePointerToKeyValue(
-      carrier.dataView,
+      carrier,
       iterator
     );
 
@@ -74,7 +71,8 @@ export function getObjectPropertiesEntries(
       | NumberEntry;
 
     foundValues.push({
-      valuePointer: carrier.dataView.getUint32(valuePointer),
+      valuePointer:
+        carrier.uint32[valuePointer / Uint32Array.BYTES_PER_ELEMENT],
       key: keyEntry.value
     });
   }
@@ -114,7 +112,7 @@ export function objectGet(
   return entryToFinalJavaScriptValue(
     externalArgs,
     carrier,
-    carrier.dataView.getUint32(valuePointer)
+    carrier.uint32[valuePointer / Uint32Array.BYTES_PER_ELEMENT]
   );
 }
 

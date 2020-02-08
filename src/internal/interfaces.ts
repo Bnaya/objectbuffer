@@ -82,7 +82,7 @@ export interface SetEntry {
  * The carrier object allows us to swap the DataView easily
  */
 export interface GlobalCarrier {
-  dataView: DataView;
+  // dataView: DataView;
   uint8: Uint8Array;
   uint16: Uint16Array;
   uint32: Uint32Array;

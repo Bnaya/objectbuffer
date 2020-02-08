@@ -33,14 +33,15 @@ export type LinkedListMachineType = ReturnType<
   typeof LINKED_LIST_MACHINE.createOperator
 >;
 
-export function initLinkedList({ dataView, allocator }: GlobalCarrier) {
+export function initLinkedList(carrier: GlobalCarrier) {
+  const { allocator } = carrier;
   const memoryForLinkedList = allocator.calloc(LINKED_LIST_MACHINE.map.SIZE_OF);
   const memoryForEndMarkerItem = allocator.calloc(
     LINKED_LIST_ITEM_MACHINE.map.SIZE_OF
   );
 
   const linkedListMachine = LINKED_LIST_MACHINE.createOperator(
-    dataView,
+    carrier,
     memoryForLinkedList
   );
 
@@ -51,26 +52,26 @@ export function initLinkedList({ dataView, allocator }: GlobalCarrier) {
 }
 
 export function linkedListItemInsert(
-  { dataView, allocator }: GlobalCarrier,
+  carrier: GlobalCarrier,
   linkedListPointer: number,
   nodeValuePointer: number
 ) {
-  const newItemMemory: number = allocator.calloc(
+  const newItemMemory: number = carrier.allocator.calloc(
     LINKED_LIST_ITEM_MACHINE.map.SIZE_OF
   );
 
   const linkedListOperator = LINKED_LIST_MACHINE.createOperator(
-    dataView,
+    carrier,
     linkedListPointer
   );
 
   const wasEndMarkerOperator = LINKED_LIST_ITEM_MACHINE.createOperator(
-    dataView,
+    carrier,
     linkedListOperator.get("END_POINTER")
   );
 
   const toBeEndMarkerOperator = LINKED_LIST_ITEM_MACHINE.createOperator(
-    dataView,
+    carrier,
     newItemMemory
   );
 
@@ -87,16 +88,16 @@ export function linkedListItemInsert(
 }
 
 export function linkedListItemRemove(
-  { dataView, allocator }: GlobalCarrier,
+  carrier: GlobalCarrier,
   itemPointer: number
 ) {
   const itemToOverwrite = LINKED_LIST_ITEM_MACHINE.createOperator(
-    dataView,
+    carrier,
     itemPointer
   );
 
   const itemToOverwriteWith = LINKED_LIST_ITEM_MACHINE.createOperator(
-    dataView,
+    carrier,
     itemToOverwrite.get("NEXT_POINTER")
   );
 
@@ -106,24 +107,21 @@ export function linkedListItemRemove(
 
   itemToOverwrite.set("NEXT_POINTER", itemToOverwriteWith.get("NEXT_POINTER"));
 
-  allocator.free(memoryToFree);
+  carrier.allocator.free(memoryToFree);
 }
 
 export function linkedListLowLevelIterator(
-  dataView: DataView,
+  carrier: GlobalCarrier,
   linkedListPointer: number,
   itemPointer: number
 ) {
   const listItem = LINKED_LIST_ITEM_MACHINE.createOperator(
-    dataView,
+    carrier,
     itemPointer
   );
 
   if (itemPointer === 0) {
-    const list = LINKED_LIST_MACHINE.createOperator(
-      dataView,
-      linkedListPointer
-    );
+    const list = LINKED_LIST_MACHINE.createOperator(carrier, linkedListPointer);
 
     listItem.startAddress = list.get("START_POINTER");
 
@@ -151,21 +149,24 @@ export function linkedListLowLevelIterator(
   return listItem.startAddress;
 }
 
-export function linkedListGetValue(dataView: DataView, itemPointer: number) {
-  return LINKED_LIST_ITEM_MACHINE.createOperator(dataView, itemPointer).get(
+export function linkedListGetValue(
+  carrier: GlobalCarrier,
+  itemPointer: number
+) {
+  return LINKED_LIST_ITEM_MACHINE.createOperator(carrier, itemPointer).get(
     "VALUE"
   );
 }
 
 export function linkedListGetPointersToFree(
-  dataView: DataView,
+  carrier: GlobalCarrier,
   linkedListPointer: number
 ) {
   const pointers: number[] = [linkedListPointer];
   const valuePointers: number[] = [];
 
   const operator = LINKED_LIST_MACHINE.createOperator(
-    dataView,
+    carrier,
     linkedListPointer
   );
 
@@ -178,8 +179,8 @@ export function linkedListGetPointersToFree(
   }
 
   const linkItemOperator = LINKED_LIST_ITEM_MACHINE.createOperator(
-    dataView,
-    linkedListLowLevelIterator(dataView, linkedListPointer, 0)
+    carrier,
+    linkedListLowLevelIterator(carrier, linkedListPointer, 0)
   );
 
   while (linkItemOperator.startAddress !== 0) {

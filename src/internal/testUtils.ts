@@ -102,7 +102,7 @@ export function makeCarrier(arrayBuffer: ArrayBuffer) {
   });
 
   const carrier: GlobalCarrier = {
-    dataView: new DataView(arrayBuffer),
+    // dataView: new DataView(arrayBuffer),
     allocator,
     uint8: new Uint8Array(arrayBuffer),
     uint16: new Uint16Array(arrayBuffer),

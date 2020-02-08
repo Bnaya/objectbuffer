@@ -248,9 +248,9 @@ export class ArrayWrapper extends BaseProxyTrap<ArrayEntry>
     return arrayGetMetadata(this.carrier, this.entryPointer).length;
   }
 
-  public getDataView() {
-    return this.carrier.dataView;
-  }
+  // public getDataView() {
+  //   return this.carrier.dataView;
+  // }
 
   public getEntryPointer() {
     return this.entryPointer;

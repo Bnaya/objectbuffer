@@ -26,7 +26,10 @@ export function arraySaver(
   for (const item of arrayToSave) {
     const rOfValue = saveValue(externalArgs, carrier, referencedPointers, item);
 
-    carrier.dataView.setUint32(memoryForPointersCursor, rOfValue);
+    carrier.uint32[
+      memoryForPointersCursor / Uint32Array.BYTES_PER_ELEMENT
+    ] = rOfValue;
+
     memoryForPointersCursor += Uint32Array.BYTES_PER_ELEMENT;
   }
 

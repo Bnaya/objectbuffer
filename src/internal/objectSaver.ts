@@ -38,7 +38,7 @@ export function objectSaver(
       value
     );
 
-    carrier.dataView.setUint32(ptrToPtr, pointerToValue);
+    carrier.uint32[ptrToPtr / Uint32Array.BYTES_PER_ELEMENT] = pointerToValue;
   }
 
   const objectStartEntry: ObjectEntry = {
@@ -76,7 +76,7 @@ export function mapSaver(
       value
     );
 
-    carrier.dataView.setUint32(ptrToPtr, pointerToValue);
+    carrier.uint32[ptrToPtr / Uint32Array.BYTES_PER_ELEMENT] = pointerToValue;
   }
 
   const objectStartEntry: MapEntry = {
@@ -106,7 +106,7 @@ export function setSaver(
       key
     );
 
-    carrier.dataView.setUint32(ptrToPtr, 1);
+    carrier.uint32[ptrToPtr / Uint32Array.BYTES_PER_ELEMENT] = 1;
   }
 
   const objectStartEntry: SetEntry = {

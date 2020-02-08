@@ -68,9 +68,11 @@ function getAllLinkedAddressesStep(
         leafAddresses.push(entry.value);
 
         for (let i = 0; i < entry.allocatedLength; i += 1) {
-          const valuePointer = carrier.dataView.getUint32(
-            entry.value + i * Uint32Array.BYTES_PER_ELEMENT
-          );
+          const valuePointer =
+            carrier.uint32[
+              (entry.value + i * Uint32Array.BYTES_PER_ELEMENT) /
+                Uint32Array.BYTES_PER_ELEMENT
+            ];
 
           getAllLinkedAddressesStep(
             carrier,
@@ -108,7 +110,7 @@ export function getObjectOrMapOrSetAddresses(
   arcAddresses: number[]
 ) {
   const { pointersToValuePointers, pointers } = hashMapGetPointersToFree(
-    carrier.dataView,
+    carrier,
     internalHashmapPointer
   );
 
@@ -118,7 +120,7 @@ export function getObjectOrMapOrSetAddresses(
     getAllLinkedAddressesStep(
       carrier,
       ignoreRefCount,
-      carrier.dataView.getUint32(pointer),
+      carrier.uint32[pointer / Uint32Array.BYTES_PER_ELEMENT],
       leafAddresses,
       arcAddresses
     );
