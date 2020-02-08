@@ -21,7 +21,7 @@ describe("Runtime errors", () => {
   });
 
   test("Fail to set new data when enough memory", () => {
-    const objectBuffer = createObjectBuffer<any>(externalArgs, 256, {
+    const objectBuffer = createObjectBuffer<any>(externalArgs, 312, {
       value: "first value 123"
     });
     const freeSpaceLeft = memoryStats(objectBuffer).available;
@@ -31,7 +31,7 @@ describe("Runtime errors", () => {
     }).toThrowErrorMatchingInlineSnapshot(`"OutOfMemoryError"`);
 
     expect(memoryStats(objectBuffer).available).toEqual(freeSpaceLeft);
-    expect(freeSpaceLeft).toMatchInlineSnapshot(`8`);
+    expect(freeSpaceLeft).toMatchInlineSnapshot(`40`);
 
     expect(objectBuffer).toMatchInlineSnapshot(`
       Object {

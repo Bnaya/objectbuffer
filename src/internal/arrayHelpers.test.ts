@@ -42,7 +42,7 @@ describe("arrayHelpers tests", () => {
       }
     `);
 
-    expect(carrier.allocator.stats().available).toMatchInlineSnapshot(`128`);
+    expect(carrier.allocator.stats().available).toMatchInlineSnapshot(`120`);
   });
 
   describe("getFinalValueAtArrayIndex", () => {
@@ -68,7 +68,7 @@ describe("arrayHelpers tests", () => {
       );
 
       expect(finalValue).toMatchInlineSnapshot(`1`);
-      expect(allocator.stats().available).toMatchInlineSnapshot(`128`);
+      expect(allocator.stats().available).toMatchInlineSnapshot(`120`);
     });
 
     test("out of bound index", () => {
@@ -93,7 +93,7 @@ describe("arrayHelpers tests", () => {
       );
 
       expect(finalValue).toMatchInlineSnapshot(`undefined`);
-      expect(allocator.stats().available).toMatchInlineSnapshot(`128`);
+      expect(allocator.stats().available).toMatchInlineSnapshot(`120`);
     });
 
     test("array of strings", () => {
@@ -118,7 +118,7 @@ describe("arrayHelpers tests", () => {
       );
 
       expect(finalValue).toMatchInlineSnapshot(`"b"`);
-      expect(allocator.stats().available).toMatchInlineSnapshot(`144`);
+      expect(allocator.stats().available).toMatchInlineSnapshot(`120`);
     });
   });
 
@@ -152,6 +152,6 @@ describe("arrayHelpers tests", () => {
     );
 
     expect(finalValue).toMatchInlineSnapshot(`"im the new value"`);
-    expect(allocator.stats().available).toMatchInlineSnapshot(`120`);
+    expect(allocator.stats().available).toMatchInlineSnapshot(`104`);
   });
 });

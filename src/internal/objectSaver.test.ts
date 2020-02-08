@@ -33,10 +33,10 @@ describe("objectSaver tests", () => {
 
       const saverOutput = objectSaver(externalArgs, carrier, [], objectToSave);
 
-      expect(saverOutput).toMatchInlineSnapshot(`896`);
+      expect(saverOutput).toMatchInlineSnapshot(`976`);
 
       expect(arrayBuffer2HexArray(arrayBuffer, true)).toMatchSnapshot();
-      expect(carrier.allocator.stats().available).toMatchInlineSnapshot(`120`);
+      expect(carrier.allocator.stats().available).toMatchInlineSnapshot(`32`);
     });
   });
 });

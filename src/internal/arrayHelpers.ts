@@ -3,17 +3,13 @@ import {
   writeEntry,
   writeValueInPtrToPtrAndHandleMemory
 } from "./store";
-import {
-  ArrayEntry,
-  ExternalArgs,
-  DataViewAndAllocatorCarrier
-} from "./interfaces";
+import { ArrayEntry, ExternalArgs, GlobalCarrier } from "./interfaces";
 import { entryToFinalJavaScriptValue } from "./entryToFinalJavaScriptValue";
 import { ENTRY_TYPE } from "./entry-types";
 import { assertNonNull } from "./assertNonNull";
 
 export function arrayGetMetadata(
-  carrier: DataViewAndAllocatorCarrier,
+  carrier: GlobalCarrier,
   pointerToArrayEntry: number
 ) {
   const arrayEntry = readEntry(carrier, pointerToArrayEntry) as ArrayEntry;
@@ -22,7 +18,7 @@ export function arrayGetMetadata(
 }
 
 export function arrayGetPointersToValueInIndex(
-  carrier: DataViewAndAllocatorCarrier,
+  carrier: GlobalCarrier,
   pointerToArrayEntry: number,
   indexToGet: number
 ) {
@@ -36,7 +32,8 @@ export function arrayGetPointersToValueInIndex(
   const pointerToThePointer =
     metadata.value + indexToGet * Uint32Array.BYTES_PER_ELEMENT;
 
-  const pointer = carrier.dataView.getUint32(pointerToThePointer);
+  const pointer =
+    carrier.uint32[pointerToThePointer / Uint32Array.BYTES_PER_ELEMENT];
 
   return {
     pointer,
@@ -46,12 +43,12 @@ export function arrayGetPointersToValueInIndex(
 
 export function getFinalValueAtArrayIndex(
   externalArgs: ExternalArgs,
-  dataViewCarrier: DataViewAndAllocatorCarrier,
+  globalCarrier: GlobalCarrier,
   pointerToArrayEntry: number,
   indexToGet: number
 ) {
   const pointers = arrayGetPointersToValueInIndex(
-    dataViewCarrier,
+    globalCarrier,
     pointerToArrayEntry,
     indexToGet
   );
@@ -62,13 +59,13 @@ export function getFinalValueAtArrayIndex(
 
   return entryToFinalJavaScriptValue(
     externalArgs,
-    dataViewCarrier,
+    globalCarrier,
     pointers.pointer
   );
 }
 
 export function setValuePointerAtArrayIndex(
-  carrier: DataViewAndAllocatorCarrier,
+  carrier: GlobalCarrier,
   pointerToArrayEntry: number,
   indexToSet: number,
   pointerToEntry: number
@@ -80,13 +77,14 @@ export function setValuePointerAtArrayIndex(
   );
 
   assertNonNull(pointers);
-
-  carrier.dataView.setUint32(pointers.pointerToThePointer, pointerToEntry);
+  carrier.uint32[
+    pointers.pointerToThePointer / Uint32Array.BYTES_PER_ELEMENT
+  ] = pointerToEntry;
 }
 
 export function setValueAtArrayIndex(
   externalArgs: ExternalArgs,
-  carrier: DataViewAndAllocatorCarrier,
+  carrier: GlobalCarrier,
   pointerToArrayEntry: number,
   indexToSet: number,
   value: any
@@ -111,7 +109,7 @@ export function setValueAtArrayIndex(
  */
 export function extendArrayIfNeeded(
   externalArgs: ExternalArgs,
-  carrier: DataViewAndAllocatorCarrier,
+  carrier: GlobalCarrier,
   pointerToArrayEntry: number,
   wishedLength: number
 ) {
@@ -144,7 +142,7 @@ export function extendArrayIfNeeded(
  */
 export function shrinkArray(
   externalArgs: ExternalArgs,
-  carrier: DataViewAndAllocatorCarrier,
+  carrier: GlobalCarrier,
   pointerToArrayEntry: number,
   wishedLength: number
 ) {
@@ -161,7 +159,7 @@ export function shrinkArray(
 
 function reallocateArray(
   externalArgs: ExternalArgs,
-  carrier: DataViewAndAllocatorCarrier,
+  carrier: GlobalCarrier,
   pointerToArrayEntry: number,
   newAllocatedLength: number,
   newLength: number
@@ -197,21 +195,22 @@ function reallocateArray(
 
 export function arraySort(
   externalArgs: ExternalArgs,
-  dataViewCarrier: DataViewAndAllocatorCarrier,
+  globalCarrier: GlobalCarrier,
   pointerToArrayEntry: number,
   sortComparator: (a: any, b: any) => 1 | -1 | 0 = defaultCompareFunction
 ) {
-  const metadata = arrayGetMetadata(dataViewCarrier, pointerToArrayEntry);
+  const metadata = arrayGetMetadata(globalCarrier, pointerToArrayEntry);
   const pointersToValues = [...new Array(metadata.length).keys()]
     .map(index => metadata.value + index * Uint32Array.BYTES_PER_ELEMENT)
-    .map(pointerToPointer =>
-      dataViewCarrier.dataView.getUint32(pointerToPointer)
+    .map(
+      pointerToPointer =>
+        globalCarrier.uint32[pointerToPointer / Uint32Array.BYTES_PER_ELEMENT]
     );
 
   const sortMe = pointersToValues.map(pointer => {
     return [
       pointer,
-      entryToFinalJavaScriptValue(externalArgs, dataViewCarrier, pointer)
+      entryToFinalJavaScriptValue(externalArgs, globalCarrier, pointer)
     ] as const;
   });
 
@@ -220,10 +219,10 @@ export function arraySort(
   });
 
   for (let i = 0; i < sortMe.length; i += 1) {
-    dataViewCarrier.dataView.setUint32(
-      metadata.value + i * Uint32Array.BYTES_PER_ELEMENT,
-      sortMe[i][0]
-    );
+    globalCarrier.uint32[
+      (metadata.value + i * Uint32Array.BYTES_PER_ELEMENT) /
+        Uint32Array.BYTES_PER_ELEMENT
+    ] = sortMe[i][0];
   }
 }
 
@@ -266,7 +265,7 @@ function toString(obj: any) {
 
 export function arrayReverse(
   externalArgs: ExternalArgs,
-  carrier: DataViewAndAllocatorCarrier,
+  carrier: GlobalCarrier,
   pointerToArrayEntry: number
 ) {
   const metadata = arrayGetMetadata(carrier, pointerToArrayEntry);

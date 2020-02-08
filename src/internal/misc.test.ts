@@ -36,7 +36,6 @@ describe("pop it all", () => {
 
     expect(sizeAfterEachPush).toMatchInlineSnapshot(`
       Array [
-        264,
         240,
         216,
         192,
@@ -46,6 +45,7 @@ describe("pop it all", () => {
         96,
         72,
         48,
+        24,
       ]
     `);
 
@@ -76,6 +76,6 @@ describe("pop it all", () => {
 
     expect(arrayWrapper).toMatchInlineSnapshot(`Array []`);
     expect(arrayToCompare).toEqual(arrayWrapper);
-    expect(carrier.allocator.stats().available).toMatchInlineSnapshot(`48`);
+    expect(carrier.allocator.stats().available).toMatchInlineSnapshot(`24`);
   });
 });

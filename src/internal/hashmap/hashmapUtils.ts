@@ -1,8 +1,9 @@
 import { ENTRY_TYPE } from "../entry-types";
 import { stringEncodeInto } from "../stringEncodeInto";
+import { GlobalCarrier } from "../interfaces";
 
 export function hashCodeInPlace(
-  dataView: DataView,
+  uint8: Uint8Array,
   capacity: number,
   keyStart: number,
   keyBytesLength: number
@@ -12,8 +13,7 @@ export function hashCodeInPlace(
   // const hashed: number[] = [];
 
   for (let i = 0; i < keyBytesLength; i++) {
-    // hashed.push(dataView.getUint8(i + keyStart));
-    h = (Math.imul(31, h) + dataView.getUint8(i + keyStart)) | 0;
+    h = (Math.imul(31, h) + uint8[i + keyStart]) | 0;
   }
 
   // console.log(hashed);
@@ -26,41 +26,42 @@ export function hashCodeExternalValue(
   value: string | number
 ): number {
   const ab = new ArrayBuffer(typeof value === "string" ? value.length * 3 : 8);
-  const dv = new DataView(ab);
+  const uint8 = new Uint8Array(ab);
   let keyBytesLength = ab.byteLength;
 
   if (typeof value === "string") {
     keyBytesLength = stringEncodeInto(new Uint8Array(ab), 0, value);
   } else {
-    dv.setFloat64(0, value);
+    new Float64Array(ab)[0] = value;
   }
 
-  return hashCodeInPlace(dv, capacity, 0, keyBytesLength);
+  return hashCodeInPlace(uint8, capacity, 0, keyBytesLength);
 }
 
 export function hashCodeEntry(
-  dataView: DataView,
+  carrier: GlobalCarrier,
   capacity: number,
   pointer: number
 ): number {
-  const type: ENTRY_TYPE.NUMBER | ENTRY_TYPE.STRING = dataView.getUint8(
-    pointer
-  );
+  const type: ENTRY_TYPE.NUMBER | ENTRY_TYPE.STRING = carrier.uint8[pointer];
 
   if (type === ENTRY_TYPE.NUMBER) {
-    return hashCodeInPlace(dataView, capacity, pointer + 1, 8);
+    return hashCodeInPlace(carrier.uint8, capacity, pointer + 1, 8);
   } else {
     return hashCodeInPlace(
-      dataView,
+      carrier.uint8,
       capacity,
       pointer + 1 + Uint16Array.BYTES_PER_ELEMENT,
-      dataView.getUint16(pointer + 1)
+      carrier.uint16[(pointer + 1) / Uint16Array.BYTES_PER_ELEMENT]
     );
   }
 }
 
-export function getKeyStartLength(dataView: DataView, keyPointer: number) {
-  if (dataView.getUint32(keyPointer) === ENTRY_TYPE.NUMBER) {
+export function getKeyStartLength(carrier: GlobalCarrier, keyPointer: number) {
+  if (
+    carrier.uint32[keyPointer / Uint32Array.BYTES_PER_ELEMENT] ===
+    ENTRY_TYPE.NUMBER
+  ) {
     return {
       start: keyPointer + 1,
       length: Float64Array.BYTES_PER_ELEMENT
@@ -68,7 +69,7 @@ export function getKeyStartLength(dataView: DataView, keyPointer: number) {
   } else {
     return {
       start: keyPointer + 1 + 2 + 2,
-      length: dataView.getUint16(keyPointer + 1)
+      length: carrier.uint16[(keyPointer + 1) / Uint16Array.BYTES_PER_ELEMENT]
     };
   }
 }

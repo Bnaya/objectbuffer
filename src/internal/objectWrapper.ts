@@ -1,8 +1,4 @@
-import {
-  ObjectEntry,
-  ExternalArgs,
-  DataViewAndAllocatorCarrier
-} from "./interfaces";
+import { ObjectEntry, ExternalArgs, GlobalCarrier } from "./interfaces";
 import {
   getObjectPropertiesEntries,
   deleteObjectPropertyEntryByKey,
@@ -128,11 +124,11 @@ export class ObjectWrapper extends BaseProxyTrap<ObjectEntry>
 
 export function createObjectWrapper<T = any>(
   externalArgs: ExternalArgs,
-  dataViewCarrier: DataViewAndAllocatorCarrier,
+  globalCarrier: GlobalCarrier,
   entryPointer: number
 ): T {
   return new Proxy(
     { objectBufferWrapper: "objectBufferWrapper" },
-    new ObjectWrapper(externalArgs, dataViewCarrier, entryPointer)
+    new ObjectWrapper(externalArgs, globalCarrier, entryPointer)
   ) as any;
 }

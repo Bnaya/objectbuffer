@@ -8,11 +8,7 @@ import {
 } from "./arrayHelpers";
 import { INTERNAL_API_SYMBOL } from "./symbols";
 import { arraySplice } from "./arraySplice";
-import {
-  ExternalArgs,
-  DataViewAndAllocatorCarrier,
-  ArrayEntry
-} from "./interfaces";
+import { ExternalArgs, GlobalCarrier, ArrayEntry } from "./interfaces";
 import {
   IllegalArrayIndexError,
   UnsupportedOperationError
@@ -252,9 +248,9 @@ export class ArrayWrapper extends BaseProxyTrap<ArrayEntry>
     return arrayGetMetadata(this.carrier, this.entryPointer).length;
   }
 
-  public getDataView() {
-    return this.carrier.dataView;
-  }
+  // public getDataView() {
+  //   return this.carrier.dataView;
+  // }
 
   public getEntryPointer() {
     return this.entryPointer;
@@ -292,11 +288,11 @@ export class ArrayWrapper extends BaseProxyTrap<ArrayEntry>
 
 export function createArrayWrapper(
   externalArgs: ExternalArgs,
-  dataViewCarrier: DataViewAndAllocatorCarrier,
+  globalCarrier: GlobalCarrier,
   entryPointer: number
 ): Array<any> {
   return new Proxy(
     [],
-    new ArrayWrapper(externalArgs, dataViewCarrier, entryPointer)
+    new ArrayWrapper(externalArgs, globalCarrier, entryPointer)
   ) as any;
 }

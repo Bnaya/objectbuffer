@@ -81,8 +81,8 @@ export interface SetEntry {
 /**
  * The carrier object allows us to swap the DataView easily
  */
-export interface DataViewAndAllocatorCarrier {
-  dataView: DataView;
+export interface GlobalCarrier {
+  // dataView: DataView;
   uint8: Uint8Array;
   uint16: Uint16Array;
   uint32: Uint32Array;
@@ -109,8 +109,8 @@ export type ExternalArgsApi = Readonly<{
 
 export interface InternalAPI {
   getExternalArgs(): ExternalArgs;
-  getCarrier(): Readonly<DataViewAndAllocatorCarrier>;
-  replaceCarrierContent(carrier: DataViewAndAllocatorCarrier): void;
+  getCarrier(): Readonly<GlobalCarrier>;
+  replaceCarrierContent(carrier: GlobalCarrier): void;
   getEntryPointer(): number;
   destroy(): number;
 }

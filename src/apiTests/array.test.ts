@@ -36,6 +36,6 @@ describe("SharedArrayBuffer tests", () => {
       }
     `);
 
-    expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`624`);
+    expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`592`);
   });
 });

@@ -18,7 +18,7 @@ describe("arrayWrapper tests", () => {
 
   describe("arrayWrapper - general", () => {
     test("arrayWrapper class 1", () => {
-      const arrayBuffer = new ArrayBuffer(256);
+      const arrayBuffer = new ArrayBuffer(512);
       const carrier = makeCarrier(arrayBuffer);
       initializeArrayBuffer(arrayBuffer);
       const allocator = new MemPool({
@@ -44,11 +44,11 @@ describe("arrayWrapper tests", () => {
         ]
       `);
 
-      expect(allocator.stats().available).toMatchInlineSnapshot(`32`);
+      expect(allocator.stats().available).toMatchInlineSnapshot(`264`);
     });
 
     test("arrayWrapper array.keys()", () => {
-      const arrayBuffer = new ArrayBuffer(256);
+      const arrayBuffer = new ArrayBuffer(512);
       const carrier = makeCarrier(arrayBuffer);
       initializeArrayBuffer(arrayBuffer);
       const allocator = new MemPool({
@@ -67,11 +67,11 @@ describe("arrayWrapper tests", () => {
 
       expect([...arrayWrapper.keys()]).toEqual([0, 1, 2]);
 
-      expect(allocator.stats().available).toMatchInlineSnapshot(`32`);
+      expect(allocator.stats().available).toMatchInlineSnapshot(`264`);
     });
 
     test("arrayWrapper array.entries()", () => {
-      const arrayBuffer = new ArrayBuffer(256);
+      const arrayBuffer = new ArrayBuffer(512);
       const carrier = makeCarrier(arrayBuffer);
       initializeArrayBuffer(arrayBuffer);
       const allocator = new MemPool({
@@ -105,11 +105,11 @@ describe("arrayWrapper tests", () => {
         ]
       `);
 
-      expect(allocator.stats().available).toMatchInlineSnapshot(`32`);
+      expect(allocator.stats().available).toMatchInlineSnapshot(`264`);
     });
 
     test("arrayWrapper array.values() & iterator", () => {
-      const arrayBuffer = new ArrayBuffer(256);
+      const arrayBuffer = new ArrayBuffer(512);
       const carrier = makeCarrier(arrayBuffer);
       initializeArrayBuffer(arrayBuffer);
       const allocator = new MemPool({
@@ -141,11 +141,11 @@ describe("arrayWrapper tests", () => {
         ]
       `);
 
-      expect(allocator.stats().available).toMatchInlineSnapshot(`32`);
+      expect(allocator.stats().available).toMatchInlineSnapshot(`264`);
     });
 
     test("arrayWrapper set value in bound", () => {
-      const arrayBuffer = new ArrayBuffer(256);
+      const arrayBuffer = new ArrayBuffer(512);
       const carrier = makeCarrier(arrayBuffer);
       initializeArrayBuffer(arrayBuffer);
       const arrayToSave = ["a", "b", 1];
@@ -170,7 +170,7 @@ describe("arrayWrapper tests", () => {
     });
 
     test("arrayWrapper set value out of bound, but inside allocated space", () => {
-      const arrayBuffer = new ArrayBuffer(256);
+      const arrayBuffer = new ArrayBuffer(512);
       const carrier = makeCarrier(arrayBuffer);
       initializeArrayBuffer(arrayBuffer);
       const arrayToSave = ["a", "b", 1];
@@ -208,7 +208,7 @@ describe("arrayWrapper tests", () => {
     });
 
     test("arrayWrapper set value out of bound, but outside allocated space", () => {
-      const arrayBuffer = new ArrayBuffer(256);
+      const arrayBuffer = new ArrayBuffer(512);
       const carrier = makeCarrier(arrayBuffer);
       initializeArrayBuffer(arrayBuffer);
       const allocator = new MemPool({
@@ -242,7 +242,7 @@ describe("arrayWrapper tests", () => {
           "new value",
         ]
       `);
-      expect(allocator.stats().available).toMatchInlineSnapshot(`8`);
+      expect(allocator.stats().available).toMatchInlineSnapshot(`232`);
     });
   });
 
@@ -280,7 +280,7 @@ describe("arrayWrapper tests", () => {
       ]
     `);
 
-    expect(allocator.stats().available).toMatchInlineSnapshot(`184`);
+    expect(allocator.stats().available).toMatchInlineSnapshot(`176`);
   });
 
   test("arrayWrapper sort - with comparator", () => {
@@ -337,7 +337,7 @@ describe("arrayWrapper tests", () => {
       ]
     `);
 
-    expect(allocator.stats().available).toMatchInlineSnapshot(`672`);
+    expect(allocator.stats().available).toMatchInlineSnapshot(`568`);
   });
 
   test("arrayWrapper - reverse", () => {
@@ -377,7 +377,7 @@ describe("arrayWrapper tests", () => {
       ]
     `);
 
-    expect(allocator.stats().available).toMatchInlineSnapshot(`160`);
+    expect(allocator.stats().available).toMatchInlineSnapshot(`152`);
   });
 
   test("arrayWrapper - set length", () => {
@@ -434,6 +434,6 @@ describe("arrayWrapper tests", () => {
       arrayWrapper.length = 2.2;
     }).toThrowErrorMatchingInlineSnapshot(`"Invalid array length"`);
 
-    expect(allocator.stats().available).toMatchInlineSnapshot(`160`);
+    expect(allocator.stats().available).toMatchInlineSnapshot(`152`);
   });
 });

@@ -1,15 +1,11 @@
 import { appendEntry } from "./store";
 import { ENTRY_TYPE } from "./entry-types";
-import {
-  ArrayEntry,
-  ExternalArgs,
-  DataViewAndAllocatorCarrier
-} from "./interfaces";
+import { ArrayEntry, ExternalArgs, GlobalCarrier } from "./interfaces";
 import { saveValue } from "./saveValue";
 
 export function arraySaver(
   externalArgs: ExternalArgs,
-  carrier: DataViewAndAllocatorCarrier,
+  carrier: GlobalCarrier,
   referencedPointers: number[],
   arrayToSave: Array<any>
 ) {
@@ -30,7 +26,10 @@ export function arraySaver(
   for (const item of arrayToSave) {
     const rOfValue = saveValue(externalArgs, carrier, referencedPointers, item);
 
-    carrier.dataView.setUint32(memoryForPointersCursor, rOfValue);
+    carrier.uint32[
+      memoryForPointersCursor / Uint32Array.BYTES_PER_ELEMENT
+    ] = rOfValue;
+
     memoryForPointersCursor += Uint32Array.BYTES_PER_ELEMENT;
   }
 

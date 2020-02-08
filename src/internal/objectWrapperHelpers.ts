@@ -1,6 +1,6 @@
 import {
   ExternalArgs,
-  DataViewAndAllocatorCarrier,
+  GlobalCarrier,
   StringEntry,
   NumberEntry,
   MapEntry,
@@ -26,7 +26,7 @@ import { getObjectOrMapOrSetAddresses } from "./getAllLinkedAddresses";
 
 export function deleteObjectPropertyEntryByKey(
   externalArgs: ExternalArgs,
-  carrier: DataViewAndAllocatorCarrier,
+  carrier: GlobalCarrier,
   hashmapPointer: number,
   keyToDeleteBy: string | number
 ): boolean {
@@ -41,9 +41,10 @@ export function deleteObjectPropertyEntryByKey(
     return false;
   }
 
-  const deletedValuePointer = carrier.dataView.getUint32(
-    deletedValuePointerToPointer
-  );
+  const deletedValuePointer =
+    carrier.uint32[
+      deletedValuePointerToPointer / Uint32Array.BYTES_PER_ELEMENT
+    ];
 
   handleArcForDeletedValuePointer(externalArgs, carrier, deletedValuePointer);
 
@@ -51,21 +52,17 @@ export function deleteObjectPropertyEntryByKey(
 }
 
 export function getObjectPropertiesEntries(
-  carrier: DataViewAndAllocatorCarrier,
+  carrier: GlobalCarrier,
   hashmapPointer: number
 ): Array<{ key: string | number; valuePointer: number }> {
   let iterator = 0;
   const foundValues: Array<{ key: string | number; valuePointer: number }> = [];
 
   while (
-    (iterator = hashMapLowLevelIterator(
-      carrier.dataView,
-      hashmapPointer,
-      iterator
-    ))
+    (iterator = hashMapLowLevelIterator(carrier, hashmapPointer, iterator))
   ) {
     const { valuePointer, keyPointer } = hashMapNodePointerToKeyValue(
-      carrier.dataView,
+      carrier,
       iterator
     );
 
@@ -74,7 +71,8 @@ export function getObjectPropertiesEntries(
       | NumberEntry;
 
     foundValues.push({
-      valuePointer: carrier.dataView.getUint32(valuePointer),
+      valuePointer:
+        carrier.uint32[valuePointer / Uint32Array.BYTES_PER_ELEMENT],
       key: keyEntry.value
     });
   }
@@ -84,7 +82,7 @@ export function getObjectPropertiesEntries(
 
 export function objectSet(
   externalArgs: ExternalArgs,
-  carrier: DataViewAndAllocatorCarrier,
+  carrier: GlobalCarrier,
   hashMapPointer: number,
   p: string | number,
   value: any
@@ -101,7 +99,7 @@ export function objectSet(
 
 export function objectGet(
   externalArgs: ExternalArgs,
-  carrier: DataViewAndAllocatorCarrier,
+  carrier: GlobalCarrier,
   entryPointer: number,
   key: string | number
 ) {
@@ -114,13 +112,13 @@ export function objectGet(
   return entryToFinalJavaScriptValue(
     externalArgs,
     carrier,
-    carrier.dataView.getUint32(valuePointer)
+    carrier.uint32[valuePointer / Uint32Array.BYTES_PER_ELEMENT]
   );
 }
 
 export function hashmapClearFree(
   externalArgs: ExternalArgs,
-  carrier: DataViewAndAllocatorCarrier,
+  carrier: GlobalCarrier,
   hashmapPointer: number
 ) {
   const leafAddresses: number[] = [];
@@ -145,7 +143,7 @@ export function hashmapClearFree(
 
 export function mapOrSetClear(
   externalArgs: ExternalArgs,
-  carrier: DataViewAndAllocatorCarrier,
+  carrier: GlobalCarrier,
   mapOrSetPtr: number
 ) {
   const entry = readEntry(carrier, mapOrSetPtr) as MapEntry | SetEntry;

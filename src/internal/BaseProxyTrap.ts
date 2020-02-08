@@ -1,6 +1,6 @@
 import {
   ExternalArgs,
-  DataViewAndAllocatorCarrier,
+  GlobalCarrier,
   InternalAPI,
   DateEntry,
   ArrayEntry,
@@ -16,7 +16,7 @@ export class BaseProxyTrap<
 > implements InternalAPI {
   constructor(
     protected externalArgs: ExternalArgs,
-    protected carrier: DataViewAndAllocatorCarrier,
+    protected carrier: GlobalCarrier,
     protected _entryPointer: number
   ) {
     incrementRefCount(this.externalArgs, this.carrier, this.entryPointer);
@@ -37,7 +37,7 @@ export class BaseProxyTrap<
     return this.carrier;
   }
 
-  public replaceCarrierContent(newCarrierContent: DataViewAndAllocatorCarrier) {
+  public replaceCarrierContent(newCarrierContent: GlobalCarrier) {
     Object.assign(this.carrier, newCarrierContent);
   }
 

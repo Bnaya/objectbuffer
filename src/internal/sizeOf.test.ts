@@ -33,8 +33,8 @@ describe("sizeOf tests", () => {
 
     expect(r).toMatchInlineSnapshot(`
       Object {
-        "calcedSize": 64,
-        "realSize": 64,
+        "calcedSize": 72,
+        "realSize": 72,
       }
     `);
     // ???
@@ -46,7 +46,7 @@ describe("sizeOf tests", () => {
   });
 
   test("string", () => {
-    expect(sizeOf(externalArgs, "סלאם עליכום")).toMatchInlineSnapshot(`40`);
+    expect(sizeOf(externalArgs, "סלאם עליכום")).toMatchInlineSnapshot(`48`);
   });
 
   test("undefined", () => {
@@ -60,12 +60,12 @@ describe("sizeOf tests", () => {
   test("Array", () => {
     expect(
       sizeOf(externalArgs, ["a", { a: "u" }, null, undefined, 1])
-    ).toMatchInlineSnapshot(`356`);
+    ).toMatchInlineSnapshot(`396`);
   });
 
   test("Object", () => {
     expect(
       sizeOf(externalArgs, { a: 1, b: "some string" })
-    ).toMatchInlineSnapshot(`256`);
+    ).toMatchInlineSnapshot(`296`);
   });
 });

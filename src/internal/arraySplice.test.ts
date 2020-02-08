@@ -86,7 +86,7 @@ describe("arraySplice tests", () => {
 
     expect(removedFromPlain).toEqual([...removed]);
 
-    expect(allocator.stats().available).toMatchInlineSnapshot(`32`);
+    expect(allocator.stats().available).toMatchInlineSnapshot(`0`);
   });
 
   test("arrayWrapper splice - Just delete items from the middle", () => {
@@ -136,7 +136,7 @@ describe("arraySplice tests", () => {
 
     expect(plainJSArray).toEqual([...arrayWrapper]);
 
-    expect(allocator.stats().available).toMatchInlineSnapshot(`80`);
+    expect(allocator.stats().available).toMatchInlineSnapshot(`72`);
   });
 
   test("arrayWrapper splice - Just add items in the middle", () => {
@@ -195,11 +195,11 @@ describe("arraySplice tests", () => {
     `);
 
     expect(plainJSArray).toEqual([...arrayWrapper]);
-    expect(allocator.stats().available).toMatchInlineSnapshot(`48`);
+    expect(allocator.stats().available).toMatchInlineSnapshot(`24`);
   });
 
   test("arrayWrapper splice - add + delete - array will get longer", () => {
-    const arrayBuffer = new ArrayBuffer(512);
+    const arrayBuffer = new ArrayBuffer(1024);
     const carrier = makeCarrier(arrayBuffer);
     initializeArrayBuffer(arrayBuffer);
     const allocator = new MemPool({
@@ -216,6 +216,8 @@ describe("arraySplice tests", () => {
       carrier,
       saverOutput
     );
+
+    const availableCheckpoint = allocator.stats().available;
 
     const removed = arrayWrapper.splice(2, 2, "a", "b", "c", "d");
     const removedFromPlain = plainJSArray.splice(2, 2, "a", "b", "c", "d");
@@ -272,11 +274,13 @@ describe("arraySplice tests", () => {
 
     expect(removedFromPlain).toEqual([...removed]);
 
-    expect(allocator.stats().available).toMatchInlineSnapshot(`16`);
+    expect(
+      availableCheckpoint - allocator.stats().available
+    ).toMatchInlineSnapshot(`96`);
   });
 
   test("arrayWrapper splice - add + delete - array will get shorter", () => {
-    const arrayBuffer = new ArrayBuffer(512);
+    const arrayBuffer = new ArrayBuffer(1024);
     const carrier = makeCarrier(arrayBuffer);
     initializeArrayBuffer(arrayBuffer);
     const allocator = new MemPool({
@@ -293,6 +297,8 @@ describe("arraySplice tests", () => {
       carrier,
       saverOutput
     );
+
+    const availableCheckpoint = allocator.stats().available;
 
     const removed = arrayWrapper.splice(2, 6, "a", "b", "c", "d");
     const removedFromPlain = plainJSArray.splice(2, 6, "a", "b", "c", "d");
@@ -350,7 +356,9 @@ describe("arraySplice tests", () => {
 
     expect(removedFromPlain).toEqual([...removed]);
 
-    expect(allocator.stats().available).toMatchInlineSnapshot(`16`);
+    expect(
+      availableCheckpoint - allocator.stats().available
+    ).toMatchInlineSnapshot(`96`);
   });
 
   test("arrayWrapper splice - start bigger than array", () => {
@@ -418,7 +426,7 @@ describe("arraySplice tests", () => {
 
     expect(removedFromPlain).toEqual([...removed]);
 
-    expect(allocator.stats().available).toMatchInlineSnapshot(`48`);
+    expect(allocator.stats().available).toMatchInlineSnapshot(`24`);
   });
 
   test("arrayWrapper splice - delete bigger than array", () => {
@@ -492,7 +500,7 @@ describe("arraySplice tests", () => {
 
     expect(removedFromPlain).toEqual([...removed]);
 
-    expect(allocator.stats().available).toMatchInlineSnapshot(`48`);
+    expect(allocator.stats().available).toMatchInlineSnapshot(`24`);
   });
 
   test("arrayWrapper splice - negative start", () => {
@@ -566,7 +574,7 @@ describe("arraySplice tests", () => {
 
     expect(removedFromPlain).toEqual([...removed]);
 
-    expect(allocator.stats().available).toMatchInlineSnapshot(`48`);
+    expect(allocator.stats().available).toMatchInlineSnapshot(`24`);
   });
 
   test("arrayWrapper splice - negative delete", () => {
@@ -634,6 +642,6 @@ describe("arraySplice tests", () => {
 
     expect(removedFromPlain).toEqual([...removed]);
 
-    expect(allocator.stats().available).toMatchInlineSnapshot(`32`);
+    expect(allocator.stats().available).toMatchInlineSnapshot(`24`);
   });
 });

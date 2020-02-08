@@ -3,7 +3,7 @@ import { ENTRY_TYPE } from "./entry-types";
 import {
   ObjectEntry,
   ExternalArgs,
-  DataViewAndAllocatorCarrier,
+  GlobalCarrier,
   MapEntry,
   SetEntry
 } from "./interfaces";
@@ -12,7 +12,7 @@ import { createHashMap, hashMapInsertUpdate } from "./hashmap/hashmap";
 
 export function objectSaver(
   externalArgs: ExternalArgs,
-  carrier: DataViewAndAllocatorCarrier,
+  carrier: GlobalCarrier,
   referencedPointers: number[],
   objectToSave: any
 ) {
@@ -20,7 +20,10 @@ export function objectSaver(
 
   const hashMapPointer = createHashMap(
     carrier,
-    Math.max(externalArgs.hashMapMinInitialCapacity, objectEntries.length * 1.3)
+    Math.max(
+      externalArgs.hashMapMinInitialCapacity,
+      Math.ceil(objectEntries.length * 1.3)
+    )
   );
 
   for (const [key, value] of objectEntries) {
@@ -38,7 +41,7 @@ export function objectSaver(
       value
     );
 
-    carrier.dataView.setUint32(ptrToPtr, pointerToValue);
+    carrier.uint32[ptrToPtr / Uint32Array.BYTES_PER_ELEMENT] = pointerToValue;
   }
 
   const objectStartEntry: ObjectEntry = {
@@ -52,13 +55,16 @@ export function objectSaver(
 
 export function mapSaver(
   externalArgs: ExternalArgs,
-  carrier: DataViewAndAllocatorCarrier,
+  carrier: GlobalCarrier,
   referencedPointers: number[],
   mapToSave: Map<string | number, any>
 ) {
   const hashMapPointer = createHashMap(
     carrier,
-    Math.max(externalArgs.hashMapMinInitialCapacity, mapToSave.size * 1.3)
+    Math.max(
+      externalArgs.hashMapMinInitialCapacity,
+      Math.ceil(mapToSave.size * 1.3)
+    )
   );
 
   for (const [key, value] of mapToSave.entries()) {
@@ -76,7 +82,7 @@ export function mapSaver(
       value
     );
 
-    carrier.dataView.setUint32(ptrToPtr, pointerToValue);
+    carrier.uint32[ptrToPtr / Uint32Array.BYTES_PER_ELEMENT] = pointerToValue;
   }
 
   const objectStartEntry: MapEntry = {
@@ -90,12 +96,15 @@ export function mapSaver(
 
 export function setSaver(
   externalArgs: ExternalArgs,
-  carrier: DataViewAndAllocatorCarrier,
+  carrier: GlobalCarrier,
   setToSave: Set<string | number>
 ) {
   const hashMapPointer = createHashMap(
     carrier,
-    Math.max(externalArgs.hashMapMinInitialCapacity, setToSave.size * 1.3)
+    Math.max(
+      externalArgs.hashMapMinInitialCapacity,
+      Math.ceil(setToSave.size * 1.3)
+    )
   );
 
   for (const key of setToSave.keys()) {
@@ -106,7 +115,7 @@ export function setSaver(
       key
     );
 
-    carrier.dataView.setUint32(ptrToPtr, 1);
+    carrier.uint32[ptrToPtr / Uint32Array.BYTES_PER_ELEMENT] = 1;
   }
 
   const objectStartEntry: SetEntry = {

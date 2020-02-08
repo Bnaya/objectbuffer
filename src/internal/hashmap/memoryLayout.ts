@@ -1,12 +1,12 @@
 import { createMemoryMachine } from "../memoryMachinery";
 
 export const MAP_MACHINE = createMemoryMachine({
-  CAPACITY: Uint8Array,
-  USED_CAPACITY: Uint8Array,
   ARRAY_POINTER: Uint32Array,
   LINKED_LIST_POINTER: Uint32Array,
   // maybe put save this value in the linked list?
-  LINKED_LIST_SIZE: Uint32Array
+  LINKED_LIST_SIZE: Uint32Array,
+  CAPACITY: Uint8Array,
+  USED_CAPACITY: Uint8Array
 });
 
 export const NODE_MACHINE = createMemoryMachine({

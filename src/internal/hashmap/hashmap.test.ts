@@ -15,7 +15,7 @@ import {
   hashMapDelete,
   hashMapGetPointersToFree
 } from "./hashmap";
-import { DataViewAndAllocatorCarrier, StringEntry } from "../interfaces";
+import { GlobalCarrier, StringEntry } from "../interfaces";
 import { readEntry } from "../store";
 import { externalArgsApiToExternalArgsApi } from "../utils";
 
@@ -27,7 +27,7 @@ describe("hashmap", () => {
   });
 
   let ab = new ArrayBuffer(128);
-  let carrier: DataViewAndAllocatorCarrier = makeCarrier(ab);
+  let carrier: GlobalCarrier = makeCarrier(ab);
 
   function setABSize(size: number) {
     ab = new ArrayBuffer(size);
@@ -56,7 +56,7 @@ describe("hashmap", () => {
       3
     );
 
-    carrier.dataView.setUint32(valuePointer, 5);
+    carrier.uint32[valuePointer / Uint32Array.BYTES_PER_ELEMENT] = 5;
 
     expect(arrayBuffer2HexArray(ab, true)).toMatchSnapshot("after insert");
   });
@@ -71,7 +71,7 @@ describe("hashmap", () => {
       "abc"
     );
 
-    carrier.dataView.setUint32(pointer, 6);
+    carrier.uint32[pointer / Uint32Array.BYTES_PER_ELEMENT] = 6;
 
     expect(arrayBuffer2HexArray(ab, true)).toMatchSnapshot("after insert");
   });
@@ -159,7 +159,10 @@ describe("hashmap", () => {
       inserts.push(
         hashMapInsertUpdate(externalArgs, carrier, mapPointer, value)
       );
-      carrier.dataView.setUint32(inserts[inserts.length - 1], index);
+
+      carrier.uint32[
+        inserts[inserts.length - 1] / Uint32Array.BYTES_PER_ELEMENT
+      ] = index;
     }
 
     const values: Array<{
@@ -170,14 +173,12 @@ describe("hashmap", () => {
     let iteratorToken = 0;
     while (
       (iteratorToken = hashMapLowLevelIterator(
-        carrier.dataView,
+        carrier,
         mapPointer,
         iteratorToken
       )) !== 0
     ) {
-      values.push(
-        hashMapNodePointerToKeyValue(carrier.dataView, iteratorToken)
-      );
+      values.push(hashMapNodePointerToKeyValue(carrier, iteratorToken));
     }
     expect(
       values.map(v => (readEntry(carrier, v.keyPointer) as StringEntry).value)
@@ -217,9 +218,7 @@ describe("hashmap", () => {
     setABSize(2048);
     const mapPointer = createHashMap(carrier);
 
-    expect(hashMapSize(carrier.dataView, mapPointer)).toMatchInlineSnapshot(
-      `0`
-    );
+    expect(hashMapSize(carrier, mapPointer)).toMatchInlineSnapshot(`0`);
     const memAvailableAfterEachStep = [carrier.allocator.stats().available];
 
     const input = [...new Array(26).keys()]
@@ -227,58 +226,54 @@ describe("hashmap", () => {
       .map(n => String.fromCharCode(n));
 
     for (const [index, useThatAsKey] of input.entries()) {
-      carrier.dataView.setUint32(
-        hashMapInsertUpdate(externalArgs, carrier, mapPointer, useThatAsKey),
-        index
-      );
+      carrier.uint32[
+        hashMapInsertUpdate(externalArgs, carrier, mapPointer, useThatAsKey) /
+          Uint32Array.BYTES_PER_ELEMENT
+      ] = index;
 
       memAvailableAfterEachStep.push(carrier.allocator.stats().available);
     }
 
-    expect(hashMapSize(carrier.dataView, mapPointer)).toMatchInlineSnapshot(
-      `26`
-    );
+    expect(hashMapSize(carrier, mapPointer)).toMatchInlineSnapshot(`26`);
 
     hashMapDelete(carrier, mapPointer, "a");
     hashMapDelete(carrier, mapPointer, "b");
     hashMapDelete(carrier, mapPointer, "c");
-    expect(hashMapSize(carrier.dataView, mapPointer)).toMatchInlineSnapshot(
-      `23`
-    );
+    expect(hashMapSize(carrier, mapPointer)).toMatchInlineSnapshot(`26`);
     memAvailableAfterEachStep.push(carrier.allocator.stats().available);
 
     expect(memAvailableAfterEachStep).toMatchInlineSnapshot(`
-      Array [
-        1904,
-        1848,
-        1792,
-        1736,
-        1680,
-        1624,
-        1568,
-        1512,
-        1416,
-        1352,
-        1296,
-        1240,
-        1184,
-        1128,
-        1072,
-        1016,
-        880,
-        824,
-        760,
-        704,
-        648,
-        592,
-        536,
-        480,
-        424,
-        368,
-        312,
-        480,
-      ]
-    `);
+Array [
+  1904,
+  1840,
+  1776,
+  1712,
+  1648,
+  1584,
+  1520,
+  1456,
+  1352,
+  1288,
+  1224,
+  1160,
+  1096,
+  1032,
+  968,
+  904,
+  760,
+  696,
+  632,
+  568,
+  504,
+  440,
+  376,
+  312,
+  248,
+  184,
+  120,
+  120,
+]
+`);
   });
 
   test("hashMapGetPointersToFree", () => {
@@ -299,72 +294,74 @@ describe("hashmap", () => {
       let toAdd: undefined | string;
 
       while ((toAdd = inputCopy.pop()) !== undefined) {
-        carrier.dataView.setUint32(
-          hashMapInsertUpdate(externalArgs, carrier, hashmapPointer, toAdd),
-          toAdd.charCodeAt(0)
-        );
+        carrier.uint32[
+          hashMapInsertUpdate(externalArgs, carrier, hashmapPointer, toAdd) /
+            Uint32Array.BYTES_PER_ELEMENT
+        ] = toAdd.charCodeAt(0);
       }
     }, carrier.allocator);
 
-    const r = hashMapGetPointersToFree(carrier.dataView, hashmapPointer);
+    const r = hashMapGetPointersToFree(carrier, hashmapPointer);
 
     expect(r).toMatchInlineSnapshot(`
-      Object {
-        "pointers": Array [
-          48,
-          600,
-          120,
-          136,
-          192,
-          248,
-          304,
-          360,
-          416,
-          472,
-          528,
-          584,
-          688,
-          744,
-          152,
-          176,
-          208,
-          232,
-          264,
-          288,
-          320,
-          344,
-          376,
-          400,
-          432,
-          456,
-          488,
-          512,
-          544,
-          568,
-          72,
-          96,
-          704,
-          728,
-        ],
-        "pointersToValuePointers": Array [
-          152,
-          208,
-          264,
-          320,
-          376,
-          432,
-          488,
-          544,
-          72,
-          704,
-        ],
-      }
-    `);
+Object {
+  "pointers": Array [
+    48,
+    664,
+    120,
+    136,
+    200,
+    264,
+    328,
+    392,
+    456,
+    520,
+    584,
+    648,
+    752,
+    816,
+    152,
+    176,
+    216,
+    240,
+    280,
+    304,
+    344,
+    368,
+    408,
+    432,
+    472,
+    496,
+    536,
+    560,
+    600,
+    624,
+    72,
+    96,
+    768,
+    792,
+  ],
+  "pointersToValuePointers": Array [
+    152,
+    216,
+    280,
+    344,
+    408,
+    472,
+    536,
+    600,
+    72,
+    768,
+  ],
+}
+`);
 
     expect(r.pointers.sort()).toEqual(allocations.sort());
     expect(
       r.pointersToValuePointers
-        .map(v => String.fromCharCode(carrier.dataView.getUint32(v)))
+        .map(v =>
+          String.fromCharCode(carrier.uint32[v / Uint32Array.BYTES_PER_ELEMENT])
+        )
         .sort()
     ).toEqual(input.sort());
   });

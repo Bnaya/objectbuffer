@@ -1,8 +1,4 @@
-import {
-  ExternalArgs,
-  DataViewAndAllocatorCarrier,
-  DateEntry
-} from "./interfaces";
+import { ExternalArgs, GlobalCarrier, DateEntry } from "./interfaces";
 
 import { readEntry, writeEntry } from "./store";
 import { ENTRY_TYPE } from "./entry-types";
@@ -69,7 +65,7 @@ export class DateWrapper extends BaseProxyTrap<DateEntry>
 
   constructor(
     externalArgs: ExternalArgs,
-    carrier: DataViewAndAllocatorCarrier,
+    carrier: GlobalCarrier,
     entryPointer: number
   ) {
     super(externalArgs, carrier, entryPointer);
@@ -136,7 +132,7 @@ export class DateWrapper extends BaseProxyTrap<DateEntry>
 
 export function createDateWrapper(
   externalArgs: ExternalArgs,
-  carrier: DataViewAndAllocatorCarrier,
+  carrier: GlobalCarrier,
   entryPointer: number
 ): Date {
   return new Proxy(

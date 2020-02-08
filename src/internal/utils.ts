@@ -13,6 +13,7 @@ import {
   TRUE_KNOWN_ADDRESS,
   FALSE_KNOWN_ADDRESS
 } from "./consts";
+import { IMemPool } from "@thi.ng/malloc";
 
 const primitives = [
   "string",
@@ -85,15 +86,13 @@ export function arrayBufferCopyTo(
   const copyFrom = new Uint8Array(origin);
   const copyTo = new Uint8Array(target);
 
-  for (let i = 0; i < length; i += 1) {
-    copyTo[toTargetByte + i] = copyFrom[startByte + i];
-  }
+  copyTo.set(copyFrom.subarray(startByte, startByte + length), toTargetByte);
 }
 
-export function getOurPointerIfApplicable(value: any, ourDateView: DataView) {
+export function getOurPointerIfApplicable(value: any, ourAllocator: IMemPool) {
   if (INTERNAL_API_SYMBOL in value) {
     const api = getInternalAPI(value);
-    if (api.getCarrier().dataView === ourDateView) {
+    if (api.getCarrier().allocator === ourAllocator) {
       return api.getEntryPointer();
     }
   }

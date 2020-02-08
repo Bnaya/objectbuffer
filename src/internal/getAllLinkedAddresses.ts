@@ -1,11 +1,11 @@
 import { readEntry } from "./store";
-import { DataViewAndAllocatorCarrier } from "./interfaces";
+import { GlobalCarrier } from "./interfaces";
 import { ENTRY_TYPE } from "./entry-types";
 import { hashMapGetPointersToFree } from "./hashmap/hashmap";
 import { isKnownAddressValuePointer } from "./utils";
 
 export function getAllLinkedAddresses(
-  carrier: DataViewAndAllocatorCarrier,
+  carrier: GlobalCarrier,
   ignoreRefCount: boolean,
   entryPointer: number
 ) {
@@ -24,7 +24,7 @@ export function getAllLinkedAddresses(
 }
 
 function getAllLinkedAddressesStep(
-  carrier: DataViewAndAllocatorCarrier,
+  carrier: GlobalCarrier,
   ignoreRefCount: boolean,
   entryPointer: number,
   leafAddresses: number[],
@@ -68,9 +68,11 @@ function getAllLinkedAddressesStep(
         leafAddresses.push(entry.value);
 
         for (let i = 0; i < entry.allocatedLength; i += 1) {
-          const valuePointer = carrier.dataView.getUint32(
-            entry.value + i * Uint32Array.BYTES_PER_ELEMENT
-          );
+          const valuePointer =
+            carrier.uint32[
+              (entry.value + i * Uint32Array.BYTES_PER_ELEMENT) /
+                Uint32Array.BYTES_PER_ELEMENT
+            ];
 
           getAllLinkedAddressesStep(
             carrier,
@@ -101,14 +103,14 @@ function getAllLinkedAddressesStep(
 }
 
 export function getObjectOrMapOrSetAddresses(
-  carrier: DataViewAndAllocatorCarrier,
+  carrier: GlobalCarrier,
   ignoreRefCount: boolean,
   internalHashmapPointer: number,
   leafAddresses: number[],
   arcAddresses: number[]
 ) {
   const { pointersToValuePointers, pointers } = hashMapGetPointersToFree(
-    carrier.dataView,
+    carrier,
     internalHashmapPointer
   );
 
@@ -118,7 +120,7 @@ export function getObjectOrMapOrSetAddresses(
     getAllLinkedAddressesStep(
       carrier,
       ignoreRefCount,
-      carrier.dataView.getUint32(pointer),
+      carrier.uint32[pointer / Uint32Array.BYTES_PER_ELEMENT],
       leafAddresses,
       arcAddresses
     );

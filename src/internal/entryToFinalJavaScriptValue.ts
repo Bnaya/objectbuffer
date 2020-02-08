@@ -1,4 +1,4 @@
-import { ExternalArgs, DataViewAndAllocatorCarrier } from "./interfaces";
+import { ExternalArgs, GlobalCarrier } from "./interfaces";
 import { ENTRY_TYPE, isPrimitiveEntryType } from "./entry-types";
 import { createObjectWrapper } from "./objectWrapper";
 import { createArrayWrapper } from "./arrayWrapper";
@@ -28,7 +28,7 @@ const TYPE_TO_FACTORY = {
 
 export function entryToFinalJavaScriptValue(
   externalArgs: ExternalArgs,
-  carrier: DataViewAndAllocatorCarrier,
+  carrier: GlobalCarrier,
   pointerToEntry: number
 ) {
   if (pointerToEntry === UNDEFINED_KNOWN_ADDRESS) {
@@ -85,7 +85,7 @@ export function entryToFinalJavaScriptValue(
 
 function finalizer(
   memoryAddress: number,
-  carrier: DataViewAndAllocatorCarrier,
+  carrier: GlobalCarrier,
   externalArgs: ExternalArgs
 ) {
   const newRefsCount = decrementRefCount(externalArgs, carrier, memoryAddress);
