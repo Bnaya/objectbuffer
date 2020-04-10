@@ -87,6 +87,8 @@ Before putting any eggs in the basket, please go over the [implementation detail
 ## Caveats & Limitations
 
 * Need to specify size for the `ArrayBuffer`. When exceed that size, exception will be thrown. (Can be extended later with a utility function, but not automatically)
+* Set, Map, Object keys can be only string or numbers. no symbols or other things
+* You can't save objects with circularities (But you can create them on objectbuffer)
 * No prototype chain. no methods on the objects
 * Adding getters, setters, will not work/break the library
 * deleting/removing the current key of Map/Set while iteration will make you skip the next key [#60](https://github.com/Bnaya/objectbuffer/issues/60)

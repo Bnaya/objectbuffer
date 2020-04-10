@@ -50,4 +50,30 @@ describe("object tests", () => {
       }
     `);
   });
+
+  // Not working. will make infinite loop
+  test.skip("With circular", () => {
+    const input: any = {
+      a: 1,
+      b: true,
+      c: false,
+      d: null,
+      e: undefined,
+      foo: { a: 1, b: true, c: false, d: null, e: undefined },
+    };
+
+    // Create circularity
+    input.foo.circular = input.foo;
+
+    const objectBuffer = createObjectBuffer<any>(externalArgs, 2048, input);
+    expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`1016`);
+    expect(input).toEqual(objectBuffer);
+
+    expect(objectBuffer.foo.circular).toEqual(objectBuffer.foo);
+    expect(objectBuffer.foo.circular.d).toMatchInlineSnapshot();
+
+    objectBuffer.foo.circular = "severe the circularity";
+
+    expect(objectBuffer).toMatchInlineSnapshot();
+  });
 });

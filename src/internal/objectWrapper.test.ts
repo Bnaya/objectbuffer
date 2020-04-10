@@ -26,7 +26,13 @@ describe("objectWrapper tests", () => {
         },
       };
 
-      const saverOutput = objectSaver(externalArgs, carrier, [], objectToSave);
+      const saverOutput = objectSaver(
+        externalArgs,
+        carrier,
+        [],
+        new Map(),
+        objectToSave
+      );
 
       const objectWrapper: any = createObjectWrapper(
         externalArgs,
@@ -69,7 +75,13 @@ describe("objectWrapper tests", () => {
         },
       };
 
-      const saverOutput = objectSaver(externalArgs, carrier, [], objectToSave);
+      const saverOutput = objectSaver(
+        externalArgs,
+        carrier,
+        [],
+        new Map(),
+        objectToSave
+      );
 
       const objectWrapper: any = createObjectWrapper(
         externalArgs,
@@ -99,7 +111,13 @@ describe("objectWrapper tests", () => {
         },
       };
 
-      const saverOutput = objectSaver(externalArgs, carrier, [], objectToSave);
+      const saverOutput = objectSaver(
+        externalArgs,
+        carrier,
+        [],
+        new Map(),
+        objectToSave
+      );
 
       const objectWrapper = createObjectWrapper(
         externalArgs,
@@ -140,7 +158,13 @@ describe("objectWrapper tests", () => {
         },
       };
 
-      const saverOutput = objectSaver(externalArgs, carrier, [], objectToSave);
+      const saverOutput = objectSaver(
+        externalArgs,
+        carrier,
+        [],
+        new Map(),
+        objectToSave
+      );
 
       const objectWrapper = createObjectWrapper(
         externalArgs,
@@ -182,7 +206,13 @@ describe("objectWrapper tests", () => {
         },
       };
 
-      const saverOutput = objectSaver(externalArgs, carrier, [], objectToSave);
+      const saverOutput = objectSaver(
+        externalArgs,
+        carrier,
+        [],
+        new Map(),
+        objectToSave
+      );
 
       const objectWrapper = createObjectWrapper(
         externalArgs,

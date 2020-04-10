@@ -362,6 +362,7 @@ export function writeValueInPtrToPtr(
       externalArgs,
       carrier,
       referencedPointers,
+      new Map(),
       value
     );
 

@@ -24,7 +24,13 @@ export function arraySaver(
   };
 
   for (const item of arrayToSave) {
-    const rOfValue = saveValue(externalArgs, carrier, referencedPointers, item);
+    const rOfValue = saveValue(
+      externalArgs,
+      carrier,
+      referencedPointers,
+      new Map(),
+      item
+    );
 
     carrier.uint32[
       memoryForPointersCursor / Uint32Array.BYTES_PER_ELEMENT

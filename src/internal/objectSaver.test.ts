@@ -28,7 +28,13 @@ describe("objectSaver tests", () => {
         },
       };
 
-      const saverOutput = objectSaver(externalArgs, carrier, [], objectToSave);
+      const saverOutput = objectSaver(
+        externalArgs,
+        carrier,
+        [],
+        new Map(),
+        objectToSave
+      );
 
       expect(saverOutput).toMatchInlineSnapshot(`976`);
 

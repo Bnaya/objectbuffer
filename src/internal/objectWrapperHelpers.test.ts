@@ -31,7 +31,13 @@ describe("objectWrapperHelpers tests", () => {
         },
       };
 
-      const saverOutput = objectSaver(externalArgs, carrier, [], objectToSave);
+      const saverOutput = objectSaver(
+        externalArgs,
+        carrier,
+        [],
+        new Map(),
+        objectToSave
+      );
 
       const hashmapPointer = (readEntry(carrier, saverOutput) as ObjectEntry)
         .value;
@@ -76,7 +82,13 @@ describe("objectWrapperHelpers tests", () => {
         d: null,
       };
 
-      const saverOutput = objectSaver(externalArgs, carrier, [], objectToSave);
+      const saverOutput = objectSaver(
+        externalArgs,
+        carrier,
+        [],
+        new Map(),
+        objectToSave
+      );
 
       expect(carrier.allocator.stats().available).toMatchInlineSnapshot(`40`);
 
@@ -125,7 +137,13 @@ Array [
         d: null,
       };
 
-      const saverOutput = objectSaver(externalArgs, carrier, [], objectToSave);
+      const saverOutput = objectSaver(
+        externalArgs,
+        carrier,
+        [],
+        new Map(),
+        objectToSave
+      );
 
       expect(carrier.allocator.stats().available).toMatchInlineSnapshot(`40`);
 
@@ -173,7 +191,13 @@ Array [
         e: 66,
       };
 
-      const saverOutput = objectSaver(externalArgs, carrier, [], objectToSave);
+      const saverOutput = objectSaver(
+        externalArgs,
+        carrier,
+        [],
+        new Map(),
+        objectToSave
+      );
       // expect(carrier.allocator.stats().available).toMatchInlineSnapshot(`8`);
 
       const hashmapPointer = readEntry(carrier, saverOutput) as ObjectEntry;
