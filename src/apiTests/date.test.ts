@@ -10,13 +10,13 @@ describe("Date test", () => {
   const externalArgs = externalArgsApiToExternalArgsApi({
     textEncoder: new util.TextEncoder(),
     textDecoder: new util.TextDecoder(),
-    arrayAdditionalAllocation: 0
+    arrayAdditionalAllocation: 0,
   });
 
   test("Date object test", () => {
     const objectBuffer = createObjectBuffer(externalArgs, 1024, {
       // 1/1 2000
-      myDate: new Date(946684800000)
+      myDate: new Date(946684800000),
     });
 
     expect(objectBuffer).toMatchInlineSnapshot(`

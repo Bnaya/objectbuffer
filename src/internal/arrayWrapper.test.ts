@@ -13,7 +13,7 @@ describe("arrayWrapper tests", () => {
   const externalArgs = externalArgsApiToExternalArgsApi({
     textEncoder: new util.TextEncoder(),
     textDecoder: new util.TextDecoder(),
-    arrayAdditionalAllocation: 20
+    arrayAdditionalAllocation: 20,
   });
 
   describe("arrayWrapper - general", () => {
@@ -23,7 +23,7 @@ describe("arrayWrapper tests", () => {
       initializeArrayBuffer(arrayBuffer);
       const allocator = new MemPool({
         buf: arrayBuffer,
-        start: MEM_POOL_START
+        start: MEM_POOL_START,
       });
 
       const arrayToSave = ["a", "b", 1];
@@ -53,7 +53,7 @@ describe("arrayWrapper tests", () => {
       initializeArrayBuffer(arrayBuffer);
       const allocator = new MemPool({
         buf: arrayBuffer,
-        start: MEM_POOL_START
+        start: MEM_POOL_START,
       });
       const arrayToSave = ["a", "b", 1];
 
@@ -76,7 +76,7 @@ describe("arrayWrapper tests", () => {
       initializeArrayBuffer(arrayBuffer);
       const allocator = new MemPool({
         buf: arrayBuffer,
-        start: MEM_POOL_START
+        start: MEM_POOL_START,
       });
       const arrayToSave = ["a", "b", 1];
 
@@ -114,7 +114,7 @@ describe("arrayWrapper tests", () => {
       initializeArrayBuffer(arrayBuffer);
       const allocator = new MemPool({
         buf: arrayBuffer,
-        start: MEM_POOL_START
+        start: MEM_POOL_START,
       });
       const arrayToSave = ["a", "b", 1];
 
@@ -213,7 +213,7 @@ describe("arrayWrapper tests", () => {
       initializeArrayBuffer(arrayBuffer);
       const allocator = new MemPool({
         buf: arrayBuffer,
-        start: MEM_POOL_START
+        start: MEM_POOL_START,
       });
       const arrayToSave = ["a", "b", 1];
 
@@ -252,7 +252,7 @@ describe("arrayWrapper tests", () => {
     initializeArrayBuffer(arrayBuffer);
     const allocator = new MemPool({
       buf: arrayBuffer,
-      start: MEM_POOL_START
+      start: MEM_POOL_START,
     });
 
     const arrayToSave = [2, 1, null, 3, 10, undefined, 6, 77];
@@ -289,11 +289,11 @@ describe("arrayWrapper tests", () => {
     initializeArrayBuffer(arrayBuffer);
     const allocator = new MemPool({
       buf: arrayBuffer,
-      start: MEM_POOL_START
+      start: MEM_POOL_START,
     });
 
-    const arrayToSave = [2, 1, 3, 10, 6, 77].map(value => ({
-      value
+    const arrayToSave = [2, 1, 3, 10, 6, 77].map((value) => ({
+      value,
     }));
 
     const saverOutput = arraySaver(externalArgs, carrier, [], arrayToSave);
@@ -346,7 +346,7 @@ describe("arrayWrapper tests", () => {
     initializeArrayBuffer(arrayBuffer);
     const allocator = new MemPool({
       buf: arrayBuffer,
-      start: MEM_POOL_START
+      start: MEM_POOL_START,
     });
 
     const arrayToSave = [1, 2, 3, 4, 5, 6, 7];
@@ -386,7 +386,7 @@ describe("arrayWrapper tests", () => {
     initializeArrayBuffer(arrayBuffer);
     const allocator = new MemPool({
       buf: arrayBuffer,
-      start: MEM_POOL_START
+      start: MEM_POOL_START,
     });
 
     const arrayToSave = [1, 2, 3, 4, 5, 6, 7];

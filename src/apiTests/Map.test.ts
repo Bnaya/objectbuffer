@@ -9,7 +9,7 @@ import { externalArgsApiToExternalArgsApi } from "../internal/utils";
 describe("Map", () => {
   const externalArgs = externalArgsApiToExternalArgsApi({
     textEncoder: new util.TextEncoder(),
-    textDecoder: new util.TextDecoder()
+    textDecoder: new util.TextDecoder(),
   });
 
   test("creation", () => {
@@ -116,7 +116,7 @@ describe("Map", () => {
   test.skip("iterate + delete compare", () => {
     const nativeMap = new Map([
       [1, "a"],
-      [2, "b"]
+      [2, "b"],
     ]);
     for (const [key] of nativeMap) {
       nativeMap.delete(key);
@@ -125,8 +125,8 @@ describe("Map", () => {
     const objectBuffer = createObjectBuffer<any>(externalArgs, 1024, {
       foo: new Map([
         [1, "a"],
-        [2, "b"]
-      ])
+        [2, "b"],
+      ]),
     });
     for (const [key] of objectBuffer.foo) {
       objectBuffer.foo.delete(key);
@@ -150,7 +150,7 @@ describe("Map", () => {
       dump.push({ value, key });
     });
 
-    expect(thisArgs.every(v => v === objectBuffer.foo)).toBe(true);
+    expect(thisArgs.every((v) => v === objectBuffer.foo)).toBe(true);
 
     expect(dump).toMatchInlineSnapshot(`
         Array [

@@ -2,13 +2,13 @@ import {
   ExternalArgs,
   GlobalCarrier,
   MapEntry,
-  InternalAPI
+  InternalAPI,
 } from "./interfaces";
 import {
   deleteObjectPropertyEntryByKey,
   objectGet,
   objectSet,
-  mapOrSetClear
+  mapOrSetClear,
 } from "./objectWrapperHelpers";
 
 import { INTERNAL_API_SYMBOL } from "./symbols";
@@ -19,7 +19,7 @@ import {
   hashMapNodeLookup,
   hashMapSize,
   hashMapNodePointerToKeyValue,
-  hashmapNodesPointerIterator
+  hashmapNodesPointerIterator,
 } from "./hashmap/hashmap";
 import { entryToFinalJavaScriptValue } from "./entryToFinalJavaScriptValue";
 
@@ -67,7 +67,7 @@ export class MapWrapper<K extends string | number, V>
           this.externalArgs,
           this.carrier,
           this.carrier.uint32[valuePointer / Uint32Array.BYTES_PER_ELEMENT]
-        )
+        ),
       ];
     }
   }

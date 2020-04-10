@@ -3,7 +3,7 @@ import * as util from "util";
 import {
   arrayBuffer2HexArray,
   recordAllocations,
-  makeCarrier
+  makeCarrier,
 } from "../testUtils";
 import {
   createHashMap,
@@ -13,7 +13,7 @@ import {
   hashMapNodePointerToKeyValue,
   hashMapSize,
   hashMapDelete,
-  hashMapGetPointersToFree
+  hashMapGetPointersToFree,
 } from "./hashmap";
 import { GlobalCarrier, StringEntry } from "../interfaces";
 import { readEntry } from "../store";
@@ -23,7 +23,7 @@ describe("hashmap", () => {
   const externalArgs = externalArgsApiToExternalArgsApi({
     textEncoder: new util.TextEncoder(),
     textDecoder: new util.TextDecoder(),
-    arrayAdditionalAllocation: 20
+    arrayAdditionalAllocation: 20,
   });
 
   let ab = new ArrayBuffer(128);
@@ -151,7 +151,7 @@ describe("hashmap", () => {
 
     const input = [...new Array(26).keys()]
       .map((i): number => i + "a".charCodeAt(0))
-      .map(n => String.fromCharCode(n));
+      .map((n) => String.fromCharCode(n));
 
     const inserts: number[] = [];
 
@@ -181,7 +181,7 @@ describe("hashmap", () => {
       values.push(hashMapNodePointerToKeyValue(carrier, iteratorToken));
     }
     expect(
-      values.map(v => (readEntry(carrier, v.keyPointer) as StringEntry).value)
+      values.map((v) => (readEntry(carrier, v.keyPointer) as StringEntry).value)
     ).toMatchInlineSnapshot(`
       Array [
         "a",
@@ -223,7 +223,7 @@ describe("hashmap", () => {
 
     const input = [...new Array(26).keys()]
       .map((i): number => i + "a".charCodeAt(0))
-      .map(n => String.fromCharCode(n));
+      .map((n) => String.fromCharCode(n));
 
     for (const [index, useThatAsKey] of input.entries()) {
       carrier.uint32[
@@ -283,7 +283,7 @@ Array [
     // a + 10 letters
     const input = [...new Array(10).keys()]
       .map((i): number => i + "a".charCodeAt(0))
-      .map(n => String.fromCharCode(n));
+      .map((n) => String.fromCharCode(n));
     const inputCopy = input.slice();
 
     const { allocations } = recordAllocations(() => {
@@ -359,7 +359,7 @@ Object {
     expect(r.pointers.sort()).toEqual(allocations.sort());
     expect(
       r.pointersToValuePointers
-        .map(v =>
+        .map((v) =>
           String.fromCharCode(carrier.uint32[v / Uint32Array.BYTES_PER_ELEMENT])
         )
         .sort()

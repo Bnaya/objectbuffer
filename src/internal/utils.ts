@@ -3,7 +3,7 @@ import {
   Entry,
   ExternalArgs,
   InternalAPI,
-  ExternalArgsApi
+  ExternalArgsApi,
 } from "./interfaces";
 import { ENTRY_TYPE } from "./entry-types";
 import { INTERNAL_API_SYMBOL } from "./symbols";
@@ -11,7 +11,7 @@ import {
   UNDEFINED_KNOWN_ADDRESS,
   NULL_KNOWN_ADDRESS,
   TRUE_KNOWN_ADDRESS,
-  FALSE_KNOWN_ADDRESS
+  FALSE_KNOWN_ADDRESS,
 } from "./consts";
 import { IMemPool } from "@thi.ng/malloc";
 
@@ -20,7 +20,7 @@ const primitives = [
   "number",
   "bigint",
   "boolean",
-  "undefined"
+  "undefined",
 ] as const;
 
 export function isPrimitive(value: unknown): value is primitive {
@@ -40,14 +40,14 @@ export function primitiveValueToEntry(value: primitive): Entry {
     return {
       type: ENTRY_TYPE.STRING,
       value,
-      allocatedBytes: strByteLength(value)
+      allocatedBytes: strByteLength(value),
     };
   }
 
   if (typeof value === "number") {
     return {
       type: ENTRY_TYPE.NUMBER,
-      value
+      value,
     };
   }
 
@@ -57,7 +57,7 @@ export function primitiveValueToEntry(value: primitive): Entry {
         value >= BigInt("0")
           ? ENTRY_TYPE.BIGINT_POSITIVE
           : ENTRY_TYPE.BIGINT_NEGATIVE,
-      value
+      value,
     };
   }
 
@@ -109,7 +109,7 @@ export function externalArgsApiToExternalArgsApi(
     hashMapLoadFactor: p.hashMapLoadFactor ? p.hashMapLoadFactor : 0.75,
     arrayAdditionalAllocation: p.arrayAdditionalAllocation
       ? p.arrayAdditionalAllocation
-      : 0
+      : 0,
   };
 }
 

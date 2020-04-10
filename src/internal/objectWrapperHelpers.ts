@@ -4,14 +4,14 @@ import {
   StringEntry,
   NumberEntry,
   MapEntry,
-  SetEntry
+  SetEntry,
 } from "./interfaces";
 import {
   readEntry,
   writeValueInPtrToPtrAndHandleMemory,
   handleArcForDeletedValuePointer,
   decrementRefCount,
-  writeEntry
+  writeEntry,
 } from "./store";
 import { entryToFinalJavaScriptValue } from "./entryToFinalJavaScriptValue";
 import {
@@ -20,7 +20,7 @@ import {
   hashMapNodePointerToKeyValue,
   hashMapInsertUpdate,
   hashMapValueLookup,
-  createHashMap
+  createHashMap,
 } from "./hashmap/hashmap";
 import { getObjectOrMapOrSetAddresses } from "./getAllLinkedAddresses";
 
@@ -73,7 +73,7 @@ export function getObjectPropertiesEntries(
     foundValues.push({
       valuePointer:
         carrier.uint32[valuePointer / Uint32Array.BYTES_PER_ELEMENT],
-      key: keyEntry.value
+      key: keyEntry.value,
     });
   }
 

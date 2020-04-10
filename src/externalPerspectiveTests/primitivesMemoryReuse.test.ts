@@ -9,12 +9,12 @@ describe.skip("primitivesMemoryReuse", () => {
   const externalArgs = externalArgsApiToExternalArgsApi({
     textEncoder: new util.TextEncoder(),
     textDecoder: new util.TextDecoder(),
-    arrayAdditionalAllocation: 0
+    arrayAdditionalAllocation: 0,
   });
 
   test("test number / bigint reuse", () => {
     const objectBuffer = createObjectBuffer(externalArgs, 128, {
-      num: 1 as number | bigint
+      num: 1 as number | bigint,
     });
 
     const memoryAfterEachOperation: number[] = [memoryStats(objectBuffer).used];
@@ -49,7 +49,7 @@ describe.skip("primitivesMemoryReuse", () => {
 
   test("test null/undefined reuse", () => {
     const objectBuffer = createObjectBuffer(externalArgs, 128, {
-      nullContainer: null as null | undefined
+      nullContainer: null as null | undefined,
     });
 
     const memoryAfterEachOperation: number[] = [memoryStats(objectBuffer).used];
@@ -77,7 +77,7 @@ describe.skip("primitivesMemoryReuse", () => {
 
   test("test boolean reuse", () => {
     const objectBuffer = createObjectBuffer(externalArgs, 128, {
-      booleanContainer: false
+      booleanContainer: false,
     });
 
     const memoryAfterEachOperation: number[] = [memoryStats(objectBuffer).used];

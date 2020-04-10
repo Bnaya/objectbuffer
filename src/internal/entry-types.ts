@@ -26,14 +26,14 @@ export enum ENTRY_TYPE {
   ARRAY_ITEM,
   MAP,
   SET,
-  DATE
+  DATE,
 }
 
 export const PRIMITIVE_TYPES = [
   ENTRY_TYPE.NUMBER,
   ENTRY_TYPE.BIGINT_POSITIVE,
   ENTRY_TYPE.BIGINT_NEGATIVE,
-  ENTRY_TYPE.STRING
+  ENTRY_TYPE.STRING,
 ] as const;
 
 export const isPrimitiveEntryType = createKnownTypeGuard(PRIMITIVE_TYPES);

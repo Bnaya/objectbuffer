@@ -6,23 +6,23 @@ import { createObjectBuffer, resizeObjectBuffer } from "../";
 import {
   getUnderlyingArrayBuffer,
   replaceUnderlyingArrayBuffer,
-  memoryStats
+  memoryStats,
 } from "../internal/api";
 import {
   arrayBufferCopyTo,
-  externalArgsApiToExternalArgsApi
+  externalArgsApiToExternalArgsApi,
 } from "../internal/utils";
 
 describe("replaceArrayBufferFlow", () => {
   const externalArgs = externalArgsApiToExternalArgsApi({
     textEncoder: new util.TextEncoder(),
     textDecoder: new util.TextDecoder(),
-    arrayAdditionalAllocation: 0
+    arrayAdditionalAllocation: 0,
   });
 
   test("test replaceUnderlyingArrayBuffer works", () => {
     const objectBuffer = createObjectBuffer<any>(externalArgs, 512, {
-      a: 1
+      a: 1,
     });
 
     const oldAb = getUnderlyingArrayBuffer(objectBuffer);
@@ -46,7 +46,7 @@ describe("replaceArrayBufferFlow", () => {
 
   test("test resizeObjectBuffer works", () => {
     const objectBuffer = createObjectBuffer<any>(externalArgs, 1024, {
-      obj1: { a: 1 }
+      obj1: { a: 1 },
     });
 
     const oldAb = getUnderlyingArrayBuffer(objectBuffer);

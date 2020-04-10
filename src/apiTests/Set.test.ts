@@ -9,7 +9,7 @@ import { externalArgsApiToExternalArgsApi } from "../internal/utils";
 describe("Set tests", () => {
   const externalArgs = externalArgsApiToExternalArgsApi({
     textEncoder: new util.TextEncoder(),
-    textDecoder: new util.TextDecoder()
+    textDecoder: new util.TextDecoder(),
   });
 
   test("creation", () => {
@@ -121,7 +121,7 @@ describe("Set tests", () => {
     }
 
     const objectBuffer = createObjectBuffer<any>(externalArgs, 1024, {
-      foo: new Set(["a", "b"])
+      foo: new Set(["a", "b"]),
     });
     for (const [key] of objectBuffer.foo) {
       objectBuffer.foo.delete(key);
@@ -145,7 +145,7 @@ describe("Set tests", () => {
       dump.push({ value, key });
     });
 
-    expect(thisArgs.every(v => v === objectBuffer.foo)).toBe(true);
+    expect(thisArgs.every((v) => v === objectBuffer.foo)).toBe(true);
 
     expect(dump).toMatchInlineSnapshot(`
       Array [

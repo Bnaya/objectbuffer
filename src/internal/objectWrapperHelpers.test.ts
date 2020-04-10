@@ -5,7 +5,7 @@ import * as util from "util";
 import { objectSaver } from "./objectSaver";
 import {
   getObjectPropertiesEntries,
-  deleteObjectPropertyEntryByKey
+  deleteObjectPropertyEntryByKey,
 } from "./objectWrapperHelpers";
 import { externalArgsApiToExternalArgsApi } from "./utils";
 import { ObjectEntry } from "./interfaces";
@@ -15,7 +15,7 @@ describe("objectWrapperHelpers tests", () => {
   const externalArgs = externalArgsApiToExternalArgsApi({
     textEncoder: new util.TextEncoder(),
     textDecoder: new util.TextDecoder(),
-    arrayAdditionalAllocation: 20
+    arrayAdditionalAllocation: 20,
   });
 
   describe("objectWrapperHelpers - general", () => {
@@ -29,8 +29,8 @@ describe("objectWrapperHelpers tests", () => {
         b: "imastringa",
         5: undefined,
         nestedObject: {
-          nestedProp: 7
-        }
+          nestedProp: 7,
+        },
       };
 
       const saverOutput = objectSaver(externalArgs, carrier, [], objectToSave);
@@ -75,7 +75,7 @@ describe("objectWrapperHelpers tests", () => {
         a: 6,
         b: "imastringa",
         c: undefined,
-        d: null
+        d: null,
       };
 
       const saverOutput = objectSaver(externalArgs, carrier, [], objectToSave);
@@ -124,7 +124,7 @@ Array [
         a: 6,
         b: "imastringa",
         c: undefined,
-        d: null
+        d: null,
       };
 
       const saverOutput = objectSaver(externalArgs, carrier, [], objectToSave);
@@ -172,7 +172,7 @@ Array [
         b: "imastringa",
         c: undefined,
         d: null,
-        e: 66
+        e: 66,
       };
 
       const saverOutput = objectSaver(externalArgs, carrier, [], objectToSave);

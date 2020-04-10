@@ -35,7 +35,7 @@ const getFunctions: Array<keyof Date> = [
   "toJSON",
   "toLocaleString",
   "toLocaleDateString",
-  "toLocaleTimeString"
+  "toLocaleTimeString",
 ];
 
 const setFunctions: Array<keyof Date> = [
@@ -54,7 +54,7 @@ const setFunctions: Array<keyof Date> = [
   "setUTCMilliseconds",
   "setUTCMinutes",
   "setUTCMonth",
-  "setUTCSeconds"
+  "setUTCSeconds",
   // "setYear"
 ];
 
@@ -113,7 +113,7 @@ export class DateWrapper extends BaseProxyTrap<DateEntry>
     writeEntry(this.carrier, this.entryPointer, {
       type: ENTRY_TYPE.DATE,
       refsCount: this.entry.refsCount,
-      value: this.dateObjectForReuse.getTime()
+      value: this.dateObjectForReuse.getTime(),
     });
   }
 

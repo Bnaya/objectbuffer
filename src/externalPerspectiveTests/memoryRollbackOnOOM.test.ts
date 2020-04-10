@@ -9,12 +9,12 @@ describe("memoryRollbackOnOOM.test", () => {
   const externalArgs = externalArgsApiToExternalArgsApi({
     textEncoder: new util.TextEncoder(),
     textDecoder: new util.TextDecoder(),
-    arrayAdditionalAllocation: 0
+    arrayAdditionalAllocation: 0,
   });
 
   test("memoryRollbackOnOOM", () => {
     const objectBuffer = createObjectBuffer<any>(externalArgs, 256, {
-      foo: null
+      foo: null,
     });
 
     const initialFreeSpace = memoryStats(objectBuffer).available;
@@ -25,7 +25,7 @@ describe("memoryRollbackOnOOM.test", () => {
       objectBuffer.foo = {
         big: "object",
         more: "than size",
-        arr: [1, 2, 3]
+        arr: [1, 2, 3],
       };
     }).toThrowErrorMatchingInlineSnapshot(`"OutOfMemoryError"`);
 

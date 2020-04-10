@@ -2,18 +2,18 @@ import {
   ExternalArgsApi,
   ExternalArgs,
   ArrayEntry,
-  ObjectEntry
+  ObjectEntry,
 } from "./interfaces";
 import {
   externalArgsApiToExternalArgsApi,
   isPrimitive,
   primitiveValueToEntry,
-  align
+  align,
 } from "./utils";
 import { ENTRY_TYPE } from "./entry-types";
 import {
   LINKED_LIST_MACHINE,
-  LINKED_LIST_ITEM_MACHINE
+  LINKED_LIST_ITEM_MACHINE,
 } from "./linkedList/linkedList";
 import { MAP_MACHINE, NODE_MACHINE } from "./hashmap/memoryLayout";
 import { sizeOfEntry } from "./store";
@@ -57,7 +57,7 @@ function sizeOfArray(
     refsCount: 0,
     allocatedLength:
       arrayToSave.length + externalArgs.arrayAdditionalAllocation,
-    length: arrayToSave.length
+    length: arrayToSave.length,
   };
 
   memoryAllocated += align(sizeOfEntry(arrayStartEntry));
@@ -72,7 +72,7 @@ function sizeOfArray(
 
   return {
     memoryAllocated,
-    numberOfAllocations
+    numberOfAllocations,
   };
 }
 
@@ -102,7 +102,7 @@ export function sizeOfObject(
   const objectStartEntry: ObjectEntry = {
     type: ENTRY_TYPE.OBJECT,
     refsCount: 0,
-    value: 0
+    value: 0,
   };
 
   memoryAllocated += align(sizeOfEntry(objectStartEntry));
@@ -110,7 +110,7 @@ export function sizeOfObject(
 
   return {
     memoryAllocated,
-    numberOfAllocations
+    numberOfAllocations,
   };
 }
 
@@ -126,7 +126,7 @@ export function sizeOfValue(
   ) {
     return {
       memoryAllocated: 0,
-      numberOfAllocations: 0
+      numberOfAllocations: 0,
     };
   }
 
@@ -135,7 +135,7 @@ export function sizeOfValue(
 
     return {
       memoryAllocated: align(sizeOfEntry(entry)),
-      numberOfAllocations: 1
+      numberOfAllocations: 1,
     };
   } else if (Array.isArray(value)) {
     return sizeOfArray(externalArgs, value);
@@ -145,10 +145,10 @@ export function sizeOfValue(
         sizeOfEntry({
           type: ENTRY_TYPE.DATE,
           refsCount: 0,
-          value: value.getTime()
+          value: value.getTime(),
         })
       ),
-      numberOfAllocations: 1
+      numberOfAllocations: 1,
     };
   } else if (typeof value === "object") {
     return sizeOfObject(externalArgs, value);
@@ -184,7 +184,7 @@ function sizeOfHashmap(
     align(NODE_MACHINE.map.SIZE_OF) * keysArray.length;
 
   const hashMapKeysSize = keysArray
-    .map(k => sizeOfEntry(primitiveValueToEntry(k)))
+    .map((k) => sizeOfEntry(primitiveValueToEntry(k)))
     .reduce((p, c) => {
       return p + align(c);
     }, 0);
@@ -201,6 +201,6 @@ function sizeOfHashmap(
       linkedListItemsAllocationsSize +
       hashMapBaseAllocationsSize +
       hashMapNodesAllocationsSize +
-      hashMapKeysSize
+      hashMapKeysSize,
   };
 }

@@ -6,7 +6,7 @@ import {
   arrayBufferCopyTo,
   externalArgsApiToExternalArgsApi,
   getInternalAPI,
-  isPrimitive
+  isPrimitive,
 } from "./utils";
 import { getCacheFor } from "./externalObjectsCache";
 import { INITIAL_ENTRY_POINTER_TO_POINTER, MEM_POOL_START } from "./consts";
@@ -52,7 +52,7 @@ export function createObjectBuffer<T = any>(
   const allocator = new MemPool({
     align: 8,
     buf: arrayBuffer,
-    start: MEM_POOL_START
+    start: MEM_POOL_START,
   });
 
   const carrier: GlobalCarrier = {
@@ -62,7 +62,7 @@ export function createObjectBuffer<T = any>(
     uint16: new Uint16Array(arrayBuffer),
     uint32: new Uint32Array(arrayBuffer),
     float64: new Float64Array(arrayBuffer),
-    bigUint64: new BigUint64Array(arrayBuffer)
+    bigUint64: new BigUint64Array(arrayBuffer),
   };
 
   const start = objectSaver(
@@ -130,7 +130,7 @@ export function loadObjectBuffer<T = any>(
     align: 8,
     buf: arrayBuffer,
     start: MEM_POOL_START,
-    skipInitialization: true
+    skipInitialization: true,
   });
 
   const carrier: GlobalCarrier = {
@@ -140,7 +140,7 @@ export function loadObjectBuffer<T = any>(
     uint16: new Uint16Array(arrayBuffer),
     uint32: new Uint32Array(arrayBuffer),
     float64: new Float64Array(arrayBuffer),
-    bigUint64: new BigUint64Array(arrayBuffer)
+    bigUint64: new BigUint64Array(arrayBuffer),
   };
 
   return createObjectWrapper(
@@ -180,7 +180,7 @@ export function replaceUnderlyingArrayBuffer(
     align: 8,
     buf: newArrayBuffer,
     start: MEM_POOL_START,
-    skipInitialization: true
+    skipInitialization: true,
   });
 
   const carrier: GlobalCarrier = {
@@ -190,7 +190,7 @@ export function replaceUnderlyingArrayBuffer(
     uint16: new Uint16Array(newArrayBuffer),
     uint32: new Uint32Array(newArrayBuffer),
     float64: new Float64Array(newArrayBuffer),
-    bigUint64: new BigUint64Array(newArrayBuffer)
+    bigUint64: new BigUint64Array(newArrayBuffer),
   };
 
   // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
@@ -212,7 +212,7 @@ export function memoryStats(objectBuffer: any) {
     align: 8,
     buf,
     skipInitialization: true,
-    start: MEM_POOL_START
+    start: MEM_POOL_START,
   });
 
   const { available, total } = pool.stats();

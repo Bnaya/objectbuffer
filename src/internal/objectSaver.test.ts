@@ -9,7 +9,7 @@ import { externalArgsApiToExternalArgsApi } from "./utils";
 describe("objectSaver tests", () => {
   const externalArgs = externalArgsApiToExternalArgsApi({
     textEncoder: new util.TextEncoder(),
-    textDecoder: new util.TextDecoder()
+    textDecoder: new util.TextDecoder(),
   });
 
   describe("objectSaver - general", () => {
@@ -27,8 +27,8 @@ describe("objectSaver tests", () => {
         ab: undefined,
         abc: BigInt("100"),
         nestedObject: {
-          nestedProp: 7
-        }
+          nestedProp: 7,
+        },
       };
 
       const saverOutput = objectSaver(externalArgs, carrier, [], objectToSave);

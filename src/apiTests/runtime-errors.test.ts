@@ -11,7 +11,7 @@ describe("Runtime errors", () => {
   const externalArgs = externalArgsApiToExternalArgsApi({
     textEncoder: new util.TextEncoder(),
     textDecoder: new util.TextDecoder(),
-    arrayAdditionalAllocation: 0
+    arrayAdditionalAllocation: 0,
   });
 
   test("Fail to create when not enough memory", () => {
@@ -22,7 +22,7 @@ describe("Runtime errors", () => {
 
   test("Fail to set new data when enough memory", () => {
     const objectBuffer = createObjectBuffer<any>(externalArgs, 312, {
-      value: "first value 123"
+      value: "first value 123",
     });
     const freeSpaceLeft = memoryStats(objectBuffer).available;
 

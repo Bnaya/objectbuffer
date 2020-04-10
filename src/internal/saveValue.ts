@@ -1,7 +1,7 @@
 import {
   primitiveValueToEntry,
   isPrimitive,
-  getOurPointerIfApplicable
+  getOurPointerIfApplicable,
 } from "./utils";
 import { appendEntry } from "./store";
 import { objectSaver, mapSaver, setSaver } from "./objectSaver";
@@ -12,7 +12,7 @@ import {
   UNDEFINED_KNOWN_ADDRESS,
   NULL_KNOWN_ADDRESS,
   TRUE_KNOWN_ADDRESS,
-  FALSE_KNOWN_ADDRESS
+  FALSE_KNOWN_ADDRESS,
 } from "./consts";
 
 /**
@@ -57,7 +57,7 @@ export function saveValue(
     valuePointer = appendEntry(externalArgs, carrier, {
       type: ENTRY_TYPE.DATE,
       refsCount: 1,
-      value: value.getTime()
+      value: value.getTime(),
     });
   } else if (value instanceof Map) {
     valuePointer = mapSaver(externalArgs, carrier, referencedPointers, value);

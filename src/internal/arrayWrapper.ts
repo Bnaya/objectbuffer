@@ -4,14 +4,14 @@ import {
   setValueAtArrayIndex,
   arraySort,
   extendArrayIfNeeded,
-  arrayReverse
+  arrayReverse,
 } from "./arrayHelpers";
 import { INTERNAL_API_SYMBOL } from "./symbols";
 import { arraySplice } from "./arraySplice";
 import { ExternalArgs, GlobalCarrier, ArrayEntry } from "./interfaces";
 import {
   IllegalArrayIndexError,
-  UnsupportedOperationError
+  UnsupportedOperationError,
 } from "./exceptions";
 import { allocationsTransaction } from "./allocationsTransaction";
 import { BaseProxyTrap } from "./BaseProxyTrap";
@@ -168,7 +168,7 @@ export class ArrayWrapper extends BaseProxyTrap<ArrayEntry>
           this.carrier,
           this.entryPointer,
           index
-        )
+        ),
       ];
 
       index += 1;

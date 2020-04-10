@@ -5,7 +5,7 @@ import {
   ExternalArgs,
   GlobalCarrier,
   MapEntry,
-  SetEntry
+  SetEntry,
 } from "./interfaces";
 import { saveValue } from "./saveValue";
 import { createHashMap, hashMapInsertUpdate } from "./hashmap/hashmap";
@@ -47,7 +47,7 @@ export function objectSaver(
   const objectStartEntry: ObjectEntry = {
     type: ENTRY_TYPE.OBJECT,
     refsCount: 1,
-    value: hashMapPointer
+    value: hashMapPointer,
   };
 
   return appendEntry(externalArgs, carrier, objectStartEntry);
@@ -88,7 +88,7 @@ export function mapSaver(
   const objectStartEntry: MapEntry = {
     type: ENTRY_TYPE.MAP,
     refsCount: 1,
-    value: hashMapPointer
+    value: hashMapPointer,
   };
 
   return appendEntry(externalArgs, carrier, objectStartEntry);
@@ -121,7 +121,7 @@ export function setSaver(
   const objectStartEntry: SetEntry = {
     type: ENTRY_TYPE.SET,
     refsCount: 1,
-    value: hashMapPointer
+    value: hashMapPointer,
   };
 
   return appendEntry(externalArgs, carrier, objectStartEntry);

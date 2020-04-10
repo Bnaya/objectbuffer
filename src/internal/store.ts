@@ -3,13 +3,13 @@ import { Entry, primitive, GlobalCarrier } from "./interfaces";
 import {
   isPrimitive,
   primitiveValueToEntry,
-  isKnownAddressValuePointer
+  isKnownAddressValuePointer,
 } from "./utils";
 import { ExternalArgs } from "./interfaces";
 import { BigInt64OverflowError } from "./exceptions";
 import {
   INITIAL_ENTRY_POINTER_TO_POINTER,
-  INITIAL_ENTRY_POINTER_VALUE
+  INITIAL_ENTRY_POINTER_VALUE,
 } from "./consts";
 import { saveValue } from "./saveValue";
 import { getAllLinkedAddresses } from "./getAllLinkedAddresses";
@@ -129,7 +129,7 @@ export function writeEntry(
           {
             value: entry.value,
             writtenBytes,
-            allocatedBytes: entry.allocatedBytes
+            allocatedBytes: entry.allocatedBytes,
           },
           true
         );
@@ -212,7 +212,7 @@ export function readEntry(
 
   const entry: any = {
     type: entryType,
-    value: undefined as any
+    value: undefined as any,
   };
 
   // let writtenDataSizeInBytes = 0;
@@ -370,7 +370,7 @@ export function writeValueInPtrToPtr(
     return {
       referencedPointers,
       existingEntryPointer,
-      existingValueEntry
+      existingValueEntry,
     };
   }
 }
@@ -384,7 +384,7 @@ export function writeValueInPtrToPtrAndHandleMemory(
   const {
     existingValueEntry = false,
     existingEntryPointer = 0,
-    referencedPointers = []
+    referencedPointers = [],
   } = writeValueInPtrToPtr(externalArgs, carrier, ptrToPtr, value) || {};
 
   if (referencedPointers.length > 0) {

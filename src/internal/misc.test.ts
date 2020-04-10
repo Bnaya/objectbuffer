@@ -11,7 +11,7 @@ describe("pop it all", () => {
   const externalArgs = externalArgsApiToExternalArgsApi({
     textEncoder: new util.TextEncoder(),
     textDecoder: new util.TextDecoder(),
-    arrayAdditionalAllocation: 20
+    arrayAdditionalAllocation: 20,
   });
 
   test("lets 1", () => {

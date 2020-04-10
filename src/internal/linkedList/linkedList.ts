@@ -18,7 +18,7 @@ for (const bla of a) {
 
 export const LINKED_LIST_ITEM_MACHINE = createMemoryMachine({
   NEXT_POINTER: Uint32Array,
-  VALUE: Uint32Array
+  VALUE: Uint32Array,
 });
 
 export type LinkedListItemMachineType = ReturnType<
@@ -27,7 +27,7 @@ export type LinkedListItemMachineType = ReturnType<
 
 export const LINKED_LIST_MACHINE = createMemoryMachine({
   END_POINTER: Uint32Array,
-  START_POINTER: Uint32Array
+  START_POINTER: Uint32Array,
 });
 export type LinkedListMachineType = ReturnType<
   typeof LINKED_LIST_MACHINE.createOperator
@@ -197,6 +197,6 @@ export function linkedListGetPointersToFree(
 
   return {
     pointers,
-    valuePointers
+    valuePointers,
   };
 }

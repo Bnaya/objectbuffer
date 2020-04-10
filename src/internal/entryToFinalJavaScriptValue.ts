@@ -12,7 +12,7 @@ import {
   UNDEFINED_KNOWN_ADDRESS,
   NULL_KNOWN_ADDRESS,
   TRUE_KNOWN_ADDRESS,
-  FALSE_KNOWN_ADDRESS
+  FALSE_KNOWN_ADDRESS,
 } from "./consts";
 
 // declare const FinalizationGroup: any;
@@ -23,7 +23,7 @@ const TYPE_TO_FACTORY = {
   [ENTRY_TYPE.DATE]: createDateWrapper,
   [ENTRY_TYPE.ARRAY]: createArrayWrapper,
   [ENTRY_TYPE.MAP]: createMapWrapper,
-  [ENTRY_TYPE.SET]: createSetWrapper
+  [ENTRY_TYPE.SET]: createSetWrapper,
 } as const;
 
 export function entryToFinalJavaScriptValue(
@@ -60,7 +60,7 @@ export function entryToFinalJavaScriptValue(
     valueEntry.type === ENTRY_TYPE.MAP ||
     valueEntry.type === ENTRY_TYPE.SET
   ) {
-    const cache = getCacheFor(carrier, key => {
+    const cache = getCacheFor(carrier, (key) => {
       finalizer(key, carrier, externalArgs);
     });
 

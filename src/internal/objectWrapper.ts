@@ -3,13 +3,13 @@ import {
   getObjectPropertiesEntries,
   deleteObjectPropertyEntryByKey,
   objectGet,
-  objectSet
+  objectSet,
 } from "./objectWrapperHelpers";
 
 import { INTERNAL_API_SYMBOL } from "./symbols";
 import {
   IllegalObjectPropConfigError,
-  UnsupportedOperationError
+  UnsupportedOperationError,
 } from "./exceptions";
 import { allocationsTransaction } from "./allocationsTransaction";
 import { BaseProxyTrap } from "./BaseProxyTrap";
@@ -48,7 +48,7 @@ export class ObjectWrapper extends BaseProxyTrap<ObjectEntry>
       this.entry.value
     );
 
-    return gotEntries.map(e => e.key);
+    return gotEntries.map((e) => e.key);
   }
 
   public ownKeys(): PropertyKey[] {
@@ -57,7 +57,7 @@ export class ObjectWrapper extends BaseProxyTrap<ObjectEntry>
       this.entry.value
     );
 
-    return gotEntries.map(e => e.key);
+    return gotEntries.map((e) => e.key);
   }
 
   public getOwnPropertyDescriptor(target: {}, p: PropertyKey) {

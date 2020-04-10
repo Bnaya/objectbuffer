@@ -4,7 +4,7 @@ import {
   shrinkArray,
   extendArrayIfNeeded,
   arrayGetPointersToValueInIndex,
-  setValuePointerAtArrayIndex
+  setValuePointerAtArrayIndex,
 } from "./arrayHelpers";
 import { assertNonNull } from "./assertNonNull";
 import { ExternalArgs, GlobalCarrier } from "./interfaces";

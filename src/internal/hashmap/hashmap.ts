@@ -3,19 +3,19 @@ import {
   GlobalCarrier,
   ExternalArgs,
   NumberEntry,
-  StringEntry
+  StringEntry,
 } from "../interfaces";
 import {
   hashCodeInPlace,
   hashCodeExternalValue,
-  getKeyStartLength
+  getKeyStartLength,
 } from "./hashmapUtils";
 import { primitiveValueToEntry } from "../utils";
 import {
   sizeOfEntry,
   writeEntry,
   readEntry,
-  compareStringOrNumberEntriesInPlace
+  compareStringOrNumberEntriesInPlace,
 } from "../store";
 import { ENTRY_TYPE } from "../entry-types";
 import {
@@ -24,7 +24,7 @@ import {
   linkedListItemRemove,
   linkedListLowLevelIterator,
   linkedListGetValue,
-  linkedListGetPointersToFree
+  linkedListGetPointersToFree,
 } from "../linkedList/linkedList";
 
 import { MemoryOperator } from "../memoryMachinery";
@@ -314,7 +314,7 @@ export function hashMapNodePointerToKeyValue(
 
   return {
     valuePointer: operator.pointerTo("VALUE_POINTER"),
-    keyPointer: operator.get("KEY_POINTER")
+    keyPointer: operator.get("KEY_POINTER"),
   };
 }
 
@@ -349,7 +349,7 @@ export function hashMapGetPointersToFree(
 
   return {
     pointers,
-    pointersToValuePointers
+    pointersToValuePointers,
   };
 }
 

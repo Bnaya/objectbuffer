@@ -1,7 +1,7 @@
 import {
   readEntry,
   writeEntry,
-  writeValueInPtrToPtrAndHandleMemory
+  writeValueInPtrToPtrAndHandleMemory,
 } from "./store";
 import { ArrayEntry, ExternalArgs, GlobalCarrier } from "./interfaces";
 import { entryToFinalJavaScriptValue } from "./entryToFinalJavaScriptValue";
@@ -37,7 +37,7 @@ export function arrayGetPointersToValueInIndex(
 
   return {
     pointer,
-    pointerToThePointer
+    pointerToThePointer,
   };
 }
 
@@ -131,7 +131,7 @@ export function extendArrayIfNeeded(
         refsCount: metadata.refsCount,
         value: metadata.value,
         allocatedLength: metadata.allocatedLength,
-        length: wishedLength
+        length: wishedLength,
       });
     }
   }
@@ -153,7 +153,7 @@ export function shrinkArray(
     refsCount: metadata.refsCount,
     value: metadata.value,
     allocatedLength: metadata.allocatedLength,
-    length: wishedLength
+    length: wishedLength,
   });
 }
 
@@ -189,7 +189,7 @@ function reallocateArray(
     refsCount: metadata.refsCount,
     value: newArrayValueLocation,
     allocatedLength: newAllocatedLength,
-    length: newLength
+    length: newLength,
   });
 }
 
@@ -201,16 +201,16 @@ export function arraySort(
 ) {
   const metadata = arrayGetMetadata(globalCarrier, pointerToArrayEntry);
   const pointersToValues = [...new Array(metadata.length).keys()]
-    .map(index => metadata.value + index * Uint32Array.BYTES_PER_ELEMENT)
+    .map((index) => metadata.value + index * Uint32Array.BYTES_PER_ELEMENT)
     .map(
-      pointerToPointer =>
+      (pointerToPointer) =>
         globalCarrier.uint32[pointerToPointer / Uint32Array.BYTES_PER_ELEMENT]
     );
 
-  const sortMe = pointersToValues.map(pointer => {
+  const sortMe = pointersToValues.map((pointer) => {
     return [
       pointer,
-      entryToFinalJavaScriptValue(externalArgs, globalCarrier, pointer)
+      entryToFinalJavaScriptValue(externalArgs, globalCarrier, pointer),
     ] as const;
   });
 

@@ -20,7 +20,7 @@ export function arraySaver(
     value: memoryForPointersCursor,
     allocatedLength:
       arrayToSave.length + externalArgs.arrayAdditionalAllocation,
-    length: arrayToSave.length
+    length: arrayToSave.length,
   };
 
   for (const item of arrayToSave) {

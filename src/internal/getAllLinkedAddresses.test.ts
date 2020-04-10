@@ -10,7 +10,7 @@ describe("getAllLinkedAddresses", () => {
   const externalArgs = externalArgsApiToExternalArgsApi({
     textEncoder: new util.TextEncoder(),
     textDecoder: new util.TextDecoder(),
-    arrayAdditionalAllocation: 20
+    arrayAdditionalAllocation: 20,
   });
 
   describe("getAllLinkedAddresses no reference counting", () => {
@@ -27,7 +27,7 @@ describe("getAllLinkedAddresses", () => {
 
       const objectBuffer = createObjectBuffer(externalArgs, 2048, {
         nestedObject: { a: 1, b: null, c: "string", bigint: BigInt("100") },
-        arr: [new Date(0), "somestring", { a: "6", h: null }]
+        arr: [new Date(0), "somestring", { a: "6", h: null }],
       });
 
       // const a = objectBuffer.nestedObject;
@@ -117,7 +117,7 @@ describe("getAllLinkedAddresses", () => {
 
       const objectBuffer = createObjectBuffer(externalArgs, 2048, {
         nestedObject: { a: 1, b: null, c: "string", bigint: BigInt("100") },
-        arr: [new Date(0), "somestring", { a: "6", h: null }]
+        arr: [new Date(0), "somestring", { a: "6", h: null }],
       });
 
       expect(memoryStats(objectBuffer)).toMatchInlineSnapshot(`
@@ -137,7 +137,7 @@ Object {
         allocatedAddresses[allocatedAddresses.length - 1]
       );
 
-      linkedAddresses.leafAddresses.forEach(address => {
+      linkedAddresses.leafAddresses.forEach((address) => {
         pool.free(address);
       });
 
