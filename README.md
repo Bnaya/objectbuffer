@@ -87,6 +87,7 @@ Before putting any eggs in the basket, please go over the [implementation detail
 ## Caveats & Limitations
 
 * Need to specify size for the `ArrayBuffer`. When exceed that size, exception will be thrown. (Can be extended later with a utility function, but not automatically)
+* Size must be multiplication of 8
 * Set, Map, Object keys can be only string or numbers. no symbols or other things
 * You can't save objects with circularities (But you can create them on objectbuffer)
 * No prototype chain. no methods on the objects
