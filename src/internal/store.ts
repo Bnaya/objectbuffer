@@ -492,6 +492,33 @@ export function decrementRefCount(
   throw new Error("unexpected");
 }
 
+export function getRefCount(carrier: GlobalCarrier, entryPointer: number) {
+  const entry = readEntry(carrier, entryPointer);
+
+  if ("refsCount" in entry) {
+    return entry.refsCount;
+  }
+
+  throw new Error("unexpected");
+}
+
+export function setRefCount(
+  carrier: GlobalCarrier,
+  entryPointer: number,
+  newRefCount: number
+) {
+  const entry = readEntry(carrier, entryPointer);
+
+  if ("refsCount" in entry) {
+    const prevCount = entry.refsCount;
+    entry.refsCount = newRefCount;
+    writeEntry(carrier, entryPointer, entry);
+    return prevCount;
+  }
+
+  throw new Error("unexpected");
+}
+
 // export function getObjectPropPtrToPtr(
 //   { dataView }: GlobalCarrier,
 //   pointerToEntry: number
