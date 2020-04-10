@@ -1,6 +1,6 @@
 /* eslint-disable */
 import { ExternalArgs } from "../internal/interfaces";
-import * as util from "util";
+
 import { createObjectBuffer } from "..";
 import { memoryStats } from "../internal/api";
 import { wait } from "../internal/testUtils";
@@ -24,10 +24,10 @@ describe.skip("memoryGCTest.test", () => {
   }
 
   const externalArgs = externalArgsApiToExternalArgsApi({
-    textEncoder: new util.TextEncoder(),
-    textDecoder: new util.TextDecoder(),
+
+
     arrayAdditionalAllocation: 0,
-    
+
   });
 
   test("internal ArrayBuffer GC", async () => {

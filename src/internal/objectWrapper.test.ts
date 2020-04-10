@@ -1,17 +1,14 @@
 /* eslint-env jest */
 
 import { initializeArrayBuffer } from "./store";
-import * as util from "util";
+
 import { objectSaver } from "./objectSaver";
 import { createObjectWrapper } from "./objectWrapper";
 import { externalArgsApiToExternalArgsApi } from "./utils";
 import { makeCarrier } from "./testUtils";
 
 describe("objectWrapper tests", () => {
-  const externalArgs = externalArgsApiToExternalArgsApi({
-    textEncoder: new util.TextEncoder(),
-    textDecoder: new util.TextDecoder(),
-  });
+  const externalArgs = externalArgsApiToExternalArgsApi({});
 
   describe("objectWrapper - general", () => {
     test("ObjectWrapper class 1", () => {
@@ -29,7 +26,13 @@ describe("objectWrapper tests", () => {
         },
       };
 
-      const saverOutput = objectSaver(externalArgs, carrier, [], objectToSave);
+      const saverOutput = objectSaver(
+        externalArgs,
+        carrier,
+        [],
+        new Map(),
+        objectToSave
+      );
 
       const objectWrapper: any = createObjectWrapper(
         externalArgs,
@@ -72,7 +75,13 @@ describe("objectWrapper tests", () => {
         },
       };
 
-      const saverOutput = objectSaver(externalArgs, carrier, [], objectToSave);
+      const saverOutput = objectSaver(
+        externalArgs,
+        carrier,
+        [],
+        new Map(),
+        objectToSave
+      );
 
       const objectWrapper: any = createObjectWrapper(
         externalArgs,
@@ -102,7 +111,13 @@ describe("objectWrapper tests", () => {
         },
       };
 
-      const saverOutput = objectSaver(externalArgs, carrier, [], objectToSave);
+      const saverOutput = objectSaver(
+        externalArgs,
+        carrier,
+        [],
+        new Map(),
+        objectToSave
+      );
 
       const objectWrapper = createObjectWrapper(
         externalArgs,
@@ -143,7 +158,13 @@ describe("objectWrapper tests", () => {
         },
       };
 
-      const saverOutput = objectSaver(externalArgs, carrier, [], objectToSave);
+      const saverOutput = objectSaver(
+        externalArgs,
+        carrier,
+        [],
+        new Map(),
+        objectToSave
+      );
 
       const objectWrapper = createObjectWrapper(
         externalArgs,
@@ -185,7 +206,13 @@ describe("objectWrapper tests", () => {
         },
       };
 
-      const saverOutput = objectSaver(externalArgs, carrier, [], objectToSave);
+      const saverOutput = objectSaver(
+        externalArgs,
+        carrier,
+        [],
+        new Map(),
+        objectToSave
+      );
 
       const objectWrapper = createObjectWrapper(
         externalArgs,

@@ -11,10 +11,7 @@ import Worker from "worker-loader!./Worker.js";
  * @type {objectbufferModules.ExternalArgs}
  */
 const externalArgs = {
-  textDecoder: new TextDecoder(),
-  textEncoder: new TextEncoder(),
   arrayAdditionalAllocation: 0,
-  
 };
 
 const o = objectbufferModules.createObjectBuffer(
@@ -24,10 +21,10 @@ const o = objectbufferModules.createObjectBuffer(
     some: {
       nested: [
         {
-          thing: "im the value to follow"
-        }
-      ]
-    }
+          thing: "im the value to follow",
+        },
+      ],
+    },
   },
   { useSharedArrayBuffer: true }
 );

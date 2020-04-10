@@ -1,7 +1,7 @@
 /* eslint-env jest */
 
 import { initializeArrayBuffer } from "./store";
-import * as util from "util";
+
 import { createArrayWrapper } from "./arrayWrapper";
 import { arraySaver } from "./arraySaver";
 import { externalArgsApiToExternalArgsApi } from "./utils";
@@ -9,8 +9,6 @@ import { makeCarrier } from "./testUtils";
 
 describe("pop it all", () => {
   const externalArgs = externalArgsApiToExternalArgsApi({
-    textEncoder: new util.TextEncoder(),
-    textDecoder: new util.TextDecoder(),
     arrayAdditionalAllocation: 20,
   });
 

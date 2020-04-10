@@ -1,13 +1,13 @@
-# Implementation details
+# Some Implementation details
 
 ## Terminology/Assorted details
 
 * Pointer: `Uint32` that holds the index in the array of a value
 * ArrayBuffer values are initialized to `0`. pointer with value `0` means `undefined`
-* We depend on externally provided [WHATWG encoding apis](https://developer.mozilla.org/en-US/docs/Web/API/Encoding_API) to encode and decode strings.
+* <s>We depend on externally provided [WHATWG encoding apis](https://developer.mozilla.org/en-US/docs/Web/API/Encoding_API) to encode and decode strings.</s> The lib has internal impl of string decoders/encoders due to incompatibilities of the node & browser ones 
 * `AB` = `ArrayBuffer`
 
-### ArrayBuffer and internal memory allocation
+## ArrayBuffer and internal memory allocation
 
 * You need to specify the size for the underlying ArrayBuffer. to know how to estimate the needed size, or how to extend the underlying ArrayBuffer, read ahead.
 
@@ -18,14 +18,41 @@
   * `Uint32` pointer to first free byte. initialized to `24`
   * `Uint32` pointer for the top level initial value object entry.
 
-#### Append or immediate overwrite. no reuse
 
-For simplicity, there's no full allocator.
-We just append we keep the first-free-byte in a known location, save new data from there and forward, and update the value.  
-When in place update of a value is possible (eg update number to another number, `count++`), we do so, to avoid memory waste.  
-To compact the memory you can save the object into a new ObjectBuffer.
+## Allocator in use: [@thi.ng/malloc](https://www.npmjs.com/package/@thi.ng/malloc)
 
-### How do we read value from a pointer
+* **Endianness is platform specific** ArrayBuffers are in use
+* Part of the magnificent [thi-ng/umbrella](https://github.com/thi-ng/umbrella) project  
+* [Memory layout](https://github.com/thi-ng/umbrella/tree/master/packages/malloc#memory-layout)  
+* All allocations are aligned to 8 bytes [#72](https://github.com/Bnaya/objectbuffer/issues/72)  
+
+
+## Freeing no-longer accessible memory (Automatic Reference counting)
+
+When setting a new value to a object property,
+The old value is may be unacceptable any more from the javascript side, and you may reclaim the memory. JS engines has GC to figure that out, but we don't.
+
+So what we do have is **reference counting!**  
+Every `Object`, `Array`, `Map`, `Set`, `Date` have ref count (inside the arraybuffer memory ofc), that we update when add a new reference to it, or removing reference. example:
+```js
+const objectBuffer = createObjectBuffer(...,{foo: ["a", "b", "c"]});
+
+// This will increment the reference count
+objectBuffer.fooAnotherRef = objectBuffer.foo;
+
+// This will decrement it
+delete objectBuffer.foo;
+```
+
+### ....But there's more!
+When we access `objectBuffer.foo` a Proxy object is returned to us, that is another reference to the target memory. so that's also increment the count.  
+Only one proxy is created for each target, per process(worker, node thread, etc) and cached by each one of them.  
+When [proposal-weakrefs](https://github.com/tc39/proposal-weakrefs) is enabled, the library will use it to figure when the proxy objects are not longer accessible, dispose them, and decrement the count.  
+But until then, there's a manual function, `disposeWrapperObject` that will make the given proxy object unusable, and decrement the count.  
+Behind all that there's a complex machinery, that covered with tests (But more are always good!)
+
+
+## How do we read value from a pointer
 
 We use something called `entry` to describe a value on the memory.
 Each entry has a header byte (`Uint8`) that tells us the type. see `entry-types.ts` ENUM for actual value.  
@@ -37,8 +64,12 @@ Some of the entries type has same size, some not
 * `boolean` header byte + `Uint8` (`0` or `1`)
 * `bigint` Positive header byte + BigUint64. max value is `2^63 − 1`
 * `bigint` Negative header byte + BigUint64 min value is `(2^63 − 1) * -1`
-* `null` header byte (TODO just point to index `1`)
-* `undefined` header byte (TODO just point to index `0`)
+
+### Known addresses
+* `UNDEFINED_KNOWN_ADDRESS = 0`
+* `NULL_KNOWN_ADDRESS = 1`
+* `TRUE_KNOWN_ADDRESS = 2`
+* `TRUE_KNOWN_ADDRESS = 2;`
 
 ### More complex value types
 
@@ -48,12 +79,7 @@ Memory representation
 
 * `Uint8` header
 * `Uint16` string length (in bytes, not `"str".length`)
-* `Uint16` reserved allocated size
-* encoded string data itself + reserved space if any
-
-Why do we need string length & allocated size?
-So you can overwrite a string with a shorter one, and then longer again, without wasting the memory.
-There is also an option when creating ObjectBuffer to always allocate a minimum size for string entries. the default value is `0`.  you may set it by your own heuristics
+* encoded string data itself
 
 ### `Date` (most of the code in `dateWrapper.ts`)
 
@@ -85,11 +111,10 @@ we check if the reserved array length have the space we need, and use it.
 
 Array `in-place` methods are also implemented in the lib. mostly not depends on the built-in behavior, it was supposed to be more efficient, maybe its not needed any more (?)
 
-### `Object` Implemented as a linked list (`objectWrapper.ts`)
+### `Object`, `Map`, `Set` are implemented as a linked-hashmap
 
-Starts with an entry of type `OBJECT` + pointer to a entry of a type `OBJECT_PROP`, that is the first prop in the object.  
-A `OBJECT_PROP` entry contains header byte, the key of the property (length in `Uint32` + string data), a pointer `Uint32` to the value entry and a pointer to the next property of the object.  
-The order of the properties does not match the ECMA spec, as numerical keys will not come before string keys.
+They have pretty annoying memory overhead until we do something about it: [#69](https://github.com/Bnaya/objectbuffer/issues/69)
+
 
 ### How does reference saving works
 
@@ -144,14 +169,14 @@ Why the lib can't do it by itself? Because it changes the `ArrayBuffer`.
 For use cases like Shared Memory, if one of the processes will swap the ArrayBuffer without coordinating it with the others, he will just point to a different data.
 Doing that coordinating is out of the scope of the lib.
 
-## How to choose the size i need
+## How to choose the size I need
 
 The initial size must fit the initial data passed to `createObjectBuffer`.  
 You may use the sizeof function that calculate the size of the given value, but a **rule of thumb** is "the size of the data in JSON form, without the line breaks and space + 5%".  
 To that, you need to add additional space for operations that will require more space.  
 To check how much free space left, use `spaceLeft`.
 
-## What will happen if i
+## What will happen if I
 
 * Exceed the size of the buffer: Exception (`OutOfMemoryError`) will be thrown
 * use object.defineProperty: Exception(`UnsupportedOperationError`) will be thrown

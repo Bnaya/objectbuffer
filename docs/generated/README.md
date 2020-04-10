@@ -1,32 +1,6 @@
-[objectbuffer](undefined) › ["index"](README.md)
+[@bnaya/objectbuffer](README.md)
 
-# External module: "index"
-
-Basic usage (Browser):
-
-```js
-import { createObjectBuffer } from "@bnaya/objectbuffer";
-
-const initialValue = {
-  foo: { bar: new Date() },
-  arrayInside: [1, "a", null],
-  arrayBufferRocks: 1
-};
-const myObject = createObjectBuffer(
-  {
-    textEncoder: new TextEncoder(),
-    textDecoder: new TextDecoder()
-  },
-  1024,
-  initialValue
-);
-
-myObject.arrayInside.push("another entry");
-myObject.foo.anotherProperty = "value";
-
-console.log(JSON.stringify(myObject));
-
-```
+# @bnaya/objectbuffer
 
 ## Index
 
@@ -40,21 +14,23 @@ console.log(JSON.stringify(myObject));
 * [acquireLock](README.md#acquirelock)
 * [acquireLockWait](README.md#acquirelockwait)
 * [createObjectBuffer](README.md#createobjectbuffer)
+* [disposeWrapperObject](README.md#disposewrapperobject)
 * [getUnderlyingArrayBuffer](README.md#getunderlyingarraybuffer)
 * [loadObjectBuffer](README.md#loadobjectbuffer)
+* [memoryStats](README.md#memorystats)
 * [releaseLock](README.md#releaselock)
 * [replaceUnderlyingArrayBuffer](README.md#replaceunderlyingarraybuffer)
 * [resizeObjectBuffer](README.md#resizeobjectbuffer)
 * [sizeOf](README.md#sizeof)
-* [spaceLeft](README.md#spaceleft)
+* [updateExternalArgs](README.md#updateexternalargs)
 
 ## Type aliases
 
 ###  CreateObjectBufferOptions
 
-Ƭ **CreateObjectBufferOptions**: *[CreateObjectBufferOptions](undefined)*
+Ƭ **CreateObjectBufferOptions**: *CreateObjectBufferOptions*
 
-*Defined in [index.ts:21](https://github.com/Bnaya/objectbuffer/blob/fe29e82/src/index.ts#L21)*
+*Defined in [index.ts:24](https://github.com/Bnaya/objectbuffer/blob/49fce16/src/index.ts#L24)*
 
 ___
 
@@ -62,7 +38,7 @@ ___
 
 Ƭ **ExternalArgs**: *object*
 
-*Defined in [index.ts:20](https://github.com/Bnaya/objectbuffer/blob/fe29e82/src/index.ts#L20)*
+*Defined in [index.ts:23](https://github.com/Bnaya/objectbuffer/blob/49fce16/src/index.ts#L23)*
 
 #### Type declaration:
 
@@ -72,7 +48,7 @@ ___
 
 ▸ **acquireLock**(`agentId`: number, `objectBuffer`: any): *boolean*
 
-*Defined in [internal/locks.ts:14](https://github.com/Bnaya/objectbuffer/blob/fe29e82/src/internal/locks.ts#L14)*
+*Defined in [internal/locks.ts:15](https://github.com/Bnaya/objectbuffer/blob/49fce16/src/internal/locks.ts#L15)*
 
 Try to acquire a lock on the given objectBuffer, as the given agentId.
 
@@ -91,7 +67,7 @@ ___
 
 ▸ **acquireLockWait**(`agentId`: number, `objectBuffer`: any, `timeout`: number): *"have-lock" | "miss-lock" | "timed-out" | "no-lock"*
 
-*Defined in [internal/locks.ts:61](https://github.com/Bnaya/objectbuffer/blob/fe29e82/src/internal/locks.ts#L61)*
+*Defined in [internal/locks.ts:62](https://github.com/Bnaya/objectbuffer/blob/49fce16/src/internal/locks.ts#L62)*
 
  Try to get a lock on a the given objectBuffer, or wait until timeout
  Will Not work on the main thread.
@@ -114,9 +90,9 @@ ___
 
 ###  createObjectBuffer
 
-▸ **createObjectBuffer**<**T**>(`externalArgs`: [ExternalArgsApi](undefined), `size`: number, `initialValue`: T, `options`: [CreateObjectBufferOptions](undefined)): *T*
+▸ **createObjectBuffer**<**T**>(`externalArgs`: ExternalArgsApi, `size`: number, `initialValue`: T, `options`: CreateObjectBufferOptions): *T*
 
-*Defined in [internal/api.ts:28](https://github.com/Bnaya/objectbuffer/blob/fe29e82/src/internal/api.ts#L28)*
+*Defined in [internal/api.ts:31](https://github.com/Bnaya/objectbuffer/blob/49fce16/src/internal/api.ts#L31)*
 
 Create a new objectBuffer, with the given initial value
 
@@ -130,12 +106,31 @@ the initial value has to be an object.
 
 Name | Type | Default |
 ------ | ------ | ------ |
-`externalArgs` | [ExternalArgsApi](undefined) | - |
+`externalArgs` | ExternalArgsApi | - |
 `size` | number | - |
 `initialValue` | T | - |
-`options` | [CreateObjectBufferOptions](undefined) |  {} |
+`options` | CreateObjectBufferOptions | {} |
 
 **Returns:** *T*
+
+___
+
+###  disposeWrapperObject
+
+▸ **disposeWrapperObject**(`value`: any): *boolean*
+
+*Defined in [internal/disposeWrapperObject.ts:10](https://github.com/Bnaya/objectbuffer/blob/49fce16/src/internal/disposeWrapperObject.ts#L10)*
+
+ Dispose the given objectWrapper, and re-claim the memory
+ This is not needed on systems that supports weak-refs
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`value` | any |
+
+**Returns:** *boolean*
 
 ___
 
@@ -143,7 +138,7 @@ ___
 
 ▸ **getUnderlyingArrayBuffer**(`objectBuffer`: any): *ArrayBuffer | SharedArrayBuffer*
 
-*Defined in [internal/api.ts:78](https://github.com/Bnaya/objectbuffer/blob/fe29e82/src/internal/api.ts#L78)*
+*Defined in [internal/api.ts:109](https://github.com/Bnaya/objectbuffer/blob/49fce16/src/internal/api.ts#L109)*
 
 **Parameters:**
 
@@ -157,9 +152,9 @@ ___
 
 ###  loadObjectBuffer
 
-▸ **loadObjectBuffer**<**T**>(`externalArgs`: [ExternalArgsApi](undefined), `arrayBuffer`: ArrayBuffer | SharedArrayBuffer): *T*
+▸ **loadObjectBuffer**<**T**>(`externalArgs`: ExternalArgsApi, `arrayBuffer`: ArrayBuffer | SharedArrayBuffer): *T*
 
-*Defined in [internal/api.ts:93](https://github.com/Bnaya/objectbuffer/blob/fe29e82/src/internal/api.ts#L93)*
+*Defined in [internal/api.ts:124](https://github.com/Bnaya/objectbuffer/blob/49fce16/src/internal/api.ts#L124)*
 
 Create objectBuffer object from the given ArrayBuffer
 
@@ -174,10 +169,32 @@ This operation doesn't change any value in the ArrayBuffer
 
 Name | Type | Description |
 ------ | ------ | ------ |
-`externalArgs` | [ExternalArgsApi](undefined) | - |
+`externalArgs` | ExternalArgsApi | - |
 `arrayBuffer` | ArrayBuffer &#124; SharedArrayBuffer |   |
 
 **Returns:** *T*
+
+___
+
+###  memoryStats
+
+▸ **memoryStats**(`objectBuffer`: any): *object*
+
+*Defined in [internal/api.ts:208](https://github.com/Bnaya/objectbuffer/blob/49fce16/src/internal/api.ts#L208)*
+
+Return the number of free & used bytes left in the given objectBuffer
+
+**Parameters:**
+
+Name | Type |
+------ | ------ |
+`objectBuffer` | any |
+
+**Returns:** *object*
+
+* **available**: *number*
+
+* **used**: *number* = total - available
 
 ___
 
@@ -185,7 +202,7 @@ ___
 
 ▸ **releaseLock**(`agentId`: number, `objectBuffer`: any): *boolean*
 
-*Defined in [internal/locks.ts:32](https://github.com/Bnaya/objectbuffer/blob/fe29e82/src/internal/locks.ts#L32)*
+*Defined in [internal/locks.ts:33](https://github.com/Bnaya/objectbuffer/blob/49fce16/src/internal/locks.ts#L33)*
 
  Try to release a lock acquired by [acquireLock](README.md#acquirelock) or [acquireLockWait](README.md#acquirelockwait)
 
@@ -204,7 +221,7 @@ ___
 
 ▸ **replaceUnderlyingArrayBuffer**(`objectBuffer`: any, `newArrayBuffer`: ArrayBuffer | SharedArrayBuffer): *void*
 
-*Defined in [internal/api.ts:117](https://github.com/Bnaya/objectbuffer/blob/fe29e82/src/internal/api.ts#L117)*
+*Defined in [internal/api.ts:165](https://github.com/Bnaya/objectbuffer/blob/49fce16/src/internal/api.ts#L165)*
 
 Replace the Underlying array buffer with the given one.
 The given ArrayBuffer is expected to be a copy of the prev ArrayBuffer,
@@ -227,7 +244,7 @@ ___
 
 ▸ **resizeObjectBuffer**(`objectBuffer`: any, `newSize`: number): *ArrayBuffer*
 
-*Defined in [internal/api.ts:61](https://github.com/Bnaya/objectbuffer/blob/fe29e82/src/internal/api.ts#L61)*
+*Defined in [internal/api.ts:92](https://github.com/Bnaya/objectbuffer/blob/49fce16/src/internal/api.ts#L92)*
 
 Grow or shrink the underlying ArrayBuffer
 
@@ -244,36 +261,39 @@ ___
 
 ###  sizeOf
 
-▸ **sizeOf**(`externalArgs`: [ExternalArgs](README.md#externalargs), `value`: any): *number*
+▸ **sizeOf**(`externalArgs`: ExternalArgsApi, `value`: any): *number*
 
-*Defined in [internal/sizeOf.ts:12](https://github.com/Bnaya/objectbuffer/blob/fe29e82/src/internal/sizeOf.ts#L12)*
+*Defined in [internal/sizeOf.ts:27](https://github.com/Bnaya/objectbuffer/blob/49fce16/src/internal/sizeOf.ts#L27)*
+
+**UNRELIABLE YET**
 
 Calculate the size (bytes) of the given value.
 Also validates that the value is saveable
 
 **Parameters:**
 
-Name | Type | Description |
------- | ------ | ------ |
-`externalArgs` | [ExternalArgs](README.md#externalargs) | - |
-`value` | any |   |
+Name | Type |
+------ | ------ |
+`externalArgs` | ExternalArgsApi |
+`value` | any |
 
 **Returns:** *number*
 
 ___
 
-###  spaceLeft
+###  updateExternalArgs
 
-▸ **spaceLeft**(`objectBuffer`: any): *number*
+▸ **updateExternalArgs**(`objectBuffer`: any, `options`: Partial‹ExternalArgsApi›): *void*
 
-*Defined in [internal/api.ts:147](https://github.com/Bnaya/objectbuffer/blob/fe29e82/src/internal/api.ts#L147)*
+*Defined in [internal/api.ts:228](https://github.com/Bnaya/objectbuffer/blob/49fce16/src/internal/api.ts#L228)*
 
-Return the number of free bytes left in the given objectBuffer
+Allows to update external args passed to createObjectBuffer
 
 **Parameters:**
 
-Name | Type | Description |
------- | ------ | ------ |
-`objectBuffer` | any |   |
+Name | Type |
+------ | ------ |
+`objectBuffer` | any |
+`options` | Partial‹ExternalArgsApi› |
 
-**Returns:** *number*
+**Returns:** *void*

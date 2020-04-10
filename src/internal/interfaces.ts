@@ -1,5 +1,4 @@
 import { ENTRY_TYPE } from "./entry-types";
-import { TextDecoder, TextEncoder } from "./textEncoderDecoderTypes";
 
 export type primitive = string | number | bigint | boolean | undefined | null;
 
@@ -94,17 +93,17 @@ export interface GlobalCarrier {
 export type ExternalArgs = Readonly<{
   hashMapLoadFactor: number;
   hashMapMinInitialCapacity: number;
+  /**
+   * Allocate additional memory for array pointers,
+   * will prevent the reallocation and copy when array is getting bigger
+   */
   arrayAdditionalAllocation: number;
-  textDecoder: TextDecoder;
-  textEncoder: TextEncoder;
 }>;
 
 export type ExternalArgsApi = Readonly<{
   hashMapLoadFactor?: number;
   hashMapMinInitialCapacity?: number;
   arrayAdditionalAllocation?: number;
-  textDecoder: TextDecoder;
-  textEncoder: TextEncoder;
 }>;
 
 export interface InternalAPI {

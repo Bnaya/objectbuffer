@@ -7,13 +7,10 @@ import * as objectbufferModule from "../src";
  * @type {objectbufferModule.ExternalArgs}
  */
 const externalArgs = {
-  textDecoder: new TextDecoder(),
-  textEncoder: new TextEncoder(),
   arrayAdditionalAllocation: 0,
-  
 };
 
-addEventListener("message", ev => {
+addEventListener("message", (ev) => {
   let lastValueToFollow = "IM NOT INTERESTING";
 
   if (ev.data instanceof SharedArrayBuffer) {

@@ -1,16 +1,13 @@
 /* eslint-env jest */
 
 import { initializeArrayBuffer } from "./store";
-import * as util from "util";
+
 import { arrayBuffer2HexArray, makeCarrier } from "./testUtils";
 import { objectSaver } from "./objectSaver";
 import { externalArgsApiToExternalArgsApi } from "./utils";
 
 describe("objectSaver tests", () => {
-  const externalArgs = externalArgsApiToExternalArgsApi({
-    textEncoder: new util.TextEncoder(),
-    textDecoder: new util.TextDecoder(),
-  });
+  const externalArgs = externalArgsApiToExternalArgsApi({});
 
   describe("objectSaver - general", () => {
     test("objectSaver", () => {
@@ -31,7 +28,13 @@ describe("objectSaver tests", () => {
         },
       };
 
-      const saverOutput = objectSaver(externalArgs, carrier, [], objectToSave);
+      const saverOutput = objectSaver(
+        externalArgs,
+        carrier,
+        [],
+        new Map(),
+        objectToSave
+      );
 
       expect(saverOutput).toMatchInlineSnapshot(`976`);
 

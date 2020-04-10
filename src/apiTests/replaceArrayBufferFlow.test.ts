@@ -1,7 +1,5 @@
 /* eslint-env jest */
 
-import * as util from "util";
-
 import { createObjectBuffer, resizeObjectBuffer } from "../";
 import {
   getUnderlyingArrayBuffer,
@@ -15,8 +13,6 @@ import {
 
 describe("replaceArrayBufferFlow", () => {
   const externalArgs = externalArgsApiToExternalArgsApi({
-    textEncoder: new util.TextEncoder(),
-    textDecoder: new util.TextDecoder(),
     arrayAdditionalAllocation: 0,
   });
 

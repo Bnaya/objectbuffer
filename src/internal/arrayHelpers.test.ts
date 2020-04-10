@@ -1,7 +1,7 @@
 /* eslint-env jest */
 
 import { initializeArrayBuffer } from "./store";
-import * as util from "util";
+
 import { arraySaver } from "./arraySaver";
 import {
   arrayGetMetadata,
@@ -15,8 +15,6 @@ import { externalArgsApiToExternalArgsApi } from "./utils";
 import { makeCarrier } from "./testUtils";
 
 const externalArgs: ExternalArgs = externalArgsApiToExternalArgsApi({
-  textEncoder: new util.TextEncoder(),
-  textDecoder: new util.TextDecoder(),
   arrayAdditionalAllocation: 0,
 });
 

@@ -5,7 +5,7 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 // eslint-disable-next-line no-undef
 module.exports = {
   resolve: {
-    extensions: [".wasm", ".mjs", ".js", ".json", ".ts"]
+    extensions: [".wasm", ".mjs", ".js", ".json", ".ts"],
   },
   module: {
     rules: [
@@ -13,10 +13,10 @@ module.exports = {
         test: [/\.m?js$/, /\.ts$/],
         exclude: /(node_modules|bower_components)/,
         use: {
-          loader: "babel-loader"
-        }
-      }
-    ]
+          loader: "babel-loader",
+        },
+      },
+    ],
   },
-  plugins: [new HtmlWebpackPlugin()]
+  plugins: [new HtmlWebpackPlugin()],
 };

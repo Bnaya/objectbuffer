@@ -1,5 +1,4 @@
 /* eslint-env jest */
-import * as util from "util";
 
 import {
   createObjectBuffer,
@@ -11,8 +10,6 @@ import { externalArgsApiToExternalArgsApi } from "./internal/utils";
 
 describe("createObjectBuffer", () => {
   const externalArgs = externalArgsApiToExternalArgsApi({
-    textEncoder: new util.TextEncoder(),
-    textDecoder: new util.TextDecoder(),
     arrayAdditionalAllocation: 0,
   });
 
@@ -37,8 +34,6 @@ describe("createObjectBuffer", () => {
 
 describe("getUnderlyingArrayBuffer", () => {
   const externalArgs = externalArgsApiToExternalArgsApi({
-    textEncoder: new util.TextEncoder(),
-    textDecoder: new util.TextDecoder(),
     arrayAdditionalAllocation: 0,
   });
   test("getUnderlyingArrayBuffer simple", () => {
@@ -58,8 +53,6 @@ describe("getUnderlyingArrayBuffer", () => {
 
 describe("loadObjectBuffer", () => {
   const externalArgs = externalArgsApiToExternalArgsApi({
-    textEncoder: new util.TextEncoder(),
-    textDecoder: new util.TextDecoder(),
     arrayAdditionalAllocation: 0,
   });
 

@@ -22,6 +22,8 @@ export function saveValue(
   externalArgs: ExternalArgs,
   carrier: GlobalCarrier,
   referencedPointers: number[],
+  // Not really working yet. we need iterative saving for it
+  visitedValuesOnCurrentSaveOperation: Map<object, number>,
   value: any
 ) {
   let valuePointer = 0;
@@ -51,6 +53,11 @@ export function saveValue(
   ) {
     valuePointer = maybeOurPointer;
     referencedPointers.push(valuePointer);
+  } else if (
+    (maybeOurPointer = visitedValuesOnCurrentSaveOperation.get(value))
+  ) {
+    valuePointer = maybeOurPointer;
+    referencedPointers.push(valuePointer);
   } else if (Array.isArray(value)) {
     valuePointer = arraySaver(externalArgs, carrier, referencedPointers, value);
   } else if (value instanceof Date) {
@@ -60,16 +67,26 @@ export function saveValue(
       value: value.getTime(),
     });
   } else if (value instanceof Map) {
-    valuePointer = mapSaver(externalArgs, carrier, referencedPointers, value);
+    valuePointer = mapSaver(
+      externalArgs,
+      carrier,
+      referencedPointers,
+      visitedValuesOnCurrentSaveOperation,
+      value
+    );
+    visitedValuesOnCurrentSaveOperation.set(value, valuePointer);
   } else if (value instanceof Set) {
     valuePointer = setSaver(externalArgs, carrier, value);
+    visitedValuesOnCurrentSaveOperation.set(value, valuePointer);
   } else if (typeof value === "object") {
     valuePointer = objectSaver(
       externalArgs,
       carrier,
       referencedPointers,
+      visitedValuesOnCurrentSaveOperation,
       value
     );
+    visitedValuesOnCurrentSaveOperation.set(value, valuePointer);
   } else {
     throw new Error("unsupported yet");
   }

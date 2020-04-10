@@ -69,6 +69,7 @@ export function createObjectBuffer<T = any>(
     externalArgsApiToExternalArgsApi(externalArgs),
     carrier,
     [],
+    new Map(),
     initialValue
   );
 

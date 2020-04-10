@@ -1,6 +1,5 @@
 /* eslint-env jest */
 
-import * as util from "util";
 import { MemPool } from "@thi.ng/malloc";
 import { createObjectBuffer, memoryStats } from "./api";
 import { getAllLinkedAddresses } from "./getAllLinkedAddresses";
@@ -8,8 +7,6 @@ import { getInternalAPI, externalArgsApiToExternalArgsApi } from "./utils";
 
 describe("getAllLinkedAddresses", () => {
   const externalArgs = externalArgsApiToExternalArgsApi({
-    textEncoder: new util.TextEncoder(),
-    textDecoder: new util.TextDecoder(),
     arrayAdditionalAllocation: 20,
   });
 

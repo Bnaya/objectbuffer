@@ -1,15 +1,13 @@
 /* eslint-env jest */
 
 import { initializeArrayBuffer } from "./store";
-import * as util from "util";
+
 import { arrayBuffer2HexArray, makeCarrier } from "./testUtils";
 import { arraySaver } from "./arraySaver";
 import { externalArgsApiToExternalArgsApi } from "./utils";
 
 describe("arraySaver tests", () => {
   const externalArgs = externalArgsApiToExternalArgsApi({
-    textEncoder: new util.TextEncoder(),
-    textDecoder: new util.TextDecoder(),
     arrayAdditionalAllocation: 20,
   });
 

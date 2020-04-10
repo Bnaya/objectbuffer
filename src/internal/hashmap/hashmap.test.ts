@@ -1,5 +1,5 @@
 /* eslint-env jest */
-import * as util from "util";
+
 import {
   arrayBuffer2HexArray,
   recordAllocations,
@@ -21,8 +21,6 @@ import { externalArgsApiToExternalArgsApi } from "../utils";
 
 describe("hashmap", () => {
   const externalArgs = externalArgsApiToExternalArgsApi({
-    textEncoder: new util.TextEncoder(),
-    textDecoder: new util.TextDecoder(),
     arrayAdditionalAllocation: 20,
   });
 
