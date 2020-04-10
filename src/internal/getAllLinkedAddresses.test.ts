@@ -13,8 +13,78 @@ describe("getAllLinkedAddresses", () => {
     arrayAdditionalAllocation: 20,
   });
 
-  describe("getAllLinkedAddresses no reference counting", () => {
-    test("getAllLinkedAddresses", () => {
+  describe("Make sure all allocated are discovered", () => {
+    test("Small object", () => {
+      const allocatedAddresses: number[] = [];
+      const origMalloc = MemPool.prototype.malloc;
+      MemPool.prototype.malloc = function malloc(dataSize: number) {
+        const address = origMalloc.call(this, dataSize);
+
+        allocatedAddresses.push(address);
+
+        return address;
+      };
+
+      const objectBuffer = createObjectBuffer(externalArgs, 2048, {
+        smallObject: [{ a: "6" }],
+      });
+      // const a = objectBuffer.nestedObject;
+      // getInternalAPI(a).destroy();
+      // // a.toString();
+
+      const carrier = getInternalAPI(objectBuffer).getCarrier();
+
+      const entryPointer = getInternalAPI(objectBuffer).getEntryPointer();
+      getInternalAPI(objectBuffer).destroy();
+
+      const linkedAddresses = getAllLinkedAddresses(
+        carrier,
+        false,
+        // allocatedAddresses[allocatedAddresses.length - 1]
+        entryPointer
+      );
+
+      expect([...linkedAddresses.leafAddresses].slice().sort()).toEqual(
+        allocatedAddresses.slice().sort()
+      );
+    });
+
+    test("With Map & Set", () => {
+      const allocatedAddresses: number[] = [];
+      const origMalloc = MemPool.prototype.malloc;
+      MemPool.prototype.malloc = function malloc(dataSize: number) {
+        const address = origMalloc.call(this, dataSize);
+
+        allocatedAddresses.push(address);
+
+        return address;
+      };
+
+      const objectBuffer = createObjectBuffer(externalArgs, 2048, {
+        m: new Map([
+          ["a", 1],
+          ["b", 2],
+        ]),
+        s: new Set(["a", "b", "c"]),
+      });
+
+      const carrier = getInternalAPI(objectBuffer).getCarrier();
+
+      const entryPointer = getInternalAPI(objectBuffer).getEntryPointer();
+      getInternalAPI(objectBuffer).destroy();
+
+      const linkedAddresses = getAllLinkedAddresses(
+        carrier,
+        false,
+        entryPointer
+      );
+
+      expect([...linkedAddresses.leafAddresses].slice().sort()).toEqual(
+        allocatedAddresses.slice().sort()
+      );
+    });
+
+    test("object with more stuff", () => {
       const allocatedAddresses: number[] = [];
       const origMalloc = MemPool.prototype.malloc;
       MemPool.prototype.malloc = function malloc(dataSize: number) {
@@ -44,11 +114,11 @@ describe("getAllLinkedAddresses", () => {
         allocatedAddresses[allocatedAddresses.length - 1]
       );
 
-      expect(linkedAddresses.leafAddresses.slice().sort()).toEqual(
+      expect([...linkedAddresses.leafAddresses].slice().sort()).toEqual(
         allocatedAddresses.slice().sort()
       );
 
-      expect(linkedAddresses.leafAddresses.slice().sort())
+      expect([...linkedAddresses.leafAddresses].slice().sort())
         .toMatchInlineSnapshot(`
         Array [
           1008,

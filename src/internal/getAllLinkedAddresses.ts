@@ -9,16 +9,34 @@ export function getAllLinkedAddresses(
   ignoreRefCount: boolean,
   entryPointer: number
 ) {
-  const leafAddresses: number[] = [];
-  const arcAddresses: number[] = [];
+  const leafAddresses: Set<number> = new Set<number>();
+  const arcAddresses: Set<number> = new Set<number>();
+  const addressesToProcessQueue: number[] = [entryPointer];
 
-  getAllLinkedAddressesStep(
-    carrier,
-    ignoreRefCount,
-    entryPointer,
-    leafAddresses,
-    arcAddresses
-  );
+  let addressToProcess: number | undefined = undefined;
+
+  // const diffs = [];
+
+  while ((addressToProcess = addressesToProcessQueue.shift()) !== undefined) {
+    // const before = addressesToProcessQueue.slice();
+
+    if (addressToProcess === 0) {
+      continue;
+    }
+
+    getAllLinkedAddressesStep(
+      carrier,
+      ignoreRefCount,
+      addressToProcess,
+      leafAddresses,
+      arcAddresses,
+      addressesToProcessQueue
+    );
+
+    // diffs.push(addressesToProcessQueue.filter((p) => !before.includes(p)));
+  }
+
+  // console.log(diffs);
 
   return { leafAddresses, arcAddresses };
 }
@@ -27,10 +45,15 @@ function getAllLinkedAddressesStep(
   carrier: GlobalCarrier,
   ignoreRefCount: boolean,
   entryPointer: number,
-  leafAddresses: number[],
-  arcAddresses: number[]
+  leafAddresses: Set<number>,
+  arcAddresses: Set<number>,
+  addressesToProcessQueue: number[]
 ) {
-  if (isKnownAddressValuePointer(entryPointer)) {
+  if (
+    isKnownAddressValuePointer(entryPointer) ||
+    leafAddresses.has(entryPointer) ||
+    arcAddresses.has(entryPointer)
+  ) {
     return;
   }
 
@@ -41,31 +64,30 @@ function getAllLinkedAddressesStep(
     case ENTRY_TYPE.STRING:
     case ENTRY_TYPE.BIGINT_NEGATIVE:
     case ENTRY_TYPE.BIGINT_POSITIVE:
-      leafAddresses.push(entryPointer);
+      leafAddresses.add(entryPointer);
       break;
 
     case ENTRY_TYPE.OBJECT:
     case ENTRY_TYPE.MAP:
     case ENTRY_TYPE.SET:
       if (entry.refsCount <= 1 || ignoreRefCount) {
-        leafAddresses.push(entryPointer);
+        leafAddresses.add(entryPointer);
         getObjectOrMapOrSetAddresses(
           carrier,
-          ignoreRefCount,
           entry.value,
           leafAddresses,
-          arcAddresses
+          addressesToProcessQueue
         );
       } else {
-        arcAddresses.push(entryPointer);
+        arcAddresses.add(entryPointer);
       }
 
       break;
 
     case ENTRY_TYPE.ARRAY:
       if (entry.refsCount <= 1 || ignoreRefCount) {
-        leafAddresses.push(entryPointer);
-        leafAddresses.push(entry.value);
+        leafAddresses.add(entryPointer);
+        leafAddresses.add(entry.value);
 
         for (let i = 0; i < entry.allocatedLength; i += 1) {
           const valuePointer =
@@ -74,24 +96,18 @@ function getAllLinkedAddressesStep(
                 Uint32Array.BYTES_PER_ELEMENT
             ];
 
-          getAllLinkedAddressesStep(
-            carrier,
-            ignoreRefCount,
-            valuePointer,
-            leafAddresses,
-            arcAddresses
-          );
+          addressesToProcessQueue.push(valuePointer);
         }
       } else {
-        arcAddresses.push(entryPointer);
+        arcAddresses.add(entryPointer);
       }
       break;
 
     case ENTRY_TYPE.DATE:
       if (entry.refsCount <= 1 || ignoreRefCount) {
-        leafAddresses.push(entryPointer);
+        leafAddresses.add(entryPointer);
       } else {
-        arcAddresses.push(entryPointer);
+        arcAddresses.add(entryPointer);
       }
       break;
 
@@ -104,25 +120,22 @@ function getAllLinkedAddressesStep(
 
 export function getObjectOrMapOrSetAddresses(
   carrier: GlobalCarrier,
-  ignoreRefCount: boolean,
   internalHashmapPointer: number,
-  leafAddresses: number[],
-  arcAddresses: number[]
+  leafAddresses: Set<number>,
+  addressesToProcessQueue: number[]
 ) {
   const { pointersToValuePointers, pointers } = hashMapGetPointersToFree(
     carrier,
     internalHashmapPointer
   );
 
-  leafAddresses.push(...pointers);
+  for (const leafPointer of pointers) {
+    leafAddresses.add(leafPointer);
+  }
 
   for (const pointer of pointersToValuePointers) {
-    getAllLinkedAddressesStep(
-      carrier,
-      ignoreRefCount,
-      carrier.uint32[pointer / Uint32Array.BYTES_PER_ELEMENT],
-      leafAddresses,
-      arcAddresses
+    addressesToProcessQueue.push(
+      carrier.uint32[pointer / Uint32Array.BYTES_PER_ELEMENT]
     );
   }
 }

@@ -22,7 +22,7 @@ import {
   hashMapValueLookup,
   createHashMap,
 } from "./hashmap/hashmap";
-import { getObjectOrMapOrSetAddresses } from "./getAllLinkedAddresses";
+import { getAllLinkedAddresses } from "./getAllLinkedAddresses";
 
 export function deleteObjectPropertyEntryByKey(
   externalArgs: ExternalArgs,
@@ -116,30 +116,30 @@ export function objectGet(
   );
 }
 
-export function hashmapClearFree(
-  externalArgs: ExternalArgs,
-  carrier: GlobalCarrier,
-  hashmapPointer: number
-) {
-  const leafAddresses: number[] = [];
-  const arcAddresses: number[] = [];
+// export function hashmapClearFree(
+//   externalArgs: ExternalArgs,
+//   carrier: GlobalCarrier,
+//   hashmapPointer: number
+// ) {
+//   const leafAddresses = new Set<number>();
 
-  getObjectOrMapOrSetAddresses(
-    carrier,
-    false,
-    hashmapPointer,
-    leafAddresses,
-    arcAddresses
-  );
+//   const addressesToProcessQueue: number[] = [];
 
-  for (const address of leafAddresses) {
-    carrier.allocator.free(address);
-  }
+//   getObjectOrMapOrSetAddresses(
+//     carrier,
+//     hashmapPointer,
+//     leafAddresses,
+//     addressesToProcessQueue
+//   );
 
-  for (const address of arcAddresses) {
-    decrementRefCount(externalArgs, carrier, address);
-  }
-}
+//   for (const address of leafAddresses) {
+//     carrier.allocator.free(address);
+//   }
+
+//   for (const address of arcAddresses) {
+//     decrementRefCount(externalArgs, carrier, address);
+//   }
+// }
 
 export function mapOrSetClear(
   externalArgs: ExternalArgs,
@@ -148,7 +148,31 @@ export function mapOrSetClear(
 ) {
   const entry = readEntry(carrier, mapOrSetPtr) as MapEntry | SetEntry;
 
-  hashmapClearFree(externalArgs, carrier, entry.value);
+  const { leafAddresses, arcAddresses } = getAllLinkedAddresses(
+    carrier,
+    true,
+    mapOrSetPtr
+  );
+
+  for (const address of leafAddresses) {
+    // don't dispose the address we need to reuse
+    if (address === mapOrSetPtr) {
+      continue;
+    }
+
+    carrier.allocator.free(address);
+  }
+
+  for (const address of arcAddresses) {
+    // don't dispose the address we need to reuse
+    if (address === mapOrSetPtr) {
+      continue;
+    }
+
+    decrementRefCount(externalArgs, carrier, address);
+  }
+
+  // hashmapClearFree(externalArgs, carrier, entry.value);
 
   entry.value = createHashMap(carrier, externalArgs.hashMapMinInitialCapacity);
 
