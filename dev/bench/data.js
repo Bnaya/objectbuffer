@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1586533014375,
+  "lastUpdate": 1586533069250,
   "repoUrl": "https://github.com/Bnaya/objectbuffer",
   "entries": {
     "Benchmark": [
@@ -1754,6 +1754,37 @@ window.BENCHMARK_DATA = {
             "range": "±2.70%",
             "unit": "ops/sec",
             "extra": "65 samples"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "me@bnaya.net",
+            "name": "Bnaya Peretz",
+            "username": "Bnaya"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "fc62f82d73814a63e8754d7a8230cd5930bf1a10",
+          "message": "Merge pull request #79 from Bnaya/fast-iterations\n\nAdd codesandbox ci",
+          "timestamp": "2020-04-10T18:37:09+03:00",
+          "tree_id": "827ad10d3f59912915ab407cd4e6b8ff3fefa367",
+          "url": "https://github.com/Bnaya/objectbuffer/commit/fc62f82d73814a63e8754d7a8230cd5930bf1a10"
+        },
+        "date": 1586533068357,
+        "tool": "benchmarkjs",
+        "benches": [
+          {
+            "name": "createObjectBuffer with 200 comments",
+            "value": 77.35,
+            "range": "±2.76%",
+            "unit": "ops/sec",
+            "extra": "66 samples"
           }
         ]
       }
