@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1586501684691,
+  "lastUpdate": 1586523744273,
   "repoUrl": "https://github.com/Bnaya/objectbuffer",
   "entries": {
     "Benchmark": [
@@ -1425,6 +1425,37 @@ window.BENCHMARK_DATA = {
             "range": "±3.26%",
             "unit": "ops/sec",
             "extra": "67 samples"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "me@bnaya.net",
+            "name": "Bnaya Peretz",
+            "username": "Bnaya"
+          },
+          "committer": {
+            "email": "me@bnaya.net",
+            "name": "Bnaya Peretz",
+            "username": "Bnaya"
+          },
+          "distinct": true,
+          "id": "411b85b774898f665ac9aba15c911e92e1ede350",
+          "message": "perf fixes #66\n\nRefactor getAllLinkedAddresses from recursive to iterative",
+          "timestamp": "2020-04-10T16:00:02+03:00",
+          "tree_id": "2c3533937eeb3a6e7aea4235afced95013d8c1c2",
+          "url": "https://github.com/Bnaya/objectbuffer/commit/411b85b774898f665ac9aba15c911e92e1ede350"
+        },
+        "date": 1586523743832,
+        "tool": "benchmarkjs",
+        "benches": [
+          {
+            "name": "createObjectBuffer with 200 comments",
+            "value": 81.72,
+            "range": "±2.25%",
+            "unit": "ops/sec",
+            "extra": "69 samples"
           }
         ]
       }
