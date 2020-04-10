@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1586501324047,
+  "lastUpdate": 1586501657056,
   "repoUrl": "https://github.com/Bnaya/objectbuffer",
   "entries": {
     "Benchmark": [
@@ -1336,6 +1336,37 @@ window.BENCHMARK_DATA = {
             "range": "±3.15%",
             "unit": "ops/sec",
             "extra": "62 samples"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "me@bnaya.net",
+            "name": "Bnaya Peretz",
+            "username": "Bnaya"
+          },
+          "committer": {
+            "email": "me@bnaya.net",
+            "name": "Bnaya Peretz",
+            "username": "Bnaya"
+          },
+          "distinct": true,
+          "id": "96df3bb71725b65c563e84a448c7e30e70588e1d",
+          "message": "Apply prettier 2.0 fix",
+          "timestamp": "2020-04-10T09:52:53+03:00",
+          "tree_id": "27230d9a27860b734dae8268c999181d86097975",
+          "url": "https://github.com/Bnaya/objectbuffer/commit/96df3bb71725b65c563e84a448c7e30e70588e1d"
+        },
+        "date": 1586501656231,
+        "tool": "benchmarkjs",
+        "benches": [
+          {
+            "name": "createObjectBuffer with 200 comments",
+            "value": 82.09,
+            "range": "±2.57%",
+            "unit": "ops/sec",
+            "extra": "71 samples"
           }
         ]
       }
