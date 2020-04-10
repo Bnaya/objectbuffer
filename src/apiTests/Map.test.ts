@@ -71,7 +71,10 @@ describe("Map", () => {
     const objectBuffer = createObjectBuffer<any>(externalArgs, 1024, {});
     expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`864`);
 
-    objectBuffer.foo = new Map([[1, "a"]]);
+    objectBuffer.foo = new Map();
+    expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`680`);
+    objectBuffer.foo.set(1, "a");
+    expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`592`);
     objectBuffer.foo.set("2", "b");
     expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`504`);
 
