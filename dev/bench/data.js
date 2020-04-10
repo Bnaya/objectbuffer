@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1586532192534,
+  "lastUpdate": 1586532226851,
   "repoUrl": "https://github.com/Bnaya/objectbuffer",
   "entries": {
     "Benchmark": [
@@ -1690,6 +1690,37 @@ window.BENCHMARK_DATA = {
             "name": "createObjectBuffer with 200 comments",
             "value": 79.02,
             "range": "±6.00%",
+            "unit": "ops/sec",
+            "extra": "69 samples"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "me@bnaya.net",
+            "name": "Bnaya Peretz",
+            "username": "Bnaya"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "547d01860442fc1dc0b24baaab2b7bbd10d934ee",
+          "message": "Merge pull request #78 from Bnaya/maintenance\n\nUpgrade kind-of due to CVE-2019-20149",
+          "timestamp": "2020-04-10T18:22:32+03:00",
+          "tree_id": "ab90ec55a1bd38b912649cbb10a4151ad7d65b3e",
+          "url": "https://github.com/Bnaya/objectbuffer/commit/547d01860442fc1dc0b24baaab2b7bbd10d934ee"
+        },
+        "date": 1586532226343,
+        "tool": "benchmarkjs",
+        "benches": [
+          {
+            "name": "createObjectBuffer with 200 comments",
+            "value": 81.04,
+            "range": "±2.37%",
             "unit": "ops/sec",
             "extra": "69 samples"
           }
