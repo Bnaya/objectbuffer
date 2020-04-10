@@ -6,7 +6,7 @@ import {
   ArrayEntry,
   ObjectEntry,
   MapEntry,
-  SetEntry
+  SetEntry,
 } from "./interfaces";
 import { incrementRefCount, decrementRefCount, readEntry } from "./store";
 import { WrapperDestroyed } from "./exceptions";

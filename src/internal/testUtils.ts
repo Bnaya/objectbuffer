@@ -14,7 +14,7 @@ export function arrayBuffer2HexArray(
 }
 
 export function wait(time: number) {
-  return new Promise(res => {
+  return new Promise((res) => {
     // eslint-disable-next-line no-undef
     setTimeout(res, time);
   });
@@ -98,7 +98,7 @@ export function recordAllocations(operation: () => void, pool: IMemPool) {
 export function makeCarrier(arrayBuffer: ArrayBuffer) {
   const allocator = new MemPool({
     buf: arrayBuffer,
-    start: MEM_POOL_START
+    start: MEM_POOL_START,
   });
 
   const carrier: GlobalCarrier = {
@@ -108,7 +108,7 @@ export function makeCarrier(arrayBuffer: ArrayBuffer) {
     uint16: new Uint16Array(arrayBuffer),
     uint32: new Uint32Array(arrayBuffer),
     float64: new Float64Array(arrayBuffer),
-    bigUint64: new BigUint64Array(arrayBuffer)
+    bigUint64: new BigUint64Array(arrayBuffer),
   };
 
   return carrier;

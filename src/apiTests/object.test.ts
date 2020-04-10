@@ -9,7 +9,7 @@ import { externalArgsApiToExternalArgsApi } from "../internal/utils";
 describe("object tests", () => {
   const externalArgs = externalArgsApiToExternalArgsApi({
     textEncoder: new util.TextEncoder(),
-    textDecoder: new util.TextDecoder()
+    textDecoder: new util.TextDecoder(),
   });
 
   test("delete object prop", () => {
@@ -32,7 +32,7 @@ describe("object tests", () => {
       c: false,
       d: null,
       e: undefined,
-      foo: { a: 1, b: true, c: false, d: null, e: undefined }
+      foo: { a: 1, b: true, c: false, d: null, e: undefined },
     };
 
     const objectBuffer = createObjectBuffer<any>(externalArgs, 2048, input);

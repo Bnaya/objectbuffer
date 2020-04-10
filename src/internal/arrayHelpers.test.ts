@@ -6,7 +6,7 @@ import { arraySaver } from "./arraySaver";
 import {
   arrayGetMetadata,
   getFinalValueAtArrayIndex,
-  setValueAtArrayIndex
+  setValueAtArrayIndex,
 } from "./arrayHelpers";
 import { ExternalArgs } from "./interfaces";
 import { MemPool } from "@thi.ng/malloc";
@@ -17,7 +17,7 @@ import { makeCarrier } from "./testUtils";
 const externalArgs: ExternalArgs = externalArgsApiToExternalArgsApi({
   textEncoder: new util.TextEncoder(),
   textDecoder: new util.TextDecoder(),
-  arrayAdditionalAllocation: 0
+  arrayAdditionalAllocation: 0,
 });
 
 describe("arrayHelpers tests", () => {
@@ -53,7 +53,7 @@ describe("arrayHelpers tests", () => {
       initializeArrayBuffer(arrayBuffer);
       const allocator = new MemPool({
         buf: arrayBuffer,
-        start: MEM_POOL_START
+        start: MEM_POOL_START,
       });
 
       const arrayToSave = [1, 2];
@@ -78,7 +78,7 @@ describe("arrayHelpers tests", () => {
       initializeArrayBuffer(arrayBuffer);
       const allocator = new MemPool({
         buf: arrayBuffer,
-        start: MEM_POOL_START
+        start: MEM_POOL_START,
       });
 
       const arrayToSave = [1, 2];
@@ -103,7 +103,7 @@ describe("arrayHelpers tests", () => {
       initializeArrayBuffer(arrayBuffer);
       const allocator = new MemPool({
         buf: arrayBuffer,
-        start: MEM_POOL_START
+        start: MEM_POOL_START,
       });
 
       const arrayToSave = ["a", "b"];
@@ -129,7 +129,7 @@ describe("arrayHelpers tests", () => {
     initializeArrayBuffer(arrayBuffer);
     const allocator = new MemPool({
       buf: arrayBuffer,
-      start: MEM_POOL_START
+      start: MEM_POOL_START,
     });
 
     const arrayToSave = [1, 2];

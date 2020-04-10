@@ -2,7 +2,7 @@
 import {
   layoutDeclarationToMemoryMap,
   createMemoryOperator,
-  _buildMemoryLayout
+  _buildMemoryLayout,
 } from "./memoryMachinery";
 import { arrayBuffer2HexArray, makeCarrier } from "./testUtils";
 
@@ -11,7 +11,7 @@ describe("memory manifest", () => {
     const input = {
       Uint16: Uint16Array,
       Uint32: Uint32Array,
-      Uint8: Uint8Array
+      Uint8: Uint8Array,
     };
 
     const r = layoutDeclarationToMemoryMap(input);
@@ -36,11 +36,11 @@ describe("memory manifest", () => {
     expect(
       Object.entries(r)
         .filter(([key]) => key !== "SIZE_OF")
-        .map(entry => [
+        .map((entry) => [
           entry[0],
           // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
           // @ts-ignore
-          entry[1].type
+          entry[1].type,
         ])
     ).toEqual(Object.entries(input));
   });
@@ -48,7 +48,7 @@ describe("memory manifest", () => {
   test("createMemoryOperator.set", () => {
     const memoryMap = layoutDeclarationToMemoryMap({
       POINTER_TO_NODE: Uint32Array,
-      LENGTH_OF_KEY: Uint32Array
+      LENGTH_OF_KEY: Uint32Array,
     });
 
     const ab = new ArrayBuffer(memoryMap.SIZE_OF + 48);
@@ -187,7 +187,7 @@ Array [
   test("createMemoryOperator.get", () => {
     const memoryMap = layoutDeclarationToMemoryMap({
       POINTER_TO_NODE: Uint32Array,
-      LENGTH_OF_KEY: Uint32Array
+      LENGTH_OF_KEY: Uint32Array,
     });
 
     const ab = new ArrayBuffer(memoryMap.SIZE_OF + 48);
@@ -207,7 +207,7 @@ test("buildMemoryLayout", () => {
     NODE_VALUE_POINTER: Uint32Array.BYTES_PER_ELEMENT,
     MODE_NEXT_BUCKET_NODE_POINTER: Uint32Array.BYTES_PER_ELEMENT,
     NODE_KEY_POINTER: Uint32Array.BYTES_PER_ELEMENT,
-    NODE_KEY_LENGTH: Uint16Array.BYTES_PER_ELEMENT
+    NODE_KEY_LENGTH: Uint16Array.BYTES_PER_ELEMENT,
   });
 
   expect(memoryLayout).toMatchInlineSnapshot(`

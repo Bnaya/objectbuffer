@@ -64,12 +64,12 @@ export function getKeyStartLength(carrier: GlobalCarrier, keyPointer: number) {
   ) {
     return {
       start: keyPointer + 1,
-      length: Float64Array.BYTES_PER_ELEMENT
+      length: Float64Array.BYTES_PER_ELEMENT,
     };
   } else {
     return {
       start: keyPointer + 1 + 2 + 2,
-      length: carrier.uint16[(keyPointer + 1) / Uint16Array.BYTES_PER_ELEMENT]
+      length: carrier.uint16[(keyPointer + 1) / Uint16Array.BYTES_PER_ELEMENT],
     };
   }
 }

@@ -9,7 +9,7 @@ describe("sizeOf tests", () => {
   const externalArgs = externalArgsApiToExternalArgsApi({
     textEncoder: new util.TextEncoder(),
     textDecoder: new util.TextDecoder(),
-    arrayAdditionalAllocation: 20
+    arrayAdditionalAllocation: 20,
   });
 
   function doThatForMe(value: any) {
@@ -24,7 +24,7 @@ describe("sizeOf tests", () => {
 
     return {
       calcedSize,
-      realSize: beforeSave - afterSave
+      realSize: beforeSave - afterSave,
     };
   }
 

@@ -2,12 +2,12 @@ import {
   ExternalArgs,
   GlobalCarrier,
   MapEntry,
-  InternalAPI
+  InternalAPI,
 } from "./interfaces";
 import {
   deleteObjectPropertyEntryByKey,
   objectSet,
-  mapOrSetClear
+  mapOrSetClear,
 } from "./objectWrapperHelpers";
 
 import { INTERNAL_API_SYMBOL } from "./symbols";
@@ -18,7 +18,7 @@ import {
   hashMapNodeLookup,
   hashMapSize,
   hashMapNodePointerToKeyValue,
-  hashmapNodesPointerIterator
+  hashmapNodesPointerIterator,
 } from "./hashmap/hashmap";
 import { entryToFinalJavaScriptValue } from "./entryToFinalJavaScriptValue";
 

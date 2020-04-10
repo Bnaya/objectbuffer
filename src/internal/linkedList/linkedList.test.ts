@@ -3,7 +3,7 @@
 import {
   arrayBuffer2HexArray,
   recordAllocations,
-  makeCarrier
+  makeCarrier,
 } from "../testUtils";
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
@@ -16,7 +16,7 @@ import {
   initLinkedList,
   linkedListLowLevelIterator,
   linkedListGetValue,
-  linkedListGetPointersToFree
+  linkedListGetPointersToFree,
   // LINKED_LIST_ITEM_MACHINE
 } from "./linkedList";
 
@@ -99,7 +99,7 @@ describe("LinkedList", () => {
       linkedListItemInsert(carrier, linkedListPointer, 7),
       linkedListItemInsert(carrier, linkedListPointer, 6),
       linkedListItemInsert(carrier, linkedListPointer, 5),
-      linkedListItemInsert(carrier, linkedListPointer, 4)
+      linkedListItemInsert(carrier, linkedListPointer, 4),
     ];
 
     const values = [];
@@ -126,7 +126,7 @@ describe("LinkedList", () => {
 
     expect(carrier.allocator.stats().available).toMatchInlineSnapshot(`120`);
 
-    itemsPointers.forEach(p => linkedListItemRemove(carrier, p));
+    itemsPointers.forEach((p) => linkedListItemRemove(carrier, p));
 
     expect(carrier.allocator.stats().available).toMatchInlineSnapshot(`184`);
   });
@@ -141,7 +141,7 @@ describe("LinkedList", () => {
       linkedListItemInsert(carrier, linkedListPointer, 7),
       linkedListItemInsert(carrier, linkedListPointer, 6),
       linkedListItemInsert(carrier, linkedListPointer, 5),
-      linkedListItemInsert(carrier, linkedListPointer, 4)
+      linkedListItemInsert(carrier, linkedListPointer, 4),
     ];
 
     const values = [];
@@ -175,7 +175,7 @@ describe("LinkedList", () => {
 
     expect(carrier.allocator.stats().available).toMatchInlineSnapshot(`152`);
 
-    itemsPointers.forEach(p => linkedListItemRemove(carrier, p));
+    itemsPointers.forEach((p) => linkedListItemRemove(carrier, p));
 
     expect(carrier.allocator.stats().available).toMatchInlineSnapshot(`184`);
   });
@@ -191,7 +191,7 @@ describe("LinkedList", () => {
       linkedListItemInsert(carrier, linkedListPointer, 7),
       linkedListItemInsert(carrier, linkedListPointer, 6),
       linkedListItemInsert(carrier, linkedListPointer, 5),
-      linkedListItemInsert(carrier, linkedListPointer, 4)
+      linkedListItemInsert(carrier, linkedListPointer, 4),
     ];
 
     const linkedLintResults = [];
@@ -232,7 +232,7 @@ describe("LinkedList", () => {
     expect(regularSetResults).toEqual(linkedLintResults);
     expect(carrier.allocator.stats().available).toMatchInlineSnapshot(`152`);
 
-    itemsPointers.forEach(p => linkedListItemRemove(carrier, p));
+    itemsPointers.forEach((p) => linkedListItemRemove(carrier, p));
 
     expect(carrier.allocator.stats().available).toMatchInlineSnapshot(`184`);
   });
@@ -245,7 +245,7 @@ describe("LinkedList", () => {
 
     const itemsPointers = [
       linkedListItemInsert(carrier, linkedListPointer, 7),
-      linkedListItemInsert(carrier, linkedListPointer, 6)
+      linkedListItemInsert(carrier, linkedListPointer, 6),
     ];
 
     const toAdd = [8, 9];
@@ -290,7 +290,7 @@ describe("LinkedList", () => {
 
     expect(carrier.allocator.stats().available).toMatchInlineSnapshot(`120`);
 
-    itemsPointers.forEach(p => linkedListItemRemove(carrier, p));
+    itemsPointers.forEach((p) => linkedListItemRemove(carrier, p));
 
     const iteratorPointerToFree = 0;
     while (

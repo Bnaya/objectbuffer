@@ -10,7 +10,7 @@ import { makeCarrier } from "./testUtils";
 describe("objectWrapper tests", () => {
   const externalArgs = externalArgsApiToExternalArgsApi({
     textEncoder: new util.TextEncoder(),
-    textDecoder: new util.TextDecoder()
+    textDecoder: new util.TextDecoder(),
   });
 
   describe("objectWrapper - general", () => {
@@ -25,8 +25,8 @@ describe("objectWrapper tests", () => {
         b: "imastringa",
         5: undefined,
         nestedObject: {
-          nestedProp: 7
-        }
+          nestedProp: 7,
+        },
       };
 
       const saverOutput = objectSaver(externalArgs, carrier, [], objectToSave);
@@ -68,8 +68,8 @@ describe("objectWrapper tests", () => {
         b: "imastringa",
         5: undefined,
         nestedObject: {
-          nestedProp: 7
-        }
+          nestedProp: 7,
+        },
       };
 
       const saverOutput = objectSaver(externalArgs, carrier, [], objectToSave);
@@ -98,8 +98,8 @@ describe("objectWrapper tests", () => {
         b: "imastringa",
         5: undefined,
         nestedObject: {
-          nestedProp: 7
-        }
+          nestedProp: 7,
+        },
       };
 
       const saverOutput = objectSaver(externalArgs, carrier, [], objectToSave);
@@ -139,8 +139,8 @@ describe("objectWrapper tests", () => {
         b: "imastringa",
         5: undefined,
         nestedObject: {
-          nestedProp: 7
-        }
+          nestedProp: 7,
+        },
       };
 
       const saverOutput = objectSaver(externalArgs, carrier, [], objectToSave);
@@ -181,8 +181,8 @@ describe("objectWrapper tests", () => {
         b: "imastringa",
         5: undefined,
         nestedObject: {
-          nestedProp: 7
-        }
+          nestedProp: 7,
+        },
       };
 
       const saverOutput = objectSaver(externalArgs, carrier, [], objectToSave);

@@ -8,14 +8,14 @@ describe("defensiveErrors", () => {
   const externalArgs = externalArgsApiToExternalArgsApi({
     textEncoder: new util.TextEncoder(),
     textDecoder: new util.TextDecoder(),
-    arrayAdditionalAllocation: 20
+    arrayAdditionalAllocation: 20,
   });
 
   test("defensiveErrors Date", () => {
     const objectBuffer = createObjectBuffer(externalArgs, 1024, {
       date: new Date(0),
       array: [1],
-      object: {}
+      object: {},
     });
 
     expect(() => {
@@ -30,7 +30,7 @@ describe("defensiveErrors", () => {
 
     expect(() => {
       Object.defineProperty(objectBuffer.date, "propy", {
-        enumerable: true
+        enumerable: true,
       });
     }).toThrowErrorMatchingInlineSnapshot(`"UnsupportedOperationError"`);
 
@@ -53,7 +53,7 @@ describe("defensiveErrors", () => {
     const objectBuffer = createObjectBuffer(externalArgs, 1024, {
       date: new Date(0),
       array: [1],
-      object: {}
+      object: {},
     });
 
     expect(() => {
@@ -85,13 +85,13 @@ describe("defensiveErrors", () => {
     const objectBuffer = createObjectBuffer(externalArgs, 1024, {
       date: new Date(0),
       array: [1],
-      object: {}
+      object: {},
     });
 
     expect(() => {
       Object.defineProperty(objectBuffer.object, "newProp", {
         configurable: false,
-        enumerable: false
+        enumerable: false,
       });
     }).toThrowErrorMatchingInlineSnapshot(`"UnsupportedOperationError"`);
 

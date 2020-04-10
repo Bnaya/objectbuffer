@@ -4,7 +4,7 @@ const ALLOWS_TYPED_ARRAYS_CTORS = [
   Uint8Array,
   Uint32Array,
   // BigUint64Array,
-  Uint16Array
+  Uint16Array,
 ] as const;
 
 type TypedArrayCtor = typeof ALLOWS_TYPED_ARRAYS_CTORS[number];
@@ -34,7 +34,7 @@ const READ_WRITE_MAPS_V2 = [
   [Uint8Array, "uint8"],
   [Uint32Array, "uint32"],
   // [BigUint64Array, dataViewInstance.getBigUint64, dataViewInstance.setBigUint64],
-  [Uint16Array, "uint16"]
+  [Uint16Array, "uint16"],
 ] as const;
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
@@ -44,7 +44,7 @@ const READ_WRITE_MAPS_V2 = [
 // const READ_MAP = new Map(READ_WRITE_MAPS.map(e => [e[0], e[1]]));
 // const WRITE_MAP = new Map(READ_WRITE_MAPS.map(e => [e[0], e[2]]));
 
-const READ_WRITE_MAP_V2 = new Map(READ_WRITE_MAPS_V2.map(e => [e[0], e[1]]));
+const READ_WRITE_MAP_V2 = new Map(READ_WRITE_MAPS_V2.map((e) => [e[0], e[1]]));
 
 export interface MemoryOperator<T extends string> {
   set(key: T, value: number): void;
@@ -87,7 +87,7 @@ export function createMemoryOperator<T extends string>(
     set startAddress(value: number) {
       startAddress = value;
     },
-    size: memoryMap.SIZE_OF
+    size: memoryMap.SIZE_OF,
   };
 }
 
@@ -110,8 +110,8 @@ export function layoutDeclarationToMemoryMap<T extends string>(
           bytesOffset:
             newObjectEntries[index - 1][1].bytesOffset +
             (oldEntries[index - 1][1] as any).BYTES_PER_ELEMENT,
-          type: type as any
-        }
+          type: type as any,
+        },
       ]);
     }
   }
@@ -120,7 +120,7 @@ export function layoutDeclarationToMemoryMap<T extends string>(
     "SIZE_OF",
     newObjectEntries[newObjectEntries.length - 1][1].bytesOffset +
       (oldEntries[newObjectEntries.length - 1][1] as TypedArrayCtor)
-        .BYTES_PER_ELEMENT
+        .BYTES_PER_ELEMENT,
   ]);
 
   return Object.fromEntries(newObjectEntries) as any;
@@ -136,7 +136,7 @@ export function createMemoryMachine<T extends string>(
     createOperator: createMemoryOperator.bind(null, map) as (
       carrier: GlobalCarrier,
       address: number
-    ) => MemoryOperator<T>
+    ) => MemoryOperator<T>,
   };
 }
 
@@ -152,7 +152,7 @@ export function _buildMemoryLayout<T extends { [x: string]: number }>(
     } else {
       newObjectEntries.push([
         key,
-        newObjectEntries[index - 1][1] + oldEntries[index - 1][1]
+        newObjectEntries[index - 1][1] + oldEntries[index - 1][1],
       ]);
     }
   }
@@ -160,7 +160,7 @@ export function _buildMemoryLayout<T extends { [x: string]: number }>(
   newObjectEntries.push([
     "TOTAL_SIZE",
     newObjectEntries[newObjectEntries.length - 1][1] +
-      oldEntries[newObjectEntries.length - 1][1]
+      oldEntries[newObjectEntries.length - 1][1],
   ]);
 
   // eslint-disable-next-line @typescript-eslint/ban-ts-ignore

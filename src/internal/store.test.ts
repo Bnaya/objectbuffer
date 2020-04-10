@@ -4,7 +4,7 @@ import {
   writeEntry,
   initializeArrayBuffer,
   readEntry,
-  appendEntry
+  appendEntry,
 } from "./store";
 import { ENTRY_TYPE } from "./entry-types";
 import * as util from "util";
@@ -52,7 +52,7 @@ describe("Store tests writeEntry", () => {
 
     writeEntry(carrier, 8, {
       type: ENTRY_TYPE.NUMBER,
-      value: Number.MAX_VALUE
+      value: Number.MAX_VALUE,
     });
 
     expect(arrayBuffer2HexArray(arrayBuffer.slice(0, 17)))
@@ -84,7 +84,7 @@ describe("Store tests writeEntry", () => {
 
     writeEntry(carrier, 8, {
       type: ENTRY_TYPE.NUMBER,
-      value: Number.MIN_VALUE
+      value: Number.MIN_VALUE,
     });
 
     expect(arrayBuffer2HexArray(arrayBuffer.slice(0, 17)))
@@ -118,7 +118,7 @@ Array [
     writeEntry(carrier, 8, {
       type: ENTRY_TYPE.STRING,
       value: "aא弟",
-      allocatedBytes: 6
+      allocatedBytes: 6,
     });
 
     expect(arrayBuffer2HexArray(arrayBuffer.slice(0, 19)))
@@ -152,7 +152,7 @@ describe("Store tests readEntry", () => {
   const externalArgs = externalArgsApiToExternalArgsApi({
     textEncoder: new util.TextEncoder(),
     textDecoder: new util.TextDecoder(),
-    arrayAdditionalAllocation: 20
+    arrayAdditionalAllocation: 20,
   });
 
   test("readEntry max number", () => {
@@ -161,7 +161,7 @@ describe("Store tests readEntry", () => {
 
     writeEntry(carrier, 8, {
       type: ENTRY_TYPE.NUMBER,
-      value: Number.MAX_VALUE
+      value: Number.MAX_VALUE,
     });
 
     const redEntry = readEntry(carrier, 8);
@@ -182,7 +182,7 @@ describe("Store tests readEntry", () => {
 
     writeEntry(carrier, 8, {
       type: ENTRY_TYPE.NUMBER,
-      value: Number.MIN_VALUE
+      value: Number.MIN_VALUE,
     });
 
     const redEntry = readEntry(carrier, 8);
@@ -202,7 +202,7 @@ describe("Store tests readEntry", () => {
     writeEntry(carrier, 0, {
       type: ENTRY_TYPE.STRING,
       value: "aא弟",
-      allocatedBytes: 6
+      allocatedBytes: 6,
     });
 
     const entry = readEntry(carrier, 0);
@@ -222,7 +222,7 @@ describe("Store tests readEntry", () => {
 
     writeEntry(carrier, 0, {
       type: ENTRY_TYPE.BIGINT_POSITIVE,
-      value: BigInt("0b0" + "1".repeat(63))
+      value: BigInt("0b0" + "1".repeat(63)),
     });
 
     const entry = readEntry(carrier, 0);
@@ -241,7 +241,7 @@ describe("Store tests readEntry", () => {
 
     writeEntry(carrier, 0, {
       type: ENTRY_TYPE.BIGINT_POSITIVE,
-      value: BigInt("0b" + "1".repeat(64))
+      value: BigInt("0b" + "1".repeat(64)),
     });
 
     const entry = readEntry(carrier, 0);
@@ -259,7 +259,7 @@ describe("Store tests readEntry", () => {
 
     writeEntry(carrier, 0, {
       type: ENTRY_TYPE.BIGINT_POSITIVE,
-      value: BigInt("0b" + "1".repeat(64))
+      value: BigInt("0b" + "1".repeat(64)),
     });
 
     expect(readEntry(carrier, 0)).toMatchInlineSnapshot(`
@@ -276,7 +276,7 @@ describe("Store tests readEntry", () => {
 
     writeEntry(carrier, 0, {
       type: ENTRY_TYPE.BIGINT_NEGATIVE,
-      value: -BigInt("0b" + "1".repeat(64))
+      value: -BigInt("0b" + "1".repeat(64)),
     });
 
     expect(readEntry(carrier, 0)).toMatchInlineSnapshot(`
@@ -294,7 +294,7 @@ describe("Store tests readEntry", () => {
     expect(() => {
       writeEntry(carrier, 0, {
         type: ENTRY_TYPE.BIGINT_POSITIVE,
-        value: BigInt("0b" + "1".repeat(65))
+        value: BigInt("0b" + "1".repeat(65)),
       });
     }).toThrowErrorMatchingInlineSnapshot(`"BigInt64OverflowError"`);
   });
@@ -307,7 +307,7 @@ describe("Store tests readEntry", () => {
       const entryToWrite: ObjectEntry = {
         type: ENTRY_TYPE.OBJECT,
         refsCount: 0,
-        value: 10
+        value: 10,
       };
 
       writeEntry(carrier, 0, entryToWrite);
@@ -334,7 +334,7 @@ describe("Store tests readEntry", () => {
       const r1 = appendEntry(externalArgs, carrier, {
         type: ENTRY_TYPE.STRING,
         value: "im a string",
-        allocatedBytes: 11
+        allocatedBytes: 11,
       });
 
       expect(r1).toMatchInlineSnapshot(`48`);

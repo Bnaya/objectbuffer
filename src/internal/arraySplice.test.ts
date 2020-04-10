@@ -13,7 +13,7 @@ describe("arraySplice tests", () => {
   const externalArgs = externalArgsApiToExternalArgsApi({
     textEncoder: new util.TextEncoder(),
     textDecoder: new util.TextDecoder(),
-    arrayAdditionalAllocation: 20
+    arrayAdditionalAllocation: 20,
   });
 
   test("arrayWrapper splice - add + delete - array stay in same length", () => {
@@ -22,7 +22,7 @@ describe("arraySplice tests", () => {
     initializeArrayBuffer(arrayBuffer);
     const allocator = new MemPool({
       buf: arrayBuffer,
-      start: MEM_POOL_START
+      start: MEM_POOL_START,
     });
 
     const plainJSArray: any[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
@@ -95,7 +95,7 @@ describe("arraySplice tests", () => {
     initializeArrayBuffer(arrayBuffer);
     const allocator = new MemPool({
       buf: arrayBuffer,
-      start: MEM_POOL_START
+      start: MEM_POOL_START,
     });
 
     const plainJSArray: any[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
@@ -145,7 +145,7 @@ describe("arraySplice tests", () => {
     initializeArrayBuffer(arrayBuffer);
     const allocator = new MemPool({
       buf: arrayBuffer,
-      start: MEM_POOL_START
+      start: MEM_POOL_START,
     });
 
     const plainJSArray: any[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
@@ -204,7 +204,7 @@ describe("arraySplice tests", () => {
     initializeArrayBuffer(arrayBuffer);
     const allocator = new MemPool({
       buf: arrayBuffer,
-      start: MEM_POOL_START
+      start: MEM_POOL_START,
     });
 
     const plainJSArray: any[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
@@ -285,7 +285,7 @@ describe("arraySplice tests", () => {
     initializeArrayBuffer(arrayBuffer);
     const allocator = new MemPool({
       buf: arrayBuffer,
-      start: MEM_POOL_START
+      start: MEM_POOL_START,
     });
 
     const plainJSArray: any[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
@@ -367,7 +367,7 @@ describe("arraySplice tests", () => {
     initializeArrayBuffer(arrayBuffer);
     const allocator = new MemPool({
       buf: arrayBuffer,
-      start: MEM_POOL_START
+      start: MEM_POOL_START,
     });
 
     const plainJSArray: any[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
@@ -435,7 +435,7 @@ describe("arraySplice tests", () => {
     initializeArrayBuffer(arrayBuffer);
     const allocator = new MemPool({
       buf: arrayBuffer,
-      start: MEM_POOL_START
+      start: MEM_POOL_START,
     });
 
     const plainJSArray: any[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
@@ -509,7 +509,7 @@ describe("arraySplice tests", () => {
     initializeArrayBuffer(arrayBuffer);
     const allocator = new MemPool({
       buf: arrayBuffer,
-      start: MEM_POOL_START
+      start: MEM_POOL_START,
     });
 
     const plainJSArray: any[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
@@ -583,7 +583,7 @@ describe("arraySplice tests", () => {
     initializeArrayBuffer(arrayBuffer);
     const allocator = new MemPool({
       buf: arrayBuffer,
-      start: MEM_POOL_START
+      start: MEM_POOL_START,
     });
 
     const plainJSArray = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
