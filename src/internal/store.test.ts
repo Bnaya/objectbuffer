@@ -7,7 +7,7 @@ import {
   appendEntry,
 } from "./store";
 import { ENTRY_TYPE } from "./entry-types";
-import * as util from "util";
+
 import { arrayBuffer2HexArray, makeCarrier } from "./testUtils";
 import { ObjectEntry } from "./interfaces";
 import { externalArgsApiToExternalArgsApi } from "./utils";
@@ -150,8 +150,6 @@ Array [
 
 describe("Store tests readEntry", () => {
   const externalArgs = externalArgsApiToExternalArgsApi({
-    textEncoder: new util.TextEncoder(),
-    textDecoder: new util.TextDecoder(),
     arrayAdditionalAllocation: 20,
   });
 

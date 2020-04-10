@@ -3,8 +3,6 @@
 import * as objectbufferModule from "../src";
 
 const externalArgs: objectbufferModule.ExternalArgs = {
-  textEncoder: new TextEncoder(),
-  textDecoder: new TextDecoder()
 };
 
 addEventListener("message", ev => {

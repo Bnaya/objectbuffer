@@ -1,16 +1,11 @@
 /* eslint-env jest */
 
-import * as util from "util";
-
 import { createObjectBuffer } from "../";
 import { memoryStats } from "../internal/api";
 import { externalArgsApiToExternalArgsApi } from "../internal/utils";
 
 describe("object tests", () => {
-  const externalArgs = externalArgsApiToExternalArgsApi({
-    textEncoder: new util.TextEncoder(),
-    textDecoder: new util.TextDecoder(),
-  });
+  const externalArgs = externalArgsApiToExternalArgsApi({});
 
   test("delete object prop", () => {
     const objectBuffer = createObjectBuffer<any>(externalArgs, 1024, {});

@@ -1,20 +1,23 @@
-# ObjectBuffer: object-like API, backed by a [shared]arraybuffer
+# ObjectBuffer: object-like API, backed by a [shared]arraybuffer 👀
 
 [![npm version](https://badge.fury.io/js/%40bnaya%2Fobjectbuffer.svg)](https://badge.fury.io/js/%40bnaya%2Fobjectbuffer)
 [![Coverage Status](https://coveralls.io/repos/github/Bnaya/objectbuffer/badge.svg)](https://coveralls.io/github/Bnaya/objectbuffer)
 
-## The readme is for latest release `v0.10.0`.big refactor ongoing (allocator, hashmap)
+For Modern browsers and node.
 
-For Modern browsers and node. Zero direct dependencies.
-
-Save, read and update plain javascript objects into `ArrayBuffer` (And not only TypedArrays),  using regular javascript object api, without serialization/deserialization.  
-Look at it as a simple implementation of javascript objects in user-land.
+Save, read and update plain javascript objects into `ArrayBuffer` (And not only TypedArrays),  using regular javascript object api, without serialization/deserialization, or pre-defined schema.  
+In other words, It's an implementation of javascript objects in user-land.
 
 That's enables us to `transfer` or share objects in-memory with `WebWorker` without additional memory or serialization
+While the library is not `1.0`, it is usable. 
 
-The library is still not `1.0`, but already usable, and will never offer full compatibility with plain js (`Symbol` and such)
+A core part of the library is an allocator, that allocates & free memory on the `ArrayBuffer` for us!  
+The allocator in use is [@thi.ng/malloc](https://www.npmjs.com/package/@thi.ng/malloc), part of the amazing [thi.ng/umbrella](https://github.com/thi-ng/umbrella) project
 
-For in-depth overview of how things are implemented, see [implementation details document](docs/implementationDetails.md)
+## 🐉🐉🐉 Adventurers Beware 🐉🐉🐉
+Using this library, and workers in general, will not necessarily make you code faster.  
+First be sure where are your bottlenecks and if you don't have a better and more simple workaround.  
+I personally also really like what's going on around the [main thread scheduling proposal](https://github.com/WICG/main-thread-scheduling) and [react userland scheduler](https://www.npmjs.com/package/scheduler) that powers concurrent react
 
 ## Quick example
 
@@ -26,11 +29,7 @@ const initialValue = {
 };
 // ArrayBuffer is created under the hood
 const myObject = createObjectBuffer(
-  {
-    // available globally in the browser, or inside `util` in node
-    textEncoder: new TextEncoder(),
-    textDecoder: new TextDecoder()
-  },
+  {},
   // size in bytes
   1024,
   initialValue
@@ -79,25 +78,25 @@ Before putting any eggs in the basket, please go over the [implementation detail
 * objects (with nesting and all)
 * arrays
 * Date
-* Internal references (`foo.bar2 = foo.bar` will not create a copy)
+* BigInt
+* Internal references (`foo.bar2 = foo.bar` will not create a copy, but a reference)
+* Automatic reference counting, to dispose a value you need to use the `disposeWrapperObject` or to have WeakRef support
 * Internal equality between objects (`foo.bar === foo.bar` will be true)
-* global lock for shared memory using [Atomics](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Atomics) (i hope its really working)
+* global lock for shared memory using [Atomics](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Atomics) (I hope its really working)
 
 ## Caveats & Limitations
 
-* Need to specify size for the `ArrayBuffer`. When exceed that size, exception will be thrown. (Can be extended with a utility function, but not automatically)
-* Not memory re-use. memory allocation is append based, or overwrite when possible [#21](https://github.com/Bnaya/objectbuffer/issues/21)
-* Object are implemented using simple linked list [#26](https://github.com/Bnaya/objectbuffer/issues/26)
-* Maps & Sets are not supported yet [#15](https://github.com/Bnaya/objectbuffer/issues/15) & [#24](https://github.com/Bnaya/objectbuffer/issues/24)
-* No prototype chain. objects props will simply be copied
-* Additional props on Array, Date, primitives will not be saved.
-* getters, setters, will not work/break the library
+* Need to specify size for the `ArrayBuffer`. When exceed that size, exception will be thrown. (Can be extended later with a utility function, but not automatically)
+* No prototype chain. no methods on the objects
+* Adding getters, setters, will not work/break the library
+* deleting/removing the current key of Map/Set while iteration will make you skip the next key [#60](https://github.com/Bnaya/objectbuffer/issues/60)
+* unreliable_sizeOf is unreliable due to hashmap array side depends on actual keys, Also It's an expensive operation
 
 ### What's not working yet, but can be
 
 * `bigint` bigger than 64 bit
 
-### What's probably never going to work (convince me otherwise )
+### What's probably never going to work
 
 * Anything that cannot go into `JSON.stringify`
 * `Symbol`
@@ -105,4 +104,12 @@ Before putting any eggs in the basket, please go over the [implementation detail
 ## Contribution / Collaboration
 
 There's a huge place for optimizations, code hygiene, and features!  
-Feel free to open issues and maybe implementing missing parts
+Feel free to open issues and maybe implementing missing parts.  
+The code is Written in TypeScript 🦾, but the semantics are more like `C` 🥵   
+Have a look on the [issues](https://github.com/Bnaya/objectbuffer/issues) and see if you find something interesting
+
+
+## If you came this far, you better also look at:
+* [GoogleChromeLabs/buffer-backed-object](https://github.com/GoogleChromeLabs/buffer-backed-object#readme) 
+* [FlatBuffers](https://google.github.io/flatbuffers/flatbuffers_guide_use_javascript.html)
+

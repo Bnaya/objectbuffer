@@ -1,17 +1,14 @@
 /* eslint-env jest */
 
 import { initializeArrayBuffer } from "./store";
-import * as util from "util";
+
 import { objectSaver } from "./objectSaver";
 import { createObjectWrapper } from "./objectWrapper";
 import { externalArgsApiToExternalArgsApi } from "./utils";
 import { makeCarrier } from "./testUtils";
 
 describe("objectWrapper tests", () => {
-  const externalArgs = externalArgsApiToExternalArgsApi({
-    textEncoder: new util.TextEncoder(),
-    textDecoder: new util.TextDecoder(),
-  });
+  const externalArgs = externalArgsApiToExternalArgsApi({});
 
   describe("objectWrapper - general", () => {
     test("ObjectWrapper class 1", () => {

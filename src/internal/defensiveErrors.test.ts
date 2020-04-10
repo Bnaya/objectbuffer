@@ -1,4 +1,3 @@
-import * as util from "util";
 import { createObjectBuffer } from "..";
 import { externalArgsApiToExternalArgsApi } from "./utils";
 
@@ -6,8 +5,6 @@ import { externalArgsApiToExternalArgsApi } from "./utils";
 
 describe("defensiveErrors", () => {
   const externalArgs = externalArgsApiToExternalArgsApi({
-    textEncoder: new util.TextEncoder(),
-    textDecoder: new util.TextDecoder(),
     arrayAdditionalAllocation: 20,
   });
 

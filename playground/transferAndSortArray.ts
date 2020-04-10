@@ -22,8 +22,6 @@ async function getData() {
 }
 
 const externalArgs: objectbufferModule.ExternalArgs = {
-  textEncoder: new TextEncoder(),
-  textDecoder: new TextDecoder()
 };
 
 async function main() {

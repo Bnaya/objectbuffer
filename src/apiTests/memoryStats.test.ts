@@ -1,15 +1,11 @@
 /* eslint-env jest */
 
-import * as util from "util";
-
 import { createObjectBuffer } from "../";
 import { resizeObjectBuffer, memoryStats } from "../internal/api";
 import { externalArgsApiToExternalArgsApi } from "../internal/utils";
 
 describe("memoryStats test", () => {
   const externalArgs = externalArgsApiToExternalArgsApi({
-    textEncoder: new util.TextEncoder(),
-    textDecoder: new util.TextDecoder(),
     arrayAdditionalAllocation: 0,
   });
 

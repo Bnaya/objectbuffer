@@ -1,7 +1,7 @@
 /* eslint-env jest */
 
 import { initializeArrayBuffer } from "./store";
-import * as util from "util";
+
 import { createArrayWrapper } from "./arrayWrapper";
 import { arraySaver } from "./arraySaver";
 import { MemPool } from "@thi.ng/malloc";
@@ -11,8 +11,6 @@ import { makeCarrier } from "./testUtils";
 
 describe("arrayWrapper tests", () => {
   const externalArgs = externalArgsApiToExternalArgsApi({
-    textEncoder: new util.TextEncoder(),
-    textDecoder: new util.TextDecoder(),
     arrayAdditionalAllocation: 20,
   });
 

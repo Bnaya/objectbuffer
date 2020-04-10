@@ -8,10 +8,7 @@ const objectBufferPrev = require("objectbuffer0100");
 const Benchmark = require("benchmark");
 const util = require("util");
 
-globalThis.externalArgs = {
-  textEncoder: new util.TextEncoder(),
-  textDecoder: new util.TextDecoder()
-};
+globalThis.externalArgs = {};
 
 // makeCreationSuite(objectBuffer, "tip");
 // makeCreationSuite(objectBufferPrev, "objectbuffer0100");
@@ -36,23 +33,23 @@ function makeCreationSuite(theModule, variant) {
     })
     .add("Tiny nested object", () => {
       theModule.createObjectBuffer(globalThis.externalArgs, 1024, {
-        a: { a: 1 }
+        a: { a: 1 },
       });
     })
     .add("Tiny nested object * 2", () => {
       theModule.createObjectBuffer(globalThis.externalArgs, 1024, {
-        a: { a: { a: 1 } }
+        a: { a: { a: 1 } },
       });
     })
-    .on("cycle", function(event) {
+    .on("cycle", function (event) {
       console.log(String(event.target));
     })
-    .on("complete", function() {
+    .on("complete", function () {
       console.log("complete", this.name);
     });
 
   creationWithObjects.run({
-    async: false
+    async: false,
   });
 }
 
@@ -68,7 +65,7 @@ function makeAssignmentSuite() {
       globalThis.externalArgs,
       5048,
       {
-        foo: undefined
+        foo: undefined,
       }
     );
   }
@@ -78,47 +75,47 @@ function makeAssignmentSuite() {
   baseSuite
     .add(
       "Empty Creation",
-      function() {
+      function () {
         ob.foo = {};
       },
       { setup }
     )
     .add(
       "Tiny object",
-      function() {
+      function () {
         ob.foo = { a: 1 };
       },
       { setup }
     )
     .add(
       "Tiny nested object",
-      function() {
+      function () {
         ob.foo = { a: { a: 1 } };
       },
       { setup }
     )
     .add(
       "Tiny nested object * 2",
-      function() {
+      function () {
         ob.foo = {
-          a: { a: { a: 1 } }
+          a: { a: { a: 1 } },
         };
       },
       { setup }
     )
-    .on("cycle", function(event) {
+    .on("cycle", function (event) {
       console.log(String(event.target));
     })
-    .on("complete", function() {
+    .on("complete", function () {
       console.log("complete", this.name);
     });
 
   const suiteTip = baseSuite.clone({
-    name: "Assignment Suite TIP"
+    name: "Assignment Suite TIP",
   });
 
   suiteTip.run({
-    async: false
+    async: false,
   });
 
   // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
@@ -126,10 +123,10 @@ function makeAssignmentSuite() {
   globalThis.currentModule = objectBufferPrev;
 
   const suitePrev = baseSuite.clone({
-    name: "Assignment Suite Old"
+    name: "Assignment Suite Old",
   });
 
   suitePrev.run({
-    async: true
+    async: true,
   });
 }

@@ -1,7 +1,7 @@
 /* eslint-env jest */
 
 import { initializeArrayBuffer, readEntry } from "./store";
-import * as util from "util";
+
 import { objectSaver } from "./objectSaver";
 import {
   getObjectPropertiesEntries,
@@ -13,8 +13,6 @@ import { makeCarrier } from "./testUtils";
 
 describe("objectWrapperHelpers tests", () => {
   const externalArgs = externalArgsApiToExternalArgsApi({
-    textEncoder: new util.TextEncoder(),
-    textDecoder: new util.TextDecoder(),
     arrayAdditionalAllocation: 20,
   });
 
