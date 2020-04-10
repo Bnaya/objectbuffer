@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1586531913898,
+  "lastUpdate": 1586532148826,
   "repoUrl": "https://github.com/Bnaya/objectbuffer",
   "entries": {
     "Benchmark": [
@@ -1634,6 +1634,37 @@ window.BENCHMARK_DATA = {
             "range": "±3.07%",
             "unit": "ops/sec",
             "extra": "57 samples"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "me@bnaya.net",
+            "name": "Bnaya Peretz",
+            "username": "Bnaya"
+          },
+          "committer": {
+            "email": "me@bnaya.net",
+            "name": "Bnaya Peretz",
+            "username": "Bnaya"
+          },
+          "distinct": true,
+          "id": "b8dcd6a4ff23531a03d3ce06d5cf5ed835ca2442",
+          "message": "Upgrade kind-of due to CVE-2019-20149",
+          "timestamp": "2020-04-10T18:20:49+03:00",
+          "tree_id": "ab90ec55a1bd38b912649cbb10a4151ad7d65b3e",
+          "url": "https://github.com/Bnaya/objectbuffer/commit/b8dcd6a4ff23531a03d3ce06d5cf5ed835ca2442"
+        },
+        "date": 1586532148414,
+        "tool": "benchmarkjs",
+        "benches": [
+          {
+            "name": "createObjectBuffer with 200 comments",
+            "value": 78.38,
+            "range": "±3.32%",
+            "unit": "ops/sec",
+            "extra": "68 samples"
           }
         ]
       }
