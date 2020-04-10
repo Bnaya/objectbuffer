@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1586523779898,
+  "lastUpdate": 1586531061542,
   "repoUrl": "https://github.com/Bnaya/objectbuffer",
   "entries": {
     "Benchmark": [
@@ -1483,6 +1483,37 @@ window.BENCHMARK_DATA = {
             "range": "±2.27%",
             "unit": "ops/sec",
             "extra": "65 samples"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "me@bnaya.net",
+            "name": "Bnaya Peretz",
+            "username": "Bnaya"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "a10c867cd02b22712d3525a0850cd3d947ca079f",
+          "message": "Merge pull request #76 from Bnaya/perf-issue-#66\n\nperf fixes #66",
+          "timestamp": "2020-04-10T18:03:37+03:00",
+          "tree_id": "2c3533937eeb3a6e7aea4235afced95013d8c1c2",
+          "url": "https://github.com/Bnaya/objectbuffer/commit/a10c867cd02b22712d3525a0850cd3d947ca079f"
+        },
+        "date": 1586531061071,
+        "tool": "benchmarkjs",
+        "benches": [
+          {
+            "name": "createObjectBuffer with 200 comments",
+            "value": 85.67,
+            "range": "±1.84%",
+            "unit": "ops/sec",
+            "extra": "66 samples"
           }
         ]
       }
