@@ -1,3 +1,7 @@
+/* istanbul ignore file */
+
+// I'm not sure how to test that yet
+
 import { invariant } from "./utils";
 import { getUnderlyingArrayBuffer } from "./api";
 import { LOCK_OFFSET } from "./consts";

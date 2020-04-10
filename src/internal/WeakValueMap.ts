@@ -1,3 +1,7 @@
+/* istanbul ignore file */
+
+// We can't run test with weakrefs yet
+
 const KEYS = 1;
 const VALUES = 2;
 const KEYS_VALUES = 3;
