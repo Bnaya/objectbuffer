@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1586548866618,
+  "lastUpdate": 1586549034720,
   "repoUrl": "https://github.com/Bnaya/objectbuffer",
   "entries": {
     "Benchmark": [
@@ -2222,6 +2222,37 @@ window.BENCHMARK_DATA = {
             "range": "±2.36%",
             "unit": "ops/sec",
             "extra": "69 samples"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "me@bnaya.net",
+            "name": "Bnaya Peretz",
+            "username": "Bnaya"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "a2ec4b4cde8c97da73bb035c1962a19c3847a364",
+          "message": "Merge pull request #80 from Bnaya/fast-iterations\n\nBunch of stuff",
+          "timestamp": "2020-04-10T23:02:45+03:00",
+          "tree_id": "187ddcf0cf35a6edb9fbbf2e598c0720d7b9ed27",
+          "url": "https://github.com/Bnaya/objectbuffer/commit/a2ec4b4cde8c97da73bb035c1962a19c3847a364"
+        },
+        "date": 1586549034273,
+        "tool": "benchmarkjs",
+        "benches": [
+          {
+            "name": "createObjectBuffer with 200 comments",
+            "value": 94.6,
+            "range": "±2.27%",
+            "unit": "ops/sec",
+            "extra": "70 samples"
           }
         ]
       }
