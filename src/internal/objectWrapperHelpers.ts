@@ -12,6 +12,7 @@ import {
   handleArcForDeletedValuePointer,
   decrementRefCount,
   writeEntry,
+  setRefCount,
 } from "./store";
 import { entryToFinalJavaScriptValue } from "./entryToFinalJavaScriptValue";
 import {
@@ -148,9 +149,12 @@ export function mapOrSetClear(
 ) {
   const entry = readEntry(carrier, mapOrSetPtr) as MapEntry | SetEntry;
 
+  // we fake the entry refCount as zero so getAllLinkedAddresses will visit what's needed
+  const prevCount = setRefCount(carrier, mapOrSetPtr, 0);
+
   const { leafAddresses, arcAddresses } = getAllLinkedAddresses(
     carrier,
-    true,
+    false,
     mapOrSetPtr
   );
 
@@ -173,6 +177,9 @@ export function mapOrSetClear(
   }
 
   // hashmapClearFree(externalArgs, carrier, entry.value);
+
+  // Restore real ref count
+  setRefCount(carrier, mapOrSetPtr, prevCount);
 
   entry.value = createHashMap(carrier, externalArgs.hashMapMinInitialCapacity);
 
