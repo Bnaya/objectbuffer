@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1586531861460,
+  "lastUpdate": 1586531913898,
   "repoUrl": "https://github.com/Bnaya/objectbuffer",
   "entries": {
     "Benchmark": [
@@ -1603,6 +1603,37 @@ window.BENCHMARK_DATA = {
             "range": "±1.82%",
             "unit": "ops/sec",
             "extra": "68 samples"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "me@bnaya.net",
+            "name": "Bnaya Peretz",
+            "username": "Bnaya"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "7d79fe63a91b34998458af68dee58527d42f5fd3",
+          "message": "Merge pull request #77 from Bnaya/more-currect-mapOrSetClear\n\nDon't ignore ref count, but zero & restore it",
+          "timestamp": "2020-04-10T18:17:52+03:00",
+          "tree_id": "e04db1307d1738d6e6d80129d6252e34a62e0492",
+          "url": "https://github.com/Bnaya/objectbuffer/commit/7d79fe63a91b34998458af68dee58527d42f5fd3"
+        },
+        "date": 1586531913519,
+        "tool": "benchmarkjs",
+        "benches": [
+          {
+            "name": "createObjectBuffer with 200 comments",
+            "value": 77.46,
+            "range": "±3.07%",
+            "unit": "ops/sec",
+            "extra": "57 samples"
           }
         ]
       }
