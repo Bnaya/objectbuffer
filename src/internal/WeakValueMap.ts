@@ -3,6 +3,7 @@ const VALUES = 2;
 const KEYS_VALUES = 3;
 
 declare const FinalizationGroup: any;
+declare const FinalizationRegistry: any;
 declare const WeakRef: any;
 
 export class WeakValueMap<K, V> implements Map<K, V> {
@@ -21,7 +22,12 @@ export class WeakValueMap<K, V> implements Map<K, V> {
 
     this.map = new Map<K, any>();
 
-    this.group = new FinalizationGroup((iterator: Iterable<any>) => {
+    const FinalizationSomething =
+      typeof FinalizationRegistry !== "undefined"
+        ? FinalizationRegistry
+        : FinalizationGroup;
+
+    this.group = new FinalizationSomething((iterator: Iterable<any>) => {
       for (const key of iterator) {
         this.map.delete(key);
         if (this.externalFinalizer) {

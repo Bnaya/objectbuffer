@@ -23,5 +23,9 @@ export function getCacheFor(
 }
 
 function supportWeakRef() {
-  return typeof WeakRef !== "undefined";
+  return (
+    typeof WeakRef !== "undefined" &&
+    (typeof FinalizationGroup !== "undefined" ||
+      typeof "FinalizationRegistry" !== "undefined")
+  );
 }
