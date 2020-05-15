@@ -28,6 +28,7 @@ describe("object tests", () => {
       d: null,
       e: undefined,
       foo: { a: 1, b: true, c: false, d: null, e: undefined },
+      g: "😌😌",
     };
 
     const objectBuffer = createObjectBuffer<any>(externalArgs, 2048, input);
