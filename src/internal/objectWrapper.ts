@@ -16,8 +16,8 @@ import { BaseProxyTrap } from "./BaseProxyTrap";
 import { hashMapNodeLookup } from "./hashmap/hashmap";
 
 export class ObjectWrapper extends BaseProxyTrap<ObjectEntry>
-  implements ProxyHandler<{}> {
-  public get(target: {}, p: PropertyKey): any {
+  implements ProxyHandler<Record<string, unknown>> {
+  public get(target: Record<string, unknown>, p: PropertyKey): any {
     if (p === INTERNAL_API_SYMBOL) {
       return this;
     }
@@ -29,7 +29,10 @@ export class ObjectWrapper extends BaseProxyTrap<ObjectEntry>
     return objectGet(this.externalArgs, this.carrier, this.entry.value, p);
   }
 
-  public deleteProperty(target: {}, p: PropertyKey): boolean {
+  public deleteProperty(
+    target: Record<string, unknown>,
+    p: PropertyKey
+  ): boolean {
     if (typeof p === "symbol") {
       return false;
     }
@@ -60,7 +63,10 @@ export class ObjectWrapper extends BaseProxyTrap<ObjectEntry>
     return gotEntries.map((e) => e.key);
   }
 
-  public getOwnPropertyDescriptor(target: {}, p: PropertyKey) {
+  public getOwnPropertyDescriptor(
+    target: Record<string, unknown>,
+    p: PropertyKey
+  ) {
     if (this.has(target, p)) {
       return { configurable: true, enumerable: true };
     }
@@ -68,7 +74,7 @@ export class ObjectWrapper extends BaseProxyTrap<ObjectEntry>
     return undefined;
   }
 
-  public has(target: {}, p: PropertyKey) {
+  public has(target: Record<string, unknown>, p: PropertyKey) {
     if (p === INTERNAL_API_SYMBOL) {
       return true;
     }
@@ -80,7 +86,11 @@ export class ObjectWrapper extends BaseProxyTrap<ObjectEntry>
     return hashMapNodeLookup(this.carrier, this.entry.value, p) !== 0;
   }
 
-  public set(target: {}, p: PropertyKey, value: any): boolean {
+  public set(
+    target: Record<string, unknown>,
+    p: PropertyKey,
+    value: any
+  ): boolean {
     if (typeof p === "symbol") {
       throw new IllegalObjectPropConfigError();
     }
@@ -104,7 +114,7 @@ export class ObjectWrapper extends BaseProxyTrap<ObjectEntry>
     throw new UnsupportedOperationError();
   }
 
-  public defineProperty(): // target: {},
+  public defineProperty(): // target: Record<string, unknown>,
   // p: PropertyKey,
   // attributes: PropertyDescriptor
   boolean {

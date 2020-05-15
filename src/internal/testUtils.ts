@@ -77,8 +77,8 @@ export function recordAllocations(operation: () => void, pool: IMemPool) {
     return allocation;
   };
 
-  // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-  // @ts-ignore
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-expect-error
   pool.free = function free(ptr: number) {
     deallocations.add(ptr);
     allocations.delete(ptr);

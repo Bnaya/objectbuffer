@@ -23,7 +23,7 @@ export function saveValue(
   carrier: GlobalCarrier,
   referencedPointers: number[],
   // Not really working yet. we need iterative saving for it
-  visitedValuesOnCurrentSaveOperation: Map<object, number>,
+  visitedValuesOnCurrentSaveOperation: Map<any, number>,
   value: any
 ) {
   let valuePointer = 0;

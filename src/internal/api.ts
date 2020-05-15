@@ -12,7 +12,6 @@ import { getCacheFor } from "./externalObjectsCache";
 import { INITIAL_ENTRY_POINTER_TO_POINTER, MEM_POOL_START } from "./consts";
 import { MemPool } from "@thi.ng/malloc";
 import { UnsupportedOperationError } from "./exceptions";
-
 export interface CreateObjectBufferOptions {
   /**
    *  Use SharedArrayBuffer and not regular ArrayBuffer
@@ -194,8 +193,8 @@ export function replaceUnderlyingArrayBuffer(
     bigUint64: new BigUint64Array(newArrayBuffer),
   };
 
-  // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-  // @ts-ignore
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-expect-error
   allocator.end = newArrayBuffer.byteLength;
 
   getInternalAPI(objectBuffer).replaceCarrierContent(carrier);

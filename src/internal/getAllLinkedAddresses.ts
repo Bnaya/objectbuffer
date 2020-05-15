@@ -112,8 +112,8 @@ function getAllLinkedAddressesStep(
       break;
 
     default:
-      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-      // @ts-ignore
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
       throw new Error(ENTRY_TYPE[entry.type] + " Not implemented yet");
   }
 }

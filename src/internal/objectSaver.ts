@@ -14,7 +14,7 @@ export function objectSaver(
   externalArgs: ExternalArgs,
   carrier: GlobalCarrier,
   referencedPointers: number[],
-  visitedValues: Map<object, number>,
+  visitedValues: Map<any, number>,
   objectToSave: any
 ) {
   const objectEntries = Object.entries(objectToSave);
@@ -59,7 +59,7 @@ export function mapSaver(
   externalArgs: ExternalArgs,
   carrier: GlobalCarrier,
   referencedPointers: number[],
-  visitedValues: Map<object, number>,
+  visitedValues: Map<any, number>,
   mapToSave: Map<string | number, any>
 ) {
   const hashMapPointer = createHashMap(

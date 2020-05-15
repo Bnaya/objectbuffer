@@ -37,8 +37,6 @@ const READ_WRITE_MAPS_V2 = [
   [Uint16Array, "uint16"],
 ] as const;
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-// @ts-ignore
 // dataViewInstance = undefined;
 
 // const READ_MAP = new Map(READ_WRITE_MAPS.map(e => [e[0], e[1]]));
@@ -163,7 +161,7 @@ export function _buildMemoryLayout<T extends { [x: string]: number }>(
       oldEntries[newObjectEntries.length - 1][1],
   ]);
 
-  // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-  // @ts-ignore
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-expect-error
   return Object.fromEntries(newObjectEntries);
 }

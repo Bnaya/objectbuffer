@@ -17,15 +17,15 @@ import { allocationsTransaction } from "./allocationsTransaction";
 import { BaseProxyTrap } from "./BaseProxyTrap";
 
 export class ArrayWrapper extends BaseProxyTrap<ArrayEntry>
-  implements ProxyHandler<{}> {
-  public get(target: {}, p: PropertyKey): any {
+  implements ProxyHandler<Record<string, unknown>> {
+  public get(target: Record<string, unknown>, p: PropertyKey): any {
     if (p === INTERNAL_API_SYMBOL) {
       return this;
     }
 
     if (p in this && p !== "constructor") {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-      // @ts-ignore
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
       return this[p];
     }
 
@@ -46,12 +46,15 @@ export class ArrayWrapper extends BaseProxyTrap<ArrayEntry>
       }
     }
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-    // @ts-ignore
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
     return target[p];
   }
 
-  public deleteProperty(target: {}, p: PropertyKey): boolean {
+  public deleteProperty(
+    target: Record<string, unknown>,
+    p: PropertyKey
+  ): boolean {
     const index = typeof p === "number" ? p : Number.parseInt(p as string, 10);
 
     return this.splice(index, 1).length === 1;
@@ -67,7 +70,7 @@ export class ArrayWrapper extends BaseProxyTrap<ArrayEntry>
     return [...new Array(length).keys(), "length"];
   }
 
-  public getOwnPropertyDescriptor(target: {}, prop: any) {
+  public getOwnPropertyDescriptor(target: Record<string, unknown>, prop: any) {
     if (prop === "length") {
       return { configurable: false, enumerable: false, writable: true };
     }
@@ -79,7 +82,7 @@ export class ArrayWrapper extends BaseProxyTrap<ArrayEntry>
     return { configurable: false, enumerable: true };
   }
 
-  public has(target: {}, p: PropertyKey): boolean {
+  public has(target: Record<string, unknown>, p: PropertyKey): boolean {
     if (p === INTERNAL_API_SYMBOL) {
       return true;
     }
@@ -95,7 +98,11 @@ export class ArrayWrapper extends BaseProxyTrap<ArrayEntry>
     throw new Error("unsupported");
   }
 
-  public set(target: {}, accessedProp: PropertyKey, value: any): boolean {
+  public set(
+    target: Record<string, unknown>,
+    accessedProp: PropertyKey,
+    value: any
+  ): boolean {
     if (typeof accessedProp === "symbol") {
       throw new IllegalArrayIndexError();
     }
@@ -268,7 +275,7 @@ export class ArrayWrapper extends BaseProxyTrap<ArrayEntry>
     throw new UnsupportedOperationError();
   }
 
-  public defineProperty(): // target: {},
+  public defineProperty(): // target: Record<string, unknown>,
   // p: PropertyKey,
   // attributes: PropertyDescriptor
   boolean {
@@ -292,6 +299,8 @@ export function createArrayWrapper(
   entryPointer: number
 ): Array<any> {
   return new Proxy(
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
     [],
     new ArrayWrapper(externalArgs, globalCarrier, entryPointer)
   ) as any;
