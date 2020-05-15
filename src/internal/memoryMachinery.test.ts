@@ -38,8 +38,8 @@ describe("memory manifest", () => {
         .filter(([key]) => key !== "SIZE_OF")
         .map((entry) => [
           entry[0],
-          // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-          // @ts-ignore
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-expect-error
           entry[1].type,
         ])
     ).toEqual(Object.entries(input));

@@ -13,7 +13,6 @@ export {
   getUnderlyingArrayBuffer,
   loadObjectBuffer,
   replaceUnderlyingArrayBuffer,
-  // eslint-disable-next-line @typescript-eslint/camelcase
   sizeOf as unreliable_sizeOf,
   memoryStats,
   disposeWrapperObject,

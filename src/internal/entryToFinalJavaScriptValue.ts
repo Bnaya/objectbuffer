@@ -67,8 +67,8 @@ export function entryToFinalJavaScriptValue(
     let ret = cache.get(pointerToEntry);
 
     if (!ret) {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-      // @ts-ignore
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
       ret = TYPE_TO_FACTORY[valueEntry.type](
         externalArgs,
         carrier,

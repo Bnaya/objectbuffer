@@ -20,7 +20,8 @@
         "classes": true,
         "functions": false
       }
-    ]
+    ],
+    "@typescript-eslint/explicit-module-boundary-types": "off"
   },
   "env": {
     "es6": true

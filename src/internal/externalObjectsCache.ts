@@ -1,11 +1,13 @@
 import { WeakValueMap } from "./WeakValueMap";
 
+// eslint-disable-next-line @typescript-eslint/ban-types
 const externalObjectsCache = new WeakMap<object, Map<number, any>>();
 
 declare const FinalizationGroup: any;
 declare const WeakRef: any;
 
 export function getCacheFor(
+  // eslint-disable-next-line @typescript-eslint/ban-types
   obj: object,
   externalFinalizer?: (key: number) => void
 ) {
