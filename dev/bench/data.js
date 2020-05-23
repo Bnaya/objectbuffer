@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1590266089355,
+  "lastUpdate": 1590266318817,
   "repoUrl": "https://github.com/Bnaya/objectbuffer",
   "entries": {
     "Benchmark": [
@@ -3220,6 +3220,37 @@ window.BENCHMARK_DATA = {
             "range": "±2.35%",
             "unit": "ops/sec",
             "extra": "66 samples"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "me@bnaya.net",
+            "name": "Bnaya Peretz",
+            "username": "Bnaya"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "4a8438f3a0f8f5d7d5c6757e43f0dfa3f7839f7b",
+          "message": "Merge pull request #86 from Bnaya/generated-structs\n\nGenerated structs ... and much more!",
+          "timestamp": "2020-05-23T23:37:34+03:00",
+          "tree_id": "dbd70250f12cc9585c58a5c7a8fa1d263180e66e",
+          "url": "https://github.com/Bnaya/objectbuffer/commit/4a8438f3a0f8f5d7d5c6757e43f0dfa3f7839f7b"
+        },
+        "date": 1590266318367,
+        "tool": "benchmarkjs",
+        "benches": [
+          {
+            "name": "createObjectBuffer with 200 comments",
+            "value": 82.06,
+            "range": "±2.12%",
+            "unit": "ops/sec",
+            "extra": "70 samples"
           }
         ]
       }
