@@ -143,10 +143,21 @@ function reallocateArray(
   newAllocatedLength: number,
   newLength: number
 ): void {
-  const newArrayValueLocation = carrier.allocator.realloc(
-    array_dataspacePointer_get(carrier.heap, pointerToArrayEntry),
-    newAllocatedLength * Uint32Array.BYTES_PER_ELEMENT
+  const dataspacePointer = array_dataspacePointer_get(
+    carrier.heap,
+    pointerToArrayEntry
   );
+
+  // if array was zero length, dataspacePointer was zero
+  const newArrayValueLocation =
+    dataspacePointer !== 0
+      ? carrier.allocator.realloc(
+          dataspacePointer,
+          newAllocatedLength * Uint32Array.BYTES_PER_ELEMENT
+        )
+      : carrier.allocator.calloc(
+          newAllocatedLength * Uint32Array.BYTES_PER_ELEMENT
+        );
 
   array_set_all(
     carrier.heap,

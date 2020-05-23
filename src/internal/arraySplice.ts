@@ -7,10 +7,14 @@ import {
 } from "./arrayHelpers";
 import { assertNonNull } from "./assertNonNull";
 import { ExternalArgs, GlobalCarrier } from "./interfaces";
-import { writeValueInPtrToPtr } from "./store";
+import { writeValueInPtrToPtr, handleArcForDeletedValuePointer } from "./store";
 import { array_length_get } from "./generatedStructs";
 
-// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/splice#Syntax
+/**
+  https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/splice#Syntax
+  this function is not OOM same yet unfortunately,
+  There's allocations after destructive mutations
+ */
 export function arraySplice(
   externalArgs: ExternalArgs,
   carrier: GlobalCarrier,
@@ -50,6 +54,15 @@ export function arraySplice(
         deletedItemIndexToSave
       )
     );
+    handleArcForDeletedValuePointer(
+      carrier,
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      arrayGetPointersToValueInIndex(
+        carrier,
+        pointerToArrayEntry,
+        deletedItemIndexToSave
+      )!.pointer
+    );
   }
 
   // copy-up items
@@ -79,7 +92,7 @@ export function arraySplice(
         valueToCopyPointers.pointer
       );
 
-      carrier.uint32[
+      carrier.heap.Uint32Array[
         valueToCopyPointers.pointerToThePointer / Uint32Array.BYTES_PER_ELEMENT
       ] = 0;
     }
@@ -96,13 +109,12 @@ export function arraySplice(
       writeValueToIndex < arrayLength + itemCountChange;
       writeValueToIndex += 1
     ) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const valueToCopyPointers = arrayGetPointersToValueInIndex(
         carrier,
         pointerToArrayEntry,
         writeValueToIndex - itemCountChange
-      );
-
-      assertNonNull(valueToCopyPointers);
+      )!;
 
       setValuePointerAtArrayIndex(
         carrier,
@@ -110,23 +122,6 @@ export function arraySplice(
         writeValueToIndex,
         valueToCopyPointers.pointer
       );
-
-      // empty old array index, its still allocated!
-
-      carrier.uint32[
-        valueToCopyPointers.pointerToThePointer / Uint32Array.BYTES_PER_ELEMENT
-      ] = 0;
-
-      // using that is wastefull
-      // setValueAtArrayIndex(
-      //   dataView,
-      //   textDecoder,
-      //   textEncoder,
-      //   arrayAdditionalAllocation,
-      //   pointerToArrayEntry,
-      //   writeValueToIndex + calcedDeleteCount,
-      //   undefined
-      // );
     }
   }
 
@@ -168,12 +163,12 @@ function calculateDeleteCount(
   deleteCountArg?: number
 ): number {
   if (deleteCountArg === undefined || deleteCountArg >= arrayLength - start) {
-    return arrayLength - start;
+    return Math.min(arrayLength, arrayLength - start);
   }
 
   if (deleteCountArg <= 0) {
     return 0;
   }
 
-  return deleteCountArg;
+  return Math.min(arrayLength, deleteCountArg);
 }

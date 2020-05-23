@@ -22,16 +22,14 @@ export function disposeWrapperObject(value: any) {
       entryPointer
     );
 
+    const { allocator, heap } = internalApi.getCarrier();
+
     for (const address of addressesToFree.leafAddresses) {
-      internalApi.getCarrier().allocator.free(address);
+      allocator.free(address);
     }
 
     for (const address of addressesToFree.arcAddresses) {
-      decrementRefCount(
-        internalApi.getExternalArgs(),
-        internalApi.getCarrier(),
-        address
-      );
+      decrementRefCount(heap, address);
     }
 
     return true;

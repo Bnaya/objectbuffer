@@ -12,9 +12,13 @@ export function arraySaverIterative(
   const arrayLength = arrayToSave.length;
 
   const arrayStructPointer = carrier.allocator.calloc(array_size);
-  const arrayPointersSpaceStart = carrier.allocator.calloc(
-    (arrayLength + arrayAdditionalAllocation) * Uint32Array.BYTES_PER_ELEMENT
-  );
+  const arrayPointersSpaceStart =
+    arrayLength + arrayAdditionalAllocation > 0
+      ? carrier.allocator.calloc(
+          (arrayLength + arrayAdditionalAllocation) *
+            Uint32Array.BYTES_PER_ELEMENT
+        )
+      : 0;
 
   array_set_all(
     carrier.heap,

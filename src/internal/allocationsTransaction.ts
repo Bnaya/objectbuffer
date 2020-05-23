@@ -2,7 +2,10 @@ import { IMemPool } from "@thi.ng/malloc";
 import { OutOfMemoryError } from "./exceptions";
 
 // extend pool and not monkey patch? need to think about it
-export function allocationsTransaction(operation: () => void, pool: IMemPool) {
+export function allocationsTransaction<T>(
+  operation: () => T,
+  pool: IMemPool
+): T {
   const allocations: number[] = [];
   const originalMalloc = pool.malloc;
   const originalCalloc = pool.calloc;
@@ -58,9 +61,11 @@ export function allocationsTransaction(operation: () => void, pool: IMemPool) {
     return allocation;
   };
 
-  operation();
-
-  pool.malloc = originalMalloc;
-  pool.calloc = originalCalloc;
-  pool.realloc = originalRealloc;
+  try {
+    return operation();
+  } finally {
+    pool.malloc = originalMalloc;
+    pool.calloc = originalCalloc;
+    pool.realloc = originalRealloc;
+  }
 }

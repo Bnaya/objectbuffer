@@ -1,5 +1,4 @@
 import { initializeArrayBuffer } from "./store";
-import { objectSaver } from "./objectSaver";
 import { createObjectWrapper } from "./objectWrapper";
 import { ExternalArgsApi, GlobalCarrier } from "./interfaces";
 import {
@@ -14,6 +13,7 @@ import { MemPool } from "@thi.ng/malloc";
 import { UnsupportedOperationError } from "./exceptions";
 import { createHeap } from "../structsGenerator/consts";
 import { saveValueIterative } from "./saveValue";
+import { allocationsTransaction } from "./allocationsTransaction";
 
 export interface CreateObjectBufferOptions {
   /**
@@ -69,13 +69,15 @@ export function createObjectBuffer<T = any>(
     heap: createHeap(arrayBuffer),
   };
 
-  saveValueIterative(
-    externalArgsApiToExternalArgsApi(externalArgs),
-    carrier,
-    [],
-    INITIAL_ENTRY_POINTER_TO_POINTER,
-    initialValue
-  );
+  allocationsTransaction(() => {
+    saveValueIterative(
+      externalArgsApiToExternalArgsApi(externalArgs),
+      carrier,
+      [],
+      INITIAL_ENTRY_POINTER_TO_POINTER,
+      initialValue
+    );
+  }, allocator);
 
   return createObjectWrapper(
     externalArgsApiToExternalArgsApi(externalArgs),

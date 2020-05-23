@@ -1,5 +1,5 @@
 import { ENTRY_TYPE } from "./entry-types";
-import { Entry, primitive, GlobalCarrier } from "./interfaces";
+import { Entry, GlobalCarrier } from "./interfaces";
 import { isKnownAddressValuePointer, isTypeWithRC } from "./utils";
 import { ExternalArgs } from "./interfaces";
 import { BigInt64OverflowError } from "./exceptions";
@@ -8,8 +8,6 @@ import {
   INITIAL_ENTRY_POINTER_VALUE,
 } from "./consts";
 import { getAllLinkedAddresses } from "./getAllLinkedAddresses";
-import { stringEncodeInto } from "./stringEncodeInto";
-import { stringDecode } from "./stringDecode";
 import {
   typeAndRc_refsCount_get,
   typeAndRc_refsCount_set,
@@ -101,238 +99,6 @@ export function sizeOfEntry(entry: Entry) {
   return cursor;
 }
 
-export function writeEntry(
-  carrier: GlobalCarrier,
-  startingCursor: number,
-  entry: Entry
-) {
-  let cursor = startingCursor;
-
-  // let writtenDataSizeInBytes = 0;
-
-  // write type
-  // undo on throw ?
-  carrier.float64[cursor / Float64Array.BYTES_PER_ELEMENT] = entry.type;
-  cursor += Float64Array.BYTES_PER_ELEMENT;
-
-  switch (entry.type) {
-    case ENTRY_TYPE.NUMBER:
-      carrier.float64[cursor / Float64Array.BYTES_PER_ELEMENT] = entry.value;
-      cursor += Float64Array.BYTES_PER_ELEMENT;
-      break;
-
-    case ENTRY_TYPE.STRING:
-      carrier.uint32[cursor / Uint32Array.BYTES_PER_ELEMENT] =
-        entry.allocatedBytes;
-      cursor += Uint32Array.BYTES_PER_ELEMENT;
-
-      // eslint-disable-next-line no-case-declarations
-      const writtenBytes = stringEncodeInto(carrier.uint8, cursor, entry.value);
-
-      if (writtenBytes !== entry.allocatedBytes) {
-        // eslint-disable-next-line no-undef
-        console.warn(
-          {
-            value: entry.value,
-            writtenBytes,
-            allocatedBytes: entry.allocatedBytes,
-          },
-          true
-        );
-        throw new Error("WTF???");
-      }
-
-      cursor += entry.allocatedBytes;
-
-      break;
-
-    case ENTRY_TYPE.BIGINT_NEGATIVE:
-    case ENTRY_TYPE.BIGINT_POSITIVE:
-      if (entry.value > MAX_64_BIG_INT || entry.value < -MAX_64_BIG_INT) {
-        throw new BigInt64OverflowError();
-      }
-      carrier.bigUint64[cursor / BigUint64Array.BYTES_PER_ELEMENT] =
-        entry.type === ENTRY_TYPE.BIGINT_NEGATIVE ? -entry.value : entry.value;
-
-      cursor += BigUint64Array.BYTES_PER_ELEMENT;
-      break;
-
-    case ENTRY_TYPE.OBJECT:
-    case ENTRY_TYPE.SET:
-    case ENTRY_TYPE.MAP:
-      carrier.uint32[cursor / Uint32Array.BYTES_PER_ELEMENT] = entry.refsCount;
-      cursor += Uint32Array.BYTES_PER_ELEMENT;
-      carrier.uint32[cursor / Uint32Array.BYTES_PER_ELEMENT] = entry.value;
-      cursor += Uint32Array.BYTES_PER_ELEMENT;
-      break;
-
-    case ENTRY_TYPE.ARRAY:
-      carrier.uint32[cursor / Uint32Array.BYTES_PER_ELEMENT] = entry.refsCount;
-      cursor += Uint32Array.BYTES_PER_ELEMENT;
-      carrier.uint32[cursor / Uint32Array.BYTES_PER_ELEMENT] = entry.value;
-      cursor += Uint32Array.BYTES_PER_ELEMENT;
-      carrier.uint32[cursor / Uint32Array.BYTES_PER_ELEMENT] = entry.length;
-      cursor += Uint32Array.BYTES_PER_ELEMENT;
-      carrier.uint32[cursor / Uint32Array.BYTES_PER_ELEMENT] =
-        entry.allocatedLength;
-      cursor += Uint32Array.BYTES_PER_ELEMENT;
-      break;
-
-    case ENTRY_TYPE.DATE:
-      carrier.float64[cursor / Float64Array.BYTES_PER_ELEMENT] = entry.value;
-      cursor += Float64Array.BYTES_PER_ELEMENT;
-      carrier.uint32[cursor / Uint32Array.BYTES_PER_ELEMENT] = entry.refsCount;
-      cursor += Uint32Array.BYTES_PER_ELEMENT;
-      break;
-
-    default:
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-expect-error
-      throw new Error(ENTRY_TYPE[entry.type] + " Not implemented yet");
-  }
-}
-
-export function appendEntry(carrier: GlobalCarrier, entry: Entry) {
-  const size = sizeOfEntry(entry);
-
-  const memoryAddress = carrier.allocator.calloc(size);
-
-  writeEntry(carrier, memoryAddress, entry);
-
-  return memoryAddress;
-}
-
-export function readEntry(
-  carrier: GlobalCarrier,
-  startingCursor: number
-): Entry {
-  let cursor = startingCursor;
-
-  const entryType: ENTRY_TYPE =
-    carrier.float64[cursor / Float64Array.BYTES_PER_ELEMENT];
-  cursor += Float64Array.BYTES_PER_ELEMENT;
-
-  const entry: any = {
-    type: entryType,
-    value: undefined as any,
-  };
-
-  // let writtenDataSizeInBytes = 0;
-
-  switch (entryType) {
-    // handled by well-known addresses
-    // case ENTRY_TYPE.UNDEFINED:
-    //   break;
-
-    // case ENTRY_TYPE.NULL:
-    //   break;
-
-    // case ENTRY_TYPE.BOOLEAN:
-    //   entry.value = carrier.dataView.getUint8(cursor) !== 0;
-    //   cursor += Uint8Array.BYTES_PER_ELEMENT;
-    //   break;
-
-    case ENTRY_TYPE.NUMBER:
-      entry.value = carrier.float64[cursor / Float64Array.BYTES_PER_ELEMENT];
-      cursor += Float64Array.BYTES_PER_ELEMENT;
-      break;
-
-    case ENTRY_TYPE.STRING:
-      // eslint-disable-next-line no-case-declarations
-      const stringLength =
-        carrier.uint32[cursor / Uint32Array.BYTES_PER_ELEMENT];
-      entry.allocatedBytes = stringLength;
-      cursor += Uint32Array.BYTES_PER_ELEMENT;
-
-      // decode fails with zero length array
-      if (stringLength > 0) {
-        // this wrapping is needed until:
-        // https://github.com/whatwg/encoding/issues/172
-        // eslint-disable-next-line no-case-declarations
-        // const tempAB = new ArrayBuffer(stringLength, true);
-        // arrayBufferCopyTo(dataView.buffer, cursor, stringLength, tempAB, 0, true);
-
-        entry.value = stringDecode(carrier.uint8, cursor, stringLength);
-      } else {
-        entry.value = "";
-      }
-
-      cursor += stringLength;
-
-      break;
-
-    case ENTRY_TYPE.BIGINT_POSITIVE:
-      entry.value =
-        carrier.bigUint64[cursor / BigUint64Array.BYTES_PER_ELEMENT];
-      cursor += BigUint64Array.BYTES_PER_ELEMENT;
-      break;
-
-    case ENTRY_TYPE.BIGINT_NEGATIVE:
-      entry.value = -carrier.bigUint64[
-        cursor / BigUint64Array.BYTES_PER_ELEMENT
-      ];
-      cursor += BigUint64Array.BYTES_PER_ELEMENT;
-      break;
-
-    case ENTRY_TYPE.OBJECT:
-    case ENTRY_TYPE.MAP:
-    case ENTRY_TYPE.SET:
-      entry.refsCount = carrier.uint32[cursor / Uint32Array.BYTES_PER_ELEMENT];
-      cursor += Uint32Array.BYTES_PER_ELEMENT;
-      entry.value = carrier.uint32[cursor / Uint32Array.BYTES_PER_ELEMENT];
-      cursor += Uint32Array.BYTES_PER_ELEMENT;
-      break;
-
-    case ENTRY_TYPE.ARRAY:
-      entry.refsCount = carrier.uint32[cursor / Uint32Array.BYTES_PER_ELEMENT];
-      cursor += Uint32Array.BYTES_PER_ELEMENT;
-      entry.value = carrier.uint32[cursor / Uint32Array.BYTES_PER_ELEMENT];
-      cursor += Uint32Array.BYTES_PER_ELEMENT;
-      entry.length = carrier.uint32[cursor / Uint32Array.BYTES_PER_ELEMENT];
-      cursor += Uint32Array.BYTES_PER_ELEMENT;
-      entry.allocatedLength =
-        carrier.uint32[cursor / Uint32Array.BYTES_PER_ELEMENT];
-      cursor += Uint32Array.BYTES_PER_ELEMENT;
-      break;
-
-    case ENTRY_TYPE.DATE:
-      entry.value = carrier.float64[cursor / Float64Array.BYTES_PER_ELEMENT];
-      cursor += Float64Array.BYTES_PER_ELEMENT;
-      entry.refsCount = carrier.uint32[cursor / Uint32Array.BYTES_PER_ELEMENT];
-      cursor += Uint32Array.BYTES_PER_ELEMENT;
-      break;
-
-    default:
-      throw new Error(ENTRY_TYPE[entryType] + " Not implemented yet");
-  }
-
-  return entry;
-}
-
-export function canReuseMemoryOfEntry(entryA: Entry, value: primitive) {
-  const typeofTheValue = typeof value;
-  // number & bigint 64 are the same size
-  if (
-    (entryA.type === ENTRY_TYPE.BIGINT_NEGATIVE ||
-      entryA.type === ENTRY_TYPE.BIGINT_POSITIVE ||
-      entryA.type === ENTRY_TYPE.NUMBER) &&
-    (typeofTheValue === "bigint" || typeofTheValue === "number")
-  ) {
-    return true;
-  }
-
-  // kill for strings for now
-  // if (
-  //   entryA.type === ENTRY_TYPE.STRING &&
-  //   typeofTheValue === "string" &&
-  //   entryA.allocatedBytes >= strByteLength(value as string)
-  // ) {
-  //   return true;
-  // }
-
-  return false;
-}
-
 export function writeValueInPtrToPtr(
   externalArgs: ExternalArgs,
   carrier: GlobalCarrier,
@@ -358,7 +124,8 @@ export function writeValueInPtrToPtrAndHandleMemory(
   ptrToPtr: number,
   value: unknown
 ) {
-  const existingEntryPointer = carrier.heap.Uint32Array[ptrToPtr];
+  const existingEntryPointer =
+    carrier.heap.Uint32Array[ptrToPtr / Uint32Array.BYTES_PER_ELEMENT];
   // Might oom here
   const referencedPointers = writeValueInPtrToPtr(
     externalArgs,
@@ -375,10 +142,7 @@ export function writeValueInPtrToPtrAndHandleMemory(
     }
   }
 
-  // I'm not sure how it gets undefind here
-  if (existingEntryPointer !== undefined) {
-    handleArcForDeletedValuePointer(carrier, existingEntryPointer);
-  }
+  handleArcForDeletedValuePointer(carrier, existingEntryPointer);
 }
 
 export function handleArcForDeletedValuePointer(

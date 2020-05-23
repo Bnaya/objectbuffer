@@ -226,14 +226,16 @@ export class ArrayWrapper extends BaseProxyTrap
   }
 
   public splice(start: number, deleteCount?: number, ...items: any[]) {
-    return arraySplice(
-      this.externalArgs,
-      this.carrier,
-      this.entryPointer,
-      start,
-      deleteCount,
-      ...items
-    );
+    return allocationsTransaction(() => {
+      return arraySplice(
+        this.externalArgs,
+        this.carrier,
+        this.entryPointer,
+        start,
+        deleteCount,
+        ...items
+      );
+    }, this.carrier.allocator);
   }
 
   public reverse() {

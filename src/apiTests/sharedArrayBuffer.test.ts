@@ -18,6 +18,19 @@ describe("SharedArrayBuffer tests", () => {
       { useSharedArrayBuffer: true }
     );
 
+    // expect(objectBuffer).toMatchInlineSnapshot(`
+    //   Object {
+    //     "arr": Array [
+    //       Object {
+    //         "a": 1,
+    //       },
+    //     ],
+    //   }
+    // `);
+
+    // disposeWrapperObject(objectBuffer.arr[0]);
+    // disposeWrapperObject(objectBuffer.arr);
+
     objectBuffer.arr = [{ bar: 666 }];
 
     expect(objectBuffer).toMatchInlineSnapshot(`
@@ -30,7 +43,13 @@ describe("SharedArrayBuffer tests", () => {
       }
     `);
 
-    expect(memoryStats(objectBuffer).used).toMatchInlineSnapshot(`480`);
+    expect(memoryStats(objectBuffer).used).toMatchInlineSnapshot(`528`);
+
+    disposeWrapperObject(objectBuffer.arr[0]);
+    disposeWrapperObject(objectBuffer.arr);
+
+    delete objectBuffer.arr;
+    expect(memoryStats(objectBuffer).used).toMatchInlineSnapshot(`176`);
   });
 
   test("basic 2", () => {
@@ -79,6 +98,6 @@ describe("SharedArrayBuffer tests", () => {
       }
     `);
 
-    expect(memoryStats(objectBuffer).used).toMatchInlineSnapshot(`664`);
+    expect(memoryStats(objectBuffer).used).toMatchInlineSnapshot(`744`);
   });
 });
