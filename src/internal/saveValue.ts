@@ -147,12 +147,12 @@ export function saveValueIterative(
         ] = UNDEFINED_KNOWN_ADDRESS;
         continue;
 
-      // we will never get here
-      case "undefined":
-        continue;
-      // we will never get here
-      case "boolean":
-        continue;
+      // // we will never get here
+      // case "undefined":
+      //   continue;
+      // // we will never get here
+      // case "boolean":
+      //   continue;
     }
 
     const maybeOurPointerFromSymbol = getOurPointerIfApplicable(
