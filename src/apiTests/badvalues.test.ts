@@ -8,10 +8,16 @@ describe("bad values tests", () => {
     const ob = createObjectBuffer<any>({}, 512, {});
     expect(memoryStats(ob).used).toMatchInlineSnapshot(`160`);
 
+    const symbol = Symbol("badsymbolhere");
+
     ob.imabadFunction = () => {
       return;
     };
     ob.imabadSymbol = Symbol("badsymbolhere");
+
+    expect(() => {
+      ob[symbol] = "But why not";
+    }).toThrowErrorMatchingInlineSnapshot(`"IllegalObjectPropConfigError"`);
 
     expect(memoryStats(ob).used).toMatchInlineSnapshot(`336`);
 
