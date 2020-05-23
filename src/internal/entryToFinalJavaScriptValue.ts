@@ -1,10 +1,10 @@
 import { ExternalArgs, GlobalCarrier } from "./interfaces";
-import { ENTRY_TYPE, isPrimitiveEntryType } from "./entry-types";
+import { ENTRY_TYPE } from "./entry-types";
 import { createObjectWrapper } from "./objectWrapper";
 import { createArrayWrapper } from "./arrayWrapper";
 import { createDateWrapper } from "./dateWrapper";
 import { getCacheFor } from "./externalObjectsCache";
-import { decrementRefCount, readEntry } from "./store";
+import { decrementRefCount } from "./store";
 import { getAllLinkedAddresses } from "./getAllLinkedAddresses";
 import { createMapWrapper } from "./mapWrapper";
 import { createSetWrapper } from "./setWrapper";
@@ -14,9 +14,12 @@ import {
   TRUE_KNOWN_ADDRESS,
   FALSE_KNOWN_ADDRESS,
 } from "./consts";
-
-// declare const FinalizationGroup: any;
-// declare const WeakRef: any;
+import {
+  typeOnly_type_get,
+  number_value_get,
+  bigint_value_get,
+} from "./generatedStructs";
+import { readString } from "./readString";
 
 const TYPE_TO_FACTORY = {
   [ENTRY_TYPE.OBJECT]: createObjectWrapper,
@@ -47,48 +50,57 @@ export function entryToFinalJavaScriptValue(
     return false;
   }
 
-  const valueEntry = readEntry(carrier, pointerToEntry);
+  const entryType: ENTRY_TYPE = typeOnly_type_get(carrier.heap, pointerToEntry);
 
-  if (isPrimitiveEntryType(valueEntry.type)) {
-    return valueEntry.value;
+  switch (entryType) {
+    case ENTRY_TYPE.NUMBER:
+      return number_value_get(carrier.heap, pointerToEntry);
+      break;
+
+    case ENTRY_TYPE.STRING:
+      return readString(carrier.heap, pointerToEntry);
+      break;
+
+    case ENTRY_TYPE.BIGINT_POSITIVE:
+      return bigint_value_get(carrier.heap, pointerToEntry);
+      break;
+
+    case ENTRY_TYPE.BIGINT_NEGATIVE:
+      return bigint_value_get(carrier.heap, pointerToEntry) * BigInt("-1");
+      break;
   }
 
+  // this is an invariant
   if (
-    valueEntry.type === ENTRY_TYPE.OBJECT ||
-    valueEntry.type === ENTRY_TYPE.DATE ||
-    valueEntry.type === ENTRY_TYPE.ARRAY ||
-    valueEntry.type === ENTRY_TYPE.MAP ||
-    valueEntry.type === ENTRY_TYPE.SET
+    !(
+      entryType === ENTRY_TYPE.OBJECT ||
+      entryType === ENTRY_TYPE.DATE ||
+      entryType === ENTRY_TYPE.ARRAY ||
+      entryType === ENTRY_TYPE.MAP ||
+      entryType === ENTRY_TYPE.SET
+    )
   ) {
-    const cache = getCacheFor(carrier, (key) => {
-      finalizer(key, carrier, externalArgs);
-    });
-
-    let ret = cache.get(pointerToEntry);
-
-    if (!ret) {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-expect-error
-      ret = TYPE_TO_FACTORY[valueEntry.type](
-        externalArgs,
-        carrier,
-        pointerToEntry
-      );
-      cache.set(pointerToEntry, ret);
-    }
-
-    return ret;
+    throw new Error("Nope Nope Nope");
   }
 
-  throw new Error("unsupported yet");
+  const cache = getCacheFor(carrier, (key) => {
+    finalizer(key, carrier);
+  });
+
+  let ret = cache.get(pointerToEntry);
+
+  if (!ret) {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
+    ret = TYPE_TO_FACTORY[entryType](externalArgs, carrier, pointerToEntry);
+    cache.set(pointerToEntry, ret);
+  }
+
+  return ret;
 }
 
-function finalizer(
-  memoryAddress: number,
-  carrier: GlobalCarrier,
-  externalArgs: ExternalArgs
-) {
-  const newRefsCount = decrementRefCount(externalArgs, carrier, memoryAddress);
+function finalizer(memoryAddress: number, carrier: GlobalCarrier) {
+  const newRefsCount = decrementRefCount(carrier.heap, memoryAddress);
 
   if (newRefsCount === 0) {
     const freeUs = getAllLinkedAddresses(carrier, false, memoryAddress);
@@ -98,7 +110,7 @@ function finalizer(
     }
 
     for (const address of freeUs.arcAddresses) {
-      decrementRefCount(externalArgs, carrier, address);
+      decrementRefCount(carrier.heap, address);
     }
   }
 }

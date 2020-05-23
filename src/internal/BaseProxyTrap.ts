@@ -1,33 +1,18 @@
-import {
-  ExternalArgs,
-  GlobalCarrier,
-  InternalAPI,
-  DateEntry,
-  ArrayEntry,
-  ObjectEntry,
-  MapEntry,
-  SetEntry,
-} from "./interfaces";
-import { incrementRefCount, decrementRefCount, readEntry } from "./store";
+import { ExternalArgs, GlobalCarrier, InternalAPI } from "./interfaces";
+import { incrementRefCount, decrementRefCount } from "./store";
 import { WrapperDestroyed } from "./exceptions";
 
-export class BaseProxyTrap<
-  T extends ObjectEntry | DateEntry | ArrayEntry | MapEntry | SetEntry
-> implements InternalAPI {
+export abstract class BaseProxyTrap implements InternalAPI {
   constructor(
     protected externalArgs: ExternalArgs,
     protected carrier: GlobalCarrier,
     protected _entryPointer: number
   ) {
-    incrementRefCount(this.externalArgs, this.carrier, this.entryPointer);
+    incrementRefCount(this.carrier.heap, this.entryPointer);
   }
 
   public destroy() {
-    const newRefCount = decrementRefCount(
-      this.externalArgs,
-      this.carrier,
-      this.entryPointer
-    );
+    const newRefCount = decrementRefCount(this.carrier.heap, this.entryPointer);
     this._entryPointer = 0;
 
     return newRefCount;
@@ -55,9 +40,5 @@ export class BaseProxyTrap<
     }
 
     return this._entryPointer;
-  }
-
-  protected get entry(): T {
-    return readEntry(this.carrier, this.entryPointer) as T;
   }
 }

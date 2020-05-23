@@ -1,4 +1,4 @@
-import { ObjectEntry, ExternalArgs, GlobalCarrier } from "./interfaces";
+import { ExternalArgs, GlobalCarrier } from "./interfaces";
 import {
   getObjectPropertiesEntries,
   deleteObjectPropertyEntryByKey,
@@ -14,8 +14,9 @@ import {
 import { allocationsTransaction } from "./allocationsTransaction";
 import { BaseProxyTrap } from "./BaseProxyTrap";
 import { hashMapNodeLookup } from "./hashmap/hashmap";
+import { object_pointerToHashMap_get } from "./generatedStructs";
 
-export class ObjectWrapper extends BaseProxyTrap<ObjectEntry>
+export class ObjectWrapper extends BaseProxyTrap
   implements ProxyHandler<Record<string, unknown>> {
   public get(target: Record<string, unknown>, p: PropertyKey): any {
     if (p === INTERNAL_API_SYMBOL) {
@@ -26,7 +27,12 @@ export class ObjectWrapper extends BaseProxyTrap<ObjectEntry>
       return undefined;
     }
 
-    return objectGet(this.externalArgs, this.carrier, this.entry.value, p);
+    return objectGet(
+      this.externalArgs,
+      this.carrier,
+      object_pointerToHashMap_get(this.carrier.heap, this.entryPointer),
+      p
+    );
   }
 
   public deleteProperty(
@@ -38,9 +44,8 @@ export class ObjectWrapper extends BaseProxyTrap<ObjectEntry>
     }
 
     return deleteObjectPropertyEntryByKey(
-      this.externalArgs,
       this.carrier,
-      this.entry.value,
+      object_pointerToHashMap_get(this.carrier.heap, this.entryPointer),
       p
     );
   }
@@ -48,7 +53,7 @@ export class ObjectWrapper extends BaseProxyTrap<ObjectEntry>
   public enumerate(): PropertyKey[] {
     const gotEntries = getObjectPropertiesEntries(
       this.carrier,
-      this.entry.value
+      object_pointerToHashMap_get(this.carrier.heap, this.entryPointer)
     );
 
     return gotEntries.map((e) => e.key);
@@ -57,7 +62,7 @@ export class ObjectWrapper extends BaseProxyTrap<ObjectEntry>
   public ownKeys(): PropertyKey[] {
     const gotEntries = getObjectPropertiesEntries(
       this.carrier,
-      this.entry.value
+      object_pointerToHashMap_get(this.carrier.heap, this.entryPointer)
     );
 
     return gotEntries.map((e) => e.key);
@@ -83,7 +88,13 @@ export class ObjectWrapper extends BaseProxyTrap<ObjectEntry>
       return false;
     }
 
-    return hashMapNodeLookup(this.carrier, this.entry.value, p) !== 0;
+    return (
+      hashMapNodeLookup(
+        this.carrier,
+        object_pointerToHashMap_get(this.carrier.heap, this.entryPointer),
+        p
+      ) !== 0
+    );
   }
 
   public set(
@@ -96,7 +107,13 @@ export class ObjectWrapper extends BaseProxyTrap<ObjectEntry>
     }
 
     allocationsTransaction(() => {
-      objectSet(this.externalArgs, this.carrier, this.entry.value, p, value);
+      objectSet(
+        this.externalArgs,
+        this.carrier,
+        object_pointerToHashMap_get(this.carrier.heap, this.entryPointer),
+        p,
+        value
+      );
     }, this.carrier.allocator);
 
     return true;

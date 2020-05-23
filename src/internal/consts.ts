@@ -12,3 +12,4 @@ export const UNDEFINED_KNOWN_ADDRESS = 0;
 export const NULL_KNOWN_ADDRESS = 1;
 export const TRUE_KNOWN_ADDRESS = 2;
 export const FALSE_KNOWN_ADDRESS = 3;
+export const MAX_64_BIG_INT = BigInt("0xFFFFFFFFFFFFFFFF");

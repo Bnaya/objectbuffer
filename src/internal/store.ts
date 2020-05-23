@@ -1,20 +1,26 @@
-import { ENTRY_TYPE, isPrimitiveEntryType } from "./entry-types";
+import { ENTRY_TYPE } from "./entry-types";
 import { Entry, primitive, GlobalCarrier } from "./interfaces";
-import {
-  isPrimitive,
-  primitiveValueToEntry,
-  isKnownAddressValuePointer,
-} from "./utils";
+import { isKnownAddressValuePointer, isTypeWithRC } from "./utils";
 import { ExternalArgs } from "./interfaces";
 import { BigInt64OverflowError } from "./exceptions";
 import {
   INITIAL_ENTRY_POINTER_TO_POINTER,
   INITIAL_ENTRY_POINTER_VALUE,
 } from "./consts";
-import { saveValue } from "./saveValue";
 import { getAllLinkedAddresses } from "./getAllLinkedAddresses";
 import { stringEncodeInto } from "./stringEncodeInto";
 import { stringDecode } from "./stringDecode";
+import {
+  typeAndRc_refsCount_get,
+  typeAndRc_refsCount_set,
+  typeOnly_type_get,
+  number_value_get,
+  string_bytesLength_get,
+  string_charsPointer_get,
+} from "./generatedStructs";
+import { Heap } from "../structsGenerator/consts";
+import { readString } from "./readString";
+import { saveValueIterative } from "./saveValue";
 
 const MAX_64_BIG_INT = BigInt("0xFFFFFFFFFFFFFFFF");
 
@@ -186,11 +192,7 @@ export function writeEntry(
   }
 }
 
-export function appendEntry(
-  externalArgs: ExternalArgs,
-  carrier: GlobalCarrier,
-  entry: Entry
-) {
+export function appendEntry(carrier: GlobalCarrier, entry: Entry) {
   const size = sizeOfEntry(entry);
 
   const memoryAddress = carrier.allocator.calloc(size);
@@ -335,205 +337,110 @@ export function writeValueInPtrToPtr(
   externalArgs: ExternalArgs,
   carrier: GlobalCarrier,
   ptrToPtr: number,
-  value: any
+  value: unknown
 ) {
-  const existingEntryPointer =
-    carrier.uint32[ptrToPtr / Uint32Array.BYTES_PER_ELEMENT];
+  const referencedPointers: number[] = [];
+  // Might oom here
+  saveValueIterative(
+    externalArgs,
+    carrier,
+    referencedPointers,
+    ptrToPtr,
+    value
+  );
 
-  let reuse = false;
-  let existingValueEntry: Entry | undefined;
-
-  if (!isKnownAddressValuePointer(existingEntryPointer)) {
-    existingValueEntry = readEntry(carrier, existingEntryPointer);
-    reuse =
-      isPrimitive(value) &&
-      isPrimitiveEntryType(existingValueEntry.type) &&
-      canReuseMemoryOfEntry(existingValueEntry, value);
-  }
-
-  // try to re use memory
-  if (reuse) {
-    const newEntry = primitiveValueToEntry(value);
-
-    writeEntry(carrier, existingEntryPointer, newEntry);
-  } else {
-    const referencedPointers: number[] = [];
-    const newEntryPointer = saveValue(
-      externalArgs,
-      carrier,
-      referencedPointers,
-      new Map(),
-      value
-    );
-
-    carrier.uint32[ptrToPtr / Uint32Array.BYTES_PER_ELEMENT] = newEntryPointer;
-
-    return {
-      referencedPointers,
-      existingEntryPointer,
-      existingValueEntry,
-    };
-  }
+  return referencedPointers;
 }
 
 export function writeValueInPtrToPtrAndHandleMemory(
   externalArgs: ExternalArgs,
   carrier: GlobalCarrier,
   ptrToPtr: number,
-  value: any
+  value: unknown
 ) {
-  const {
-    existingValueEntry = false,
-    existingEntryPointer = 0,
-    referencedPointers = [],
-  } = writeValueInPtrToPtr(externalArgs, carrier, ptrToPtr, value) || {};
+  const existingEntryPointer = carrier.heap.Uint32Array[ptrToPtr];
+  // Might oom here
+  const referencedPointers = writeValueInPtrToPtr(
+    externalArgs,
+    carrier,
+    ptrToPtr,
+    value
+  );
+  // -- end of might oom
 
+  // commit ref count changes of existing objects
   if (referencedPointers.length > 0) {
     for (const ptr of referencedPointers) {
-      incrementRefCount(externalArgs, carrier, ptr);
+      incrementRefCount(carrier.heap, ptr);
     }
   }
 
-  if (existingValueEntry && "refsCount" in existingValueEntry) {
-    const newRefCount = decrementRefCount(
-      externalArgs,
-      carrier,
-      existingEntryPointer
-    );
-
-    if (newRefCount === 0) {
-      const addressesToFree = getAllLinkedAddresses(
-        carrier,
-        false,
-        existingEntryPointer
-      );
-
-      for (const address of addressesToFree.leafAddresses) {
-        carrier.allocator.free(address);
-      }
-
-      for (const address of addressesToFree.arcAddresses) {
-        decrementRefCount(externalArgs, carrier, address);
-      }
-    }
-  } else {
-    carrier.allocator.free(existingEntryPointer);
+  // I'm not sure how it gets undefind here
+  if (existingEntryPointer !== undefined) {
+    handleArcForDeletedValuePointer(carrier, existingEntryPointer);
   }
 }
 
 export function handleArcForDeletedValuePointer(
-  externalArgs: ExternalArgs,
   carrier: GlobalCarrier,
   deletedValuePointer: number
 ): void {
+  const { heap, allocator } = carrier;
   // No memory to free/ARC
   if (isKnownAddressValuePointer(deletedValuePointer)) {
     return;
   }
 
-  const existingValueEntry = readEntry(carrier, deletedValuePointer);
-  if (existingValueEntry && "refsCount" in existingValueEntry) {
-    const newRefCount = decrementRefCount(
-      externalArgs,
-      carrier,
-      deletedValuePointer
-    );
-
-    if (newRefCount === 0) {
-      const addressesToFree = getAllLinkedAddresses(
-        carrier,
-        false,
-        deletedValuePointer
+  const entryType = typeOnly_type_get(heap, deletedValuePointer);
+  if (!isTypeWithRC(entryType)) {
+    if (entryType === ENTRY_TYPE.STRING) {
+      allocator.free(
+        string_charsPointer_get(carrier.heap, deletedValuePointer)
       );
-
-      for (const address of addressesToFree.leafAddresses) {
-        carrier.allocator.free(address);
-      }
-
-      for (const address of addressesToFree.arcAddresses) {
-        decrementRefCount(externalArgs, carrier, address);
-      }
     }
-  } else {
-    carrier.allocator.free(deletedValuePointer);
+    allocator.free(deletedValuePointer);
+    return;
+  }
+
+  if (decrementRefCount(heap, deletedValuePointer) > 0) {
+    allocator.free(deletedValuePointer);
+    return;
+  }
+
+  const { leafAddresses, arcAddresses } = getAllLinkedAddresses(
+    carrier,
+    false,
+    deletedValuePointer
+  );
+
+  for (const address of leafAddresses) {
+    allocator.free(address);
+  }
+
+  for (const address of arcAddresses) {
+    decrementRefCount(heap, address);
   }
 }
 
-export function incrementRefCount(
-  externalArgs: ExternalArgs,
-  carrier: GlobalCarrier,
-  entryPointer: number
-) {
-  const entry = readEntry(carrier, entryPointer);
+export function incrementRefCount(heap: Heap, entryPointer: number) {
+  typeAndRc_refsCount_set(
+    heap,
+    entryPointer,
+    typeAndRc_refsCount_get(heap, entryPointer) + 1
+  );
 
-  if ("refsCount" in entry) {
-    entry.refsCount += 1;
-    writeEntry(carrier, entryPointer, entry);
-
-    return entry.refsCount;
-  }
-
-  throw new Error("unexpected");
+  return typeAndRc_refsCount_get(heap, entryPointer);
 }
 
-export function decrementRefCount(
-  externalArgs: ExternalArgs,
-  carrier: GlobalCarrier,
-  entryPointer: number
-) {
-  const entry = readEntry(carrier, entryPointer);
+export function decrementRefCount(heap: Heap, entryPointer: number) {
+  typeAndRc_refsCount_set(
+    heap,
+    entryPointer,
+    typeAndRc_refsCount_get(heap, entryPointer) - 1
+  );
 
-  if ("refsCount" in entry) {
-    entry.refsCount -= 1;
-    writeEntry(carrier, entryPointer, entry);
-
-    return entry.refsCount;
-  }
-
-  throw new Error("unexpected");
+  return typeAndRc_refsCount_get(heap, entryPointer);
 }
-
-export function getRefCount(carrier: GlobalCarrier, entryPointer: number) {
-  const entry = readEntry(carrier, entryPointer);
-
-  if ("refsCount" in entry) {
-    return entry.refsCount;
-  }
-
-  throw new Error("unexpected");
-}
-
-export function setRefCount(
-  carrier: GlobalCarrier,
-  entryPointer: number,
-  newRefCount: number
-) {
-  const entry = readEntry(carrier, entryPointer);
-
-  if ("refsCount" in entry) {
-    const prevCount = entry.refsCount;
-    entry.refsCount = newRefCount;
-    writeEntry(carrier, entryPointer, entry);
-    return prevCount;
-  }
-
-  throw new Error("unexpected");
-}
-
-// export function getObjectPropPtrToPtr(
-//   { dataView }: GlobalCarrier,
-//   pointerToEntry: number
-// ) {
-//   const keyStringLength = dataView.getUint16(pointerToEntry + 1);
-//   const valuePtrToPtr =
-//     Uint16Array.BYTES_PER_ELEMENT + pointerToEntry + 1 + keyStringLength;
-//   const nextPtrToPtr = valuePtrToPtr + Uint32Array.BYTES_PER_ELEMENT;
-
-//   return {
-//     valuePtrToPtr,
-//     nextPtrToPtr
-//   };
-// }
 
 export function getObjectValuePtrToPtr(pointerToEntry: number) {
   return pointerToEntry + 1 + 1;
@@ -562,6 +469,49 @@ export function memComp(
 }
 
 export function compareStringOrNumberEntriesInPlace(
+  heap: Heap,
+  entryAPointer: number,
+  entryBPointer: number
+) {
+  typeOnly_type_get(heap, entryAPointer);
+  const entryAType: ENTRY_TYPE.STRING | ENTRY_TYPE.NUMBER = typeOnly_type_get(
+    heap,
+    entryAPointer
+  );
+
+  const entryBType: ENTRY_TYPE.STRING | ENTRY_TYPE.NUMBER = typeOnly_type_get(
+    heap,
+    entryBPointer
+  );
+
+  if (entryAType !== entryBType) {
+    return false;
+  }
+
+  if (entryAType === ENTRY_TYPE.STRING) {
+    const aLength = string_bytesLength_get(heap, entryAPointer);
+    const bLength = string_bytesLength_get(heap, entryBPointer);
+
+    if (aLength !== bLength) {
+      return false;
+    }
+
+    return memComp(
+      heap.Uint8Array,
+      string_charsPointer_get(heap, entryAPointer),
+      string_charsPointer_get(heap, entryBPointer),
+      aLength
+    );
+  }
+
+  // numbers
+  return (
+    number_value_get(heap, entryAPointer) ===
+    number_value_get(heap, entryBPointer)
+  );
+}
+
+export function compareStringOrNumberEntriesInPlaceOld(
   carrier: GlobalCarrier,
   entryAPointer: number,
   entryBPointer: number
@@ -604,4 +554,17 @@ export function compareStringOrNumberEntriesInPlace(
     ] ===
     carrier.float64[(entryBPointer + cursor) / Float64Array.BYTES_PER_ELEMENT]
   );
+}
+
+export function readNumberOrString(heap: Heap, pointer: number) {
+  const type: ENTRY_TYPE.NUMBER | ENTRY_TYPE.STRING = typeOnly_type_get(
+    heap,
+    pointer
+  );
+
+  if (type === ENTRY_TYPE.NUMBER) {
+    return number_value_get(heap, pointer);
+  } else {
+    return readString(heap, pointer);
+  }
 }

@@ -1,95 +1,237 @@
-import {
-  primitiveValueToEntry,
-  isPrimitive,
-  getOurPointerIfApplicable,
-} from "./utils";
-import { appendEntry } from "./store";
-import { objectSaver, mapSaver, setSaver } from "./objectSaver";
-import { arraySaver } from "./arraySaver";
+import { getOurPointerIfApplicable, strByteLength } from "./utils";
 import { ExternalArgs, GlobalCarrier } from "./interfaces";
 import { ENTRY_TYPE } from "./entry-types";
+import {
+  number_size,
+  number_set_all,
+  bigint_size,
+  bigint_set_all,
+  string_size,
+  string_set_all,
+  date_size,
+  date_set_all,
+} from "./generatedStructs";
 import {
   UNDEFINED_KNOWN_ADDRESS,
   NULL_KNOWN_ADDRESS,
   TRUE_KNOWN_ADDRESS,
   FALSE_KNOWN_ADDRESS,
+  MAX_64_BIG_INT,
 } from "./consts";
+import { arraySaverIterative } from "./arraySaverIterative";
+import {
+  objectSaverIterative,
+  mapSaverIterative,
+  setSaverIterative,
+} from "./objectSaverIterative";
+import { stringEncodeInto } from "./stringEncodeInto";
 
-/**
- * Returns pointer for the value
- */
-export function saveValue(
+export function saveValueIterative(
   externalArgs: ExternalArgs,
   carrier: GlobalCarrier,
-  referencedPointers: number[],
-  // Not really working yet. we need iterative saving for it
-  visitedValuesOnCurrentSaveOperation: Map<any, number>,
-  value: any
+  referencedExistingPointers: number[],
+  initialValuePtrToPtr: number,
+  initialValue: unknown
 ) {
-  let valuePointer = 0;
-  let maybeOurPointer: number | undefined;
+  const valuesToSave = [initialValue];
+  const pointersToSaveTo = [initialValuePtrToPtr];
+  const {
+    heap: { Uint32Array: uint32 },
+    allocator,
+    heap,
+  } = carrier;
 
-  if (value === undefined) {
-    return UNDEFINED_KNOWN_ADDRESS;
-  }
+  while (valuesToSave.length !== 0) {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const valueToSave = valuesToSave.pop()!;
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const ptrToPtrToSaveTo = pointersToSaveTo.pop()!;
 
-  if (value === null) {
-    return NULL_KNOWN_ADDRESS;
-  }
+    // Handler well-known values
+    if (valueToSave === undefined) {
+      uint32[
+        ptrToPtrToSaveTo / Uint32Array.BYTES_PER_ELEMENT
+      ] = UNDEFINED_KNOWN_ADDRESS;
+      continue;
+    }
 
-  if (value === true) {
-    return TRUE_KNOWN_ADDRESS;
-  }
+    if (valueToSave === null) {
+      uint32[
+        ptrToPtrToSaveTo / Uint32Array.BYTES_PER_ELEMENT
+      ] = NULL_KNOWN_ADDRESS;
+      continue;
+    }
 
-  if (value === false) {
-    return FALSE_KNOWN_ADDRESS;
-  }
+    if (valueToSave === true) {
+      uint32[
+        ptrToPtrToSaveTo / Uint32Array.BYTES_PER_ELEMENT
+      ] = TRUE_KNOWN_ADDRESS;
+      continue;
+    }
 
-  if (isPrimitive(value)) {
-    const entry = primitiveValueToEntry(value);
-    valuePointer = appendEntry(externalArgs, carrier, entry);
-  } else if (
-    (maybeOurPointer = getOurPointerIfApplicable(value, carrier.allocator))
-  ) {
-    valuePointer = maybeOurPointer;
-    referencedPointers.push(valuePointer);
-  } else if (
-    (maybeOurPointer = visitedValuesOnCurrentSaveOperation.get(value))
-  ) {
-    valuePointer = maybeOurPointer;
-    referencedPointers.push(valuePointer);
-  } else if (Array.isArray(value)) {
-    valuePointer = arraySaver(externalArgs, carrier, referencedPointers, value);
-  } else if (value instanceof Date) {
-    valuePointer = appendEntry(externalArgs, carrier, {
-      type: ENTRY_TYPE.DATE,
-      refsCount: 1,
-      value: value.getTime(),
-    });
-  } else if (value instanceof Map) {
-    valuePointer = mapSaver(
+    if (valueToSave === false) {
+      uint32[
+        ptrToPtrToSaveTo / Uint32Array.BYTES_PER_ELEMENT
+      ] = FALSE_KNOWN_ADDRESS;
+      continue;
+    }
+
+    switch (typeof valueToSave) {
+      case "number":
+        uint32[
+          ptrToPtrToSaveTo / Uint32Array.BYTES_PER_ELEMENT
+        ] = allocator.calloc(number_size);
+        number_set_all(
+          heap,
+          uint32[ptrToPtrToSaveTo / Uint32Array.BYTES_PER_ELEMENT],
+          ENTRY_TYPE.NUMBER,
+          valueToSave
+        );
+        continue;
+        break;
+
+      case "string":
+        // eslint-disable-next-line no-case-declarations
+        const stringBytesLength = strByteLength(valueToSave);
+        // eslint-disable-next-line no-case-declarations
+        const stringDataPointer = allocator.calloc(stringBytesLength);
+        uint32[
+          ptrToPtrToSaveTo / Uint32Array.BYTES_PER_ELEMENT
+        ] = allocator.calloc(string_size);
+
+        stringEncodeInto(heap.Uint8Array, stringDataPointer, valueToSave);
+
+        string_set_all(
+          heap,
+          uint32[ptrToPtrToSaveTo / Uint32Array.BYTES_PER_ELEMENT],
+          ENTRY_TYPE.STRING,
+          stringBytesLength,
+          stringDataPointer
+        );
+        continue;
+        break;
+
+      case "bigint":
+        if (valueToSave > MAX_64_BIG_INT || valueToSave < -MAX_64_BIG_INT) {
+          uint32[
+            ptrToPtrToSaveTo / Uint32Array.BYTES_PER_ELEMENT
+          ] = UNDEFINED_KNOWN_ADDRESS;
+          continue;
+          // Maybe don't make undefined but throw, or clamp
+          // throw new Error("MAX_64_BIG_INT");
+        }
+
+        uint32[
+          ptrToPtrToSaveTo / Uint32Array.BYTES_PER_ELEMENT
+        ] = allocator.calloc(bigint_size);
+        bigint_set_all(
+          heap,
+          uint32[ptrToPtrToSaveTo / Uint32Array.BYTES_PER_ELEMENT],
+          valueToSave > 0
+            ? ENTRY_TYPE.BIGINT_POSITIVE
+            : ENTRY_TYPE.BIGINT_NEGATIVE,
+          valueToSave * (valueToSave > 0 ? BigInt("1") : BigInt("-1"))
+        );
+
+        continue;
+        break;
+
+      case "function":
+        // Nope Nope Nope
+        uint32[
+          ptrToPtrToSaveTo / Uint32Array.BYTES_PER_ELEMENT
+        ] = UNDEFINED_KNOWN_ADDRESS;
+        continue;
+        break;
+
+      case "symbol":
+        // not supported, write undefined
+        uint32[
+          ptrToPtrToSaveTo / Uint32Array.BYTES_PER_ELEMENT
+        ] = UNDEFINED_KNOWN_ADDRESS;
+        continue;
+        break;
+
+      // we will never get here
+      case "undefined":
+        continue;
+        break;
+      // we will never get here
+      case "boolean":
+        continue;
+        break;
+    }
+
+    const maybeOurPointerFromSymbol = getOurPointerIfApplicable(
+      valueToSave,
+      carrier.allocator
+    );
+
+    if (maybeOurPointerFromSymbol) {
+      referencedExistingPointers.push(maybeOurPointerFromSymbol);
+      heap.Uint32Array[
+        ptrToPtrToSaveTo / Uint32Array.BYTES_PER_ELEMENT
+      ] = maybeOurPointerFromSymbol;
+      continue;
+    }
+
+    if (Array.isArray(valueToSave)) {
+      heap.Uint32Array[
+        ptrToPtrToSaveTo / Uint32Array.BYTES_PER_ELEMENT
+      ] = arraySaverIterative(
+        externalArgs.arrayAdditionalAllocation,
+        carrier,
+        valuesToSave,
+        pointersToSaveTo,
+        valueToSave
+      );
+      continue;
+    }
+
+    if (valueToSave instanceof Date) {
+      heap.Uint32Array[
+        ptrToPtrToSaveTo / Uint32Array.BYTES_PER_ELEMENT
+      ] = allocator.calloc(date_size);
+      date_set_all(
+        heap,
+        heap.Uint32Array[ptrToPtrToSaveTo / Uint32Array.BYTES_PER_ELEMENT],
+        ENTRY_TYPE.DATE,
+        1,
+        0,
+        valueToSave.getTime()
+      );
+      continue;
+    }
+
+    if (valueToSave instanceof Map) {
+      heap.Uint32Array[
+        ptrToPtrToSaveTo / Uint32Array.BYTES_PER_ELEMENT
+      ] = mapSaverIterative(
+        externalArgs,
+        carrier,
+        valuesToSave,
+        pointersToSaveTo,
+        valueToSave
+      );
+      continue;
+    }
+
+    if (valueToSave instanceof Set) {
+      heap.Uint32Array[
+        ptrToPtrToSaveTo / Uint32Array.BYTES_PER_ELEMENT
+      ] = setSaverIterative(externalArgs, carrier, valueToSave);
+      continue;
+    }
+
+    // Plain object? I hope so
+    heap.Uint32Array[
+      ptrToPtrToSaveTo / Uint32Array.BYTES_PER_ELEMENT
+    ] = objectSaverIterative(
       externalArgs,
       carrier,
-      referencedPointers,
-      visitedValuesOnCurrentSaveOperation,
-      value
+      valuesToSave,
+      pointersToSaveTo,
+      valueToSave
     );
-    visitedValuesOnCurrentSaveOperation.set(value, valuePointer);
-  } else if (value instanceof Set) {
-    valuePointer = setSaver(externalArgs, carrier, value);
-    visitedValuesOnCurrentSaveOperation.set(value, valuePointer);
-  } else if (typeof value === "object") {
-    valuePointer = objectSaver(
-      externalArgs,
-      carrier,
-      referencedPointers,
-      visitedValuesOnCurrentSaveOperation,
-      value
-    );
-    visitedValuesOnCurrentSaveOperation.set(value, valuePointer);
-  } else {
-    throw new Error("unsupported yet");
   }
-
-  return valuePointer;
 }

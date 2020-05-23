@@ -1,6 +1,5 @@
 import {
   getFinalValueAtArrayIndex,
-  arrayGetMetadata,
   setValueAtArrayIndex,
   arraySort,
   extendArrayIfNeeded,
@@ -8,15 +7,16 @@ import {
 } from "./arrayHelpers";
 import { INTERNAL_API_SYMBOL } from "./symbols";
 import { arraySplice } from "./arraySplice";
-import { ExternalArgs, GlobalCarrier, ArrayEntry } from "./interfaces";
+import { ExternalArgs, GlobalCarrier } from "./interfaces";
 import {
   IllegalArrayIndexError,
   UnsupportedOperationError,
 } from "./exceptions";
 import { allocationsTransaction } from "./allocationsTransaction";
 import { BaseProxyTrap } from "./BaseProxyTrap";
+import { array_length_get } from "./generatedStructs";
 
-export class ArrayWrapper extends BaseProxyTrap<ArrayEntry>
+export class ArrayWrapper extends BaseProxyTrap
   implements ProxyHandler<Record<string, unknown>> {
   public get(target: Record<string, unknown>, p: PropertyKey): any {
     if (p === INTERNAL_API_SYMBOL) {
@@ -30,7 +30,7 @@ export class ArrayWrapper extends BaseProxyTrap<ArrayEntry>
     }
 
     if (p === "length") {
-      return arrayGetMetadata(this.carrier, this.entryPointer).length;
+      return array_length_get(this.carrier.heap, this.entryPointer);
     }
 
     if (typeof p === "string" || typeof p === "number") {
@@ -65,7 +65,7 @@ export class ArrayWrapper extends BaseProxyTrap<ArrayEntry>
   }
 
   public ownKeys(): PropertyKey[] {
-    const length = arrayGetMetadata(this.carrier, this.entryPointer).length;
+    const length = array_length_get(this.carrier.heap, this.entryPointer);
 
     return [...new Array(length).keys(), "length"];
   }
@@ -87,7 +87,7 @@ export class ArrayWrapper extends BaseProxyTrap<ArrayEntry>
       return true;
     }
 
-    const length = arrayGetMetadata(this.carrier, this.entryPointer).length;
+    const length = array_length_get(this.carrier.heap, this.entryPointer);
 
     if (typeof p === "number") {
       return length - 1 >= p;
@@ -112,8 +112,10 @@ export class ArrayWrapper extends BaseProxyTrap<ArrayEntry>
         throw new RangeError("Invalid array length");
       }
 
-      const currentLength = arrayGetMetadata(this.carrier, this.entryPointer)
-        .length;
+      const currentLength = array_length_get(
+        this.carrier.heap,
+        this.entryPointer
+      );
 
       if (currentLength === value) {
         return true;
@@ -180,7 +182,7 @@ export class ArrayWrapper extends BaseProxyTrap<ArrayEntry>
 
       index += 1;
 
-      length = arrayGetMetadata(this.carrier, this.entryPointer).length;
+      length = array_length_get(this.carrier.heap, this.entryPointer);
     } while (index < length);
   }
 
@@ -193,7 +195,7 @@ export class ArrayWrapper extends BaseProxyTrap<ArrayEntry>
 
       index += 1;
 
-      length = arrayGetMetadata(this.carrier, this.entryPointer).length;
+      length = array_length_get(this.carrier.heap, this.entryPointer);
     } while (index < length);
   }
 
@@ -211,7 +213,7 @@ export class ArrayWrapper extends BaseProxyTrap<ArrayEntry>
 
       index += 1;
 
-      length = arrayGetMetadata(this.carrier, this.entryPointer).length;
+      length = array_length_get(this.carrier.heap, this.entryPointer);
     } while (index < length);
   }
 
@@ -235,7 +237,7 @@ export class ArrayWrapper extends BaseProxyTrap<ArrayEntry>
   }
 
   public reverse() {
-    arrayReverse(this.externalArgs, this.carrier, this.entryPointer);
+    arrayReverse(this.carrier, this.entryPointer);
     return this;
   }
 
@@ -252,7 +254,7 @@ export class ArrayWrapper extends BaseProxyTrap<ArrayEntry>
   public unshift(...elements: any) {
     this.splice(0, 0, ...elements);
 
-    return arrayGetMetadata(this.carrier, this.entryPointer).length;
+    return array_length_get(this.carrier.heap, this.entryPointer);
   }
 
   // public getDataView() {

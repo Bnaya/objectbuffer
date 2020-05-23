@@ -4,7 +4,6 @@ import { initializeArrayBuffer } from "./store";
 
 import { arraySaver } from "./arraySaver";
 import {
-  arrayGetMetadata,
   getFinalValueAtArrayIndex,
   setValueAtArrayIndex,
 } from "./arrayHelpers";

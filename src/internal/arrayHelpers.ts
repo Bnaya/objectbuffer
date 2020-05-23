@@ -1,36 +1,31 @@
-import {
-  readEntry,
-  writeEntry,
-  writeValueInPtrToPtrAndHandleMemory,
-} from "./store";
-import { ArrayEntry, ExternalArgs, GlobalCarrier } from "./interfaces";
+import { writeValueInPtrToPtrAndHandleMemory } from "./store";
+import { ExternalArgs, GlobalCarrier } from "./interfaces";
 import { entryToFinalJavaScriptValue } from "./entryToFinalJavaScriptValue";
 import { ENTRY_TYPE } from "./entry-types";
 import { assertNonNull } from "./assertNonNull";
-
-export function arrayGetMetadata(
-  carrier: GlobalCarrier,
-  pointerToArrayEntry: number
-) {
-  const arrayEntry = readEntry(carrier, pointerToArrayEntry) as ArrayEntry;
-
-  return arrayEntry;
-}
+import {
+  array_length_get,
+  array_dataspacePointer_get,
+  array_allocatedLength_get,
+  array_length_set,
+  array_set_all,
+  array_refsCount_get,
+} from "./generatedStructs";
+import { Heap } from "../structsGenerator/consts";
 
 export function arrayGetPointersToValueInIndex(
   carrier: GlobalCarrier,
   pointerToArrayEntry: number,
   indexToGet: number
 ) {
-  const metadata = arrayGetMetadata(carrier, pointerToArrayEntry);
-
   // out of bound
-  if (indexToGet >= metadata.length) {
+  if (indexToGet >= array_length_get(carrier.heap, pointerToArrayEntry)) {
     return undefined;
   }
 
   const pointerToThePointer =
-    metadata.value + indexToGet * Uint32Array.BYTES_PER_ELEMENT;
+    array_dataspacePointer_get(carrier.heap, pointerToArrayEntry) +
+    indexToGet * Uint32Array.BYTES_PER_ELEMENT;
 
   const pointer =
     carrier.uint32[pointerToThePointer / Uint32Array.BYTES_PER_ELEMENT];
@@ -113,12 +108,12 @@ export function extendArrayIfNeeded(
   pointerToArrayEntry: number,
   wishedLength: number
 ) {
-  const metadata = arrayGetMetadata(carrier, pointerToArrayEntry);
-
-  if (wishedLength > metadata.length) {
-    if (wishedLength > metadata.allocatedLength) {
+  if (wishedLength > array_length_get(carrier.heap, pointerToArrayEntry)) {
+    if (
+      wishedLength >
+      array_allocatedLength_get(carrier.heap, pointerToArrayEntry)
+    ) {
       reallocateArray(
-        externalArgs,
         carrier,
         pointerToArrayEntry,
         wishedLength + externalArgs.arrayAdditionalAllocation,
@@ -126,13 +121,7 @@ export function extendArrayIfNeeded(
       );
     } else {
       // no need to re-allocated, just push the length forward
-      writeEntry(carrier, pointerToArrayEntry, {
-        type: ENTRY_TYPE.ARRAY,
-        refsCount: metadata.refsCount,
-        value: metadata.value,
-        allocatedLength: metadata.allocatedLength,
-        length: wishedLength,
-      });
+      array_length_set(carrier.heap, pointerToArrayEntry, wishedLength);
     }
   }
 }
@@ -141,76 +130,60 @@ export function extendArrayIfNeeded(
  * Will not empty memory or relocate the array!
  */
 export function shrinkArray(
-  externalArgs: ExternalArgs,
-  carrier: GlobalCarrier,
+  heap: Heap,
   pointerToArrayEntry: number,
   wishedLength: number
 ) {
-  const metadata = arrayGetMetadata(carrier, pointerToArrayEntry);
-
-  writeEntry(carrier, pointerToArrayEntry, {
-    type: ENTRY_TYPE.ARRAY,
-    refsCount: metadata.refsCount,
-    value: metadata.value,
-    allocatedLength: metadata.allocatedLength,
-    length: wishedLength,
-  });
+  array_length_set(heap, pointerToArrayEntry, wishedLength);
 }
 
 function reallocateArray(
-  externalArgs: ExternalArgs,
   carrier: GlobalCarrier,
   pointerToArrayEntry: number,
   newAllocatedLength: number,
   newLength: number
-) {
-  const metadata = arrayGetMetadata(carrier, pointerToArrayEntry);
-
+): void {
   const newArrayValueLocation = carrier.allocator.realloc(
-    metadata.value,
+    array_dataspacePointer_get(carrier.heap, pointerToArrayEntry),
     newAllocatedLength * Uint32Array.BYTES_PER_ELEMENT
   );
 
-  // for (
-  //   let memoryToCopyIndex = 0;
-  //   memoryToCopyIndex < metadata.length;
-  //   memoryToCopyIndex += 1
-  // ) {
-  //   carrier.dataView.setUint32(
-  //     newArrayValueLocation + memoryToCopyIndex * Uint32Array.BYTES_PER_ELEMENT,
-  //     carrier.dataView.getUint32(
-  //       metadata.value + memoryToCopyIndex * Uint32Array.BYTES_PER_ELEMENT
-  //     )
-  //   );
-  // }
-
-  writeEntry(carrier, pointerToArrayEntry, {
-    type: ENTRY_TYPE.ARRAY,
-    refsCount: metadata.refsCount,
-    value: newArrayValueLocation,
-    allocatedLength: newAllocatedLength,
-    length: newLength,
-  });
+  array_set_all(
+    carrier.heap,
+    pointerToArrayEntry,
+    ENTRY_TYPE.ARRAY,
+    array_refsCount_get(carrier.heap, pointerToArrayEntry),
+    newArrayValueLocation,
+    newLength,
+    newAllocatedLength
+  );
 }
 
 export function arraySort(
   externalArgs: ExternalArgs,
-  globalCarrier: GlobalCarrier,
+  carrier: GlobalCarrier,
   pointerToArrayEntry: number,
   sortComparator: (a: any, b: any) => 1 | -1 | 0 = defaultCompareFunction
 ) {
-  const metadata = arrayGetMetadata(globalCarrier, pointerToArrayEntry);
-  const pointersToValues = [...new Array(metadata.length).keys()]
-    .map((index) => metadata.value + index * Uint32Array.BYTES_PER_ELEMENT)
+  const arrayDataSpace = array_dataspacePointer_get(
+    carrier.heap,
+    pointerToArrayEntry
+  );
+  const pointersToValues = [
+    ...new Array(array_length_get(carrier.heap, pointerToArrayEntry)).keys(),
+  ]
+    .map((index) => arrayDataSpace + index * Uint32Array.BYTES_PER_ELEMENT)
     .map(
       (pointerToPointer) =>
-        globalCarrier.uint32[pointerToPointer / Uint32Array.BYTES_PER_ELEMENT]
+        carrier.heap.Uint32Array[
+          pointerToPointer / Uint32Array.BYTES_PER_ELEMENT
+        ]
     );
 
   const sortMe = pointersToValues.map((pointer) => {
     return [
       pointer,
-      entryToFinalJavaScriptValue(externalArgs, globalCarrier, pointer),
+      entryToFinalJavaScriptValue(externalArgs, carrier, pointer),
     ] as const;
   });
 
@@ -219,8 +192,8 @@ export function arraySort(
   });
 
   for (let i = 0; i < sortMe.length; i += 1) {
-    globalCarrier.uint32[
-      (metadata.value + i * Uint32Array.BYTES_PER_ELEMENT) /
+    carrier.heap.Uint32Array[
+      (arrayDataSpace + i * Uint32Array.BYTES_PER_ELEMENT) /
         Uint32Array.BYTES_PER_ELEMENT
     ] = sortMe[i][0];
   }
@@ -264,14 +237,16 @@ function toString(obj: any) {
 }
 
 export function arrayReverse(
-  externalArgs: ExternalArgs,
   carrier: GlobalCarrier,
   pointerToArrayEntry: number
 ) {
-  const metadata = arrayGetMetadata(carrier, pointerToArrayEntry);
-
-  for (let i = 0; i < Math.floor(metadata.length / 2); i += 1) {
-    const theOtherIndex = metadata.length - i - 1;
+  for (
+    let i = 0;
+    i < Math.floor(array_length_get(carrier.heap, pointerToArrayEntry) / 2);
+    i += 1
+  ) {
+    const theOtherIndex =
+      array_length_get(carrier.heap, pointerToArrayEntry) - i - 1;
 
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const a = arrayGetPointersToValueInIndex(carrier, pointerToArrayEntry, i)!;

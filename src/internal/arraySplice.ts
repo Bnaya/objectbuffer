@@ -1,5 +1,4 @@
 import {
-  arrayGetMetadata,
   getFinalValueAtArrayIndex,
   shrinkArray,
   extendArrayIfNeeded,
@@ -9,38 +8,34 @@ import {
 import { assertNonNull } from "./assertNonNull";
 import { ExternalArgs, GlobalCarrier } from "./interfaces";
 import { writeValueInPtrToPtr } from "./store";
+import { array_length_get } from "./generatedStructs";
 
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/splice#Syntax
 export function arraySplice(
   externalArgs: ExternalArgs,
-  globalCarrier: GlobalCarrier,
+  carrier: GlobalCarrier,
   pointerToArrayEntry: number,
   startArg: number,
   deleteCountArg?: number,
   ...itemsToAddArg: Array<any>
 ) {
-  const metadata = arrayGetMetadata(globalCarrier, pointerToArrayEntry);
+  const arrayLength = array_length_get(carrier.heap, pointerToArrayEntry);
 
-  const calcedStart = calculateSpliceStart(metadata.length, startArg);
+  const calcedStart = calculateSpliceStart(arrayLength, startArg);
 
   const calcedDeleteCount = calculateDeleteCount(
-    metadata.length,
+    arrayLength,
     calcedStart,
     deleteCountArg
   );
 
-  const newLength = metadata.length + itemsToAddArg.length - calcedDeleteCount;
+  const newLength = arrayLength + itemsToAddArg.length - calcedDeleteCount;
 
-  extendArrayIfNeeded(
-    externalArgs,
-    globalCarrier,
-    pointerToArrayEntry,
-    newLength
-  );
+  extendArrayIfNeeded(externalArgs, carrier, pointerToArrayEntry, newLength);
 
   const deletedItemsToReturn = [];
   // can be negative
-  const itemCountChange = newLength - metadata.length;
+  const itemCountChange = newLength - arrayLength;
 
   for (
     let deletedItemIndexToSave = calcedStart;
@@ -50,7 +45,7 @@ export function arraySplice(
     deletedItemsToReturn.push(
       getFinalValueAtArrayIndex(
         externalArgs,
-        globalCarrier,
+        carrier,
         pointerToArrayEntry,
         deletedItemIndexToSave
       )
@@ -70,7 +65,7 @@ export function arraySplice(
       writeValueToIndex -= 1
     ) {
       const valueToCopyPointers = arrayGetPointersToValueInIndex(
-        globalCarrier,
+        carrier,
         pointerToArrayEntry,
         writeValueToIndex - itemCountChange
       );
@@ -78,13 +73,13 @@ export function arraySplice(
       assertNonNull(valueToCopyPointers);
 
       setValuePointerAtArrayIndex(
-        globalCarrier,
+        carrier,
         pointerToArrayEntry,
         writeValueToIndex,
         valueToCopyPointers.pointer
       );
 
-      globalCarrier.uint32[
+      carrier.uint32[
         valueToCopyPointers.pointerToThePointer / Uint32Array.BYTES_PER_ELEMENT
       ] = 0;
     }
@@ -98,11 +93,11 @@ export function arraySplice(
   else if (itemCountChange < 0) {
     for (
       let writeValueToIndex = calcedStart + itemsToAddArg.length;
-      writeValueToIndex < metadata.length + itemCountChange;
+      writeValueToIndex < arrayLength + itemCountChange;
       writeValueToIndex += 1
     ) {
       const valueToCopyPointers = arrayGetPointersToValueInIndex(
-        globalCarrier,
+        carrier,
         pointerToArrayEntry,
         writeValueToIndex - itemCountChange
       );
@@ -110,7 +105,7 @@ export function arraySplice(
       assertNonNull(valueToCopyPointers);
 
       setValuePointerAtArrayIndex(
-        globalCarrier,
+        carrier,
         pointerToArrayEntry,
         writeValueToIndex,
         valueToCopyPointers.pointer
@@ -118,7 +113,7 @@ export function arraySplice(
 
       // empty old array index, its still allocated!
 
-      globalCarrier.uint32[
+      carrier.uint32[
         valueToCopyPointers.pointerToThePointer / Uint32Array.BYTES_PER_ELEMENT
       ] = 0;
 
@@ -137,7 +132,7 @@ export function arraySplice(
 
   for (let i = 0; i < itemsToAddArg.length; i += 1) {
     const valueToSetPointers = arrayGetPointersToValueInIndex(
-      globalCarrier,
+      carrier,
       pointerToArrayEntry,
       calcedStart + i
     );
@@ -146,14 +141,14 @@ export function arraySplice(
 
     writeValueInPtrToPtr(
       externalArgs,
-      globalCarrier,
+      carrier,
       valueToSetPointers.pointerToThePointer,
       itemsToAddArg[i]
     );
   }
 
-  if (newLength < metadata.length) {
-    shrinkArray(externalArgs, globalCarrier, pointerToArrayEntry, newLength);
+  if (newLength < arrayLength) {
+    shrinkArray(carrier.heap, pointerToArrayEntry, newLength);
   }
 
   return deletedItemsToReturn;
