@@ -88,7 +88,6 @@ export function saveValueIterative(
           valueToSave
         );
         continue;
-        break;
 
       case "string":
         // eslint-disable-next-line no-case-declarations
@@ -109,7 +108,6 @@ export function saveValueIterative(
           stringDataPointer
         );
         continue;
-        break;
 
       case "bigint":
         if (valueToSave > MAX_64_BIG_INT || valueToSave < -MAX_64_BIG_INT) {
@@ -134,7 +132,6 @@ export function saveValueIterative(
         );
 
         continue;
-        break;
 
       case "function":
         // Nope Nope Nope
@@ -142,7 +139,6 @@ export function saveValueIterative(
           ptrToPtrToSaveTo / Uint32Array.BYTES_PER_ELEMENT
         ] = UNDEFINED_KNOWN_ADDRESS;
         continue;
-        break;
 
       case "symbol":
         // not supported, write undefined
@@ -150,16 +146,13 @@ export function saveValueIterative(
           ptrToPtrToSaveTo / Uint32Array.BYTES_PER_ELEMENT
         ] = UNDEFINED_KNOWN_ADDRESS;
         continue;
-        break;
 
       // we will never get here
       case "undefined":
         continue;
-        break;
       // we will never get here
       case "boolean":
         continue;
-        break;
     }
 
     const maybeOurPointerFromSymbol = getOurPointerIfApplicable(
