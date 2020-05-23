@@ -1,4 +1,5 @@
 /** Generate code. don't try to edit manually **/
+/* istanbul ignore file */
 import type { Heap } from "../structsGenerator/consts";
 
 /** --- struct number start --- **/

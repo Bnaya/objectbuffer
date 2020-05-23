@@ -68,9 +68,6 @@ export function hashMapInsertUpdate(
   externalKeyValue: number | string
 ) {
   const mapOperator = MAP_MACHINE.createOperator(carrier, mapPointer);
-  // const keyEntry = primitiveValueToEntry(externalKeyValue) as
-  //   | NumberEntry
-  //   | StringEntry;
 
   // allocate all possible needed memory upfront, so we won't oom in the middle of something
   // in case of overwrite, we will not need this memory
@@ -153,6 +150,15 @@ export function hashMapInsertUpdate(
   if (commonNodeOperator.startAddress !== 0) {
     // we don't need the new memory
     // @todo Free here also the string data
+    if (
+      typeOnly_type_get(carrier.heap, keyMemoryEntryPointer) ===
+      ENTRY_TYPE.STRING
+    ) {
+      carrier.allocator.free(
+        string_charsPointer_get(carrier.heap, keyMemoryEntryPointer)
+      );
+    }
+
     carrier.allocator.free(keyMemoryEntryPointer);
     carrier.allocator.free(memoryForNewNode);
 

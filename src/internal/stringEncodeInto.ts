@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 // https://github.com/anonyco/FastestSmallestTextEncoderDecoder/blob/master/EncoderDecoderTogether.src.js
 // https://developer.mozilla.org/en-US/docs/Web/API/TextEncoder#Polyfill
 export function stringEncodeInto(uint8: Uint8Array, from: number, str: string) {

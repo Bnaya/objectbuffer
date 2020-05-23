@@ -31,6 +31,7 @@ export function initializeArrayBuffer(arrayBuffer: ArrayBuffer) {
   ] = INITIAL_ENTRY_POINTER_VALUE;
 }
 
+/* istanbul ignore next */
 export function sizeOfEntry(entry: Entry) {
   let cursor = 0;
 
@@ -272,51 +273,6 @@ export function compareStringOrNumberEntriesInPlace(
   return (
     number_value_get(heap, entryAPointer) ===
     number_value_get(heap, entryBPointer)
-  );
-}
-
-export function compareStringOrNumberEntriesInPlaceOld(
-  carrier: GlobalCarrier,
-  entryAPointer: number,
-  entryBPointer: number
-) {
-  let cursor = 0;
-  const entryAType: ENTRY_TYPE =
-    carrier.float64[(entryAPointer + cursor) / Float64Array.BYTES_PER_ELEMENT];
-  const entryBType: ENTRY_TYPE =
-    carrier.float64[(entryBPointer + cursor) / Float64Array.BYTES_PER_ELEMENT];
-  cursor += Float64Array.BYTES_PER_ELEMENT;
-
-  if (entryAType !== entryBType) {
-    return false;
-  }
-
-  if (entryAType === ENTRY_TYPE.STRING) {
-    const aLength =
-      carrier.uint32[(entryAPointer + cursor) / Uint32Array.BYTES_PER_ELEMENT];
-    const bLength =
-      carrier.uint32[(entryBPointer + cursor) / Uint32Array.BYTES_PER_ELEMENT];
-
-    if (aLength !== bLength) {
-      return false;
-    }
-
-    // string length
-    cursor += Uint32Array.BYTES_PER_ELEMENT;
-
-    return memComp(
-      carrier.uint8,
-      entryAPointer + cursor,
-      entryBPointer + cursor,
-      aLength
-    );
-  }
-
-  return (
-    carrier.float64[
-      (entryAPointer + cursor) / Float64Array.BYTES_PER_ELEMENT
-    ] ===
-    carrier.float64[(entryBPointer + cursor) / Float64Array.BYTES_PER_ELEMENT]
   );
 }
 

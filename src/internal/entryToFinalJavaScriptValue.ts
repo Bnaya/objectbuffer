@@ -99,6 +99,7 @@ export function entryToFinalJavaScriptValue(
   return ret;
 }
 
+/* istanbul ignore next */
 function finalizer(memoryAddress: number, carrier: GlobalCarrier) {
   const newRefsCount = decrementRefCount(carrier.heap, memoryAddress);
 

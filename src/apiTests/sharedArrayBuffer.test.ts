@@ -43,13 +43,13 @@ describe("SharedArrayBuffer tests", () => {
       }
     `);
 
-    expect(memoryStats(objectBuffer).used).toMatchInlineSnapshot(`528`);
+    expect(memoryStats(objectBuffer).used).toMatchInlineSnapshot(`512`);
 
     disposeWrapperObject(objectBuffer.arr[0]);
     disposeWrapperObject(objectBuffer.arr);
 
     delete objectBuffer.arr;
-    expect(memoryStats(objectBuffer).used).toMatchInlineSnapshot(`176`);
+    expect(memoryStats(objectBuffer).used).toMatchInlineSnapshot(`160`);
   });
 
   test("basic 2", () => {
@@ -98,6 +98,6 @@ describe("SharedArrayBuffer tests", () => {
       }
     `);
 
-    expect(memoryStats(objectBuffer).used).toMatchInlineSnapshot(`744`);
+    expect(memoryStats(objectBuffer).used).toMatchInlineSnapshot(`712`);
   });
 });
