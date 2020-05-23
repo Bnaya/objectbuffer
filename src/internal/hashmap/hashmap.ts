@@ -1,21 +1,15 @@
 import { MAP_MACHINE, NODE_MACHINE } from "./memoryLayout";
-import {
-  GlobalCarrier,
-  ExternalArgs,
-  NumberEntry,
-  StringEntry,
-} from "../interfaces";
+import { GlobalCarrier, ExternalArgs } from "../interfaces";
 import {
   hashCodeInPlace,
   hashCodeExternalValue,
   getKeyStartLength,
 } from "./hashmapUtils";
-import { primitiveValueToEntry } from "../utils";
+import { strByteLength } from "../utils";
+import { stringEncodeInto } from "../stringEncodeInto";
 import {
-  sizeOfEntry,
-  writeEntry,
-  readEntry,
   compareStringOrNumberEntriesInPlace,
+  readNumberOrString,
 } from "../store";
 import { ENTRY_TYPE } from "../entry-types";
 import {
@@ -28,6 +22,16 @@ import {
 } from "../linkedList/linkedList";
 
 import { MemoryOperator } from "../memoryMachinery";
+import {
+  number_size,
+  string_size,
+  number_set_all,
+  string_set_all,
+  number_value_place,
+  number_value_ctor,
+  typeOnly_type_get,
+  string_charsPointer_get,
+} from "../generatedStructs";
 
 export function createHashMap(
   carrier: GlobalCarrier,
@@ -64,30 +68,49 @@ export function hashMapInsertUpdate(
   externalKeyValue: number | string
 ) {
   const mapOperator = MAP_MACHINE.createOperator(carrier, mapPointer);
-  const keyEntry = primitiveValueToEntry(externalKeyValue) as
-    | NumberEntry
-    | StringEntry;
 
   // allocate all possible needed memory upfront, so we won't oom in the middle of something
   // in case of overwrite, we will not need this memory
   const memoryForNewNode = carrier.allocator.calloc(NODE_MACHINE.map.SIZE_OF);
-  const memorySizeOfKey = sizeOfEntry(keyEntry);
-  const keyEntryMemory = carrier.allocator.calloc(memorySizeOfKey);
+  let keyMemoryEntryPointer;
+  let keyDataMemoryStart: number;
+  let keyDataMemoryLength: number;
 
-  writeEntry(carrier, keyEntryMemory, keyEntry);
+  if (typeof externalKeyValue === "number") {
+    keyMemoryEntryPointer = carrier.allocator.calloc(number_size);
+    number_set_all(
+      carrier.heap,
+      keyMemoryEntryPointer,
+      ENTRY_TYPE.NUMBER,
+      externalKeyValue
+    );
 
-  const keyHeaderOverhead =
-    keyEntry.type === ENTRY_TYPE.STRING
-      ? // type + string length
-        8 + 4
-      : // type
-        8;
+    keyDataMemoryStart = keyMemoryEntryPointer + number_value_place;
+    keyDataMemoryLength = number_value_ctor.BYTES_PER_ELEMENT;
+  } else {
+    keyMemoryEntryPointer = carrier.allocator.calloc(string_size);
+    keyDataMemoryLength = strByteLength(externalKeyValue);
+    keyDataMemoryStart = carrier.allocator.calloc(keyDataMemoryLength);
+    stringEncodeInto(
+      carrier.heap.Uint8Array,
+      keyDataMemoryStart,
+      externalKeyValue
+    );
+
+    string_set_all(
+      carrier.heap,
+      keyMemoryEntryPointer,
+      ENTRY_TYPE.STRING,
+      keyDataMemoryLength,
+      keyDataMemoryStart
+    );
+  }
+
   const keyHashCode = hashCodeInPlace(
     carrier.uint8,
     mapOperator.get("CAPACITY"),
-    // + 1 for the type of key
-    keyEntryMemory + keyHeaderOverhead,
-    memorySizeOfKey - keyHeaderOverhead
+    keyDataMemoryStart,
+    keyDataMemoryLength
   );
 
   let ptrToPtrToSaveTheNodeTo =
@@ -103,9 +126,9 @@ export function hashMapInsertUpdate(
   while (
     commonNodeOperator.startAddress !== 0 &&
     !compareStringOrNumberEntriesInPlace(
-      carrier,
+      carrier.heap,
       commonNodeOperator.get("KEY_POINTER"),
-      keyEntryMemory
+      keyMemoryEntryPointer
     )
   ) {
     ptrToPtrToSaveTheNodeTo = commonNodeOperator.pointerTo("NEXT_NODE_POINTER");
@@ -126,13 +149,23 @@ export function hashMapInsertUpdate(
   // found node with same key, return same pointer
   if (commonNodeOperator.startAddress !== 0) {
     // we don't need the new memory
-    carrier.allocator.free(keyEntryMemory);
+    // @todo Free here also the string data
+    if (
+      typeOnly_type_get(carrier.heap, keyMemoryEntryPointer) ===
+      ENTRY_TYPE.STRING
+    ) {
+      carrier.allocator.free(
+        string_charsPointer_get(carrier.heap, keyMemoryEntryPointer)
+      );
+    }
+
+    carrier.allocator.free(keyMemoryEntryPointer);
     carrier.allocator.free(memoryForNewNode);
 
     return commonNodeOperator.pointerTo("VALUE_POINTER");
   } else {
     commonNodeOperator.startAddress = memoryForNewNode;
-    commonNodeOperator.set("KEY_POINTER", keyEntryMemory);
+    commonNodeOperator.set("KEY_POINTER", keyMemoryEntryPointer);
     commonNodeOperator.set(
       "LINKED_LIST_ITEM_POINTER",
       linkedListItemInsert(
@@ -153,7 +186,6 @@ export function hashMapInsertUpdate(
 
     if (
       shouldRehash(
-        mapOperator.get("LINKED_LIST_SIZE"),
         mapOperator.get("CAPACITY"),
         mapOperator.get("USED_CAPACITY"),
         externalArgs.hashMapLoadFactor
@@ -194,11 +226,9 @@ export function hashMapNodeLookup(
   );
 
   while (node.startAddress !== 0) {
-    const keyEntry = readEntry(carrier, node.get("KEY_POINTER")) as
-      | NumberEntry
-      | StringEntry;
+    const keyValue = readNumberOrString(carrier.heap, node.get("KEY_POINTER"));
 
-    if (keyEntry.value === externalKeyValue) {
+    if (keyValue === externalKeyValue) {
       return ptrToPtr;
     }
 
@@ -262,6 +292,15 @@ export function hashMapDelete(
   carrier.uint32[
     foundNodePtrToPtr / Uint32Array.BYTES_PER_ELEMENT
   ] = nodeOperator.get("NEXT_NODE_POINTER");
+
+  if (
+    typeOnly_type_get(carrier.heap, nodeOperator.get("KEY_POINTER")) ===
+    ENTRY_TYPE.STRING
+  ) {
+    carrier.allocator.free(
+      string_charsPointer_get(carrier.heap, nodeOperator.get("KEY_POINTER"))
+    );
+  }
 
   carrier.allocator.free(nodeOperator.get("KEY_POINTER"));
   carrier.allocator.free(nodeOperator.startAddress);
@@ -344,6 +383,14 @@ export function hashMapGetPointersToFree(
   for (const nodePointer of pointersOfLinkedList.valuePointers) {
     nodeOperator.startAddress = nodePointer;
     pointersToValuePointers.push(nodeOperator.pointerTo("VALUE_POINTER"));
+    if (
+      typeOnly_type_get(carrier.heap, nodeOperator.get("KEY_POINTER")) ===
+      ENTRY_TYPE.STRING
+    ) {
+      pointers.push(
+        string_charsPointer_get(carrier.heap, nodeOperator.get("KEY_POINTER"))
+      );
+    }
     pointers.push(nodePointer, nodeOperator.get("KEY_POINTER"));
   }
 
@@ -446,7 +493,6 @@ function hashMapRehashInsert(
 }
 
 function shouldRehash(
-  nodesCount: number,
   buckets: number,
   fullBuckets: number,
   loadFactor: number

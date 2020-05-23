@@ -17,8 +17,8 @@ describe("memoryStats test", () => {
 
     expect(memoryStats(objectBuffer)).toMatchInlineSnapshot(`
       Object {
-        "available": 376,
-        "used": 648,
+        "available": 328,
+        "used": 696,
       }
     `);
   });
@@ -31,33 +31,33 @@ describe("memoryStats test", () => {
 
     expect(memoryStats(objectBuffer)).toMatchInlineSnapshot(`
       Object {
-        "available": 1400,
-        "used": 648,
+        "available": 1352,
+        "used": 696,
       }
     `);
 
     resizeObjectBuffer(objectBuffer, 1024);
     expect(memoryStats(objectBuffer)).toMatchInlineSnapshot(`
       Object {
-        "available": 376,
-        "used": 648,
+        "available": 328,
+        "used": 696,
       }
     `);
 
     resizeObjectBuffer(objectBuffer, 768);
     expect(memoryStats(objectBuffer)).toMatchInlineSnapshot(`
       Object {
-        "available": 120,
-        "used": 648,
+        "available": 72,
+        "used": 696,
       }
     `);
 
     resizeObjectBuffer(objectBuffer, 2048);
     expect(memoryStats(objectBuffer)).toMatchInlineSnapshot(`
-Object {
-  "available": 1400,
-  "used": 648,
-}
-`);
+      Object {
+        "available": 1352,
+        "used": 696,
+      }
+    `);
   });
 });

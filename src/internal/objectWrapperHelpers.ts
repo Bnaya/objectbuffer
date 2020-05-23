@@ -1,18 +1,8 @@
+import { ExternalArgs, GlobalCarrier } from "./interfaces";
 import {
-  ExternalArgs,
-  GlobalCarrier,
-  StringEntry,
-  NumberEntry,
-  MapEntry,
-  SetEntry,
-} from "./interfaces";
-import {
-  readEntry,
   writeValueInPtrToPtrAndHandleMemory,
   handleArcForDeletedValuePointer,
   decrementRefCount,
-  writeEntry,
-  setRefCount,
 } from "./store";
 import { entryToFinalJavaScriptValue } from "./entryToFinalJavaScriptValue";
 import {
@@ -24,9 +14,17 @@ import {
   createHashMap,
 } from "./hashmap/hashmap";
 import { getAllLinkedAddresses } from "./getAllLinkedAddresses";
+import {
+  typeOnly_type_get,
+  number_value_get,
+  typeAndRc_refsCount_get,
+  typeAndRc_refsCount_set,
+  object_pointerToHashMap_set,
+} from "./generatedStructs";
+import { ENTRY_TYPE } from "./entry-types";
+import { readString } from "./readString";
 
 export function deleteObjectPropertyEntryByKey(
-  externalArgs: ExternalArgs,
   carrier: GlobalCarrier,
   hashmapPointer: number,
   keyToDeleteBy: string | number
@@ -43,11 +41,11 @@ export function deleteObjectPropertyEntryByKey(
   }
 
   const deletedValuePointer =
-    carrier.uint32[
+    carrier.heap.Uint32Array[
       deletedValuePointerToPointer / Uint32Array.BYTES_PER_ELEMENT
     ];
 
-  handleArcForDeletedValuePointer(externalArgs, carrier, deletedValuePointer);
+  handleArcForDeletedValuePointer(carrier, deletedValuePointer);
 
   return true;
 }
@@ -67,14 +65,19 @@ export function getObjectPropertiesEntries(
       iterator
     );
 
-    const keyEntry = readEntry(carrier, keyPointer) as
-      | StringEntry
-      | NumberEntry;
+    const typeOfKeyEntry:
+      | ENTRY_TYPE.NUMBER
+      | ENTRY_TYPE.STRING = typeOnly_type_get(carrier.heap, keyPointer);
+
+    const key =
+      typeOfKeyEntry === ENTRY_TYPE.NUMBER
+        ? number_value_get(carrier.heap, keyPointer)
+        : readString(carrier.heap, keyPointer);
 
     foundValues.push({
       valuePointer:
         carrier.uint32[valuePointer / Uint32Array.BYTES_PER_ELEMENT],
-      key: keyEntry.value,
+      key,
     });
   }
 
@@ -86,7 +89,7 @@ export function objectSet(
   carrier: GlobalCarrier,
   hashMapPointer: number,
   p: string | number,
-  value: any
+  value: unknown
 ) {
   const ptrToPtr = hashMapInsertUpdate(
     externalArgs,
@@ -105,10 +108,6 @@ export function objectGet(
   key: string | number
 ) {
   const valuePointer = hashMapValueLookup(carrier, entryPointer, key);
-
-  if (valuePointer === 0) {
-    return undefined;
-  }
 
   return entryToFinalJavaScriptValue(
     externalArgs,
@@ -147,10 +146,9 @@ export function mapOrSetClear(
   carrier: GlobalCarrier,
   mapOrSetPtr: number
 ) {
-  const entry = readEntry(carrier, mapOrSetPtr) as MapEntry | SetEntry;
-
   // we fake the entry refCount as zero so getAllLinkedAddresses will visit what's needed
-  const prevCount = setRefCount(carrier, mapOrSetPtr, 0);
+  const prevCount = typeAndRc_refsCount_get(carrier.heap, mapOrSetPtr);
+  typeAndRc_refsCount_set(carrier.heap, mapOrSetPtr, 0);
 
   const { leafAddresses, arcAddresses } = getAllLinkedAddresses(
     carrier,
@@ -173,15 +171,14 @@ export function mapOrSetClear(
       continue;
     }
 
-    decrementRefCount(externalArgs, carrier, address);
+    decrementRefCount(carrier.heap, address);
   }
 
-  // hashmapClearFree(externalArgs, carrier, entry.value);
-
   // Restore real ref count
-  setRefCount(carrier, mapOrSetPtr, prevCount);
-
-  entry.value = createHashMap(carrier, externalArgs.hashMapMinInitialCapacity);
-
-  writeEntry(carrier, mapOrSetPtr, entry);
+  typeAndRc_refsCount_set(carrier.heap, mapOrSetPtr, prevCount);
+  object_pointerToHashMap_set(
+    carrier.heap,
+    mapOrSetPtr,
+    createHashMap(carrier, externalArgs.hashMapMinInitialCapacity)
+  );
 }

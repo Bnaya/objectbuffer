@@ -1,5 +1,4 @@
 import { initializeArrayBuffer } from "./store";
-import { objectSaver } from "./objectSaver";
 import { createObjectWrapper } from "./objectWrapper";
 import { ExternalArgsApi, GlobalCarrier } from "./interfaces";
 import {
@@ -12,6 +11,10 @@ import { getCacheFor } from "./externalObjectsCache";
 import { INITIAL_ENTRY_POINTER_TO_POINTER, MEM_POOL_START } from "./consts";
 import { MemPool } from "@thi.ng/malloc";
 import { UnsupportedOperationError } from "./exceptions";
+import { createHeap } from "../structsGenerator/consts";
+import { saveValueIterative } from "./saveValue";
+import { allocationsTransaction } from "./allocationsTransaction";
+
 export interface CreateObjectBufferOptions {
   /**
    *  Use SharedArrayBuffer and not regular ArrayBuffer
@@ -38,7 +41,8 @@ export function createObjectBuffer<T = any>(
     initialValue instanceof Date ||
     initialValue instanceof Map ||
     initialValue instanceof Set ||
-    isPrimitive(initialValue)
+    isPrimitive(initialValue) ||
+    typeof initialValue === "symbol"
   ) {
     throw new UnsupportedOperationError();
   }
@@ -62,24 +66,25 @@ export function createObjectBuffer<T = any>(
     uint32: new Uint32Array(arrayBuffer),
     float64: new Float64Array(arrayBuffer),
     bigUint64: new BigUint64Array(arrayBuffer),
+    heap: createHeap(arrayBuffer),
   };
 
-  const start = objectSaver(
-    externalArgsApiToExternalArgsApi(externalArgs),
-    carrier,
-    [],
-    new Map(),
-    initialValue
-  );
-
-  carrier.uint32[
-    INITIAL_ENTRY_POINTER_TO_POINTER / Uint32Array.BYTES_PER_ELEMENT
-  ] = start;
+  allocationsTransaction(() => {
+    saveValueIterative(
+      externalArgsApiToExternalArgsApi(externalArgs),
+      carrier,
+      [],
+      INITIAL_ENTRY_POINTER_TO_POINTER,
+      initialValue
+    );
+  }, allocator);
 
   return createObjectWrapper(
     externalArgsApiToExternalArgsApi(externalArgs),
     carrier,
-    start
+    carrier.heap.Uint32Array[
+      INITIAL_ENTRY_POINTER_TO_POINTER / Uint32Array.BYTES_PER_ELEMENT
+    ]
   );
 }
 
@@ -141,6 +146,7 @@ export function loadObjectBuffer<T = any>(
     uint32: new Uint32Array(arrayBuffer),
     float64: new Float64Array(arrayBuffer),
     bigUint64: new BigUint64Array(arrayBuffer),
+    heap: createHeap(arrayBuffer),
   };
 
   return createObjectWrapper(
@@ -191,6 +197,7 @@ export function replaceUnderlyingArrayBuffer(
     uint32: new Uint32Array(newArrayBuffer),
     float64: new Float64Array(newArrayBuffer),
     bigUint64: new BigUint64Array(newArrayBuffer),
+    heap: createHeap(newArrayBuffer),
   };
 
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment

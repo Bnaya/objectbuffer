@@ -1,8 +1,15 @@
-import { readEntry } from "./store";
 import { GlobalCarrier } from "./interfaces";
 import { ENTRY_TYPE } from "./entry-types";
 import { hashMapGetPointersToFree } from "./hashmap/hashmap";
 import { isKnownAddressValuePointer } from "./utils";
+import {
+  typeOnly_type_get,
+  string_charsPointer_get,
+  typeAndRc_refsCount_get,
+  object_pointerToHashMap_get,
+  array_dataspacePointer_get,
+  array_length_get,
+} from "./generatedStructs";
 
 export function getAllLinkedAddresses(
   carrier: GlobalCarrier,
@@ -49,6 +56,7 @@ function getAllLinkedAddressesStep(
   arcAddresses: Set<number>,
   addressesToProcessQueue: number[]
 ) {
+  const { heap } = carrier;
   if (
     isKnownAddressValuePointer(entryPointer) ||
     leafAddresses.has(entryPointer) ||
@@ -57,42 +65,48 @@ function getAllLinkedAddressesStep(
     return;
   }
 
-  const entry = readEntry(carrier, entryPointer);
+  const entryType = typeOnly_type_get(heap, entryPointer);
+  // to be used ONLY if the type has ref counter
+  const refsCount = typeAndRc_refsCount_get(heap, entryPointer);
 
-  switch (entry.type) {
+  switch (entryType) {
     case ENTRY_TYPE.NUMBER:
-    case ENTRY_TYPE.STRING:
     case ENTRY_TYPE.BIGINT_NEGATIVE:
     case ENTRY_TYPE.BIGINT_POSITIVE:
+      leafAddresses.add(entryPointer);
+      break;
+
+    case ENTRY_TYPE.STRING:
+      leafAddresses.add(string_charsPointer_get(heap, entryPointer));
       leafAddresses.add(entryPointer);
       break;
 
     case ENTRY_TYPE.OBJECT:
     case ENTRY_TYPE.MAP:
     case ENTRY_TYPE.SET:
-      if (entry.refsCount <= 1 || ignoreRefCount) {
+      if (refsCount <= 1 || ignoreRefCount) {
         leafAddresses.add(entryPointer);
         getObjectOrMapOrSetAddresses(
           carrier,
-          entry.value,
+          object_pointerToHashMap_get(heap, entryPointer),
           leafAddresses,
           addressesToProcessQueue
         );
       } else {
         arcAddresses.add(entryPointer);
       }
-
       break;
 
     case ENTRY_TYPE.ARRAY:
-      if (entry.refsCount <= 1 || ignoreRefCount) {
+      if (refsCount <= 1 || ignoreRefCount) {
         leafAddresses.add(entryPointer);
-        leafAddresses.add(entry.value);
-
-        for (let i = 0; i < entry.allocatedLength; i += 1) {
+        leafAddresses.add(array_dataspacePointer_get(heap, entryPointer));
+        const arrayLength = array_length_get(heap, entryPointer);
+        for (let i = 0; i < arrayLength; i += 1) {
           const valuePointer =
             carrier.uint32[
-              (entry.value + i * Uint32Array.BYTES_PER_ELEMENT) /
+              (array_dataspacePointer_get(heap, entryPointer) +
+                i * Uint32Array.BYTES_PER_ELEMENT) /
                 Uint32Array.BYTES_PER_ELEMENT
             ];
 
@@ -104,7 +118,7 @@ function getAllLinkedAddressesStep(
       break;
 
     case ENTRY_TYPE.DATE:
-      if (entry.refsCount <= 1 || ignoreRefCount) {
+      if (refsCount <= 1 || ignoreRefCount) {
         leafAddresses.add(entryPointer);
       } else {
         arcAddresses.add(entryPointer);
@@ -112,9 +126,7 @@ function getAllLinkedAddressesStep(
       break;
 
     default:
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-expect-error
-      throw new Error(ENTRY_TYPE[entry.type] + " Not implemented yet");
+      throw new Error(ENTRY_TYPE[entryType] + " Not implemented yet");
   }
 }
 

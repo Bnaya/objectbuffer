@@ -24,6 +24,7 @@ import { IMemPool, MemPool } from "@thi.ng/malloc";
 import { OutOfMemoryError } from "./exceptions";
 import { GlobalCarrier } from "./interfaces";
 import { MEM_POOL_START } from "./consts";
+import { createHeap } from "../structsGenerator/consts";
 
 // extend pool and not monkey patch? need to think about it
 export function recordAllocations(operation: () => void, pool: IMemPool) {
@@ -109,6 +110,7 @@ export function makeCarrier(arrayBuffer: ArrayBuffer) {
     uint32: new Uint32Array(arrayBuffer),
     float64: new Float64Array(arrayBuffer),
     bigUint64: new BigUint64Array(arrayBuffer),
+    heap: createHeap(arrayBuffer),
   };
 
   return carrier;

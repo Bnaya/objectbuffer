@@ -1,37 +1,16 @@
 /* eslint-env jest */
 
-import { initializeArrayBuffer } from "./store";
-
-import { createArrayWrapper } from "./arrayWrapper";
-import { arraySaver } from "./arraySaver";
-import { MemPool } from "@thi.ng/malloc";
-import { MEM_POOL_START } from "./consts";
-import { externalArgsApiToExternalArgsApi } from "./utils";
-import { makeCarrier } from "./testUtils";
+import { createObjectBuffer } from "..";
+import { memoryStats } from "./api";
 
 describe("arraySplice tests", () => {
-  const externalArgs = externalArgsApiToExternalArgsApi({
-    arrayAdditionalAllocation: 20,
-  });
-
   test("arrayWrapper splice - add + delete - array stay in same length", () => {
-    const arrayBuffer = new ArrayBuffer(512);
-    const carrier = makeCarrier(arrayBuffer);
-    initializeArrayBuffer(arrayBuffer);
-    const allocator = new MemPool({
-      buf: arrayBuffer,
-      start: MEM_POOL_START,
+    const plainJSArray: any[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+    const ob = createObjectBuffer({ arrayAdditionalAllocation: 20 }, 1024, {
+      arr: plainJSArray,
     });
 
-    const plainJSArray: any[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-
-    const saverOutput = arraySaver(externalArgs, carrier, [], plainJSArray);
-
-    const arrayWrapper = createArrayWrapper(
-      { ...externalArgs, arrayAdditionalAllocation: 3 },
-      carrier,
-      saverOutput
-    );
+    const arrayWrapper = ob.arr;
 
     const removed = arrayWrapper.splice(2, 3, "a", "b", "c");
     const removedFromPlain = plainJSArray.splice(2, 3, "a", "b", "c");
@@ -83,28 +62,15 @@ describe("arraySplice tests", () => {
     `);
 
     expect(removedFromPlain).toEqual([...removed]);
-
-    expect(allocator.stats().available).toMatchInlineSnapshot(`0`);
   });
 
   test("arrayWrapper splice - Just delete items from the middle", () => {
-    const arrayBuffer = new ArrayBuffer(512);
-    const carrier = makeCarrier(arrayBuffer);
-    initializeArrayBuffer(arrayBuffer);
-    const allocator = new MemPool({
-      buf: arrayBuffer,
-      start: MEM_POOL_START,
+    const plainJSArray: any[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+    const ob = createObjectBuffer({ arrayAdditionalAllocation: 20 }, 1024, {
+      arr: plainJSArray,
     });
 
-    const plainJSArray: any[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-
-    const saverOutput = arraySaver(externalArgs, carrier, [], plainJSArray);
-
-    const arrayWrapper = createArrayWrapper(
-      { ...externalArgs, arrayAdditionalAllocation: 3 },
-      carrier,
-      saverOutput
-    );
+    const arrayWrapper = ob.arr;
 
     arrayWrapper.splice(2, 3);
     plainJSArray.splice(2, 3);
@@ -133,28 +99,15 @@ describe("arraySplice tests", () => {
     `);
 
     expect(plainJSArray).toEqual([...arrayWrapper]);
-
-    expect(allocator.stats().available).toMatchInlineSnapshot(`72`);
   });
 
   test("arrayWrapper splice - Just add items in the middle", () => {
-    const arrayBuffer = new ArrayBuffer(512);
-    const carrier = makeCarrier(arrayBuffer);
-    initializeArrayBuffer(arrayBuffer);
-    const allocator = new MemPool({
-      buf: arrayBuffer,
-      start: MEM_POOL_START,
+    const plainJSArray: any[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+    const ob = createObjectBuffer({ arrayAdditionalAllocation: 20 }, 1024, {
+      arr: plainJSArray,
     });
 
-    const plainJSArray: any[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-
-    const saverOutput = arraySaver(externalArgs, carrier, [], plainJSArray);
-
-    const arrayWrapper = createArrayWrapper(
-      { ...externalArgs, arrayAdditionalAllocation: 3 },
-      carrier,
-      saverOutput
-    );
+    const arrayWrapper = ob.arr;
 
     arrayWrapper.splice(4, 0, "a", "b");
     plainJSArray.splice(4, 0, "a", "b");
@@ -193,29 +146,15 @@ describe("arraySplice tests", () => {
     `);
 
     expect(plainJSArray).toEqual([...arrayWrapper]);
-    expect(allocator.stats().available).toMatchInlineSnapshot(`24`);
   });
 
   test("arrayWrapper splice - add + delete - array will get longer", () => {
-    const arrayBuffer = new ArrayBuffer(1024);
-    const carrier = makeCarrier(arrayBuffer);
-    initializeArrayBuffer(arrayBuffer);
-    const allocator = new MemPool({
-      buf: arrayBuffer,
-      start: MEM_POOL_START,
+    const plainJSArray: any[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+    const ob = createObjectBuffer({ arrayAdditionalAllocation: 3 }, 1024, {
+      arr: plainJSArray,
     });
 
-    const plainJSArray: any[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-
-    const saverOutput = arraySaver(externalArgs, carrier, [], plainJSArray);
-
-    const arrayWrapper = createArrayWrapper(
-      { ...externalArgs, arrayAdditionalAllocation: 3 },
-      carrier,
-      saverOutput
-    );
-
-    const availableCheckpoint = allocator.stats().available;
+    const arrayWrapper = ob.arr;
 
     const removed = arrayWrapper.splice(2, 2, "a", "b", "c", "d");
     const removedFromPlain = plainJSArray.splice(2, 2, "a", "b", "c", "d");
@@ -271,32 +210,17 @@ describe("arraySplice tests", () => {
     `);
 
     expect(removedFromPlain).toEqual([...removed]);
-
-    expect(
-      availableCheckpoint - allocator.stats().available
-    ).toMatchInlineSnapshot(`96`);
   });
 
   test("arrayWrapper splice - add + delete - array will get shorter", () => {
-    const arrayBuffer = new ArrayBuffer(1024);
-    const carrier = makeCarrier(arrayBuffer);
-    initializeArrayBuffer(arrayBuffer);
-    const allocator = new MemPool({
-      buf: arrayBuffer,
-      start: MEM_POOL_START,
+    const plainJSArray: any[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+    const ob = createObjectBuffer({ arrayAdditionalAllocation: 20 }, 1024, {
+      arr: plainJSArray,
     });
 
-    const plainJSArray: any[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+    const availableCheckpoint = memoryStats(ob).available;
 
-    const saverOutput = arraySaver(externalArgs, carrier, [], plainJSArray);
-
-    const arrayWrapper = createArrayWrapper(
-      { ...externalArgs, arrayAdditionalAllocation: 3 },
-      carrier,
-      saverOutput
-    );
-
-    const availableCheckpoint = allocator.stats().available;
+    const arrayWrapper = ob.arr;
 
     const removed = arrayWrapper.splice(2, 6, "a", "b", "c", "d");
     const removedFromPlain = plainJSArray.splice(2, 6, "a", "b", "c", "d");
@@ -355,28 +279,17 @@ describe("arraySplice tests", () => {
     expect(removedFromPlain).toEqual([...removed]);
 
     expect(
-      availableCheckpoint - allocator.stats().available
-    ).toMatchInlineSnapshot(`96`);
+      availableCheckpoint - memoryStats(ob).available
+    ).toMatchInlineSnapshot(`24`);
   });
 
   test("arrayWrapper splice - start bigger than array", () => {
-    const arrayBuffer = new ArrayBuffer(512);
-    const carrier = makeCarrier(arrayBuffer);
-    initializeArrayBuffer(arrayBuffer);
-    const allocator = new MemPool({
-      buf: arrayBuffer,
-      start: MEM_POOL_START,
+    const plainJSArray: any[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+    const ob = createObjectBuffer({ arrayAdditionalAllocation: 20 }, 1024, {
+      arr: plainJSArray,
     });
 
-    const plainJSArray: any[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-
-    const saverOutput = arraySaver(externalArgs, carrier, [], plainJSArray);
-
-    const arrayWrapper = createArrayWrapper(
-      { ...externalArgs, arrayAdditionalAllocation: 3 },
-      carrier,
-      saverOutput
-    );
+    const arrayWrapper = ob.arr;
 
     const removed = arrayWrapper.splice(12, 3, "a", "b");
     const removedFromPlain = plainJSArray.splice(12, 3, "a", "b");
@@ -423,28 +336,15 @@ describe("arraySplice tests", () => {
     expect(removedFromPlain).toMatchInlineSnapshot(`Array []`);
 
     expect(removedFromPlain).toEqual([...removed]);
-
-    expect(allocator.stats().available).toMatchInlineSnapshot(`24`);
   });
 
   test("arrayWrapper splice - delete bigger than array", () => {
-    const arrayBuffer = new ArrayBuffer(512);
-    const carrier = makeCarrier(arrayBuffer);
-    initializeArrayBuffer(arrayBuffer);
-    const allocator = new MemPool({
-      buf: arrayBuffer,
-      start: MEM_POOL_START,
+    const plainJSArray: any[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+    const ob = createObjectBuffer({ arrayAdditionalAllocation: 20 }, 1024, {
+      arr: plainJSArray,
     });
 
-    const plainJSArray: any[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-
-    const saverOutput = arraySaver(externalArgs, carrier, [], plainJSArray);
-
-    const arrayWrapper = createArrayWrapper(
-      { ...externalArgs, arrayAdditionalAllocation: 3 },
-      carrier,
-      saverOutput
-    );
+    const arrayWrapper = ob.arr;
 
     const removed = arrayWrapper.splice(2, 20, "a", "b");
     const removedFromPlain = plainJSArray.splice(2, 20, "a", "b");
@@ -497,28 +397,15 @@ describe("arraySplice tests", () => {
     `);
 
     expect(removedFromPlain).toEqual([...removed]);
-
-    expect(allocator.stats().available).toMatchInlineSnapshot(`24`);
   });
 
   test("arrayWrapper splice - negative start", () => {
-    const arrayBuffer = new ArrayBuffer(512);
-    const carrier = makeCarrier(arrayBuffer);
-    initializeArrayBuffer(arrayBuffer);
-    const allocator = new MemPool({
-      buf: arrayBuffer,
-      start: MEM_POOL_START,
+    const plainJSArray: any[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+    const ob = createObjectBuffer({ arrayAdditionalAllocation: 20 }, 1024, {
+      arr: plainJSArray,
     });
 
-    const plainJSArray: any[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-
-    const saverOutput = arraySaver(externalArgs, carrier, [], plainJSArray);
-
-    const arrayWrapper = createArrayWrapper(
-      { ...externalArgs, arrayAdditionalAllocation: 3 },
-      carrier,
-      saverOutput
-    );
+    const arrayWrapper = ob.arr;
 
     const removed = arrayWrapper.splice(-4, 1, "a", "b");
     const removedFromPlain = plainJSArray.splice(-4, 1, "a", "b");
@@ -571,28 +458,15 @@ describe("arraySplice tests", () => {
     `);
 
     expect(removedFromPlain).toEqual([...removed]);
-
-    expect(allocator.stats().available).toMatchInlineSnapshot(`24`);
   });
 
   test("arrayWrapper splice - negative delete", () => {
-    const arrayBuffer = new ArrayBuffer(512);
-    const carrier = makeCarrier(arrayBuffer);
-    initializeArrayBuffer(arrayBuffer);
-    const allocator = new MemPool({
-      buf: arrayBuffer,
-      start: MEM_POOL_START,
+    const plainJSArray: any[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+    const ob = createObjectBuffer({ arrayAdditionalAllocation: 3 }, 1024, {
+      arr: plainJSArray,
     });
 
-    const plainJSArray = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-
-    const saverOutput = arraySaver(externalArgs, carrier, [], plainJSArray);
-
-    const arrayWrapper = createArrayWrapper(
-      { ...externalArgs, arrayAdditionalAllocation: 3 },
-      carrier,
-      saverOutput
-    );
+    const arrayWrapper = ob.arr;
 
     const removed = arrayWrapper.splice(4, -1, 50, 51);
     const removedFromPlain = plainJSArray.splice(4, -1, 50, 51);
@@ -639,7 +513,5 @@ describe("arraySplice tests", () => {
     expect(removedFromPlain).toMatchInlineSnapshot(`Array []`);
 
     expect(removedFromPlain).toEqual([...removed]);
-
-    expect(allocator.stats().available).toMatchInlineSnapshot(`24`);
   });
 });

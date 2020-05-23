@@ -25,9 +25,6 @@ describe("getAllLinkedAddresses", () => {
       const objectBuffer = createObjectBuffer(externalArgs, 2048, {
         smallObject: [{ a: "6" }],
       });
-      // const a = objectBuffer.nestedObject;
-      // getInternalAPI(a).destroy();
-      // // a.toString();
 
       const carrier = getInternalAPI(objectBuffer).getCarrier();
 
@@ -97,76 +94,20 @@ describe("getAllLinkedAddresses", () => {
         arr: [new Date(0), "somestring", { a: "6", h: null }],
       });
 
-      // const a = objectBuffer.nestedObject;
-      // getInternalAPI(a).destroy();
-      // // a.toString();
-
       const carrier = getInternalAPI(objectBuffer).getCarrier();
 
+      const entryPointer = getInternalAPI(objectBuffer).getEntryPointer();
       getInternalAPI(objectBuffer).destroy();
 
       const linkedAddresses = getAllLinkedAddresses(
         carrier,
         false,
-        allocatedAddresses[allocatedAddresses.length - 1]
+        entryPointer
       );
 
       expect([...linkedAddresses.leafAddresses].slice().sort()).toEqual(
         allocatedAddresses.slice().sort()
       );
-
-      expect([...linkedAddresses.leafAddresses].slice().sort())
-        .toMatchInlineSnapshot(`
-        Array [
-          1008,
-          1032,
-          1056,
-          1072,
-          1096,
-          112,
-          1120,
-          1144,
-          1160,
-          1184,
-          1216,
-          128,
-          144,
-          168,
-          200,
-          216,
-          240,
-          280,
-          296,
-          312,
-          336,
-          360,
-          376,
-          400,
-          424,
-          448,
-          464,
-          48,
-          488,
-          512,
-          528,
-          560,
-          584,
-          616,
-          632,
-          656,
-          680,
-          704,
-          72,
-          728,
-          744,
-          848,
-          880,
-          912,
-          936,
-          976,
-          992,
-        ]
-      `);
     });
 
     test("getAllLinkedAddresses free all from outside", () => {
@@ -188,12 +129,13 @@ describe("getAllLinkedAddresses", () => {
       });
 
       expect(memoryStats(objectBuffer)).toMatchInlineSnapshot(`
-Object {
-  "available": 816,
-  "used": 1232,
-}
-`);
+        Object {
+          "available": 656,
+          "used": 1392,
+        }
+      `);
 
+      const entryPointer = getInternalAPI(objectBuffer).getEntryPointer();
       const carrier = getInternalAPI(objectBuffer).getCarrier();
 
       getInternalAPI(objectBuffer).destroy();
@@ -201,7 +143,7 @@ Object {
       const linkedAddresses = getAllLinkedAddresses(
         carrier,
         false,
-        allocatedAddresses[allocatedAddresses.length - 1]
+        entryPointer
       );
 
       linkedAddresses.leafAddresses.forEach((address) => {

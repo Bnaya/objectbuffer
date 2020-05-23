@@ -1,9 +1,4 @@
-import {
-  ExternalArgs,
-  GlobalCarrier,
-  MapEntry,
-  InternalAPI,
-} from "./interfaces";
+import { ExternalArgs, GlobalCarrier, InternalAPI } from "./interfaces";
 import {
   deleteObjectPropertyEntryByKey,
   objectSet,
@@ -21,9 +16,9 @@ import {
   hashmapNodesPointerIterator,
 } from "./hashmap/hashmap";
 import { entryToFinalJavaScriptValue } from "./entryToFinalJavaScriptValue";
+import { object_pointerToHashMap_get } from "./generatedStructs";
 
-export class SetWrapper<K extends string | number>
-  extends BaseProxyTrap<MapEntry>
+export class SetWrapper<K extends string | number> extends BaseProxyTrap
   implements Set<K> {
   clear(): void {
     mapOrSetClear(this.externalArgs, this.carrier, this.entryPointer);
@@ -39,7 +34,10 @@ export class SetWrapper<K extends string | number>
   }
 
   get size(): number {
-    return hashMapSize(this.carrier, this.entry.value);
+    return hashMapSize(
+      this.carrier,
+      object_pointerToHashMap_get(this.carrier.heap, this.entryPointer)
+    );
   }
 
   [Symbol.iterator](): IterableIterator<K> {
@@ -49,7 +47,7 @@ export class SetWrapper<K extends string | number>
   *entries(): IterableIterator<[K, K]> {
     for (const nodePointer of hashmapNodesPointerIterator(
       this.carrier,
-      this.entry.value
+      object_pointerToHashMap_get(this.carrier.heap, this.entryPointer)
     )) {
       const t = hashMapNodePointerToKeyValue(this.carrier, nodePointer);
 
@@ -66,7 +64,7 @@ export class SetWrapper<K extends string | number>
   *keys(): IterableIterator<K> {
     for (const nodePointer of hashmapNodesPointerIterator(
       this.carrier,
-      this.entry.value
+      object_pointerToHashMap_get(this.carrier.heap, this.entryPointer)
     )) {
       const t = hashMapNodePointerToKeyValue(this.carrier, nodePointer);
 
@@ -80,7 +78,7 @@ export class SetWrapper<K extends string | number>
   *values(): IterableIterator<K> {
     for (const nodePointer of hashmapNodesPointerIterator(
       this.carrier,
-      this.entry.value
+      object_pointerToHashMap_get(this.carrier.heap, this.entryPointer)
     )) {
       const t = hashMapNodePointerToKeyValue(this.carrier, nodePointer);
 
@@ -109,7 +107,13 @@ export class SetWrapper<K extends string | number>
       return false;
     }
 
-    return hashMapNodeLookup(this.carrier, this.entry.value, p) !== 0;
+    return (
+      hashMapNodeLookup(
+        this.carrier,
+        object_pointerToHashMap_get(this.carrier.heap, this.entryPointer),
+        p
+      ) !== 0
+    );
   }
 
   public add(p: string | number) {
@@ -121,7 +125,7 @@ export class SetWrapper<K extends string | number>
       objectSet(
         this.externalArgs,
         this.carrier,
-        this.entry.value,
+        object_pointerToHashMap_get(this.carrier.heap, this.entryPointer),
         p,
         undefined
       );
@@ -136,9 +140,8 @@ export class SetWrapper<K extends string | number>
     }
 
     return deleteObjectPropertyEntryByKey(
-      this.externalArgs,
       this.carrier,
-      this.entry.value,
+      object_pointerToHashMap_get(this.carrier.heap, this.entryPointer),
       p
     );
   }

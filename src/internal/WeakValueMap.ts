@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 /* istanbul ignore file */
 
 // We can't run test with weakrefs yet
@@ -31,14 +32,27 @@ export class WeakValueMap<K, V> implements Map<K, V> {
         ? FinalizationRegistry
         : FinalizationGroup;
 
-    this.group = new FinalizationSomething((iterator: Iterable<any>) => {
-      for (const key of iterator) {
-        this.map.delete(key);
-        if (this.externalFinalizer) {
-          this.externalFinalizer(key);
+    this.group = new FinalizationSomething(
+      (iteratorOrKey: Iterable<unknown> | unknown) => {
+        // @ts-expect-error
+        if (Symbol.iterator in iterable) {
+          // @ts-expect-error
+          for (const key of iteratorOrKey) {
+            this.map.delete(key);
+            if (this.externalFinalizer) {
+              this.externalFinalizer(key);
+            }
+          }
+        } else {
+          // @ts-expect-error
+          this.map.delete(iteratorOrKey);
+          if (this.externalFinalizer) {
+            // @ts-expect-error
+            this.externalFinalizer(iteratorOrKey);
+          }
         }
       }
-    });
+    );
   }
 
   set(key: K, value: V) {

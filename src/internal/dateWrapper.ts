@@ -1,10 +1,14 @@
-import { ExternalArgs, GlobalCarrier, DateEntry } from "./interfaces";
+import { ExternalArgs, GlobalCarrier } from "./interfaces";
 
-import { readEntry, writeEntry } from "./store";
 import { ENTRY_TYPE } from "./entry-types";
 import { INTERNAL_API_SYMBOL } from "./symbols";
 import { UnsupportedOperationError } from "./exceptions";
 import { BaseProxyTrap } from "./BaseProxyTrap";
+import {
+  date_set_all,
+  date_refsCount_get,
+  date_timestamp_get,
+} from "./generatedStructs";
 
 const getFunctions: Array<keyof Date> = [
   "toString",
@@ -58,8 +62,7 @@ const setFunctions: Array<keyof Date> = [
   // "setYear"
 ];
 
-export class DateWrapper extends BaseProxyTrap<DateEntry>
-  implements ProxyHandler<Date> {
+export class DateWrapper extends BaseProxyTrap implements ProxyHandler<Date> {
   private dateObjectForReuse: Date;
   private useMeToGiveNamesToFunctionsAndCacheThem: any;
 
@@ -104,17 +107,21 @@ export class DateWrapper extends BaseProxyTrap<DateEntry>
   }
 
   private updateDateObjectForReuse() {
-    const entry = readEntry(this.carrier, this.entryPointer) as DateEntry;
-
-    this.dateObjectForReuse.setTime(entry.value);
+    this.dateObjectForReuse.setTime(
+      date_timestamp_get(this.carrier.heap, this.entryPointer)
+    );
   }
 
   private persistDateObject() {
-    writeEntry(this.carrier, this.entryPointer, {
-      type: ENTRY_TYPE.DATE,
-      refsCount: this.entry.refsCount,
-      value: this.dateObjectForReuse.getTime(),
-    });
+    date_set_all(
+      this.carrier.heap,
+      this.entryPointer,
+      ENTRY_TYPE.DATE,
+      date_refsCount_get(this.carrier.heap, this.entryPointer),
+      // padding
+      0,
+      this.dateObjectForReuse.getTime()
+    );
   }
 
   public defineProperty(): boolean {

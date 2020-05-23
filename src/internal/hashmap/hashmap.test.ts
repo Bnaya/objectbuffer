@@ -15,9 +15,9 @@ import {
   hashMapDelete,
   hashMapGetPointersToFree,
 } from "./hashmap";
-import { GlobalCarrier, StringEntry } from "../interfaces";
-import { readEntry } from "../store";
+import { GlobalCarrier } from "../interfaces";
 import { externalArgsApiToExternalArgsApi } from "../utils";
+import { readString } from "../readString";
 
 describe("hashmap", () => {
   const externalArgs = externalArgsApiToExternalArgsApi({
@@ -178,9 +178,8 @@ describe("hashmap", () => {
     ) {
       values.push(hashMapNodePointerToKeyValue(carrier, iteratorToken));
     }
-    expect(
-      values.map((v) => (readEntry(carrier, v.keyPointer) as StringEntry).value)
-    ).toMatchInlineSnapshot(`
+    expect(values.map((v) => readString(carrier.heap, v.keyPointer)))
+      .toMatchInlineSnapshot(`
       Array [
         "a",
         "b",
@@ -204,10 +203,6 @@ describe("hashmap", () => {
         "t",
         "u",
         "v",
-        "w",
-        "x",
-        "y",
-        "z",
       ]
     `);
   });
@@ -241,37 +236,37 @@ describe("hashmap", () => {
     memAvailableAfterEachStep.push(carrier.allocator.stats().available);
 
     expect(memAvailableAfterEachStep).toMatchInlineSnapshot(`
-Array [
-  1904,
-  1840,
-  1776,
-  1712,
-  1648,
-  1584,
-  1520,
-  1456,
-  1352,
-  1288,
-  1224,
-  1160,
-  1096,
-  1032,
-  968,
-  904,
-  760,
-  696,
-  632,
-  568,
-  504,
-  440,
-  376,
-  312,
-  248,
-  184,
-  120,
-  120,
-]
-`);
+      Array [
+        1904,
+        1824,
+        1744,
+        1664,
+        1584,
+        1504,
+        1424,
+        1344,
+        1224,
+        1144,
+        1064,
+        984,
+        904,
+        824,
+        744,
+        664,
+        504,
+        416,
+        336,
+        256,
+        176,
+        96,
+        16,
+        0,
+        0,
+        0,
+        0,
+        0,
+      ]
+    `);
   });
 
   test("hashMapGetPointersToFree", () => {
@@ -302,57 +297,67 @@ Array [
     const r = hashMapGetPointersToFree(carrier, hashmapPointer);
 
     expect(r).toMatchInlineSnapshot(`
-Object {
-  "pointers": Array [
-    48,
-    664,
-    120,
-    136,
-    200,
-    264,
-    328,
-    392,
-    456,
-    520,
-    584,
-    648,
-    752,
-    816,
-    152,
-    176,
-    216,
-    240,
-    280,
-    304,
-    344,
-    368,
-    408,
-    432,
-    472,
-    496,
-    536,
-    560,
-    600,
-    624,
-    72,
-    96,
-    768,
-    792,
-  ],
-  "pointersToValuePointers": Array [
-    152,
-    216,
-    280,
-    344,
-    408,
-    472,
-    536,
-    600,
-    72,
-    768,
-  ],
-}
-`);
+      Object {
+        "pointers": Array [
+          48,
+          792,
+          120,
+          136,
+          216,
+          296,
+          376,
+          456,
+          536,
+          616,
+          696,
+          776,
+          896,
+          976,
+          200,
+          152,
+          176,
+          280,
+          232,
+          256,
+          360,
+          312,
+          336,
+          440,
+          392,
+          416,
+          520,
+          472,
+          496,
+          600,
+          552,
+          576,
+          680,
+          632,
+          656,
+          760,
+          712,
+          736,
+          880,
+          72,
+          96,
+          960,
+          912,
+          936,
+        ],
+        "pointersToValuePointers": Array [
+          152,
+          232,
+          312,
+          392,
+          472,
+          552,
+          632,
+          712,
+          72,
+          912,
+        ],
+      }
+    `);
 
     expect(r.pointers.sort()).toEqual(allocations.sort());
     expect(

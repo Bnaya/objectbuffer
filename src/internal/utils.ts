@@ -121,6 +121,10 @@ export function getInternalAPI(value: any): InternalAPI {
   return value[INTERNAL_API_SYMBOL];
 }
 
+/**
+ * Incorrect length (too big) for emojis
+ * @param str
+ */
 export function strByteLength(str: string) {
   let s = str.length;
   for (let i = str.length - 1; i >= 0; i--) {
@@ -142,5 +146,15 @@ export function isKnownAddressValuePointer(entryPointer: number) {
     entryPointer === NULL_KNOWN_ADDRESS ||
     entryPointer === TRUE_KNOWN_ADDRESS ||
     entryPointer === FALSE_KNOWN_ADDRESS
+  );
+}
+
+export function isTypeWithRC(type: ENTRY_TYPE) {
+  return (
+    type === ENTRY_TYPE.OBJECT ||
+    type === ENTRY_TYPE.ARRAY ||
+    type === ENTRY_TYPE.DATE ||
+    type === ENTRY_TYPE.MAP ||
+    type === ENTRY_TYPE.SET
   );
 }

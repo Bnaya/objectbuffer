@@ -1,4 +1,5 @@
 import { ENTRY_TYPE } from "./entry-types";
+import { Heap } from "../structsGenerator/consts";
 
 export type primitive = string | number | bigint | boolean | undefined | null;
 
@@ -88,6 +89,7 @@ export interface GlobalCarrier {
   float64: Float64Array;
   bigUint64: BigUint64Array;
   allocator: import("@thi.ng/malloc").IMemPool;
+  heap: Heap;
 }
 
 export type ExternalArgs = Readonly<{
