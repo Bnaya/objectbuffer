@@ -12,6 +12,8 @@ import {
   stringStructDeclaration,
   typeReaderDeclaration,
   typeAndRcDeclaration,
+  linkedListDeclaration,
+  linkedListItemDeclaration,
 } from "./declarations";
 
 const number = generateFunctionsCodeForManifest(
@@ -45,6 +47,16 @@ const typeAndRc = generateFunctionsCodeForManifest(
   typeAndRcDeclaration
 );
 
+const linkedListItem = generateFunctionsCodeForManifest(
+  "linkedListItem",
+  linkedListItemDeclaration
+);
+
+const linkedList = generateFunctionsCodeForManifest(
+  "linkedList",
+  linkedListDeclaration
+);
+
 const all = [
   `/** Generate code. don't try to edit manually **/`,
   `/* istanbul ignore file */`,
@@ -57,6 +69,8 @@ const all = [
   ...string,
   ...typeOnly,
   ...typeAndRc,
+  ...linkedList,
+  ...linkedListItem,
 ];
 
 fs.writeFileSync(

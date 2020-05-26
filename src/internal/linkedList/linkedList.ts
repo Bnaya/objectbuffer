@@ -1,5 +1,10 @@
 import { createMemoryMachine } from "../memoryMachinery";
 import { GlobalCarrier } from "../interfaces";
+import {
+  linkedListItem_size,
+  linkedList_size,
+  linkedList_set_all,
+} from "../generatedStructs";
 
 /*
 
@@ -16,37 +21,34 @@ for (const bla of a) {
 
 */
 
-export const LINKED_LIST_ITEM_MACHINE = createMemoryMachine({
-  NEXT_POINTER: Uint32Array,
-  VALUE: Uint32Array,
-});
+// export const LINKED_LIST_ITEM_MACHINE = createMemoryMachine({
+//   NEXT_POINTER: Uint32Array,
+//   VALUE: Uint32Array,
+// });
 
-export type LinkedListItemMachineType = ReturnType<
-  typeof LINKED_LIST_ITEM_MACHINE.createOperator
->;
+// export type LinkedListItemMachineType = ReturnType<
+//   typeof LINKED_LIST_ITEM_MACHINE.createOperator
+// >;
 
-export const LINKED_LIST_MACHINE = createMemoryMachine({
-  END_POINTER: Uint32Array,
-  START_POINTER: Uint32Array,
-});
-export type LinkedListMachineType = ReturnType<
-  typeof LINKED_LIST_MACHINE.createOperator
->;
+// export const LINKED_LIST_MACHINE = createMemoryMachine({
+//   END_POINTER: Uint32Array,
+//   START_POINTER: Uint32Array,
+// });
+// export type LinkedListMachineType = ReturnType<
+//   typeof LINKED_LIST_MACHINE.createOperator
+// >;
 
 export function initLinkedList(carrier: GlobalCarrier) {
-  const { allocator } = carrier;
-  const memoryForLinkedList = allocator.calloc(LINKED_LIST_MACHINE.map.SIZE_OF);
-  const memoryForEndMarkerItem = allocator.calloc(
-    LINKED_LIST_ITEM_MACHINE.map.SIZE_OF
-  );
+  const { allocator, heap } = carrier;
+  const memoryForLinkedList = allocator.calloc(linkedList_size);
+  const memoryForEndMarkerItem = allocator.calloc(linkedListItem_size);
 
-  const linkedListMachine = LINKED_LIST_MACHINE.createOperator(
-    carrier,
-    memoryForLinkedList
+  linkedList_set_all(
+    heap,
+    memoryForLinkedList,
+    memoryForEndMarkerItem,
+    memoryForEndMarkerItem
   );
-
-  linkedListMachine.set("START_POINTER", memoryForEndMarkerItem);
-  linkedListMachine.set("END_POINTER", memoryForEndMarkerItem);
 
   return memoryForLinkedList;
 }
@@ -56,24 +58,23 @@ export function linkedListItemInsert(
   linkedListPointer: number,
   nodeValuePointer: number
 ) {
-  const newItemMemory: number = carrier.allocator.calloc(
-    LINKED_LIST_ITEM_MACHINE.map.SIZE_OF
-  );
+  const { allocator, heap } = carrier;
+  const newItemMemory: number = carrier.allocator.calloc(linkedListItem_size);
 
-  const linkedListOperator = LINKED_LIST_MACHINE.createOperator(
-    carrier,
-    linkedListPointer
-  );
+  // const linkedListOperator = LINKED_LIST_MACHINE.createOperator(
+  //   carrier,
+  //   linkedListPointer
+  // );
 
-  const wasEndMarkerOperator = LINKED_LIST_ITEM_MACHINE.createOperator(
-    carrier,
-    linkedListOperator.get("END_POINTER")
-  );
+  // const wasEndMarkerOperator = LINKED_LIST_ITEM_MACHINE.createOperator(
+  //   carrier,
+  //   linkedListOperator.get("END_POINTER")
+  // );
 
-  const toBeEndMarkerOperator = LINKED_LIST_ITEM_MACHINE.createOperator(
-    carrier,
-    newItemMemory
-  );
+  // const toBeEndMarkerOperator = LINKED_LIST_ITEM_MACHINE.createOperator(
+  //   carrier,
+  //   newItemMemory
+  // );
 
   toBeEndMarkerOperator.set("VALUE", 0);
   toBeEndMarkerOperator.set("NEXT_POINTER", 0);

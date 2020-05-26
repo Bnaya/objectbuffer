@@ -47,3 +47,12 @@ export const typeAndRcDeclaration = createStructDeclaration({
   type: Float64Array,
   refsCount: Uint32Array,
 });
+
+export const linkedListItemDeclaration = createStructDeclaration({
+  NEXT_POINTER: Uint32Array,
+  VALUE: Uint32Array,
+});
+export const linkedListDeclaration = createStructDeclaration({
+  END_POINTER: Uint32Array,
+  START_POINTER: Uint32Array,
+});

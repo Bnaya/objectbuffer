@@ -471,3 +471,101 @@ export function typeAndRc_set_all(
 export const typeAndRc_size = 12;
 
 /** --- struct typeAndRc end --- **/
+
+/** --- struct linkedList start --- **/
+
+export function linkedList_END_POINTER_get(heap: Heap, structPointer: number) {
+  return heap.Uint32Array[(structPointer + 0) / 4];
+}
+
+export function linkedList_END_POINTER_set(
+  heap: Heap,
+  structPointer: number,
+  value: number
+) {
+  return (heap.Uint32Array[(structPointer + 0) / 4] = value);
+}
+
+export const linkedList_END_POINTER_place = 0;
+export const linkedList_END_POINTER_ctor = Uint32Array;
+
+export function linkedList_START_POINTER_get(
+  heap: Heap,
+  structPointer: number
+) {
+  return heap.Uint32Array[(structPointer + 4) / 4];
+}
+
+export function linkedList_START_POINTER_set(
+  heap: Heap,
+  structPointer: number,
+  value: number
+) {
+  return (heap.Uint32Array[(structPointer + 4) / 4] = value);
+}
+
+export const linkedList_START_POINTER_place = 4;
+export const linkedList_START_POINTER_ctor = Uint32Array;
+
+export function linkedList_set_all(
+  heap: Heap,
+  structPointer: number,
+  END_POINTER: number,
+  START_POINTER: number
+) {
+  heap.Uint32Array[(structPointer + 0) / 4] = END_POINTER;
+  heap.Uint32Array[(structPointer + 4) / 4] = START_POINTER;
+}
+
+export const linkedList_size = 8;
+
+/** --- struct linkedList end --- **/
+
+/** --- struct linkedListItem start --- **/
+
+export function linkedListItem_NEXT_POINTER_get(
+  heap: Heap,
+  structPointer: number
+) {
+  return heap.Uint32Array[(structPointer + 0) / 4];
+}
+
+export function linkedListItem_NEXT_POINTER_set(
+  heap: Heap,
+  structPointer: number,
+  value: number
+) {
+  return (heap.Uint32Array[(structPointer + 0) / 4] = value);
+}
+
+export const linkedListItem_NEXT_POINTER_place = 0;
+export const linkedListItem_NEXT_POINTER_ctor = Uint32Array;
+
+export function linkedListItem_VALUE_get(heap: Heap, structPointer: number) {
+  return heap.Uint32Array[(structPointer + 4) / 4];
+}
+
+export function linkedListItem_VALUE_set(
+  heap: Heap,
+  structPointer: number,
+  value: number
+) {
+  return (heap.Uint32Array[(structPointer + 4) / 4] = value);
+}
+
+export const linkedListItem_VALUE_place = 4;
+export const linkedListItem_VALUE_ctor = Uint32Array;
+
+export function linkedListItem_set_all(
+  heap: Heap,
+  structPointer: number,
+  NEXT_POINTER: number,
+  VALUE: number
+) {
+  heap.Uint32Array[(structPointer + 0) / 4] = NEXT_POINTER;
+  heap.Uint32Array[(structPointer + 4) / 4] = VALUE;
+}
+
+export const linkedListItem_size = 8;
+
+/** --- struct linkedListItem end --- **/
