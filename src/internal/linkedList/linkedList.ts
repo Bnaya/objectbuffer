@@ -1,10 +1,16 @@
-import { createMemoryMachine } from "../memoryMachinery";
-import { GlobalCarrier } from "../interfaces";
+import type { GlobalCarrier } from "../interfaces";
 import {
   linkedListItem_size,
   linkedList_size,
   linkedList_set_all,
+  linkedListItem_set_all,
+  linkedList_END_POINTER_get,
+  linkedList_END_POINTER_set,
+  linkedListItem_NEXT_POINTER_get,
+  linkedListItem_VALUE_get,
+  linkedList_START_POINTER_get,
 } from "../generatedStructs";
+import { Heap } from "../../structsGenerator/consts";
 
 /*
 
@@ -59,141 +65,99 @@ export function linkedListItemInsert(
   nodeValuePointer: number
 ) {
   const { allocator, heap } = carrier;
-  const newItemMemory: number = carrier.allocator.calloc(linkedListItem_size);
+  const newEndMarker = allocator.calloc(linkedListItem_size);
 
-  // const linkedListOperator = LINKED_LIST_MACHINE.createOperator(
-  //   carrier,
-  //   linkedListPointer
-  // );
+  linkedListItem_set_all(heap, newEndMarker, 0, 0);
+  const wasEndMarker = linkedList_END_POINTER_get(heap, linkedListPointer);
+  linkedList_END_POINTER_set(heap, linkedListPointer, newEndMarker);
 
-  // const wasEndMarkerOperator = LINKED_LIST_ITEM_MACHINE.createOperator(
-  //   carrier,
-  //   linkedListOperator.get("END_POINTER")
-  // );
+  linkedListItem_set_all(heap, wasEndMarker, newEndMarker, nodeValuePointer);
 
-  // const toBeEndMarkerOperator = LINKED_LIST_ITEM_MACHINE.createOperator(
-  //   carrier,
-  //   newItemMemory
-  // );
-
-  toBeEndMarkerOperator.set("VALUE", 0);
-  toBeEndMarkerOperator.set("NEXT_POINTER", 0);
-
-  linkedListOperator.set("END_POINTER", toBeEndMarkerOperator.startAddress);
-
-  wasEndMarkerOperator.set("VALUE", toBeEndMarkerOperator.startAddress);
-  wasEndMarkerOperator.set("NEXT_POINTER", toBeEndMarkerOperator.startAddress);
-  wasEndMarkerOperator.set("VALUE", nodeValuePointer);
-
-  return wasEndMarkerOperator.startAddress;
+  return wasEndMarker;
 }
 
 export function linkedListItemRemove(
-  carrier: GlobalCarrier,
+  { heap, allocator }: GlobalCarrier,
   itemPointer: number
 ) {
-  const itemToOverwrite = LINKED_LIST_ITEM_MACHINE.createOperator(
-    carrier,
-    itemPointer
+  const memoryToFree = linkedListItem_NEXT_POINTER_get(heap, itemPointer);
+  linkedListItem_set_all(
+    heap,
+    itemPointer,
+    linkedListItem_NEXT_POINTER_get(heap, memoryToFree),
+    linkedListItem_VALUE_get(heap, memoryToFree)
   );
 
-  const itemToOverwriteWith = LINKED_LIST_ITEM_MACHINE.createOperator(
-    carrier,
-    itemToOverwrite.get("NEXT_POINTER")
-  );
-
-  const memoryToFree = itemToOverwrite.get("NEXT_POINTER");
-
-  itemToOverwrite.set("VALUE", itemToOverwriteWith.get("VALUE"));
-
-  itemToOverwrite.set("NEXT_POINTER", itemToOverwriteWith.get("NEXT_POINTER"));
-
-  carrier.allocator.free(memoryToFree);
+  allocator.free(memoryToFree);
 }
 
 export function linkedListLowLevelIterator(
-  carrier: GlobalCarrier,
+  heap: Heap,
   linkedListPointer: number,
   itemPointer: number
 ) {
-  const listItem = LINKED_LIST_ITEM_MACHINE.createOperator(
-    carrier,
-    itemPointer
-  );
+  let iteratedItem = itemPointer;
 
+  // new iteration session
   if (itemPointer === 0) {
-    const list = LINKED_LIST_MACHINE.createOperator(carrier, linkedListPointer);
-
-    listItem.startAddress = list.get("START_POINTER");
+    // read the first item in the list
+    iteratedItem = linkedList_START_POINTER_get(heap, linkedListPointer);
 
     // can be zero if START_POINTER pointes to the end marker
-    if (listItem.get("VALUE") === 0) {
+    if (linkedListItem_VALUE_get(heap, iteratedItem) === 0) {
       return 0;
     }
 
     // can be zero if START_POINTER pointes to the end marker
-    return listItem.startAddress;
+    return iteratedItem;
   }
 
   // deleted during iteration
-  if (listItem.get("VALUE") === 0) {
+  if (linkedListItem_VALUE_get(heap, iteratedItem) === 0) {
     return 0;
   }
 
-  listItem.startAddress = listItem.get("NEXT_POINTER");
+  iteratedItem = linkedListItem_NEXT_POINTER_get(heap, iteratedItem);
 
   // next item is the end
-  if (listItem.get("VALUE") === 0) {
+  if (linkedListItem_VALUE_get(heap, iteratedItem) === 0) {
     return 0;
   }
 
-  return listItem.startAddress;
+  return iteratedItem;
 }
 
-export function linkedListGetValue(
-  carrier: GlobalCarrier,
-  itemPointer: number
-) {
-  return LINKED_LIST_ITEM_MACHINE.createOperator(carrier, itemPointer).get(
-    "VALUE"
-  );
+export function linkedListGetValue(heap: Heap, itemPointer: number) {
+  return linkedListItem_VALUE_get(heap, itemPointer);
 }
 
 export function linkedListGetPointersToFree(
-  carrier: GlobalCarrier,
+  heap: Heap,
   linkedListPointer: number
 ) {
   const pointers: number[] = [linkedListPointer];
   const valuePointers: number[] = [];
 
-  const operator = LINKED_LIST_MACHINE.createOperator(
-    carrier,
-    linkedListPointer
-  );
-
-  const firstItem = operator.get("START_POINTER");
-  const lastItem = operator.get("END_POINTER");
+  const firstItem = linkedList_START_POINTER_get(heap, linkedListPointer);
+  const lastItem = linkedList_END_POINTER_get(heap, linkedListPointer);
 
   // list empty
   if (firstItem === lastItem) {
     pointers.push(firstItem);
   }
 
-  const linkItemOperator = LINKED_LIST_ITEM_MACHINE.createOperator(
-    carrier,
-    linkedListLowLevelIterator(carrier, linkedListPointer, 0)
-  );
+  let iterator = linkedListLowLevelIterator(heap, linkedListPointer, 0);
 
-  while (linkItemOperator.startAddress !== 0) {
-    pointers.push(linkItemOperator.startAddress);
+  while (iterator) {
+    pointers.push(iterator);
 
     // value = 0 means end marker
-    if (linkItemOperator.get("VALUE") !== 0) {
-      valuePointers.push(linkItemOperator.get("VALUE"));
+    if (linkedListItem_VALUE_get(heap, iterator) !== 0) {
+      valuePointers.push(linkedListItem_VALUE_get(heap, iterator));
       // linkItemOperator.startAddress = 0;
     }
 
-    linkItemOperator.startAddress = linkItemOperator.get("NEXT_POINTER");
+    iterator = linkedListItem_NEXT_POINTER_get(heap, iterator);
   }
 
   return {

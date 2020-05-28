@@ -333,7 +333,7 @@ export function hashMapLowLevelIterator(
   }
 
   const pointerToNextLinkedListItem = linkedListLowLevelIterator(
-    carrier,
+    carrier.heap,
     mapOperator.get("LINKED_LIST_POINTER"),
     tokenToUseForLinkedListIterator
   );
@@ -342,7 +342,7 @@ export function hashMapLowLevelIterator(
     return 0;
   }
 
-  return linkedListGetValue(carrier, pointerToNextLinkedListItem);
+  return linkedListGetValue(carrier.heap, pointerToNextLinkedListItem);
 }
 
 export function hashMapNodePointerToKeyValue(
@@ -373,7 +373,7 @@ export function hashMapGetPointersToFree(
   const pointersToValuePointers: number[] = [];
 
   const pointersOfLinkedList = linkedListGetPointersToFree(
-    carrier,
+    carrier.heap,
     mapOperator.get("LINKED_LIST_POINTER")
   );
 
