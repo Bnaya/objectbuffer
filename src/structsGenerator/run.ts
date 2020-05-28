@@ -14,6 +14,8 @@ import {
   typeAndRcDeclaration,
   linkedListDeclaration,
   linkedListItemDeclaration,
+  hashmapDeclaration,
+  hashmapNodeDeclaration,
 } from "./declarations";
 
 const number = generateFunctionsCodeForManifest(
@@ -57,6 +59,12 @@ const linkedList = generateFunctionsCodeForManifest(
   linkedListDeclaration
 );
 
+const hashmap = generateFunctionsCodeForManifest("hashmap", hashmapDeclaration);
+const hashmapNode = generateFunctionsCodeForManifest(
+  "hashmapNode",
+  hashmapNodeDeclaration
+);
+
 const all = [
   `/** Generate code. don't try to edit manually **/`,
   `/* istanbul ignore file */`,
@@ -71,6 +79,8 @@ const all = [
   ...typeAndRc,
   ...linkedList,
   ...linkedListItem,
+  ...hashmap,
+  ...hashmapNode,
 ];
 
 fs.writeFileSync(

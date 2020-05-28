@@ -569,3 +569,195 @@ export function linkedListItem_set_all(
 export const linkedListItem_size = 8;
 
 /** --- struct linkedListItem end --- **/
+
+/** --- struct hashmap start --- **/
+
+export function hashmap_ARRAY_POINTER_get(heap: Heap, structPointer: number) {
+  return heap.Uint32Array[(structPointer + 0) / 4];
+}
+
+export function hashmap_ARRAY_POINTER_set(
+  heap: Heap,
+  structPointer: number,
+  value: number
+) {
+  return (heap.Uint32Array[(structPointer + 0) / 4] = value);
+}
+
+export const hashmap_ARRAY_POINTER_place = 0;
+export const hashmap_ARRAY_POINTER_ctor = Uint32Array;
+
+export function hashmap_LINKED_LIST_POINTER_get(
+  heap: Heap,
+  structPointer: number
+) {
+  return heap.Uint32Array[(structPointer + 4) / 4];
+}
+
+export function hashmap_LINKED_LIST_POINTER_set(
+  heap: Heap,
+  structPointer: number,
+  value: number
+) {
+  return (heap.Uint32Array[(structPointer + 4) / 4] = value);
+}
+
+export const hashmap_LINKED_LIST_POINTER_place = 4;
+export const hashmap_LINKED_LIST_POINTER_ctor = Uint32Array;
+
+export function hashmap_LINKED_LIST_SIZE_get(
+  heap: Heap,
+  structPointer: number
+) {
+  return heap.Uint32Array[(structPointer + 8) / 4];
+}
+
+export function hashmap_LINKED_LIST_SIZE_set(
+  heap: Heap,
+  structPointer: number,
+  value: number
+) {
+  return (heap.Uint32Array[(structPointer + 8) / 4] = value);
+}
+
+export const hashmap_LINKED_LIST_SIZE_place = 8;
+export const hashmap_LINKED_LIST_SIZE_ctor = Uint32Array;
+
+export function hashmap_CAPACITY_get(heap: Heap, structPointer: number) {
+  return heap.Uint8Array[(structPointer + 12) / 1];
+}
+
+export function hashmap_CAPACITY_set(
+  heap: Heap,
+  structPointer: number,
+  value: number
+) {
+  return (heap.Uint8Array[(structPointer + 12) / 1] = value);
+}
+
+export const hashmap_CAPACITY_place = 12;
+export const hashmap_CAPACITY_ctor = Uint8Array;
+
+export function hashmap_USED_CAPACITY_get(heap: Heap, structPointer: number) {
+  return heap.Uint8Array[(structPointer + 13) / 1];
+}
+
+export function hashmap_USED_CAPACITY_set(
+  heap: Heap,
+  structPointer: number,
+  value: number
+) {
+  return (heap.Uint8Array[(structPointer + 13) / 1] = value);
+}
+
+export const hashmap_USED_CAPACITY_place = 13;
+export const hashmap_USED_CAPACITY_ctor = Uint8Array;
+
+export function hashmap_set_all(
+  heap: Heap,
+  structPointer: number,
+  ARRAY_POINTER: number,
+  LINKED_LIST_POINTER: number,
+  LINKED_LIST_SIZE: number,
+  CAPACITY: number,
+  USED_CAPACITY: number
+) {
+  heap.Uint32Array[(structPointer + 0) / 4] = ARRAY_POINTER;
+  heap.Uint32Array[(structPointer + 4) / 4] = LINKED_LIST_POINTER;
+  heap.Uint32Array[(structPointer + 8) / 4] = LINKED_LIST_SIZE;
+  heap.Uint8Array[(structPointer + 12) / 1] = CAPACITY;
+  heap.Uint8Array[(structPointer + 13) / 1] = USED_CAPACITY;
+}
+
+export const hashmap_size = 14;
+
+/** --- struct hashmap end --- **/
+
+/** --- struct hashmapNode start --- **/
+
+export function hashmapNode_VALUE_POINTER_get(
+  heap: Heap,
+  structPointer: number
+) {
+  return heap.Uint32Array[(structPointer + 0) / 4];
+}
+
+export function hashmapNode_VALUE_POINTER_set(
+  heap: Heap,
+  structPointer: number,
+  value: number
+) {
+  return (heap.Uint32Array[(structPointer + 0) / 4] = value);
+}
+
+export const hashmapNode_VALUE_POINTER_place = 0;
+export const hashmapNode_VALUE_POINTER_ctor = Uint32Array;
+
+export function hashmapNode_NEXT_NODE_POINTER_get(
+  heap: Heap,
+  structPointer: number
+) {
+  return heap.Uint32Array[(structPointer + 4) / 4];
+}
+
+export function hashmapNode_NEXT_NODE_POINTER_set(
+  heap: Heap,
+  structPointer: number,
+  value: number
+) {
+  return (heap.Uint32Array[(structPointer + 4) / 4] = value);
+}
+
+export const hashmapNode_NEXT_NODE_POINTER_place = 4;
+export const hashmapNode_NEXT_NODE_POINTER_ctor = Uint32Array;
+
+export function hashmapNode_KEY_POINTER_get(heap: Heap, structPointer: number) {
+  return heap.Uint32Array[(structPointer + 8) / 4];
+}
+
+export function hashmapNode_KEY_POINTER_set(
+  heap: Heap,
+  structPointer: number,
+  value: number
+) {
+  return (heap.Uint32Array[(structPointer + 8) / 4] = value);
+}
+
+export const hashmapNode_KEY_POINTER_place = 8;
+export const hashmapNode_KEY_POINTER_ctor = Uint32Array;
+
+export function hashmapNode_LINKED_LIST_ITEM_POINTER_get(
+  heap: Heap,
+  structPointer: number
+) {
+  return heap.Uint32Array[(structPointer + 12) / 4];
+}
+
+export function hashmapNode_LINKED_LIST_ITEM_POINTER_set(
+  heap: Heap,
+  structPointer: number,
+  value: number
+) {
+  return (heap.Uint32Array[(structPointer + 12) / 4] = value);
+}
+
+export const hashmapNode_LINKED_LIST_ITEM_POINTER_place = 12;
+export const hashmapNode_LINKED_LIST_ITEM_POINTER_ctor = Uint32Array;
+
+export function hashmapNode_set_all(
+  heap: Heap,
+  structPointer: number,
+  VALUE_POINTER: number,
+  NEXT_NODE_POINTER: number,
+  KEY_POINTER: number,
+  LINKED_LIST_ITEM_POINTER: number
+) {
+  heap.Uint32Array[(structPointer + 0) / 4] = VALUE_POINTER;
+  heap.Uint32Array[(structPointer + 4) / 4] = NEXT_NODE_POINTER;
+  heap.Uint32Array[(structPointer + 8) / 4] = KEY_POINTER;
+  heap.Uint32Array[(structPointer + 12) / 4] = LINKED_LIST_ITEM_POINTER;
+}
+
+export const hashmapNode_size = 16;
+
+/** --- struct hashmapNode end --- **/

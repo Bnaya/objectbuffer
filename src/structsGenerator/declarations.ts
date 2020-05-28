@@ -52,7 +52,24 @@ export const linkedListItemDeclaration = createStructDeclaration({
   NEXT_POINTER: Uint32Array,
   VALUE: Uint32Array,
 });
+
 export const linkedListDeclaration = createStructDeclaration({
   END_POINTER: Uint32Array,
   START_POINTER: Uint32Array,
+});
+
+export const hashmapDeclaration = createStructDeclaration({
+  ARRAY_POINTER: Uint32Array,
+  LINKED_LIST_POINTER: Uint32Array,
+  // maybe put save this value in the linked list?
+  LINKED_LIST_SIZE: Uint32Array,
+  CAPACITY: Uint8Array,
+  USED_CAPACITY: Uint8Array,
+});
+
+export const hashmapNodeDeclaration = createStructDeclaration({
+  VALUE_POINTER: Uint32Array,
+  NEXT_NODE_POINTER: Uint32Array,
+  KEY_POINTER: Uint32Array,
+  LINKED_LIST_ITEM_POINTER: Uint32Array,
 });
