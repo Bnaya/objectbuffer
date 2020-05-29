@@ -32,7 +32,7 @@ describe("getAllLinkedAddresses", () => {
       getInternalAPI(objectBuffer).destroy();
 
       const linkedAddresses = getAllLinkedAddresses(
-        carrier,
+        carrier.heap,
         false,
         // allocatedAddresses[allocatedAddresses.length - 1]
         entryPointer
@@ -68,7 +68,7 @@ describe("getAllLinkedAddresses", () => {
       getInternalAPI(objectBuffer).destroy();
 
       const linkedAddresses = getAllLinkedAddresses(
-        carrier,
+        carrier.heap,
         false,
         entryPointer
       );
@@ -100,7 +100,7 @@ describe("getAllLinkedAddresses", () => {
       getInternalAPI(objectBuffer).destroy();
 
       const linkedAddresses = getAllLinkedAddresses(
-        carrier,
+        carrier.heap,
         false,
         entryPointer
       );
@@ -141,7 +141,7 @@ describe("getAllLinkedAddresses", () => {
       getInternalAPI(objectBuffer).destroy();
 
       const linkedAddresses = getAllLinkedAddresses(
-        carrier,
+        carrier.heap,
         false,
         entryPointer
       );

@@ -58,10 +58,10 @@ export function getObjectPropertiesEntries(
   const foundValues: Array<{ key: string | number; valuePointer: number }> = [];
 
   while (
-    (iterator = hashMapLowLevelIterator(carrier, hashmapPointer, iterator))
+    (iterator = hashMapLowLevelIterator(carrier.heap, hashmapPointer, iterator))
   ) {
     const { valuePointer, keyPointer } = hashMapNodePointerToKeyValue(
-      carrier,
+      carrier.heap,
       iterator
     );
 
@@ -107,7 +107,7 @@ export function objectGet(
   entryPointer: number,
   key: string | number
 ) {
-  const valuePointer = hashMapValueLookup(carrier, entryPointer, key);
+  const valuePointer = hashMapValueLookup(carrier.heap, entryPointer, key);
 
   return entryToFinalJavaScriptValue(
     externalArgs,
@@ -151,7 +151,7 @@ export function mapOrSetClear(
   typeAndRc_refsCount_set(carrier.heap, mapOrSetPtr, 0);
 
   const { leafAddresses, arcAddresses } = getAllLinkedAddresses(
-    carrier,
+    carrier.heap,
     false,
     mapOrSetPtr
   );

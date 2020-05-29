@@ -35,7 +35,7 @@ export class SetWrapper<K extends string | number> extends BaseProxyTrap
 
   get size(): number {
     return hashMapSize(
-      this.carrier,
+      this.carrier.heap,
       object_pointerToHashMap_get(this.carrier.heap, this.entryPointer)
     );
   }
@@ -46,10 +46,10 @@ export class SetWrapper<K extends string | number> extends BaseProxyTrap
 
   *entries(): IterableIterator<[K, K]> {
     for (const nodePointer of hashmapNodesPointerIterator(
-      this.carrier,
+      this.carrier.heap,
       object_pointerToHashMap_get(this.carrier.heap, this.entryPointer)
     )) {
-      const t = hashMapNodePointerToKeyValue(this.carrier, nodePointer);
+      const t = hashMapNodePointerToKeyValue(this.carrier.heap, nodePointer);
 
       const key = entryToFinalJavaScriptValue(
         this.externalArgs,
@@ -63,10 +63,10 @@ export class SetWrapper<K extends string | number> extends BaseProxyTrap
 
   *keys(): IterableIterator<K> {
     for (const nodePointer of hashmapNodesPointerIterator(
-      this.carrier,
+      this.carrier.heap,
       object_pointerToHashMap_get(this.carrier.heap, this.entryPointer)
     )) {
-      const t = hashMapNodePointerToKeyValue(this.carrier, nodePointer);
+      const t = hashMapNodePointerToKeyValue(this.carrier.heap, nodePointer);
 
       yield entryToFinalJavaScriptValue(
         this.externalArgs,
@@ -77,10 +77,10 @@ export class SetWrapper<K extends string | number> extends BaseProxyTrap
   }
   *values(): IterableIterator<K> {
     for (const nodePointer of hashmapNodesPointerIterator(
-      this.carrier,
+      this.carrier.heap,
       object_pointerToHashMap_get(this.carrier.heap, this.entryPointer)
     )) {
-      const t = hashMapNodePointerToKeyValue(this.carrier, nodePointer);
+      const t = hashMapNodePointerToKeyValue(this.carrier.heap, nodePointer);
 
       yield entryToFinalJavaScriptValue(
         this.externalArgs,
@@ -109,7 +109,7 @@ export class SetWrapper<K extends string | number> extends BaseProxyTrap
 
     return (
       hashMapNodeLookup(
-        this.carrier,
+        this.carrier.heap,
         object_pointerToHashMap_get(this.carrier.heap, this.entryPointer),
         p
       ) !== 0

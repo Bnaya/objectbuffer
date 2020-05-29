@@ -104,7 +104,7 @@ function finalizer(memoryAddress: number, carrier: GlobalCarrier) {
   const newRefsCount = decrementRefCount(carrier.heap, memoryAddress);
 
   if (newRefsCount === 0) {
-    const freeUs = getAllLinkedAddresses(carrier, false, memoryAddress);
+    const freeUs = getAllLinkedAddresses(carrier.heap, false, memoryAddress);
 
     for (const address of freeUs.leafAddresses) {
       carrier.allocator.free(address);

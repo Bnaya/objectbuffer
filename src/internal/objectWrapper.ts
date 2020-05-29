@@ -90,7 +90,7 @@ export class ObjectWrapper extends BaseProxyTrap
 
     return (
       hashMapNodeLookup(
-        this.carrier,
+        this.carrier.heap,
         object_pointerToHashMap_get(this.carrier.heap, this.entryPointer),
         p
       ) !== 0

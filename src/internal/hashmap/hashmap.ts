@@ -273,9 +273,10 @@ export function hashMapNodeLookup(
     keyHashCode * Uint32Array.BYTES_PER_ELEMENT;
 
   let ptrToPtr = bucketStartPtrToPtr;
-  let iteratedNode = heap.Uint32Array[bucketStartPtrToPtr];
+  let iteratedNode =
+    heap.Uint32Array[bucketStartPtrToPtr / Uint32Array.BYTES_PER_ELEMENT];
 
-  while (iteratedNode) {
+  while (iteratedNode !== 0) {
     const keyValue = readNumberOrString(
       heap,
       hashmapNode_KEY_POINTER_get(heap, iteratedNode)
@@ -439,20 +440,17 @@ export function hashMapGetPointersToFree(heap: Heap, hashmapPointer: number) {
     if (
       typeOnly_type_get(
         heap,
-        hashmapNode_KEY_POINTER_get(heap, hashmapPointer)
+        hashmapNode_KEY_POINTER_get(heap, nodePointer)
       ) === ENTRY_TYPE.STRING
     ) {
       pointers.push(
         string_charsPointer_get(
           heap,
-          hashmapNode_KEY_POINTER_get(heap, hashmapPointer)
+          hashmapNode_KEY_POINTER_get(heap, nodePointer)
         )
       );
     }
-    pointers.push(
-      nodePointer,
-      hashmapNode_KEY_POINTER_get(heap, hashmapPointer)
-    );
+    pointers.push(nodePointer, hashmapNode_KEY_POINTER_get(heap, nodePointer));
   }
 
   return {
