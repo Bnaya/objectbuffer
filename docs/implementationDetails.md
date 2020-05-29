@@ -1,4 +1,4 @@
-# Some Implementation details
+# Some Implementation details (Not up do date, the principles are same)
 
 ## Terminology/Assorted details
 
@@ -171,10 +171,14 @@ Doing that coordinating is out of the scope of the lib.
 
 ## How to choose the size I need
 
-The initial size must fit the initial data passed to `createObjectBuffer`.  
+Think of the arraybuffer size as the [heap allocated to your program by the operating system](https://en.wikibooks.org/wiki/Memory_Management/Stacks_and_Heaps#Heap_Storage), but with your direct control.  
+
+It's difficult to pre-determine how much memory is required, so you need to start with something reasonable and resize it on need. 
+
+<s>The initial size must fit the initial data passed to `createObjectBuffer`.  
 You may use the sizeof function that calculate the size of the given value, but a **rule of thumb** is "the size of the data in JSON form, without the line breaks and space + 5%".  
 To that, you need to add additional space for operations that will require more space.  
-To check how much free space left, use `spaceLeft`.
+To check how much free space left, use `spaceLeft`.</s>
 
 ## What will happen if I
 

@@ -3,6 +3,8 @@
 [![npm version](https://badge.fury.io/js/%40bnaya%2Fobjectbuffer.svg)](https://badge.fury.io/js/%40bnaya%2Fobjectbuffer)
 [![Coverage Status](https://coveralls.io/repos/github/Bnaya/objectbuffer/badge.svg)](https://coveralls.io/github/Bnaya/objectbuffer)
 
+[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/Bnaya/objectbuffer)
+
 For Modern browsers and node.
 
 Save, read and update plain javascript objects into `ArrayBuffer` (And not only TypedArrays),  using regular javascript object api, without serialization/deserialization, or pre-defined schema.  
@@ -93,7 +95,7 @@ Before putting any eggs in the basket, please go over the [implementation detail
 * No prototype chain. no methods on the objects
 * Adding getters, setters, will not work/break the library
 * deleting/removing the current key of Map/Set while iteration will make you skip the next key [#60](https://github.com/Bnaya/objectbuffer/issues/60)
-* unreliable_sizeOf is unreliable due to hashmap array side depends on actual keys, Also It's an expensive operation
+* <s>unreliable_sizeOf is unreliable due to hashmap array side depends on actual keys, Also It's an expensive operation</s> sizeof removed
 
 ### What's not working yet, but can be
 
