@@ -43,13 +43,13 @@ import {
   hashmap_LINKED_LIST_POINTER_get,
   hashmap_LINKED_LIST_SIZE_set,
   hashmap_LINKED_LIST_SIZE_get,
-  hashmapNode_VALUE_POINTER_get,
   hashmapNode_set_all,
   hashmap_ARRAY_POINTER_set,
   hashmap_CAPACITY_set,
   hashmapNode_NEXT_NODE_POINTER_set,
   hashmap_size,
   hashmapNode_size,
+  hashmapNode_LINKED_LIST_ITEM_POINTER_get,
 } from "../generatedStructs";
 import { Heap } from "../../structsGenerator/consts";
 
@@ -259,53 +259,52 @@ export function hashMapInsertUpdate(
  * @returns pointer of the pointer to the found node
  */
 export function hashMapNodeLookup(
-  carrier: GlobalCarrier,
+  heap: Heap,
   mapPointer: number,
   externalKeyValue: number | string
 ) {
-  const mapMachine = MAP_MACHINE.createOperator(carrier, mapPointer);
-
   const keyHashCode = hashCodeExternalValue(
-    mapMachine.get("CAPACITY"),
+    hashmap_CAPACITY_get(heap, mapPointer),
     externalKeyValue
   );
 
-  let ptrToPtr =
-    mapMachine.get("ARRAY_POINTER") +
+  const bucketStartPtrToPtr =
+    hashmap_ARRAY_POINTER_get(heap, mapPointer) +
     keyHashCode * Uint32Array.BYTES_PER_ELEMENT;
 
-  const node = NODE_MACHINE.createOperator(
-    carrier,
-    carrier.uint32[ptrToPtr / Uint32Array.BYTES_PER_ELEMENT]
-  );
+  let ptrToPtr = bucketStartPtrToPtr;
+  let iteratedNode = heap.Uint32Array[bucketStartPtrToPtr];
 
-  while (node.startAddress !== 0) {
-    const keyValue = readNumberOrString(carrier.heap, node.get("KEY_POINTER"));
+  while (iteratedNode) {
+    const keyValue = readNumberOrString(
+      heap,
+      hashmapNode_KEY_POINTER_get(heap, iteratedNode)
+    );
 
     if (keyValue === externalKeyValue) {
       return ptrToPtr;
     }
 
-    ptrToPtr = node.pointerTo("NEXT_NODE_POINTER");
-    node.startAddress = node.get("NEXT_NODE_POINTER");
+    ptrToPtr = iteratedNode + hashmapNode_NEXT_NODE_POINTER_place;
+    iteratedNode = hashmapNode_NEXT_NODE_POINTER_get(heap, iteratedNode);
   }
 
   return 0;
 }
 
 export function hashMapValueLookup(
-  carrier: GlobalCarrier,
+  heap: Heap,
   mapPointer: number,
   externalKeyValue: number | string
 ) {
-  const nodePtrToPtr = hashMapNodeLookup(carrier, mapPointer, externalKeyValue);
+  const nodePtrToPtr = hashMapNodeLookup(heap, mapPointer, externalKeyValue);
 
   if (nodePtrToPtr === 0) {
     return 0;
   }
 
   return (
-    carrier.heap.Uint32Array[nodePtrToPtr / Uint32Array.BYTES_PER_ELEMENT] +
+    heap.Uint32Array[nodePtrToPtr / Uint32Array.BYTES_PER_ELEMENT] +
     hashmapNode_VALUE_POINTER_place
   );
 }
@@ -318,8 +317,9 @@ export function hashMapDelete(
   mapPointer: number,
   externalKeyValue: number | string
 ) {
+  const { heap, allocator } = carrier;
   const foundNodePtrToPtr = hashMapNodeLookup(
-    carrier,
+    heap,
     mapPointer,
     externalKeyValue
   );
@@ -329,38 +329,48 @@ export function hashMapDelete(
   }
 
   const nodeToDeletePointer =
-    carrier.uint32[foundNodePtrToPtr / Uint32Array.BYTES_PER_ELEMENT];
+    heap.Uint32Array[foundNodePtrToPtr / Uint32Array.BYTES_PER_ELEMENT];
 
-  const nodeOperator = NODE_MACHINE.createOperator(
+  // const nodeOperator = NODE_MACHINE.createOperator(
+  //   carrier,
+  //   nodeToDeletePointer
+  // );
+
+  // const valuePointer = nodeOperator.pointerTo("VALUE_POINTER");
+  const valuePointer = nodeToDeletePointer + hashmapNode_VALUE_POINTER_place;
+
+  linkedListItemRemove(
     carrier,
-    nodeToDeletePointer
+    hashmapNode_LINKED_LIST_ITEM_POINTER_get(heap, nodeToDeletePointer)
   );
 
-  const valuePointer = nodeOperator.pointerTo("VALUE_POINTER");
-
-  linkedListItemRemove(carrier, nodeOperator.get("LINKED_LIST_ITEM_POINTER"));
-
   // remove node from bucket
-  carrier.uint32[
+  heap.Uint32Array[
     foundNodePtrToPtr / Uint32Array.BYTES_PER_ELEMENT
-  ] = nodeOperator.get("NEXT_NODE_POINTER");
+  ] = hashmapNode_NEXT_NODE_POINTER_get(heap, nodeToDeletePointer);
 
   if (
-    typeOnly_type_get(carrier.heap, nodeOperator.get("KEY_POINTER")) ===
-    ENTRY_TYPE.STRING
+    typeOnly_type_get(
+      heap,
+      hashmapNode_KEY_POINTER_get(heap, nodeToDeletePointer)
+    ) === ENTRY_TYPE.STRING
   ) {
-    carrier.allocator.free(
-      string_charsPointer_get(carrier.heap, nodeOperator.get("KEY_POINTER"))
+    allocator.free(
+      string_charsPointer_get(
+        heap,
+        hashmapNode_KEY_POINTER_get(heap, nodeToDeletePointer)
+      )
     );
   }
 
-  carrier.allocator.free(nodeOperator.get("KEY_POINTER"));
-  carrier.allocator.free(nodeOperator.startAddress);
+  allocator.free(hashmapNode_KEY_POINTER_get(heap, nodeToDeletePointer));
+  allocator.free(nodeToDeletePointer);
 
-  carrier.uint32[
-    (mapPointer + MAP_MACHINE.map.LINKED_LIST_SIZE.bytesOffset) /
-      Uint32Array.BYTES_PER_ELEMENT
-  ]--;
+  hashmap_LINKED_LIST_SIZE_set(
+    heap,
+    mapPointer,
+    hashmap_LINKED_LIST_SIZE_get(heap, mapPointer) - 1
+  );
 
   return valuePointer;
 }
@@ -370,23 +380,22 @@ export function hashMapDelete(
  * return pointer to the next node
  */
 export function hashMapLowLevelIterator(
-  carrier: GlobalCarrier,
+  heap: Heap,
   mapPointer: number,
   nodePointerIteratorToken: number
 ) {
-  const mapOperator = MAP_MACHINE.createOperator(carrier, mapPointer);
   let tokenToUseForLinkedListIterator = 0;
 
   if (nodePointerIteratorToken !== 0) {
-    tokenToUseForLinkedListIterator = NODE_MACHINE.createOperator(
-      carrier,
+    tokenToUseForLinkedListIterator = hashmapNode_LINKED_LIST_ITEM_POINTER_get(
+      heap,
       nodePointerIteratorToken
-    ).get("LINKED_LIST_ITEM_POINTER");
+    );
   }
 
   const pointerToNextLinkedListItem = linkedListLowLevelIterator(
-    carrier.heap,
-    mapOperator.get("LINKED_LIST_POINTER"),
+    heap,
+    hashmap_LINKED_LIST_POINTER_get(heap, mapPointer),
     tokenToUseForLinkedListIterator
   );
 
@@ -394,56 +403,56 @@ export function hashMapLowLevelIterator(
     return 0;
   }
 
-  return linkedListGetValue(carrier.heap, pointerToNextLinkedListItem);
+  return linkedListGetValue(heap, pointerToNextLinkedListItem);
 }
 
-export function hashMapNodePointerToKeyValue(
-  carrier: GlobalCarrier,
-  nodePointer: number
-) {
-  const operator = NODE_MACHINE.createOperator(carrier, nodePointer);
-
+export function hashMapNodePointerToKeyValue(heap: Heap, nodePointer: number) {
   return {
-    valuePointer: operator.pointerTo("VALUE_POINTER"),
-    keyPointer: operator.get("KEY_POINTER"),
+    valuePointer: nodePointer + hashmapNode_VALUE_POINTER_place,
+    keyPointer: hashmapNode_KEY_POINTER_get(heap, nodePointer),
   };
 }
 
-export function hashMapSize(carrier: GlobalCarrier, mapPointer: number) {
-  return carrier.uint32[
-    (mapPointer + MAP_MACHINE.map.LINKED_LIST_SIZE.bytesOffset) /
-      Uint32Array.BYTES_PER_ELEMENT
-  ];
+export function hashMapSize(heap: Heap, mapPointer: number) {
+  return hashmap_LINKED_LIST_SIZE_get(heap, mapPointer);
 }
 
-export function hashMapGetPointersToFree(
-  carrier: GlobalCarrier,
-  hashmapPointer: number
-) {
-  const mapOperator = MAP_MACHINE.createOperator(carrier, hashmapPointer);
-  const pointers: number[] = [hashmapPointer, mapOperator.get("ARRAY_POINTER")];
+export function hashMapGetPointersToFree(heap: Heap, hashmapPointer: number) {
+  // const mapOperator = MAP_MACHINE.createOperator(carrier, hashmapPointer);
+  const pointers: number[] = [
+    hashmapPointer,
+    hashmap_ARRAY_POINTER_get(heap, hashmapPointer),
+  ];
   const pointersToValuePointers: number[] = [];
 
   const pointersOfLinkedList = linkedListGetPointersToFree(
-    carrier.heap,
-    mapOperator.get("LINKED_LIST_POINTER")
+    heap,
+    hashmap_LINKED_LIST_POINTER_get(heap, hashmapPointer)
   );
 
   pointers.push(...pointersOfLinkedList.pointers);
-  const nodeOperator = NODE_MACHINE.createOperator(carrier, 0);
+  // const nodeOperator = NODE_MACHINE.createOperator(carrier, 0);
 
   for (const nodePointer of pointersOfLinkedList.valuePointers) {
-    nodeOperator.startAddress = nodePointer;
-    pointersToValuePointers.push(nodeOperator.pointerTo("VALUE_POINTER"));
+    // nodeOperator.startAddress = nodePointer;
+    pointersToValuePointers.push(nodePointer + hashmapNode_VALUE_POINTER_place);
     if (
-      typeOnly_type_get(carrier.heap, nodeOperator.get("KEY_POINTER")) ===
-      ENTRY_TYPE.STRING
+      typeOnly_type_get(
+        heap,
+        hashmapNode_KEY_POINTER_get(heap, hashmapPointer)
+      ) === ENTRY_TYPE.STRING
     ) {
       pointers.push(
-        string_charsPointer_get(carrier.heap, nodeOperator.get("KEY_POINTER"))
+        string_charsPointer_get(
+          heap,
+          hashmapNode_KEY_POINTER_get(heap, hashmapPointer)
+        )
       );
     }
-    pointers.push(nodePointer, nodeOperator.get("KEY_POINTER"));
+    pointers.push(
+      nodePointer,
+      hashmapNode_KEY_POINTER_get(heap, hashmapPointer)
+    );
   }
 
   return {
@@ -491,12 +500,12 @@ function hashMapRehash(
   let pointerToNode = 0;
   while (
     (pointerToNode = hashMapLowLevelIterator(
-      carrier,
+      heap,
       hashmapPointer,
       pointerToNode
     )) !== 0
   ) {
-    hashMapRehashInsert(carrier.heap, biggerArray, newCapacity, pointerToNode);
+    hashMapRehashInsert(heap, biggerArray, newCapacity, pointerToNode);
   }
 }
 
@@ -553,15 +562,12 @@ function shouldRehash(
   return fullBuckets / buckets > loadFactor;
 }
 
-export function* hashmapNodesPointerIterator(
-  carrier: GlobalCarrier,
-  mapPointer: number
-) {
+export function* hashmapNodesPointerIterator(heap: Heap, mapPointer: number) {
   let iteratorToken = 0;
 
   while (
     (iteratorToken = hashMapLowLevelIterator(
-      carrier,
+      heap,
       mapPointer,
       iteratorToken
     )) !== 0
