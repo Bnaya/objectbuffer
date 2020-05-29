@@ -144,7 +144,7 @@ describe("hashmap", () => {
   });
 
   test("hashMapLowLevelIterator", () => {
-    setABSize(2048);
+    setABSize(2048 * 2);
     const mapPointer = createHashMap(carrier);
 
     const input = [...new Array(26).keys()]
@@ -208,7 +208,7 @@ describe("hashmap", () => {
   });
 
   test("hashMapSize", () => {
-    setABSize(2048);
+    setABSize(2048 + 208);
     const mapPointer = createHashMap(carrier);
 
     expect(hashMapSize(carrier, mapPointer)).toMatchInlineSnapshot(`0`);
