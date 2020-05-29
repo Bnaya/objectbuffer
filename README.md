@@ -1,10 +1,9 @@
-[![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-Ready--to--Code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/Bnaya/objectbuffer) 
-
 # ObjectBuffer: object-like API, backed by a [shared]arraybuffer 👀
 
 [![npm version](https://badge.fury.io/js/%40bnaya%2Fobjectbuffer.svg)](https://badge.fury.io/js/%40bnaya%2Fobjectbuffer)
 [![Coverage Status](https://coveralls.io/repos/github/Bnaya/objectbuffer/badge.svg)](https://coveralls.io/github/Bnaya/objectbuffer)
 
+[![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-Ready--to--Code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/Bnaya/objectbuffer)   
 [![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/Bnaya/objectbuffer)
 
 For Modern browsers and node.
