@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1590767092376,
+  "lastUpdate": 1590767209391,
   "repoUrl": "https://github.com/Bnaya/objectbuffer",
   "entries": {
     "Benchmark": [
@@ -3959,6 +3959,37 @@ window.BENCHMARK_DATA = {
             "range": "±1.32%",
             "unit": "ops/sec",
             "extra": "81 samples"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "me@bnaya.net",
+            "name": "Bnaya Peretz",
+            "username": "Bnaya"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "4c1a6d75d474f77b87d5c53e22c782d519d09dda",
+          "message": "Setup gitpod (#97)\n\n* Add gitpod config\n\nthis commit adds support for Gitpod.io, a free automated\ndev environment that makes contributing and generally working on GitHub\nprojects much easier. It allows anyone to start a ready-to-code dev\nenvironment for any branch, issue and pull request with a single click.\n\n* Set empty ports array",
+          "timestamp": "2020-05-29T18:45:58+03:00",
+          "tree_id": "7fdae731a0f94c4ef322fd03b6a949e5f7c1c626",
+          "url": "https://github.com/Bnaya/objectbuffer/commit/4c1a6d75d474f77b87d5c53e22c782d519d09dda"
+        },
+        "date": 1590767208947,
+        "tool": "benchmarkjs",
+        "benches": [
+          {
+            "name": "createObjectBuffer with 200 comments",
+            "value": 343,
+            "range": "±1.34%",
+            "unit": "ops/sec",
+            "extra": "79 samples"
           }
         ]
       }
