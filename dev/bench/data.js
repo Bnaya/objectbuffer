@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1590773059659,
+  "lastUpdate": 1590773091646,
   "repoUrl": "https://github.com/Bnaya/objectbuffer",
   "entries": {
     "Benchmark": [
@@ -4199,6 +4199,37 @@ window.BENCHMARK_DATA = {
             "range": "±1.29%",
             "unit": "ops/sec",
             "extra": "82 samples"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "me@bnaya.net",
+            "name": "Bnaya Peretz",
+            "username": "Bnaya"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "a954c8a23b6429abc726d78b0040bd8d5ea0b4c0",
+          "message": "Contributions welcome (#104)\n\n* Add code of conduct, based on Mobx one\r\n\r\n* readme, CONTRIBUTING.md",
+          "timestamp": "2020-05-29T20:24:18+03:00",
+          "tree_id": "2a568ee3013d0f71951b821f7d378047ecc8c336",
+          "url": "https://github.com/Bnaya/objectbuffer/commit/a954c8a23b6429abc726d78b0040bd8d5ea0b4c0"
+        },
+        "date": 1590773091248,
+        "tool": "benchmarkjs",
+        "benches": [
+          {
+            "name": "createObjectBuffer with 200 comments",
+            "value": 356,
+            "range": "±1.78%",
+            "unit": "ops/sec",
+            "extra": "84 samples"
           }
         ]
       }
