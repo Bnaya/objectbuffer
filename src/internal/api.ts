@@ -5,7 +5,7 @@ import {
   arrayBufferCopyTo,
   externalArgsApiToExternalArgsApi,
   getInternalAPI,
-  isPrimitive,
+  isSupportedTopLevelValue,
 } from "./utils";
 import { getCacheFor } from "./externalObjectsCache";
 import { INITIAL_ENTRY_POINTER_TO_POINTER, MEM_POOL_START } from "./consts";
@@ -36,14 +36,7 @@ export function createObjectBuffer<T = any>(
   initialValue: T,
   options: CreateObjectBufferOptions = {}
 ): T {
-  if (
-    Array.isArray(initialValue) ||
-    initialValue instanceof Date ||
-    initialValue instanceof Map ||
-    initialValue instanceof Set ||
-    isPrimitive(initialValue) ||
-    typeof initialValue === "symbol"
-  ) {
+  if (!isSupportedTopLevelValue(initialValue)) {
     throw new UnsupportedOperationError();
   }
 
@@ -59,13 +52,7 @@ export function createObjectBuffer<T = any>(
   });
 
   const carrier: GlobalCarrier = {
-    // dataView,
     allocator,
-    uint8: new Uint8Array(arrayBuffer),
-    uint16: new Uint16Array(arrayBuffer),
-    uint32: new Uint32Array(arrayBuffer),
-    float64: new Float64Array(arrayBuffer),
-    bigUint64: new BigUint64Array(arrayBuffer),
     heap: createHeap(arrayBuffer),
   };
 
@@ -94,7 +81,7 @@ export function createObjectBuffer<T = any>(
  * @param objectBuffer
  * @param newSize
  */
-export function resizeObjectBuffer(objectBuffer: any, newSize: number) {
+export function resizeObjectBuffer(objectBuffer: unknown, newSize: number) {
   const oldArrayBuffer = getUnderlyingArrayBuffer(objectBuffer);
   const newArrayBuffer = new ArrayBuffer(newSize);
 
@@ -112,9 +99,9 @@ export function resizeObjectBuffer(objectBuffer: any, newSize: number) {
 }
 
 export function getUnderlyingArrayBuffer(
-  objectBuffer: any
+  objectBuffer: unknown
 ): ArrayBuffer | SharedArrayBuffer {
-  return getInternalAPI(objectBuffer).getCarrier().uint8.buffer;
+  return getInternalAPI(objectBuffer).getCarrier().heap.Uint8Array.buffer;
 }
 
 /**
@@ -130,7 +117,6 @@ export function loadObjectBuffer<T = any>(
   externalArgs: ExternalArgsApi,
   arrayBuffer: ArrayBuffer | SharedArrayBuffer
 ): T {
-  // const dataView = new DataView(arrayBuffer);
   const allocator = new MemPool({
     align: 8,
     buf: arrayBuffer,
@@ -139,20 +125,14 @@ export function loadObjectBuffer<T = any>(
   });
 
   const carrier: GlobalCarrier = {
-    // dataView,
     allocator,
-    uint8: new Uint8Array(arrayBuffer),
-    uint16: new Uint16Array(arrayBuffer),
-    uint32: new Uint32Array(arrayBuffer),
-    float64: new Float64Array(arrayBuffer),
-    bigUint64: new BigUint64Array(arrayBuffer),
     heap: createHeap(arrayBuffer),
   };
 
   return createObjectWrapper(
     externalArgsApiToExternalArgsApi(externalArgs),
     carrier,
-    carrier.uint32[
+    carrier.heap.Uint32Array[
       INITIAL_ENTRY_POINTER_TO_POINTER / Uint32Array.BYTES_PER_ELEMENT
     ]
   );
@@ -169,7 +149,7 @@ export function loadObjectBuffer<T = any>(
  * @param newArrayBuffer
  */
 export function replaceUnderlyingArrayBuffer(
-  objectBuffer: any,
+  objectBuffer: unknown,
   newArrayBuffer: ArrayBuffer | SharedArrayBuffer
 ) {
   const oldArrayBuffer = getUnderlyingArrayBuffer(objectBuffer);
@@ -190,13 +170,7 @@ export function replaceUnderlyingArrayBuffer(
   });
 
   const carrier: GlobalCarrier = {
-    // dataView: new DataView(newArrayBuffer),
     allocator,
-    uint8: new Uint8Array(newArrayBuffer),
-    uint16: new Uint16Array(newArrayBuffer),
-    uint32: new Uint32Array(newArrayBuffer),
-    float64: new Float64Array(newArrayBuffer),
-    bigUint64: new BigUint64Array(newArrayBuffer),
     heap: createHeap(newArrayBuffer),
   };
 
@@ -212,7 +186,7 @@ export { sizeOf } from "./sizeOf";
 /**
  * Return the number of free & used bytes left in the given objectBuffer
  */
-export function memoryStats(objectBuffer: any) {
+export function memoryStats(objectBuffer: unknown) {
   const buf = getUnderlyingArrayBuffer(objectBuffer);
 
   const pool = new MemPool({
@@ -233,7 +207,7 @@ export { disposeWrapperObject } from "./disposeWrapperObject";
  * Allows to update external args passed to createObjectBuffer
  */
 export function updateExternalArgs(
-  objectBuffer: any,
+  objectBuffer: unknown,
   options: Partial<ExternalArgsApi>
 ) {
   Object.assign(getInternalAPI(objectBuffer).getExternalArgs(), options);

@@ -259,10 +259,6 @@ export class ArrayWrapper extends BaseProxyTrap
     return array_length_get(this.carrier.heap, this.entryPointer);
   }
 
-  // public getDataView() {
-  //   return this.carrier.dataView;
-  // }
-
   public getEntryPointer() {
     return this.entryPointer;
   }

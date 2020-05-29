@@ -76,7 +76,7 @@ export function getObjectPropertiesEntries(
 
     foundValues.push({
       valuePointer:
-        carrier.uint32[valuePointer / Uint32Array.BYTES_PER_ELEMENT],
+        carrier.heap.Uint32Array[valuePointer / Uint32Array.BYTES_PER_ELEMENT],
       key,
     });
   }
@@ -112,7 +112,7 @@ export function objectGet(
   return entryToFinalJavaScriptValue(
     externalArgs,
     carrier,
-    carrier.uint32[valuePointer / Uint32Array.BYTES_PER_ELEMENT]
+    carrier.heap.Uint32Array[valuePointer / Uint32Array.BYTES_PER_ELEMENT]
   );
 }
 

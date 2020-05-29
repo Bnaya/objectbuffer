@@ -1,8 +1,7 @@
 import { ENTRY_TYPE } from "./entry-types";
-import { Entry, GlobalCarrier } from "./interfaces";
+import { GlobalCarrier } from "./interfaces";
 import { isKnownAddressValuePointer, isTypeWithRC } from "./utils";
 import { ExternalArgs } from "./interfaces";
-import { BigInt64OverflowError } from "./exceptions";
 import {
   INITIAL_ENTRY_POINTER_TO_POINTER,
   INITIAL_ENTRY_POINTER_VALUE,
@@ -20,8 +19,6 @@ import { Heap } from "../structsGenerator/consts";
 import { readString } from "./readString";
 import { saveValueIterative } from "./saveValue";
 
-const MAX_64_BIG_INT = BigInt("0xFFFFFFFFFFFFFFFF");
-
 export function initializeArrayBuffer(arrayBuffer: ArrayBuffer) {
   const uint32 = new Uint32Array(arrayBuffer);
 
@@ -31,74 +28,73 @@ export function initializeArrayBuffer(arrayBuffer: ArrayBuffer) {
   ] = INITIAL_ENTRY_POINTER_VALUE;
 }
 
-/* istanbul ignore next */
-export function sizeOfEntry(entry: Entry) {
-  let cursor = 0;
+// /* istanbul ignore next */
+// export function sizeOfEntry(entry: Entry) {
+//   let cursor = 0;
 
-  // type
-  cursor += Float64Array.BYTES_PER_ELEMENT;
+//   // type
+//   cursor += Float64Array.BYTES_PER_ELEMENT;
 
-  switch (entry.type) {
-    case ENTRY_TYPE.NUMBER:
-      cursor += Float64Array.BYTES_PER_ELEMENT;
-      break;
+//   switch (entry.type) {
+//     case ENTRY_TYPE.NUMBER:
+//       cursor += Float64Array.BYTES_PER_ELEMENT;
+//       break;
 
-    case ENTRY_TYPE.STRING:
-      // string length
-      cursor += Uint32Array.BYTES_PER_ELEMENT;
+//     case ENTRY_TYPE.STRING:
+//       // string length
+//       cursor += Uint32Array.BYTES_PER_ELEMENT;
 
-      cursor += entry.allocatedBytes;
+//       cursor += entry.allocatedBytes;
 
-      // oh boy. i don't want to change it now, but no choice
-      // @todo: this is incorrect? should be Math.max
-      // cursor += entry.allocatedBytes;
+//       // oh boy. i don't want to change it now, but no choice
+//       // @todo: this is incorrect? should be Math.max
+//       // cursor += entry.allocatedBytes;
 
-      break;
+//       break;
 
-    case ENTRY_TYPE.BIGINT_NEGATIVE:
-    case ENTRY_TYPE.BIGINT_POSITIVE:
-      if (entry.value > MAX_64_BIG_INT || entry.value < -MAX_64_BIG_INT) {
-        throw new BigInt64OverflowError();
-      }
+//     case ENTRY_TYPE.BIGINT_NEGATIVE:
+//     case ENTRY_TYPE.BIGINT_POSITIVE:
+//       if (entry.value > MAX_64_BIG_INT || entry.value < -MAX_64_BIG_INT) {
+//         throw new BigInt64OverflowError();
+//       }
 
-      cursor += BigInt64Array.BYTES_PER_ELEMENT;
-      break;
+//       cursor += BigInt64Array.BYTES_PER_ELEMENT;
+//       break;
 
-    case ENTRY_TYPE.OBJECT:
-    case ENTRY_TYPE.MAP:
-    case ENTRY_TYPE.SET:
-      // ref count
-      cursor += Uint32Array.BYTES_PER_ELEMENT;
-      // pointer
-      cursor += Uint32Array.BYTES_PER_ELEMENT;
-      break;
+//     case ENTRY_TYPE.OBJECT:
+//     case ENTRY_TYPE.MAP:
+//     case ENTRY_TYPE.SET:
+//       // ref count
+//       cursor += Uint32Array.BYTES_PER_ELEMENT;
+//       // pointer
+//       cursor += Uint32Array.BYTES_PER_ELEMENT;
+//       break;
 
-    case ENTRY_TYPE.ARRAY:
-      // refsCount
-      cursor += Uint32Array.BYTES_PER_ELEMENT;
-      // pointer
-      cursor += Uint32Array.BYTES_PER_ELEMENT;
-      // length
-      cursor += Uint32Array.BYTES_PER_ELEMENT;
-      // allocated length
-      cursor += Uint32Array.BYTES_PER_ELEMENT;
-      break;
+//     case ENTRY_TYPE.ARRAY:
+//       // refsCount
+//       cursor += Uint32Array.BYTES_PER_ELEMENT;
+//       // pointer
+//       cursor += Uint32Array.BYTES_PER_ELEMENT;
+//       // length
+//       cursor += Uint32Array.BYTES_PER_ELEMENT;
+//       // allocated length
+//       cursor += Uint32Array.BYTES_PER_ELEMENT;
+//       break;
 
-    case ENTRY_TYPE.DATE:
-      // timestamp
-      cursor += Float64Array.BYTES_PER_ELEMENT;
-      // ref count
-      cursor += Uint32Array.BYTES_PER_ELEMENT;
-      break;
+//     case ENTRY_TYPE.DATE:
+//       // timestamp
+//       cursor += Float64Array.BYTES_PER_ELEMENT;
+//       // ref count
+//       cursor += Uint32Array.BYTES_PER_ELEMENT;
+//       break;
 
-    default:
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-expect-error
-      throw new Error(ENTRY_TYPE[entry.type] + " Not implemented yet");
-  }
+//     default:
+//       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+//       throw new Error(ENTRY_TYPE[entry.type] + " Not implemented yet");
+//   }
 
-  return cursor;
-}
+//   return cursor;
+// }
 
 export function writeValueInPtrToPtr(
   externalArgs: ExternalArgs,

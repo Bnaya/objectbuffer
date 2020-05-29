@@ -1,6 +1,5 @@
 import { ENTRY_TYPE } from "../entry-types";
 import { stringEncodeInto } from "../stringEncodeInto";
-import { GlobalCarrier } from "../interfaces";
 import { Heap } from "../../structsGenerator/consts";
 import {
   number_value_place,
@@ -44,25 +43,6 @@ export function hashCodeExternalValue(
   }
 
   return hashCodeInPlace(uint8, capacity, 0, keyBytesLength);
-}
-
-export function hashCodeEntry(
-  carrier: GlobalCarrier,
-  capacity: number,
-  pointer: number
-): number {
-  const type: ENTRY_TYPE.NUMBER | ENTRY_TYPE.STRING = carrier.uint8[pointer];
-
-  if (type === ENTRY_TYPE.NUMBER) {
-    return hashCodeInPlace(carrier.uint8, capacity, pointer + 1, 8);
-  } else {
-    return hashCodeInPlace(
-      carrier.uint8,
-      capacity,
-      pointer + 1 + Uint16Array.BYTES_PER_ELEMENT,
-      carrier.uint16[(pointer + 1) / Uint16Array.BYTES_PER_ELEMENT]
-    );
-  }
 }
 
 export function getKeyStart(heap: Heap, keyPointer: number) {
