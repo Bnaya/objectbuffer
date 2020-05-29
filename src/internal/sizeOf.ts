@@ -12,9 +12,13 @@ import {
   align,
 } from "./utils";
 import { ENTRY_TYPE } from "./entry-types";
-import { MAP_MACHINE, NODE_MACHINE } from "./hashmap/memoryLayout";
 import { sizeOfEntry } from "./store";
-import { linkedList_size, linkedListItem_size } from "./generatedStructs";
+import {
+  linkedList_size,
+  linkedListItem_size,
+  hashmap_size,
+  hashmapNode_size,
+} from "./generatedStructs";
 
 /**
  * **UNRELIABLE YET**
@@ -172,14 +176,14 @@ function sizeOfHashmap(
 
   const hashMapBaseAllocations = 2;
   const hashMapBaseAllocationsSize =
-    align(MAP_MACHINE.map.SIZE_OF) +
+    align(hashmap_size) +
     align(
       externalArgs.hashMapMinInitialCapacity * Uint32Array.BYTES_PER_ELEMENT
     );
 
   const hashMapNodesAllocations = keysArray.length;
   const hashMapNodesAllocationsSize =
-    align(NODE_MACHINE.map.SIZE_OF) * keysArray.length;
+    align(hashmapNode_size) * keysArray.length;
 
   const hashMapKeysSize = keysArray
     .map((k) => sizeOfEntry(primitiveValueToEntry(k)))
