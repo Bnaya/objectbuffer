@@ -24,7 +24,7 @@ describe("hashmap", () => {
     arrayAdditionalAllocation: 20,
   });
 
-  let ab = new ArrayBuffer(128 * 4);
+  let ab = new ArrayBuffer(128);
   let carrier: GlobalCarrier = makeCarrier(ab);
 
   function setABSize(size: number) {
@@ -33,10 +33,10 @@ describe("hashmap", () => {
   }
 
   beforeEach(() => {
-    setABSize(256 * 4);
+    setABSize(256);
   });
 
-  test.skip("createHashMap", () => {
+  test("createHashMap", () => {
     const mapPointer = createHashMap(carrier, 8);
     expect(mapPointer).toMatchInlineSnapshot(`48`);
     expect(arrayBuffer2HexArray(ab.slice(0, 128), true)).toMatchSnapshot(
@@ -44,7 +44,7 @@ describe("hashmap", () => {
     );
   });
 
-  test.skip("hashMapInsert simple, key is number", () => {
+  test("hashMapInsert simple, key is number", () => {
     const mapPointer = createHashMap(carrier, 8);
 
     const valuePointer = hashMapInsertUpdate(
@@ -59,7 +59,7 @@ describe("hashmap", () => {
     expect(arrayBuffer2HexArray(ab, true)).toMatchSnapshot("after insert");
   });
 
-  test.skip("hashMapInsert simple, key is string", () => {
+  test("hashMapInsert simple, key is string", () => {
     const mapPointer = createHashMap(carrier, 8);
 
     const pointer = hashMapInsertUpdate(
