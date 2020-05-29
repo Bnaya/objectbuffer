@@ -1,6 +1,14 @@
 import { ENTRY_TYPE } from "../entry-types";
 import { stringEncodeInto } from "../stringEncodeInto";
 import { GlobalCarrier } from "../interfaces";
+import { Heap } from "../../structsGenerator/consts";
+import {
+  number_value_place,
+  string_charsPointer_get,
+  typeOnly_type_get,
+  number_value_ctor,
+  string_bytesLength_get,
+} from "../generatedStructs";
 
 export function hashCodeInPlace(
   uint8: Uint8Array,
@@ -57,19 +65,19 @@ export function hashCodeEntry(
   }
 }
 
-export function getKeyStartLength(carrier: GlobalCarrier, keyPointer: number) {
-  if (
-    carrier.uint32[keyPointer / Uint32Array.BYTES_PER_ELEMENT] ===
-    ENTRY_TYPE.NUMBER
-  ) {
-    return {
-      start: keyPointer + 1,
-      length: Float64Array.BYTES_PER_ELEMENT,
-    };
+export function getKeyStart(heap: Heap, keyPointer: number) {
+  if (typeOnly_type_get(heap, keyPointer) === ENTRY_TYPE.NUMBER) {
+    return keyPointer + number_value_place;
   } else {
-    return {
-      start: keyPointer + 1 + 2 + 2,
-      length: carrier.uint16[(keyPointer + 1) / Uint16Array.BYTES_PER_ELEMENT],
-    };
+    // string
+    return string_charsPointer_get(heap, keyPointer);
+  }
+}
+
+export function getKeyLength(heap: Heap, keyPointer: number) {
+  if (typeOnly_type_get(heap, keyPointer) === ENTRY_TYPE.NUMBER) {
+    return number_value_ctor.BYTES_PER_ELEMENT;
+  } else {
+    return string_bytesLength_get(heap, keyPointer);
   }
 }

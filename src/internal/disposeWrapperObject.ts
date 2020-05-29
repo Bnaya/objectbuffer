@@ -17,7 +17,7 @@ export function disposeWrapperObject(value: any) {
 
   if (newRefCount === 0) {
     const addressesToFree = getAllLinkedAddresses(
-      internalApi.getCarrier(),
+      internalApi.getCarrier().heap,
       false,
       entryPointer
     );

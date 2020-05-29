@@ -36,7 +36,7 @@ export class MapWrapper<K extends string | number, V> extends BaseProxyTrap
 
   get size(): number {
     return hashMapSize(
-      this.carrier,
+      this.carrier.heap,
       object_pointerToHashMap_get(this.carrier.heap, this.entryPointer)
     );
   }
@@ -47,11 +47,11 @@ export class MapWrapper<K extends string | number, V> extends BaseProxyTrap
 
   *entries(): IterableIterator<[K, V]> {
     for (const nodePointer of hashmapNodesPointerIterator(
-      this.carrier,
+      this.carrier.heap,
       object_pointerToHashMap_get(this.carrier.heap, this.entryPointer)
     )) {
       const { valuePointer, keyPointer } = hashMapNodePointerToKeyValue(
-        this.carrier,
+        this.carrier.heap,
         nodePointer
       );
 
@@ -64,7 +64,9 @@ export class MapWrapper<K extends string | number, V> extends BaseProxyTrap
         entryToFinalJavaScriptValue(
           this.externalArgs,
           this.carrier,
-          this.carrier.uint32[valuePointer / Uint32Array.BYTES_PER_ELEMENT]
+          this.carrier.heap.Uint32Array[
+            valuePointer / Uint32Array.BYTES_PER_ELEMENT
+          ]
         ),
       ];
     }
@@ -72,10 +74,10 @@ export class MapWrapper<K extends string | number, V> extends BaseProxyTrap
 
   *keys(): IterableIterator<K> {
     for (const nodePointer of hashmapNodesPointerIterator(
-      this.carrier,
+      this.carrier.heap,
       object_pointerToHashMap_get(this.carrier.heap, this.entryPointer)
     )) {
-      const t = hashMapNodePointerToKeyValue(this.carrier, nodePointer);
+      const t = hashMapNodePointerToKeyValue(this.carrier.heap, nodePointer);
 
       yield entryToFinalJavaScriptValue(
         this.externalArgs,
@@ -87,18 +89,20 @@ export class MapWrapper<K extends string | number, V> extends BaseProxyTrap
 
   *values(): IterableIterator<V> {
     for (const nodePointer of hashmapNodesPointerIterator(
-      this.carrier,
+      this.carrier.heap,
       object_pointerToHashMap_get(this.carrier.heap, this.entryPointer)
     )) {
       const { valuePointer } = hashMapNodePointerToKeyValue(
-        this.carrier,
+        this.carrier.heap,
         nodePointer
       );
 
       yield entryToFinalJavaScriptValue(
         this.externalArgs,
         this.carrier,
-        this.carrier.uint32[valuePointer / Uint32Array.BYTES_PER_ELEMENT]
+        this.carrier.heap.Uint32Array[
+          valuePointer / Uint32Array.BYTES_PER_ELEMENT
+        ]
       );
     }
   }
@@ -147,7 +151,7 @@ export class MapWrapper<K extends string | number, V> extends BaseProxyTrap
 
     return (
       hashMapNodeLookup(
-        this.carrier,
+        this.carrier.heap,
         object_pointerToHashMap_get(this.carrier.heap, this.entryPointer),
         p
       ) !== 0

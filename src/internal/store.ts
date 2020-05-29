@@ -173,7 +173,7 @@ export function handleArcForDeletedValuePointer(
   }
 
   const { leafAddresses, arcAddresses } = getAllLinkedAddresses(
-    carrier,
+    carrier.heap,
     false,
     deletedValuePointer
   );

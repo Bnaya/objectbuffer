@@ -103,12 +103,12 @@ describe("LinkedList", () => {
     let iteratorPointer = 0;
     while (
       (iteratorPointer = linkedListLowLevelIterator(
-        carrier,
+        carrier.heap,
         linkedListPointer,
         iteratorPointer
       ))
     ) {
-      values.push(linkedListGetValue(carrier, iteratorPointer));
+      values.push(linkedListGetValue(carrier.heap, iteratorPointer));
     }
 
     expect(values).toMatchInlineSnapshot(`
@@ -145,12 +145,12 @@ describe("LinkedList", () => {
     let iteratorPointer = 0;
     while (
       (iteratorPointer = linkedListLowLevelIterator(
-        carrier,
+        carrier.heap,
         linkedListPointer,
         iteratorPointer
       ))
     ) {
-      values.push(linkedListGetValue(carrier, iteratorPointer));
+      values.push(linkedListGetValue(carrier.heap, iteratorPointer));
       linkedListItemRemove(carrier, iteratorPointer);
     }
 
@@ -195,12 +195,12 @@ describe("LinkedList", () => {
     let iteratorPointer = 0;
     while (
       (iteratorPointer = linkedListLowLevelIterator(
-        carrier,
+        carrier.heap,
         linkedListPointer,
         iteratorPointer
       ))
     ) {
-      linkedLintResults.push(linkedListGetValue(carrier, iteratorPointer));
+      linkedLintResults.push(linkedListGetValue(carrier.heap, iteratorPointer));
       linkedListItemRemove(carrier, iteratorPointer);
     }
 
@@ -252,12 +252,12 @@ describe("LinkedList", () => {
     let iteratorPointer = 0;
     while (
       (iteratorPointer = linkedListLowLevelIterator(
-        carrier,
+        carrier.heap,
         linkedListPointer,
         iteratorPointer
       ))
     ) {
-      values.push(linkedListGetValue(carrier, iteratorPointer));
+      values.push(linkedListGetValue(carrier.heap, iteratorPointer));
       if (c < toAdd.length) {
         linkedListItemInsert(carrier, linkedListPointer, toAdd[c++]);
       }
@@ -291,7 +291,7 @@ describe("LinkedList", () => {
     const iteratorPointerToFree = 0;
     while (
       (iteratorPointer = linkedListLowLevelIterator(
-        carrier,
+        carrier.heap,
         linkedListPointer,
         iteratorPointerToFree
       ))
@@ -320,7 +320,7 @@ describe("LinkedList", () => {
       }
     }, carrier.allocator);
 
-    const r = linkedListGetPointersToFree(carrier, linkedListPointer);
+    const r = linkedListGetPointersToFree(carrier.heap, linkedListPointer);
 
     expect(r).toMatchInlineSnapshot(`
       Object {

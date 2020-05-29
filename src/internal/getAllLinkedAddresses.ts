@@ -1,4 +1,3 @@
-import { GlobalCarrier } from "./interfaces";
 import { ENTRY_TYPE } from "./entry-types";
 import { hashMapGetPointersToFree } from "./hashmap/hashmap";
 import { isKnownAddressValuePointer } from "./utils";
@@ -10,9 +9,10 @@ import {
   array_dataspacePointer_get,
   array_length_get,
 } from "./generatedStructs";
+import { Heap } from "../structsGenerator/consts";
 
 export function getAllLinkedAddresses(
-  carrier: GlobalCarrier,
+  heap: Heap,
   ignoreRefCount: boolean,
   entryPointer: number
 ) {
@@ -32,7 +32,7 @@ export function getAllLinkedAddresses(
     }
 
     getAllLinkedAddressesStep(
-      carrier,
+      heap,
       ignoreRefCount,
       addressToProcess,
       leafAddresses,
@@ -45,18 +45,18 @@ export function getAllLinkedAddresses(
 
   // console.log(diffs);
 
+  // @todo avoid intermediate object
   return { leafAddresses, arcAddresses };
 }
 
 function getAllLinkedAddressesStep(
-  carrier: GlobalCarrier,
+  heap: Heap,
   ignoreRefCount: boolean,
   entryPointer: number,
   leafAddresses: Set<number>,
   arcAddresses: Set<number>,
   addressesToProcessQueue: number[]
 ) {
-  const { heap } = carrier;
   if (
     isKnownAddressValuePointer(entryPointer) ||
     leafAddresses.has(entryPointer) ||
@@ -87,7 +87,7 @@ function getAllLinkedAddressesStep(
       if (refsCount <= 1 || ignoreRefCount) {
         leafAddresses.add(entryPointer);
         getObjectOrMapOrSetAddresses(
-          carrier,
+          heap,
           object_pointerToHashMap_get(heap, entryPointer),
           leafAddresses,
           addressesToProcessQueue
@@ -104,7 +104,7 @@ function getAllLinkedAddressesStep(
         const arrayLength = array_length_get(heap, entryPointer);
         for (let i = 0; i < arrayLength; i += 1) {
           const valuePointer =
-            carrier.uint32[
+            heap.Uint32Array[
               (array_dataspacePointer_get(heap, entryPointer) +
                 i * Uint32Array.BYTES_PER_ELEMENT) /
                 Uint32Array.BYTES_PER_ELEMENT
@@ -131,13 +131,13 @@ function getAllLinkedAddressesStep(
 }
 
 export function getObjectOrMapOrSetAddresses(
-  carrier: GlobalCarrier,
+  heap: Heap,
   internalHashmapPointer: number,
   leafAddresses: Set<number>,
   addressesToProcessQueue: number[]
 ) {
   const { pointersToValuePointers, pointers } = hashMapGetPointersToFree(
-    carrier,
+    heap,
     internalHashmapPointer
   );
 
@@ -147,7 +147,7 @@ export function getObjectOrMapOrSetAddresses(
 
   for (const pointer of pointersToValuePointers) {
     addressesToProcessQueue.push(
-      carrier.uint32[pointer / Uint32Array.BYTES_PER_ELEMENT]
+      heap.Uint32Array[pointer / Uint32Array.BYTES_PER_ELEMENT]
     );
   }
 }

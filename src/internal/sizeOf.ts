@@ -12,12 +12,13 @@ import {
   align,
 } from "./utils";
 import { ENTRY_TYPE } from "./entry-types";
-import {
-  LINKED_LIST_MACHINE,
-  LINKED_LIST_ITEM_MACHINE,
-} from "./linkedList/linkedList";
-import { MAP_MACHINE, NODE_MACHINE } from "./hashmap/memoryLayout";
 import { sizeOfEntry } from "./store";
+import {
+  linkedList_size,
+  linkedListItem_size,
+  hashmap_size,
+  hashmapNode_size,
+} from "./generatedStructs";
 
 /**
  * **UNRELIABLE YET**
@@ -164,25 +165,25 @@ function sizeOfHashmap(
   keysArray: Array<string | number>
 ) {
   const linkedListBaseAllocationsSize =
-    align(LINKED_LIST_MACHINE.map.SIZE_OF) +
+    align(linkedList_size) +
     // end marker
-    align(LINKED_LIST_ITEM_MACHINE.map.SIZE_OF);
+    align(linkedListItem_size);
   const linkedListBaseAllocations = 2;
 
   const linkedListItemsAllocations = keysArray.length;
   const linkedListItemsAllocationsSize =
-    keysArray.length * align(LINKED_LIST_ITEM_MACHINE.map.SIZE_OF);
+    keysArray.length * align(linkedListItem_size);
 
   const hashMapBaseAllocations = 2;
   const hashMapBaseAllocationsSize =
-    align(MAP_MACHINE.map.SIZE_OF) +
+    align(hashmap_size) +
     align(
       externalArgs.hashMapMinInitialCapacity * Uint32Array.BYTES_PER_ELEMENT
     );
 
   const hashMapNodesAllocations = keysArray.length;
   const hashMapNodesAllocationsSize =
-    align(NODE_MACHINE.map.SIZE_OF) * keysArray.length;
+    align(hashmapNode_size) * keysArray.length;
 
   const hashMapKeysSize = keysArray
     .map((k) => sizeOfEntry(primitiveValueToEntry(k)))

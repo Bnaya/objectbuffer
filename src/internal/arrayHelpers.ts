@@ -30,6 +30,7 @@ export function arrayGetPointersToValueInIndex(
   const pointer =
     carrier.uint32[pointerToThePointer / Uint32Array.BYTES_PER_ELEMENT];
 
+  // @todo avoid intermediate object
   return {
     pointer,
     pointerToThePointer,

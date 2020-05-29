@@ -12,6 +12,10 @@ import {
   stringStructDeclaration,
   typeReaderDeclaration,
   typeAndRcDeclaration,
+  linkedListDeclaration,
+  linkedListItemDeclaration,
+  hashmapDeclaration,
+  hashmapNodeDeclaration,
 } from "./declarations";
 
 const number = generateFunctionsCodeForManifest(
@@ -45,6 +49,22 @@ const typeAndRc = generateFunctionsCodeForManifest(
   typeAndRcDeclaration
 );
 
+const linkedListItem = generateFunctionsCodeForManifest(
+  "linkedListItem",
+  linkedListItemDeclaration
+);
+
+const linkedList = generateFunctionsCodeForManifest(
+  "linkedList",
+  linkedListDeclaration
+);
+
+const hashmap = generateFunctionsCodeForManifest("hashmap", hashmapDeclaration);
+const hashmapNode = generateFunctionsCodeForManifest(
+  "hashmapNode",
+  hashmapNodeDeclaration
+);
+
 const all = [
   `/** Generate code. don't try to edit manually **/`,
   `/* istanbul ignore file */`,
@@ -57,6 +77,10 @@ const all = [
   ...string,
   ...typeOnly,
   ...typeAndRc,
+  ...linkedList,
+  ...linkedListItem,
+  ...hashmap,
+  ...hashmapNode,
 ];
 
 fs.writeFileSync(

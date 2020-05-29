@@ -54,7 +54,7 @@ describe("hashmap", () => {
       3
     );
 
-    carrier.uint32[valuePointer / Uint32Array.BYTES_PER_ELEMENT] = 5;
+    carrier.heap.Uint32Array[valuePointer / Uint32Array.BYTES_PER_ELEMENT] = 5;
 
     expect(arrayBuffer2HexArray(ab, true)).toMatchSnapshot("after insert");
   });
@@ -69,7 +69,7 @@ describe("hashmap", () => {
       "abc"
     );
 
-    carrier.uint32[pointer / Uint32Array.BYTES_PER_ELEMENT] = 6;
+    carrier.heap.Uint32Array[pointer / Uint32Array.BYTES_PER_ELEMENT] = 6;
 
     expect(arrayBuffer2HexArray(ab, true)).toMatchSnapshot("after insert");
   });
@@ -81,7 +81,7 @@ describe("hashmap", () => {
 
     const pointer = hashMapInsertUpdate(externalArgs, carrier, mapPointer, key);
 
-    const foundValuePointer = hashMapValueLookup(carrier, mapPointer, key);
+    const foundValuePointer = hashMapValueLookup(carrier.heap, mapPointer, key);
 
     expect(pointer).toBe(foundValuePointer);
   });
@@ -98,7 +98,7 @@ describe("hashmap", () => {
       key
     );
 
-    const foundValuePointer = hashMapValueLookup(carrier, mapPointer, key);
+    const foundValuePointer = hashMapValueLookup(carrier.heap, mapPointer, key);
     expect(foundValuePointer).toBe(valuePointer);
   });
 
@@ -116,7 +116,7 @@ describe("hashmap", () => {
 
     expect(firstValuePointer).toMatchInlineSnapshot(`144`);
 
-    const foundValuePointer = hashMapValueLookup(carrier, mapPointer, key);
+    const foundValuePointer = hashMapValueLookup(carrier.heap, mapPointer, key);
 
     expect(foundValuePointer).toBe(firstValuePointer);
   });
@@ -136,7 +136,7 @@ describe("hashmap", () => {
     expect(memoryOfOverWrittenValue).toMatchInlineSnapshot(`152`);
 
     const foundValuePointer = hashMapValueLookup(
-      carrier,
+      carrier.heap,
       mapPointer,
       "Not a real key"
     );
@@ -144,7 +144,7 @@ describe("hashmap", () => {
   });
 
   test("hashMapLowLevelIterator", () => {
-    setABSize(2048);
+    setABSize(2048 * 2);
     const mapPointer = createHashMap(carrier);
 
     const input = [...new Array(26).keys()]
@@ -158,7 +158,7 @@ describe("hashmap", () => {
         hashMapInsertUpdate(externalArgs, carrier, mapPointer, value)
       );
 
-      carrier.uint32[
+      carrier.heap.Uint32Array[
         inserts[inserts.length - 1] / Uint32Array.BYTES_PER_ELEMENT
       ] = index;
     }
@@ -171,12 +171,12 @@ describe("hashmap", () => {
     let iteratorToken = 0;
     while (
       (iteratorToken = hashMapLowLevelIterator(
-        carrier,
+        carrier.heap,
         mapPointer,
         iteratorToken
       )) !== 0
     ) {
-      values.push(hashMapNodePointerToKeyValue(carrier, iteratorToken));
+      values.push(hashMapNodePointerToKeyValue(carrier.heap, iteratorToken));
     }
     expect(values.map((v) => readString(carrier.heap, v.keyPointer)))
       .toMatchInlineSnapshot(`
@@ -203,15 +203,20 @@ describe("hashmap", () => {
         "t",
         "u",
         "v",
+        "w",
+        "x",
+        "y",
+        "z",
       ]
     `);
   });
 
   test("hashMapSize", () => {
-    setABSize(2048);
+    const abSize = 2048 * 4;
+    setABSize(abSize);
     const mapPointer = createHashMap(carrier);
 
-    expect(hashMapSize(carrier, mapPointer)).toMatchInlineSnapshot(`0`);
+    expect(hashMapSize(carrier.heap, mapPointer)).toMatchInlineSnapshot(`0`);
     const memAvailableAfterEachStep = [carrier.allocator.stats().available];
 
     const input = [...new Array(26).keys()]
@@ -219,7 +224,7 @@ describe("hashmap", () => {
       .map((n) => String.fromCharCode(n));
 
     for (const [index, useThatAsKey] of input.entries()) {
-      carrier.uint32[
+      carrier.heap.Uint32Array[
         hashMapInsertUpdate(externalArgs, carrier, mapPointer, useThatAsKey) /
           Uint32Array.BYTES_PER_ELEMENT
       ] = index;
@@ -227,50 +232,51 @@ describe("hashmap", () => {
       memAvailableAfterEachStep.push(carrier.allocator.stats().available);
     }
 
-    expect(hashMapSize(carrier, mapPointer)).toMatchInlineSnapshot(`26`);
+    expect(hashMapSize(carrier.heap, mapPointer)).toMatchInlineSnapshot(`26`);
 
     hashMapDelete(carrier, mapPointer, "a");
     hashMapDelete(carrier, mapPointer, "b");
     hashMapDelete(carrier, mapPointer, "c");
-    expect(hashMapSize(carrier, mapPointer)).toMatchInlineSnapshot(`26`);
+    expect(hashMapSize(carrier.heap, mapPointer)).toMatchInlineSnapshot(`26`);
     memAvailableAfterEachStep.push(carrier.allocator.stats().available);
 
-    expect(memAvailableAfterEachStep).toMatchInlineSnapshot(`
+    expect(memAvailableAfterEachStep.map((a) => abSize - a))
+      .toMatchInlineSnapshot(`
       Array [
-        1904,
-        1824,
-        1744,
-        1664,
-        1584,
-        1504,
-        1424,
-        1344,
-        1224,
-        1144,
-        1064,
-        984,
-        904,
+        144,
+        224,
+        304,
+        384,
+        464,
+        544,
+        624,
+        704,
         824,
-        744,
-        664,
-        504,
-        416,
-        336,
-        256,
-        176,
-        96,
-        16,
-        0,
-        0,
-        0,
-        0,
-        0,
+        904,
+        984,
+        1064,
+        1144,
+        1224,
+        1304,
+        1384,
+        1464,
+        1544,
+        1624,
+        1704,
+        1784,
+        1864,
+        2024,
+        2112,
+        2192,
+        2272,
+        2352,
+        2352,
       ]
     `);
   });
 
   test("hashMapGetPointersToFree", () => {
-    setABSize(1024);
+    setABSize(1024 * 4);
     let hashmapPointer = 0;
 
     // a + 10 letters
@@ -282,88 +288,27 @@ describe("hashmap", () => {
     const { allocations } = recordAllocations(() => {
       hashmapPointer = createHashMap(carrier);
 
-      expect(carrier.allocator.stats().available).toMatchInlineSnapshot(`880`);
+      // expect(carrier.allocator.stats().available).toMatchInlineSnapshot(`880`);
 
       let toAdd: undefined | string;
 
       while ((toAdd = inputCopy.pop()) !== undefined) {
-        carrier.uint32[
+        carrier.heap.Uint32Array[
           hashMapInsertUpdate(externalArgs, carrier, hashmapPointer, toAdd) /
             Uint32Array.BYTES_PER_ELEMENT
         ] = toAdd.charCodeAt(0);
       }
     }, carrier.allocator);
 
-    const r = hashMapGetPointersToFree(carrier, hashmapPointer);
-
-    expect(r).toMatchInlineSnapshot(`
-      Object {
-        "pointers": Array [
-          48,
-          792,
-          120,
-          136,
-          216,
-          296,
-          376,
-          456,
-          536,
-          616,
-          696,
-          776,
-          896,
-          976,
-          200,
-          152,
-          176,
-          280,
-          232,
-          256,
-          360,
-          312,
-          336,
-          440,
-          392,
-          416,
-          520,
-          472,
-          496,
-          600,
-          552,
-          576,
-          680,
-          632,
-          656,
-          760,
-          712,
-          736,
-          880,
-          72,
-          96,
-          960,
-          912,
-          936,
-        ],
-        "pointersToValuePointers": Array [
-          152,
-          232,
-          312,
-          392,
-          472,
-          552,
-          632,
-          712,
-          72,
-          912,
-        ],
-      }
-    `);
+    const r = hashMapGetPointersToFree(carrier.heap, hashmapPointer);
 
     expect(r.pointers.sort()).toEqual(allocations.sort());
     expect(
       r.pointersToValuePointers
         .map((v) =>
-          String.fromCharCode(carrier.uint32[v / Uint32Array.BYTES_PER_ELEMENT])
+          String.fromCharCode(
+            carrier.heap.Uint32Array[v / Uint32Array.BYTES_PER_ELEMENT]
+          )
         )
         .sort()
     ).toEqual(input.sort());
