@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1590751065212,
+  "lastUpdate": 1590751118811,
   "repoUrl": "https://github.com/Bnaya/objectbuffer",
   "entries": {
     "Benchmark": [
@@ -3425,6 +3425,37 @@ window.BENCHMARK_DATA = {
             "range": "±2.56%",
             "unit": "ops/sec",
             "extra": "72 samples"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "me@bnaya.net",
+            "name": "Bnaya Peretz",
+            "username": "Bnaya"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "da30950ea29d734691c7f70490bd662bb9fefbde",
+          "message": "Issue 87 refactor hashmap linkedlist to use generated structs (#90)",
+          "timestamp": "2020-05-29T14:17:31+03:00",
+          "tree_id": "482b741581545646a4bbb5683537a9ecad37df69",
+          "url": "https://github.com/Bnaya/objectbuffer/commit/da30950ea29d734691c7f70490bd662bb9fefbde"
+        },
+        "date": 1590751118402,
+        "tool": "benchmarkjs",
+        "benches": [
+          {
+            "name": "createObjectBuffer with 200 comments",
+            "value": 332,
+            "range": "±1.16%",
+            "unit": "ops/sec",
+            "extra": "73 samples"
           }
         ]
       }
