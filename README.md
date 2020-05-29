@@ -1,9 +1,7 @@
 # ObjectBuffer: object-like API, backed by a [shared]arraybuffer 👀
 
 [![npm version](https://badge.fury.io/js/%40bnaya%2Fobjectbuffer.svg)](https://badge.fury.io/js/%40bnaya%2Fobjectbuffer)
-[![Coverage Status](https://coveralls.io/repos/github/Bnaya/objectbuffer/badge.svg)](https://coveralls.io/github/Bnaya/objectbuffer)
-
-[![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-Ready--to--Code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/Bnaya/objectbuffer)   
+[![Coverage Status](https://coveralls.io/repos/github/Bnaya/objectbuffer/badge.svg)](https://coveralls.io/github/Bnaya/objectbuffer) [![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-Ready--to--Code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/Bnaya/objectbuffer)   
 [![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/Bnaya/objectbuffer)
 
 For Modern browsers and node.
@@ -54,6 +52,16 @@ myObject.arr.push(2);
 See also [main.js](playground/main.js) for shared memory example.
 to run it: clone the repo, `yarn install` and `yarn browser-playground`
 
+## Getting involved
+
+Participants is Adhere to the [Code of Conduct](./CODE_OF_CONDUCT.md).  
+The quickest way to get up and running is via [![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-Ready--to--Code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/Bnaya/objectbuffer) and to run the tests.
+
+Go over the [contributing document](CONTRIBUTING.md).  
+Pick an issue with ["good first" or "help wanted"](https://github.com/Bnaya/objectbuffer/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22), or do some cool by your own!
+
+Feel free to open an issue, or contact me directly at [me@bnaya.net](mailto:me@bnaya.net)
+
 ## API reference
 
 [link](docs/generated/README.md)
@@ -64,7 +72,7 @@ Exchanging plain objects with `WebWorkers` is done by serializing and copying th
 for some use-cases, it's slow and memory expensive.  
 `ArrayBuffer` can be `transferred` without a copy, and `SharedArrayBuffer` can be directly shared, but out of the box, it's hard to use `ArrayBuffer` as more than a [TypedArray](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Typed_arrays).  
 
-## Why not [FlatBuffers](https://github.com/google/flatbuffers)
+## Why maybe not [FlatBuffers](https://github.com/google/flatbuffers)
 
 For many cases FlatBuffers is the right tool!  
 FlatBuffers requires full re-serialization when changing values. inside. The api is also more different than javascript objects.
@@ -106,14 +114,6 @@ Before putting any eggs in the basket, please go over the [implementation detail
 
 * Anything that cannot go into `JSON.stringify`
 * `Symbol`
-
-## Contribution / Collaboration
-
-There's a huge place for optimizations, code hygiene, and features!  
-Feel free to open issues and maybe implementing missing parts.  
-The code is Written in TypeScript 🦾, but the semantics are more like `C` 🥵   
-Have a look on the [issues](https://github.com/Bnaya/objectbuffer/issues) and see if you find something interesting
-
 
 ## If you came this far, you better also look at:
 * [GoogleChromeLabs/buffer-backed-object](https://github.com/GoogleChromeLabs/buffer-backed-object#readme) 
