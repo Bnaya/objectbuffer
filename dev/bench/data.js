@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1590766685600,
+  "lastUpdate": 1590767069313,
   "repoUrl": "https://github.com/Bnaya/objectbuffer",
   "entries": {
     "Benchmark": [
@@ -3901,6 +3901,37 @@ window.BENCHMARK_DATA = {
             "range": "±1.29%",
             "unit": "ops/sec",
             "extra": "81 samples"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "me@bnaya.net",
+            "name": "Bnaya Peretz",
+            "username": "Bnaya"
+          },
+          "committer": {
+            "email": "me@bnaya.net",
+            "name": "Bnaya Peretz",
+            "username": "Bnaya"
+          },
+          "distinct": true,
+          "id": "428dc509290a11202eaea8e18fdf9d5fb8e90fc4",
+          "message": "Set empty ports array",
+          "timestamp": "2020-05-29T15:43:14Z",
+          "tree_id": "7484e9bd2a2310b3a07dde4600e58c54371f2083",
+          "url": "https://github.com/Bnaya/objectbuffer/commit/428dc509290a11202eaea8e18fdf9d5fb8e90fc4"
+        },
+        "date": 1590767068924,
+        "tool": "benchmarkjs",
+        "benches": [
+          {
+            "name": "createObjectBuffer with 200 comments",
+            "value": 339,
+            "range": "±1.34%",
+            "unit": "ops/sec",
+            "extra": "85 samples"
           }
         ]
       }
