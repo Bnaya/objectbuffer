@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1590765091927,
+  "lastUpdate": 1590766049324,
   "repoUrl": "https://github.com/Bnaya/objectbuffer",
   "entries": {
     "Benchmark": [
@@ -3750,6 +3750,37 @@ window.BENCHMARK_DATA = {
             "range": "±2.65%",
             "unit": "ops/sec",
             "extra": "72 samples"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "me@bnaya.net",
+            "name": "Bnaya Peretz",
+            "username": "Bnaya"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "c89694e0c0e4252f72b086f99db9f12a22469b0e",
+          "message": "Assorted changes (#95)\n\n* Add gitpod badge\r\n* Readme changes",
+          "timestamp": "2020-05-29T18:26:44+03:00",
+          "tree_id": "b91f8b9c37a7ff675f4e1f4468e43ee53de8fe5f",
+          "url": "https://github.com/Bnaya/objectbuffer/commit/c89694e0c0e4252f72b086f99db9f12a22469b0e"
+        },
+        "date": 1590766048867,
+        "tool": "benchmarkjs",
+        "benches": [
+          {
+            "name": "createObjectBuffer with 200 comments",
+            "value": 325,
+            "range": "±1.90%",
+            "unit": "ops/sec",
+            "extra": "74 samples"
           }
         ]
       }
