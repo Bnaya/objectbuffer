@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1590767446870,
+  "lastUpdate": 1590767510845,
   "repoUrl": "https://github.com/Bnaya/objectbuffer",
   "entries": {
     "Benchmark": [
@@ -4050,6 +4050,37 @@ window.BENCHMARK_DATA = {
             "name": "createObjectBuffer with 200 comments",
             "value": 354,
             "range": "±1.35%",
+            "unit": "ops/sec",
+            "extra": "81 samples"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "me@bnaya.net",
+            "name": "Bnaya Peretz",
+            "username": "Bnaya"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "b8786ddba8858318f4d4435f42eea7e042a0d025",
+          "message": "Readme changes (#99)",
+          "timestamp": "2020-05-29T18:50:31+03:00",
+          "tree_id": "6d7429a1679979ccc484c6661995abee9c9b75ca",
+          "url": "https://github.com/Bnaya/objectbuffer/commit/b8786ddba8858318f4d4435f42eea7e042a0d025"
+        },
+        "date": 1590767510423,
+        "tool": "benchmarkjs",
+        "benches": [
+          {
+            "name": "createObjectBuffer with 200 comments",
+            "value": 343,
+            "range": "±2.04%",
             "unit": "ops/sec",
             "extra": "81 samples"
           }
