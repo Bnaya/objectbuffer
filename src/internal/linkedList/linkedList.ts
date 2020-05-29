@@ -27,23 +27,6 @@ for (const bla of a) {
 
 */
 
-// export const LINKED_LIST_ITEM_MACHINE = createMemoryMachine({
-//   NEXT_POINTER: Uint32Array,
-//   VALUE: Uint32Array,
-// });
-
-// export type LinkedListItemMachineType = ReturnType<
-//   typeof LINKED_LIST_ITEM_MACHINE.createOperator
-// >;
-
-// export const LINKED_LIST_MACHINE = createMemoryMachine({
-//   END_POINTER: Uint32Array,
-//   START_POINTER: Uint32Array,
-// });
-// export type LinkedListMachineType = ReturnType<
-//   typeof LINKED_LIST_MACHINE.createOperator
-// >;
-
 export function initLinkedList(carrier: GlobalCarrier) {
   const { allocator, heap } = carrier;
   const memoryForLinkedList = allocator.calloc(linkedList_size);
@@ -148,18 +131,18 @@ export function linkedListGetPointersToFree(
 
   let iterator = linkedListLowLevelIterator(heap, linkedListPointer, 0);
 
-  while (iterator) {
+  while (iterator !== 0) {
     pointers.push(iterator);
 
     // value = 0 means end marker
     if (linkedListItem_VALUE_get(heap, iterator) !== 0) {
       valuePointers.push(linkedListItem_VALUE_get(heap, iterator));
-      // linkItemOperator.startAddress = 0;
     }
 
     iterator = linkedListItem_NEXT_POINTER_get(heap, iterator);
   }
 
+  // @todo avoid intermediate object
   return {
     pointers,
     valuePointers,

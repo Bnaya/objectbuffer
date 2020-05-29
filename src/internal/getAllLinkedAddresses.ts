@@ -45,6 +45,7 @@ export function getAllLinkedAddresses(
 
   // console.log(diffs);
 
+  // @todo avoid intermediate object
   return { leafAddresses, arcAddresses };
 }
 

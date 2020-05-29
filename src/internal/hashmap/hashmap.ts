@@ -1,4 +1,3 @@
-// import { MAP_MACHINE, NODE_MACHINE } from "./memoryLayout";
 import { GlobalCarrier, ExternalArgs } from "../interfaces";
 import {
   hashCodeInPlace,
@@ -91,8 +90,6 @@ export function hashMapInsertUpdate(
   externalKeyValue: number | string
 ) {
   const { heap, allocator } = carrier;
-  // const mapOperator = MAP_MACHINE.createOperator(carrier, mapPointer);
-
   // allocate all possible needed memory upfront, so we won't oom in the middle of something
   // in case of overwrite, we will not need this memory
   const memoryForNewNode = allocator.calloc(hashmapNode_size);
@@ -146,11 +143,6 @@ export function hashMapInsertUpdate(
   let iteratedNodePointer =
     heap.Uint32Array[ptrToPtrToSaveTheNodeTo / Uint32Array.BYTES_PER_ELEMENT];
 
-  // const commonNodeOperator = NODE_MACHINE.createOperator(
-  //   carrier,
-  //   carrier.uint32[ptrToPtrToSaveTheNodeTo / Uint32Array.BYTES_PER_ELEMENT]
-  // );
-
   // todo: share code with hashMapNodeLookup?
   while (
     iteratedNodePointer !== 0 &&
@@ -160,16 +152,12 @@ export function hashMapInsertUpdate(
       keyMemoryEntryPointer
     )
   ) {
-    // ptrToPtrToSaveTheNodeTo = commonNodeOperator.pointerTo("NEXT_NODE_POINTER");
     ptrToPtrToSaveTheNodeTo =
       iteratedNodePointer + hashmapNode_NEXT_NODE_POINTER_place;
     iteratedNodePointer = hashmapNode_NEXT_NODE_POINTER_get(
       heap,
       iteratedNodePointer
     );
-    // commonNodeOperator.startAddress = commonNodeOperator.get(
-    //   "NEXT_NODE_POINTER"
-    // );
   }
 
   // bucket was empty, first item added to bucket
@@ -198,7 +186,6 @@ export function hashMapInsertUpdate(
     allocator.free(keyMemoryEntryPointer);
     allocator.free(memoryForNewNode);
 
-    // return commonNodeOperator.pointerTo("VALUE_POINTER");
     return iteratedNodePointer + hashmapNode_VALUE_POINTER_place;
   } else {
     iteratedNodePointer = memoryForNewNode;
@@ -214,15 +201,6 @@ export function hashMapInsertUpdate(
         memoryForNewNode
       )
     );
-    // commonNodeOperator.set("KEY_POINTER", keyMemoryEntryPointer);
-    // commonNodeOperator.set(
-    //   "LINKED_LIST_ITEM_POINTER",
-    //   linkedListItemInsert(
-    //     carrier,
-    //     hashmap_LINKED_LIST_POINTER_get(heap, mapPointer),
-    //     memoryForNewNode
-    //   )
-    // );
 
     heap.Uint32Array[
       ptrToPtrToSaveTheNodeTo / Uint32Array.BYTES_PER_ELEMENT
@@ -241,9 +219,6 @@ export function hashMapInsertUpdate(
         externalArgs.hashMapLoadFactor
       )
     ) {
-      // console.log("rehash", {
-      //   USED_CAPACITY: mapOperator.get("USED_CAPACITY")
-      // });
       hashMapRehash(
         carrier,
         mapPointer,
@@ -331,13 +306,6 @@ export function hashMapDelete(
 
   const nodeToDeletePointer =
     heap.Uint32Array[foundNodePtrToPtr / Uint32Array.BYTES_PER_ELEMENT];
-
-  // const nodeOperator = NODE_MACHINE.createOperator(
-  //   carrier,
-  //   nodeToDeletePointer
-  // );
-
-  // const valuePointer = nodeOperator.pointerTo("VALUE_POINTER");
   const valuePointer = nodeToDeletePointer + hashmapNode_VALUE_POINTER_place;
 
   linkedListItemRemove(
@@ -408,6 +376,7 @@ export function hashMapLowLevelIterator(
 }
 
 export function hashMapNodePointerToKeyValue(heap: Heap, nodePointer: number) {
+  // @todo avoid intermediate object
   return {
     valuePointer: nodePointer + hashmapNode_VALUE_POINTER_place,
     keyPointer: hashmapNode_KEY_POINTER_get(heap, nodePointer),
@@ -419,7 +388,6 @@ export function hashMapSize(heap: Heap, mapPointer: number) {
 }
 
 export function hashMapGetPointersToFree(heap: Heap, hashmapPointer: number) {
-  // const mapOperator = MAP_MACHINE.createOperator(carrier, hashmapPointer);
   const pointers: number[] = [
     hashmapPointer,
     hashmap_ARRAY_POINTER_get(heap, hashmapPointer),
@@ -432,10 +400,8 @@ export function hashMapGetPointersToFree(heap: Heap, hashmapPointer: number) {
   );
 
   pointers.push(...pointersOfLinkedList.pointers);
-  // const nodeOperator = NODE_MACHINE.createOperator(carrier, 0);
 
   for (const nodePointer of pointersOfLinkedList.valuePointers) {
-    // nodeOperator.startAddress = nodePointer;
     pointersToValuePointers.push(nodePointer + hashmapNode_VALUE_POINTER_place);
     if (
       typeOnly_type_get(
@@ -453,6 +419,7 @@ export function hashMapGetPointersToFree(heap: Heap, hashmapPointer: number) {
     pointers.push(nodePointer, hashmapNode_KEY_POINTER_get(heap, nodePointer));
   }
 
+  // @todo avoid intermediate object
   return {
     pointers,
     pointersToValuePointers,
@@ -465,11 +432,6 @@ function hashMapRehash(
   newCapacity: number
 ) {
   const { heap, allocator } = carrier;
-  // const before = {
-  //   ARRAY_POINTER: mapOperator.get("ARRAY_POINTER"),
-  //   CAPACITY: mapOperator.get("CAPACITY"),
-  //   USED_CAPACITY: mapOperator.get("USED_CAPACITY")
-  // };
 
   // Why not realloc?
   allocator.free(hashmap_ARRAY_POINTER_get(heap, hashmapPointer));
@@ -477,23 +439,8 @@ function hashMapRehash(
     newCapacity * Uint32Array.BYTES_PER_ELEMENT
   );
 
-  // (carrier.allocator as typeof carrier.allocator & { u8: Uint8Array }).u8.fill(
-  //   0,
-  //   biggerArray,
-  //   biggerArray + newCapacity * Uint32Array.BYTES_PER_ELEMENT
-  // );
-
   hashmap_ARRAY_POINTER_set(heap, hashmapPointer, biggerArray);
   hashmap_CAPACITY_set(heap, hashmapPointer, newCapacity);
-
-  // mapOperator.set("ARRAY_POINTER", biggerArray);
-  // mapOperator.set("CAPACITY", newCapacity);
-
-  // const after = {
-  //   ARRAY_POINTER: mapOperator.get("ARRAY_POINTER"),
-  //   CAPACITY: mapOperator.get("CAPACITY"),
-  //   USED_CAPACITY: mapOperator.get("USED_CAPACITY")
-  // };
 
   let pointerToNode = 0;
   while (
@@ -513,8 +460,6 @@ function hashMapRehashInsert(
   arraySize: number,
   nodePointer: number
 ) {
-  // const nodeOperator = NODE_MACHINE.createOperator(carrier, nodePointer);
-
   const keyHashCode = hashCodeInPlace(
     heap.Uint8Array,
     arraySize,
@@ -534,20 +479,6 @@ function hashMapRehashInsert(
   ] = nodePointer;
 
   hashmapNode_NEXT_NODE_POINTER_set(heap, nodePointer, prevFirstNodeInBucket);
-  // nodeOperator.set("NEXT_NODE_POINTER", prevFirstNodeInBucket);
-
-  // // Add is first node in bucket
-  // if (nodeOperator.startAddress === 0) {
-  //   carrier.dataView.setUint32(bucketStartPointer, nodePointer);
-  //   return;
-  // }
-
-  // // find last node.
-  // while (nodeOperator.get("NEXT_NODE_POINTER") !== 0) {
-  //   nodeOperator.startAddress = nodeOperator.get("NEXT_NODE_POINTER");
-  // }
-
-  // nodeOperator.set("NEXT_NODE_POINTER", nodePointer);
 }
 
 function shouldRehash(
