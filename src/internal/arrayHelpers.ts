@@ -28,7 +28,9 @@ export function arrayGetPointersToValueInIndex(
     indexToGet * Uint32Array.BYTES_PER_ELEMENT;
 
   const pointer =
-    carrier.uint32[pointerToThePointer / Uint32Array.BYTES_PER_ELEMENT];
+    carrier.heap.Uint32Array[
+      pointerToThePointer / Uint32Array.BYTES_PER_ELEMENT
+    ];
 
   // @todo avoid intermediate object
   return {
@@ -73,7 +75,7 @@ export function setValuePointerAtArrayIndex(
   );
 
   assertNonNull(pointers);
-  carrier.uint32[
+  carrier.heap.Uint32Array[
     pointers.pointerToThePointer / Uint32Array.BYTES_PER_ELEMENT
   ] = pointerToEntry;
 }

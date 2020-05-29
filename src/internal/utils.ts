@@ -1,10 +1,4 @@
-import {
-  primitive,
-  Entry,
-  ExternalArgs,
-  InternalAPI,
-  ExternalArgsApi,
-} from "./interfaces";
+import { ExternalArgs, InternalAPI, ExternalArgsApi } from "./interfaces";
 import { ENTRY_TYPE } from "./entry-types";
 import { INTERNAL_API_SYMBOL } from "./symbols";
 import {
@@ -14,55 +8,6 @@ import {
   FALSE_KNOWN_ADDRESS,
 } from "./consts";
 import { IMemPool } from "@thi.ng/malloc";
-
-const primitives = [
-  "string",
-  "number",
-  "bigint",
-  "boolean",
-  "undefined",
-] as const;
-
-export function isPrimitive(value: unknown): value is primitive {
-  if (primitives.includes(typeof value as any)) {
-    return true;
-  }
-
-  if (value === null) {
-    return true;
-  }
-
-  return false;
-}
-
-export function primitiveValueToEntry(value: primitive): Entry {
-  if (typeof value === "string") {
-    return {
-      type: ENTRY_TYPE.STRING,
-      value,
-      allocatedBytes: strByteLength(value),
-    };
-  }
-
-  if (typeof value === "number") {
-    return {
-      type: ENTRY_TYPE.NUMBER,
-      value,
-    };
-  }
-
-  if (typeof value === "bigint") {
-    return {
-      type:
-        value >= BigInt("0")
-          ? ENTRY_TYPE.BIGINT_POSITIVE
-          : ENTRY_TYPE.BIGINT_NEGATIVE,
-      value,
-    };
-  }
-
-  throw new Error("unexpected");
-}
 
 export function createKnownTypeGuard<T>(arr: ReadonlyArray<T>) {
   return function knownTypeGuard(v: unknown): v is T {
@@ -156,5 +101,22 @@ export function isTypeWithRC(type: ENTRY_TYPE) {
     type === ENTRY_TYPE.DATE ||
     type === ENTRY_TYPE.MAP ||
     type === ENTRY_TYPE.SET
+  );
+}
+
+/**
+ *
+ * I hope It's reliable
+ */
+export function isSupportedTopLevelValue(value: unknown) {
+  return !(
+    Array.isArray(value) ||
+    value instanceof Date ||
+    value instanceof Map ||
+    value instanceof Set ||
+    typeof value !== "object" ||
+    typeof value === null ||
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    value!.constructor.name !== "Object"
   );
 }
