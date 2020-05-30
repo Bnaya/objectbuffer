@@ -4,6 +4,7 @@ import {
   arrayBuffer2HexArray,
   recordAllocations,
   makeCarrier,
+  makeAllocatorThrowOnOOM,
 } from "../testUtils";
 import {
   createHashMap,
@@ -30,6 +31,7 @@ describe("hashmap", () => {
   function setABSize(size: number) {
     ab = new ArrayBuffer(size);
     carrier = makeCarrier(ab);
+    makeAllocatorThrowOnOOM(carrier.allocator);
   }
 
   beforeEach(() => {
@@ -39,9 +41,9 @@ describe("hashmap", () => {
   test("createHashMap", () => {
     const mapPointer = createHashMap(carrier, 8);
     expect(mapPointer).toMatchInlineSnapshot(`48`);
-    expect(arrayBuffer2HexArray(ab.slice(0, 128), true)).toMatchSnapshot(
-      "simple create empty"
-    );
+    expect(
+      arrayBuffer2HexArray(ab.slice(0, carrier.allocator.stats().top), true)
+    ).toMatchSnapshot("simple create empty");
   });
 
   test("hashMapInsert simple, key is number", () => {
@@ -56,7 +58,9 @@ describe("hashmap", () => {
 
     carrier.heap.Uint32Array[valuePointer / Uint32Array.BYTES_PER_ELEMENT] = 5;
 
-    expect(arrayBuffer2HexArray(ab, true)).toMatchSnapshot("after insert");
+    expect(
+      arrayBuffer2HexArray(ab.slice(0, carrier.allocator.stats().top), true)
+    ).toMatchSnapshot("after insert");
   });
 
   test("hashMapInsert simple, key is string", () => {
@@ -71,7 +75,9 @@ describe("hashmap", () => {
 
     carrier.heap.Uint32Array[pointer / Uint32Array.BYTES_PER_ELEMENT] = 6;
 
-    expect(arrayBuffer2HexArray(ab, true)).toMatchSnapshot("after insert");
+    expect(
+      arrayBuffer2HexArray(ab.slice(0, carrier.allocator.stats().top), true)
+    ).toMatchSnapshot("after insert");
   });
 
   test("hashMapInsert / hashMapValueLookup simple, key is a number", () => {
@@ -217,7 +223,7 @@ describe("hashmap", () => {
     const mapPointer = createHashMap(carrier);
 
     expect(hashMapSize(carrier.heap, mapPointer)).toMatchInlineSnapshot(`0`);
-    const memAvailableAfterEachStep = [carrier.allocator.stats().available];
+    const memAvailableAfterEachStep = [carrier.allocator.stats().top];
 
     const input = [...new Array(26).keys()]
       .map((i): number => i + "a".charCodeAt(0))
@@ -229,19 +235,19 @@ describe("hashmap", () => {
           Uint32Array.BYTES_PER_ELEMENT
       ] = index;
 
-      memAvailableAfterEachStep.push(carrier.allocator.stats().available);
+      memAvailableAfterEachStep.push(carrier.allocator.stats().top);
     }
 
-    expect(hashMapSize(carrier.heap, mapPointer)).toMatchInlineSnapshot(`26`);
+    expect(hashMapSize(carrier.heap, mapPointer)).toBe(26);
 
     hashMapDelete(carrier, mapPointer, "a");
     hashMapDelete(carrier, mapPointer, "b");
     hashMapDelete(carrier, mapPointer, "c");
-    expect(hashMapSize(carrier.heap, mapPointer)).toMatchInlineSnapshot(`26`);
-    memAvailableAfterEachStep.push(carrier.allocator.stats().available);
+    hashMapDelete(carrier, mapPointer, "t");
+    expect(hashMapSize(carrier.heap, mapPointer)).toBe(22);
+    memAvailableAfterEachStep.push(carrier.allocator.stats().top);
 
-    expect(memAvailableAfterEachStep.map((a) => abSize - a))
-      .toMatchInlineSnapshot(`
+    expect(memAvailableAfterEachStep).toMatchInlineSnapshot(`
       Array [
         144,
         224,
@@ -251,7 +257,7 @@ describe("hashmap", () => {
         544,
         624,
         704,
-        824,
+        872,
         904,
         984,
         1064,
@@ -259,13 +265,13 @@ describe("hashmap", () => {
         1224,
         1304,
         1384,
-        1464,
-        1544,
-        1624,
-        1704,
-        1784,
-        1864,
-        2024,
+        1632,
+        1632,
+        1712,
+        1792,
+        1872,
+        1952,
+        2032,
         2112,
         2192,
         2272,
@@ -288,7 +294,7 @@ describe("hashmap", () => {
     const { allocations } = recordAllocations(() => {
       hashmapPointer = createHashMap(carrier);
 
-      // expect(carrier.allocator.stats().available).toMatchInlineSnapshot(`880`);
+      expect(carrier.allocator.stats().top).toMatchInlineSnapshot(`144`);
 
       let toAdd: undefined | string;
 

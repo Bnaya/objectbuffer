@@ -1,6 +1,6 @@
 import { initializeArrayBuffer } from "./store";
 import { createObjectWrapper } from "./objectWrapper";
-import { ExternalArgsApi, GlobalCarrier } from "./interfaces";
+import { ExternalArgsApi, GlobalCarrier, MemoryStats } from "./interfaces";
 import {
   arrayBufferCopyTo,
   externalArgsApiToExternalArgsApi,
@@ -186,7 +186,7 @@ export { sizeOf } from "./sizeOf";
 /**
  * Return the number of free & used bytes left in the given objectBuffer
  */
-export function memoryStats(objectBuffer: unknown) {
+export function memoryStats(objectBuffer: unknown): MemoryStats {
   const buf = getUnderlyingArrayBuffer(objectBuffer);
 
   const pool = new MemPool({
@@ -196,9 +196,9 @@ export function memoryStats(objectBuffer: unknown) {
     start: MEM_POOL_START,
   });
 
-  const { available, total } = pool.stats();
+  const { available, total, top } = pool.stats();
 
-  return { available, used: total - available };
+  return { available, used: total - available, total, top };
 }
 
 export { disposeWrapperObject } from "./disposeWrapperObject";

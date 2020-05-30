@@ -124,9 +124,6 @@ function getAllLinkedAddressesStep(
         arcAddresses.add(entryPointer);
       }
       break;
-
-    default:
-      throw new Error(ENTRY_TYPE[entryType] + " Not implemented yet");
   }
 }
 
