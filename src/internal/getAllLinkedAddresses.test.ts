@@ -131,6 +131,8 @@ describe("getAllLinkedAddresses", () => {
       expect(memoryStats(objectBuffer)).toMatchInlineSnapshot(`
         Object {
           "available": 656,
+          "top": 1392,
+          "total": 2048,
           "used": 1392,
         }
       `);
@@ -153,6 +155,8 @@ describe("getAllLinkedAddresses", () => {
       expect(memoryStats(objectBuffer)).toMatchInlineSnapshot(`
         Object {
           "available": 2008,
+          "top": 40,
+          "total": 2048,
           "used": 40,
         }
       `);

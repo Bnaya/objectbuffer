@@ -1,5 +1,3 @@
-import { createKnownTypeGuard } from "./utils";
-
 export enum ENTRY_TYPE {
   /**
    * @deprecated
@@ -23,17 +21,11 @@ export enum ENTRY_TYPE {
    */
   OBJECT_PROP,
   ARRAY,
+  /**
+   * @deprecated
+   */
   ARRAY_ITEM,
   MAP,
   SET,
   DATE,
 }
-
-export const PRIMITIVE_TYPES = [
-  ENTRY_TYPE.NUMBER,
-  ENTRY_TYPE.BIGINT_POSITIVE,
-  ENTRY_TYPE.BIGINT_NEGATIVE,
-  ENTRY_TYPE.STRING,
-] as const;
-
-export const isPrimitiveEntryType = createKnownTypeGuard(PRIMITIVE_TYPES);

@@ -1,3 +1,39 @@
+import { IMemPool, MemPool } from "@thi.ng/malloc";
+import { OutOfMemoryError } from "./exceptions";
+import { GlobalCarrier } from "./interfaces";
+import { MEM_POOL_START } from "./consts";
+import { createHeap } from "../structsGenerator/consts";
+import { getInternalAPI } from "./utils";
+import { memoryStats } from "./api";
+
+export function getArrayBufferOnTopSize(ob: unknown) {
+  const stats = memoryStats(ob);
+  const carrier = getInternalAPI(ob).getCarrier();
+  return carrier.heap.Uint8Array.slice(0, stats.top);
+}
+
+export function makeAllocatorThrowOnOOM(allocator: IMemPool) {
+  const origMalloc = allocator.malloc;
+  allocator.malloc = function wrappedMalloc(memSize) {
+    if (memSize === 0) {
+      throw new Error("memSize can't be 0");
+    }
+
+    const allocated = origMalloc.call(allocator, memSize);
+    if (allocated === 0) {
+      throw new Error("OOM memSize");
+    }
+
+    return allocated;
+  };
+}
+
+export function makeThrowOnOOM(ob: unknown) {
+  const allocator = getInternalAPI(ob).getCarrier().allocator;
+
+  makeAllocatorThrowOnOOM(allocator);
+}
+
 export function arrayBuffer2HexArray(
   buffer: ArrayBuffer,
   withByteNumber = false
@@ -19,12 +55,6 @@ export function wait(time: number) {
     setTimeout(res, time);
   });
 }
-
-import { IMemPool, MemPool } from "@thi.ng/malloc";
-import { OutOfMemoryError } from "./exceptions";
-import { GlobalCarrier } from "./interfaces";
-import { MEM_POOL_START } from "./consts";
-import { createHeap } from "../structsGenerator/consts";
 
 // extend pool and not monkey patch? need to think about it
 export function recordAllocations(operation: () => void, pool: IMemPool) {

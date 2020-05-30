@@ -18,6 +18,8 @@ describe("memoryStats test", () => {
     expect(memoryStats(objectBuffer)).toMatchInlineSnapshot(`
       Object {
         "available": 328,
+        "top": 696,
+        "total": 1024,
         "used": 696,
       }
     `);
@@ -32,6 +34,8 @@ describe("memoryStats test", () => {
     expect(memoryStats(objectBuffer)).toMatchInlineSnapshot(`
       Object {
         "available": 1352,
+        "top": 696,
+        "total": 2048,
         "used": 696,
       }
     `);
@@ -40,6 +44,8 @@ describe("memoryStats test", () => {
     expect(memoryStats(objectBuffer)).toMatchInlineSnapshot(`
       Object {
         "available": 328,
+        "top": 696,
+        "total": 1024,
         "used": 696,
       }
     `);
@@ -48,6 +54,8 @@ describe("memoryStats test", () => {
     expect(memoryStats(objectBuffer)).toMatchInlineSnapshot(`
       Object {
         "available": 72,
+        "top": 696,
+        "total": 768,
         "used": 696,
       }
     `);
@@ -56,6 +64,8 @@ describe("memoryStats test", () => {
     expect(memoryStats(objectBuffer)).toMatchInlineSnapshot(`
       Object {
         "available": 1352,
+        "top": 696,
+        "total": 2048,
         "used": 696,
       }
     `);

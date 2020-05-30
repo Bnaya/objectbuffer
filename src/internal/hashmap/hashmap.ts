@@ -127,7 +127,7 @@ export function hashMapInsertUpdate(
     );
   }
 
-  const keyHashCode = hashCodeInPlace(
+  const bucket = hashCodeInPlace(
     heap.Uint8Array,
     hashmap_CAPACITY_get(heap, mapPointer),
     keyDataMemoryStart,
@@ -136,7 +136,7 @@ export function hashMapInsertUpdate(
 
   const bucketStartPointer =
     hashmap_ARRAY_POINTER_get(heap, mapPointer) +
-    keyHashCode * Uint32Array.BYTES_PER_ELEMENT;
+    bucket * Uint32Array.BYTES_PER_ELEMENT;
 
   let ptrToPtrToSaveTheNodeTo = bucketStartPointer;
 
@@ -238,14 +238,14 @@ export function hashMapNodeLookup(
   mapPointer: number,
   externalKeyValue: number | string
 ) {
-  const keyHashCode = hashCodeExternalValue(
+  const bucket = hashCodeExternalValue(
     hashmap_CAPACITY_get(heap, mapPointer),
     externalKeyValue
   );
 
   const bucketStartPtrToPtr =
     hashmap_ARRAY_POINTER_get(heap, mapPointer) +
-    keyHashCode * Uint32Array.BYTES_PER_ELEMENT;
+    bucket * Uint32Array.BYTES_PER_ELEMENT;
 
   let ptrToPtr = bucketStartPtrToPtr;
   let iteratedNode =
@@ -433,7 +433,7 @@ function hashMapRehash(
 ) {
   const { heap, allocator } = carrier;
 
-  // Why not realloc?
+  // we don't use re alloc because we don't need the old values
   allocator.free(hashmap_ARRAY_POINTER_get(heap, hashmapPointer));
   const biggerArray = carrier.allocator.calloc(
     newCapacity * Uint32Array.BYTES_PER_ELEMENT
@@ -441,6 +441,7 @@ function hashMapRehash(
 
   hashmap_ARRAY_POINTER_set(heap, hashmapPointer, biggerArray);
   hashmap_CAPACITY_set(heap, hashmapPointer, newCapacity);
+  hashmap_USED_CAPACITY_set(heap, hashmapPointer, 0);
 
   let pointerToNode = 0;
   while (
@@ -450,26 +451,25 @@ function hashMapRehash(
       pointerToNode
     )) !== 0
   ) {
-    hashMapRehashInsert(heap, biggerArray, newCapacity, pointerToNode);
+    hashMapRehashInsert(heap, hashmapPointer, pointerToNode);
   }
 }
 
 function hashMapRehashInsert(
   heap: Heap,
-  bucketsArrayPointer: number,
-  arraySize: number,
+  hashmapPointer: number,
   nodePointer: number
 ) {
-  const keyHashCode = hashCodeInPlace(
+  const bucket = hashCodeInPlace(
     heap.Uint8Array,
-    arraySize,
-    getKeyStart(heap, nodePointer),
-    getKeyLength(heap, nodePointer)
+    hashmap_CAPACITY_get(heap, hashmapPointer),
+    getKeyStart(heap, hashmapNode_KEY_POINTER_get(heap, nodePointer)),
+    getKeyLength(heap, hashmapNode_KEY_POINTER_get(heap, nodePointer))
   );
 
-  const bucket = keyHashCode % arraySize;
   const bucketStartPointer =
-    bucketsArrayPointer + bucket * Uint32Array.BYTES_PER_ELEMENT;
+    hashmap_ARRAY_POINTER_get(heap, hashmapPointer) +
+    bucket * Uint32Array.BYTES_PER_ELEMENT;
 
   const prevFirstNodeInBucket =
     heap.Uint32Array[bucketStartPointer / Uint32Array.BYTES_PER_ELEMENT];
@@ -478,7 +478,16 @@ function hashMapRehashInsert(
     bucketStartPointer / Uint32Array.BYTES_PER_ELEMENT
   ] = nodePointer;
 
-  hashmapNode_NEXT_NODE_POINTER_set(heap, nodePointer, prevFirstNodeInBucket);
+  if (prevFirstNodeInBucket !== 0) {
+    hashmapNode_NEXT_NODE_POINTER_set(heap, nodePointer, prevFirstNodeInBucket);
+  } else {
+    hashmapNode_NEXT_NODE_POINTER_set(heap, nodePointer, 0);
+    hashmap_USED_CAPACITY_set(
+      heap,
+      hashmapPointer,
+      hashmap_USED_CAPACITY_get(heap, hashmapPointer) + 1
+    );
+  }
 }
 
 function shouldRehash(

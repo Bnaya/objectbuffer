@@ -5,7 +5,10 @@ import {
   getUnderlyingArrayBuffer,
   loadObjectBuffer,
 } from ".";
-import { arrayBuffer2HexArray } from "./internal/testUtils";
+import {
+  arrayBuffer2HexArray,
+  getArrayBufferOnTopSize,
+} from "./internal/testUtils";
 import { externalArgsApiToExternalArgsApi } from "./internal/utils";
 
 describe("createObjectBuffer", () => {
@@ -47,7 +50,9 @@ describe("getUnderlyingArrayBuffer", () => {
     expect(arrayBuffer).toBeInstanceOf(ArrayBuffer);
 
     // that one tests implementation details, but...
-    expect(arrayBuffer2HexArray(arrayBuffer, true)).toMatchSnapshot();
+    expect(
+      arrayBuffer2HexArray(getArrayBufferOnTopSize(o), true)
+    ).toMatchSnapshot();
   });
 });
 
