@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1590835169772,
+  "lastUpdate": 1590835180666,
   "repoUrl": "https://github.com/Bnaya/objectbuffer",
   "entries": {
     "Benchmark": [
@@ -4288,6 +4288,37 @@ window.BENCHMARK_DATA = {
             "range": "±1.23%",
             "unit": "ops/sec",
             "extra": "79 samples"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "me@bnaya.net",
+            "name": "Bnaya Peretz",
+            "username": "Bnaya"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "7a3f3a1c98503a14564f7528d4228249f97321fd",
+          "message": "Bug fixes and cleanups (#106)",
+          "timestamp": "2020-05-30T13:39:06+03:00",
+          "tree_id": "bcd5fd938458e2eaf7f588fbbb83256671dbd79a",
+          "url": "https://github.com/Bnaya/objectbuffer/commit/7a3f3a1c98503a14564f7528d4228249f97321fd"
+        },
+        "date": 1590835180128,
+        "tool": "benchmarkjs",
+        "benches": [
+          {
+            "name": "createObjectBuffer with 200 comments",
+            "value": 351,
+            "range": "±1.62%",
+            "unit": "ops/sec",
+            "extra": "81 samples"
           }
         ]
       }
