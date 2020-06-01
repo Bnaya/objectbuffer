@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1590835180666,
+  "lastUpdate": 1590992348691,
   "repoUrl": "https://github.com/Bnaya/objectbuffer",
   "entries": {
     "Benchmark": [
@@ -4319,6 +4319,37 @@ window.BENCHMARK_DATA = {
             "range": "±1.62%",
             "unit": "ops/sec",
             "extra": "81 samples"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "me@bnaya.net",
+            "name": "Bnaya Peretz",
+            "username": "Bnaya"
+          },
+          "committer": {
+            "email": "me@bnaya.net",
+            "name": "Bnaya Peretz",
+            "username": "Bnaya"
+          },
+          "distinct": true,
+          "id": "742b4efaf539534de83c46d127efb3b494882b3c",
+          "message": "strings deduplications rocks",
+          "timestamp": "2020-06-01T09:17:25+03:00",
+          "tree_id": "5196138da26c5273a38cc4058032b7e1b8b2ce60",
+          "url": "https://github.com/Bnaya/objectbuffer/commit/742b4efaf539534de83c46d127efb3b494882b3c"
+        },
+        "date": 1590992348263,
+        "tool": "benchmarkjs",
+        "benches": [
+          {
+            "name": "createObjectBuffer with 200 comments",
+            "value": 551,
+            "range": "±6.01%",
+            "unit": "ops/sec",
+            "extra": "21 samples"
           }
         ]
       }
