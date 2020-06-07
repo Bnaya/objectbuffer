@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1591512732361,
+  "lastUpdate": 1591512752299,
   "repoUrl": "https://github.com/Bnaya/objectbuffer",
   "entries": {
     "Benchmark": [
@@ -4930,6 +4930,33 @@ window.BENCHMARK_DATA = {
             "range": "±1.51%",
             "unit": "ops/sec",
             "extra": "80 samples"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "name": "Bnaya",
+            "username": "Bnaya"
+          },
+          "committer": {
+            "name": "Bnaya",
+            "username": "Bnaya"
+          },
+          "id": "a2492fb86849de24d6eaf983ca78d3642fb1881d",
+          "message": "Bump websocket-extensions from 0.1.3 to 0.1.4",
+          "timestamp": "2020-06-06T17:26:30Z",
+          "url": "https://github.com/Bnaya/objectbuffer/pull/110/commits/a2492fb86849de24d6eaf983ca78d3642fb1881d"
+        },
+        "date": 1591512751735,
+        "tool": "benchmarkjs",
+        "benches": [
+          {
+            "name": "createObjectBuffer with 200 comments",
+            "value": 305,
+            "range": "±2.30%",
+            "unit": "ops/sec",
+            "extra": "75 samples"
           }
         ]
       }
