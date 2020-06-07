@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1591484788006,
+  "lastUpdate": 1591512732361,
   "repoUrl": "https://github.com/Bnaya/objectbuffer",
   "entries": {
     "Benchmark": [
@@ -4899,6 +4899,37 @@ window.BENCHMARK_DATA = {
             "range": "±4.85%",
             "unit": "ops/sec",
             "extra": "34 samples"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "49699333+dependabot[bot]@users.noreply.github.com",
+            "name": "dependabot[bot]",
+            "username": "dependabot[bot]"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "a2492fb86849de24d6eaf983ca78d3642fb1881d",
+          "message": "Bump websocket-extensions from 0.1.3 to 0.1.4\n\nBumps [websocket-extensions](https://github.com/faye/websocket-extensions-node) from 0.1.3 to 0.1.4.\n- [Release notes](https://github.com/faye/websocket-extensions-node/releases)\n- [Changelog](https://github.com/faye/websocket-extensions-node/blob/master/CHANGELOG.md)\n- [Commits](https://github.com/faye/websocket-extensions-node/compare/0.1.3...0.1.4)\n\nSigned-off-by: dependabot[bot] <support@github.com>",
+          "timestamp": "2020-06-07T06:51:07Z",
+          "tree_id": "960ea690c627221827d986441e7adc0d9dd4b7c8",
+          "url": "https://github.com/Bnaya/objectbuffer/commit/a2492fb86849de24d6eaf983ca78d3642fb1881d"
+        },
+        "date": 1591512731977,
+        "tool": "benchmarkjs",
+        "benches": [
+          {
+            "name": "createObjectBuffer with 200 comments",
+            "value": 341,
+            "range": "±1.51%",
+            "unit": "ops/sec",
+            "extra": "80 samples"
           }
         ]
       }
