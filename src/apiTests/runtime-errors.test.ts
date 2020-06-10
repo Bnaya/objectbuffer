@@ -27,7 +27,7 @@ describe("Runtime errors", () => {
     }).toThrowErrorMatchingInlineSnapshot(`"OutOfMemoryError"`);
 
     expect(memoryStats(objectBuffer).available).toEqual(freeSpaceLeft);
-    expect(freeSpaceLeft).toMatchInlineSnapshot(`24`);
+    expect(freeSpaceLeft).toMatchInlineSnapshot(`8`);
 
     expect(objectBuffer).toMatchInlineSnapshot(`
       Object {

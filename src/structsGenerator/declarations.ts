@@ -35,6 +35,7 @@ export const bigIntPositiveOrNegativeStructDeclaration = createStructDeclaration
 
 export const stringStructDeclaration = createStructDeclaration({
   type: Float64Array,
+  refsCount: Uint32Array,
   bytesLength: Uint32Array,
   charsPointer: Uint32Array,
 });

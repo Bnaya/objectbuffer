@@ -12,14 +12,14 @@ describe("bigint tests", () => {
     ob.bigintNegative = undefined;
     ob.bigintPositive = undefined;
 
-    expect(memoryStats(ob).used).toMatchInlineSnapshot(`336`);
+    expect(memoryStats(ob).used).toMatchInlineSnapshot(`352`);
 
     ob.bigintNegative = MAX_64_BIG_INT * BigInt("-1");
     ob.bigintPositive = MAX_64_BIG_INT;
     ob.bigintPositive = undefined;
     ob.bigintPositive = MAX_64_BIG_INT;
 
-    expect(memoryStats(ob).used).toMatchInlineSnapshot(`384`);
+    expect(memoryStats(ob).used).toMatchInlineSnapshot(`400`);
 
     expect(ob).toMatchInlineSnapshot(`
       Object {
@@ -36,14 +36,14 @@ describe("bigint tests", () => {
     ob.bigintNegative = undefined;
     ob.bigintPositive = undefined;
 
-    expect(memoryStats(ob).used).toMatchInlineSnapshot(`336`);
+    expect(memoryStats(ob).used).toMatchInlineSnapshot(`352`);
 
     ob.bigintNegative = (MAX_64_BIG_INT + BigInt("1")) * BigInt("-1");
     ob.bigintPositive = MAX_64_BIG_INT + BigInt("1");
     ob.bigintPositive = undefined;
     ob.bigintPositive = MAX_64_BIG_INT + BigInt("1");
 
-    expect(memoryStats(ob).used).toMatchInlineSnapshot(`336`);
+    expect(memoryStats(ob).used).toMatchInlineSnapshot(`352`);
 
     expect(ob).toMatchInlineSnapshot(`
       Object {

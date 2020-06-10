@@ -1,6 +1,10 @@
 import { ENTRY_TYPE } from "./entry-types";
 import { GlobalCarrier } from "./interfaces";
-import { isKnownAddressValuePointer, isTypeWithRC } from "./utils";
+import {
+  isKnownAddressValuePointer,
+  isTypeWithRC,
+  strByteLength,
+} from "./utils";
 import { ExternalArgs } from "./interfaces";
 import {
   INITIAL_ENTRY_POINTER_TO_POINTER,
@@ -14,10 +18,15 @@ import {
   number_value_get,
   string_bytesLength_get,
   string_charsPointer_get,
+  string_size,
+  string_set_all,
+  number_set_all,
+  number_size,
 } from "./generatedStructs";
 import { Heap } from "../structsGenerator/consts";
 import { readString } from "./readString";
 import { saveValueIterative } from "./saveValue";
+import { stringEncodeInto } from "./stringEncodeInto";
 
 export function initializeArrayBuffer(arrayBuffer: ArrayBuffer) {
   const uint32 = new Uint32Array(arrayBuffer);
@@ -28,73 +37,55 @@ export function initializeArrayBuffer(arrayBuffer: ArrayBuffer) {
   ] = INITIAL_ENTRY_POINTER_VALUE;
 }
 
-// /* istanbul ignore next */
-// export function sizeOfEntry(entry: Entry) {
-//   let cursor = 0;
+export function freeStringOrNumber(
+  { heap, allocator }: GlobalCarrier,
+  stringOrNumberStructPointer: number
+) {
+  if (
+    typeOnly_type_get(heap, stringOrNumberStructPointer) == ENTRY_TYPE.STRING
+  ) {
+    allocator.free(string_charsPointer_get(heap, stringOrNumberStructPointer));
+  }
 
-//   // type
-//   cursor += Float64Array.BYTES_PER_ELEMENT;
+  allocator.free(stringOrNumberStructPointer);
+}
 
-//   switch (entry.type) {
-//     case ENTRY_TYPE.NUMBER:
-//       cursor += Float64Array.BYTES_PER_ELEMENT;
-//       break;
+export function saveStringOrNumber(
+  carrier: GlobalCarrier,
+  value: string | number
+) {
+  if (typeof value === "string") {
+    return saveString(carrier, value);
+  } else {
+    return saveNumber(carrier, value);
+  }
+}
 
-//     case ENTRY_TYPE.STRING:
-//       // string length
-//       cursor += Uint32Array.BYTES_PER_ELEMENT;
+export function saveString({ heap, allocator }: GlobalCarrier, value: string) {
+  const stringBytesLength = strByteLength(value);
+  const stringDataPointer = allocator.calloc(stringBytesLength);
+  stringEncodeInto(heap.Uint8Array, stringDataPointer, value);
+  const stringPointer = allocator.calloc(string_size);
 
-//       cursor += entry.allocatedBytes;
+  string_set_all(
+    heap,
+    stringPointer,
+    ENTRY_TYPE.STRING,
+    1,
+    stringBytesLength,
+    stringDataPointer
+  );
 
-//       // oh boy. i don't want to change it now, but no choice
-//       // @todo: this is incorrect? should be Math.max
-//       // cursor += entry.allocatedBytes;
+  return stringPointer;
+}
 
-//       break;
+export function saveNumber({ heap, allocator }: GlobalCarrier, value: number) {
+  const numberPointer = allocator.calloc(number_size);
 
-//     case ENTRY_TYPE.BIGINT_NEGATIVE:
-//     case ENTRY_TYPE.BIGINT_POSITIVE:
-//       if (entry.value > MAX_64_BIG_INT || entry.value < -MAX_64_BIG_INT) {
-//         throw new BigInt64OverflowError();
-//       }
+  number_set_all(heap, numberPointer, ENTRY_TYPE.NUMBER, value);
 
-//       cursor += BigInt64Array.BYTES_PER_ELEMENT;
-//       break;
-
-//     case ENTRY_TYPE.OBJECT:
-//     case ENTRY_TYPE.MAP:
-//     case ENTRY_TYPE.SET:
-//       // ref count
-//       cursor += Uint32Array.BYTES_PER_ELEMENT;
-//       // pointer
-//       cursor += Uint32Array.BYTES_PER_ELEMENT;
-//       break;
-
-//     case ENTRY_TYPE.ARRAY:
-//       // refsCount
-//       cursor += Uint32Array.BYTES_PER_ELEMENT;
-//       // pointer
-//       cursor += Uint32Array.BYTES_PER_ELEMENT;
-//       // length
-//       cursor += Uint32Array.BYTES_PER_ELEMENT;
-//       // allocated length
-//       cursor += Uint32Array.BYTES_PER_ELEMENT;
-//       break;
-
-//     case ENTRY_TYPE.DATE:
-//       // timestamp
-//       cursor += Float64Array.BYTES_PER_ELEMENT;
-//       // ref count
-//       cursor += Uint32Array.BYTES_PER_ELEMENT;
-//       break;
-
-//     default:
-//       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-//       throw new Error(ENTRY_TYPE[entry.type] + " Not implemented yet");
-//   }
-
-//   return cursor;
-// }
+  return numberPointer;
+}
 
 export function writeValueInPtrToPtr(
   externalArgs: ExternalArgs,
@@ -154,17 +145,12 @@ export function handleArcForDeletedValuePointer(
 
   const entryType = typeOnly_type_get(heap, deletedValuePointer);
   if (!isTypeWithRC(entryType)) {
-    if (entryType === ENTRY_TYPE.STRING) {
-      allocator.free(
-        string_charsPointer_get(carrier.heap, deletedValuePointer)
-      );
-    }
     allocator.free(deletedValuePointer);
     return;
   }
 
-  if (decrementRefCount(heap, deletedValuePointer) > 0) {
-    allocator.free(deletedValuePointer);
+  const refCountAfterDec = decrementRefCount(heap, deletedValuePointer);
+  if (refCountAfterDec > 0) {
     return;
   }
 
@@ -178,8 +164,8 @@ export function handleArcForDeletedValuePointer(
     allocator.free(address);
   }
 
-  for (const address of arcAddresses) {
-    decrementRefCount(heap, address);
+  for (const [address, count] of arcAddresses) {
+    decrementRefCountWithNum(heap, address, count);
   }
 }
 
@@ -198,6 +184,20 @@ export function decrementRefCount(heap: Heap, entryPointer: number) {
     heap,
     entryPointer,
     typeAndRc_refsCount_get(heap, entryPointer) - 1
+  );
+
+  return typeAndRc_refsCount_get(heap, entryPointer);
+}
+
+export function decrementRefCountWithNum(
+  heap: Heap,
+  entryPointer: number,
+  num: number
+) {
+  typeAndRc_refsCount_set(
+    heap,
+    entryPointer,
+    typeAndRc_refsCount_get(heap, entryPointer) - num
   );
 
   return typeAndRc_refsCount_get(heap, entryPointer);

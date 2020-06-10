@@ -13,7 +13,6 @@ export {
   getUnderlyingArrayBuffer,
   loadObjectBuffer,
   replaceUnderlyingArrayBuffer,
-  sizeOf as unreliable_sizeOf,
   memoryStats,
   disposeWrapperObject,
   updateExternalArgs,

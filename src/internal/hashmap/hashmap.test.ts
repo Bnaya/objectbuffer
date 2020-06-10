@@ -2,7 +2,6 @@
 
 import {
   arrayBuffer2HexArray,
-  recordAllocations,
   makeCarrier,
   makeAllocatorThrowOnOOM,
 } from "../testUtils";
@@ -14,7 +13,6 @@ import {
   hashMapNodePointerToKeyValue,
   hashMapSize,
   hashMapDelete,
-  hashMapGetPointersToFree,
 } from "./hashmap";
 import { GlobalCarrier } from "../interfaces";
 import { externalArgsApiToExternalArgsApi } from "../utils";
@@ -250,73 +248,34 @@ describe("hashmap", () => {
     expect(memAvailableAfterEachStep).toMatchInlineSnapshot(`
       Array [
         144,
-        224,
-        304,
-        384,
-        464,
-        544,
-        624,
-        704,
-        872,
-        904,
+        232,
+        320,
+        408,
+        496,
+        584,
+        672,
+        760,
+        936,
         984,
-        1064,
-        1144,
-        1224,
-        1304,
-        1384,
-        1632,
-        1632,
-        1712,
-        1792,
-        1872,
-        1952,
+        1072,
+        1160,
+        1248,
+        1336,
+        1424,
+        1512,
+        1768,
+        1768,
+        1856,
+        1944,
         2032,
-        2112,
-        2192,
-        2272,
-        2352,
-        2352,
+        2120,
+        2208,
+        2296,
+        2384,
+        2472,
+        2560,
+        2560,
       ]
     `);
-  });
-
-  test("hashMapGetPointersToFree", () => {
-    setABSize(1024 * 4);
-    let hashmapPointer = 0;
-
-    // a + 10 letters
-    const input = [...new Array(10).keys()]
-      .map((i): number => i + "a".charCodeAt(0))
-      .map((n) => String.fromCharCode(n));
-    const inputCopy = input.slice();
-
-    const { allocations } = recordAllocations(() => {
-      hashmapPointer = createHashMap(carrier);
-
-      expect(carrier.allocator.stats().top).toMatchInlineSnapshot(`144`);
-
-      let toAdd: undefined | string;
-
-      while ((toAdd = inputCopy.pop()) !== undefined) {
-        carrier.heap.Uint32Array[
-          hashMapInsertUpdate(externalArgs, carrier, hashmapPointer, toAdd) /
-            Uint32Array.BYTES_PER_ELEMENT
-        ] = toAdd.charCodeAt(0);
-      }
-    }, carrier.allocator);
-
-    const r = hashMapGetPointersToFree(carrier.heap, hashmapPointer);
-
-    expect(r.pointers.sort()).toEqual(allocations.sort());
-    expect(
-      r.pointersToValuePointers
-        .map((v) =>
-          String.fromCharCode(
-            carrier.heap.Uint32Array[v / Uint32Array.BYTES_PER_ELEMENT]
-          )
-        )
-        .sort()
-    ).toEqual(input.sort());
   });
 });

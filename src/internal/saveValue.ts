@@ -35,6 +35,9 @@ export function saveValueIterative(
 ) {
   const valuesToSave = [initialValue];
   const pointersToSaveTo = [initialValuePtrToPtr];
+  const savedValuesToPointer = new Map<unknown, number>();
+  // const savedValuesRefCount = new Map<unknown, number>();
+
   const {
     heap: { Uint32Array: uint32 },
     allocator,
@@ -76,6 +79,18 @@ export function saveValueIterative(
       continue;
     }
 
+    if (savedValuesToPointer.has(valueToSave)) {
+      uint32[
+        ptrToPtrToSaveTo / Uint32Array.BYTES_PER_ELEMENT
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      ] = savedValuesToPointer.get(valueToSave)!;
+      referencedExistingPointers.push(
+        uint32[ptrToPtrToSaveTo / Uint32Array.BYTES_PER_ELEMENT]
+      );
+
+      continue;
+    }
+
     switch (typeof valueToSave) {
       case "number":
         uint32[
@@ -104,8 +119,14 @@ export function saveValueIterative(
           heap,
           uint32[ptrToPtrToSaveTo / Uint32Array.BYTES_PER_ELEMENT],
           ENTRY_TYPE.STRING,
+          1,
           stringBytesLength,
           stringDataPointer
+        );
+
+        savedValuesToPointer.set(
+          valueToSave,
+          uint32[ptrToPtrToSaveTo / Uint32Array.BYTES_PER_ELEMENT]
         );
         continue;
 
@@ -178,6 +199,11 @@ export function saveValueIterative(
         pointersToSaveTo,
         valueToSave
       );
+
+      savedValuesToPointer.set(
+        valueToSave,
+        uint32[ptrToPtrToSaveTo / Uint32Array.BYTES_PER_ELEMENT]
+      );
       continue;
     }
 
@@ -193,6 +219,11 @@ export function saveValueIterative(
         0,
         valueToSave.getTime()
       );
+
+      savedValuesToPointer.set(
+        valueToSave,
+        uint32[ptrToPtrToSaveTo / Uint32Array.BYTES_PER_ELEMENT]
+      );
       continue;
     }
 
@@ -204,7 +235,14 @@ export function saveValueIterative(
         carrier,
         valuesToSave,
         pointersToSaveTo,
+        savedValuesToPointer,
+        referencedExistingPointers,
         valueToSave
+      );
+
+      savedValuesToPointer.set(
+        valueToSave,
+        uint32[ptrToPtrToSaveTo / Uint32Array.BYTES_PER_ELEMENT]
       );
       continue;
     }
@@ -212,7 +250,18 @@ export function saveValueIterative(
     if (valueToSave instanceof Set) {
       heap.Uint32Array[
         ptrToPtrToSaveTo / Uint32Array.BYTES_PER_ELEMENT
-      ] = setSaverIterative(externalArgs, carrier, valueToSave);
+      ] = setSaverIterative(
+        externalArgs,
+        carrier,
+        savedValuesToPointer,
+        referencedExistingPointers,
+        valueToSave
+      );
+
+      savedValuesToPointer.set(
+        valueToSave,
+        uint32[ptrToPtrToSaveTo / Uint32Array.BYTES_PER_ELEMENT]
+      );
       continue;
     }
 
@@ -224,7 +273,14 @@ export function saveValueIterative(
       carrier,
       valuesToSave,
       pointersToSaveTo,
+      savedValuesToPointer,
+      referencedExistingPointers,
       valueToSave
+    );
+
+    savedValuesToPointer.set(
+      valueToSave,
+      uint32[ptrToPtrToSaveTo / Uint32Array.BYTES_PER_ELEMENT]
     );
   }
 }

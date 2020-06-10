@@ -137,13 +137,13 @@ describe("hashmap rehash", () => {
     expect(memAvailableAfterEachStep).toMatchInlineSnapshot(`
       Array [
         112,
-        192,
-        296,
-        360,
-        480,
-        536,
-        616,
-        616,
+        200,
+        312,
+        384,
+        512,
+        576,
+        664,
+        664,
       ]
     `);
   });

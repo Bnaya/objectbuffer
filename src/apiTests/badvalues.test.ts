@@ -19,7 +19,7 @@ describe("bad values tests", () => {
       ob[symbol] = "But why not";
     }).toThrowErrorMatchingInlineSnapshot(`"IllegalObjectPropConfigError"`);
 
-    expect(memoryStats(ob).used).toMatchInlineSnapshot(`336`);
+    expect(memoryStats(ob).used).toMatchInlineSnapshot(`352`);
 
     expect(ob).toMatchInlineSnapshot(`
       Object {

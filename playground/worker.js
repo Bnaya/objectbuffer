@@ -14,15 +14,15 @@ addEventListener("message", (ev) => {
   let lastValueToFollow = "IM NOT INTERESTING";
 
   if (ev.data instanceof SharedArrayBuffer) {
-    const o = objectbufferModule.loadObjectBuffer(externalArgs, ev.data);
+    const ob = objectbufferModule.loadObjectBuffer(externalArgs, ev.data);
 
-    const lockStatus = objectbufferModule.acquireLockWait(2, ev.data, 1000);
+    const lockStatus = objectbufferModule.acquireLockWait(2, ob, 1000);
 
     if (lockStatus === "have-lock") {
-      lastValueToFollow = o.some.nested[0].thing;
+      lastValueToFollow = ob.some.nested[0].thing;
 
       console.log("got SAB, first value is:", lastValueToFollow);
-      if (!objectbufferModule.releaseLock(2, ev.data)) {
+      if (!objectbufferModule.releaseLock(2, ob)) {
         console.warn("failed releasing lock ??");
       }
     } else {
@@ -30,18 +30,14 @@ addEventListener("message", (ev) => {
     }
 
     setInterval(() => {
-      const lockStatusInner = objectbufferModule.acquireLockWait(
-        2,
-        ev.data,
-        1000
-      );
+      const lockStatusInner = objectbufferModule.acquireLockWait(2, ob, 1000);
 
       if (lockStatusInner === "have-lock") {
-        if (lastValueToFollow !== o.some.nested[0].thing) {
-          lastValueToFollow = o.some.nested[0].thing;
+        if (lastValueToFollow !== ob.some.nested[0].thing) {
+          lastValueToFollow = ob.some.nested[0].thing;
           console.log(lastValueToFollow);
         }
-        if (!objectbufferModule.releaseLock(2, ev.data)) {
+        if (!objectbufferModule.releaseLock(2, ob)) {
           console.warn("failed releasing lock ??");
         }
       } else {

@@ -21,27 +21,27 @@ describe("equality.test tests. make sure our cache of proxies works", () => {
     objectBuffer.obj2 = objectBuffer.obj;
 
     expect(objectBuffer).toMatchInlineSnapshot(`
-    Object {
-      "arr": Array [
-        1,
-        2,
-        3,
-        4,
-      ],
-      "arr2": Array [
-        1,
-        2,
-        3,
-        4,
-      ],
-      "obj": Object {
-        "a": 1,
-      },
-      "obj2": Object {
-        "a": 1,
-      },
-    }
-  `);
+          Object {
+            "arr": Array [
+              1,
+              2,
+              3,
+              4,
+            ],
+            "arr2": Array [
+              1,
+              2,
+              3,
+              4,
+            ],
+            "obj": Object {
+              "a": 1,
+            },
+            "obj2": Object {
+              "a": 1,
+            },
+          }
+      `);
 
     expect(objectBuffer.arr2).toBe(objectBuffer.arr2);
     expect(objectBuffer.arr2).toBe(objectBuffer.arr);
@@ -49,6 +49,6 @@ describe("equality.test tests. make sure our cache of proxies works", () => {
     expect(objectBuffer.obj2).toBe(objectBuffer.obj2);
     expect(objectBuffer.obj2).toBe(objectBuffer.obj);
 
-    expect(memoryStats(objectBuffer).used).toMatchInlineSnapshot(`856`);
+    expect(memoryStats(objectBuffer).used).toMatchInlineSnapshot(`896`);
   });
 });

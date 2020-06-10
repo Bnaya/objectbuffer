@@ -12,7 +12,7 @@ describe("Map", () => {
     expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`864`);
 
     objectBuffer.foo = new Map([[1, "a"]]);
-    expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`560`);
+    expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`544`);
     expect(objectBuffer.foo).toMatchInlineSnapshot(`
         Map {
           1 => "a",
@@ -26,7 +26,7 @@ describe("Map", () => {
 
     objectBuffer.foo = new Map([[1, "a"]]);
     objectBuffer.foo.set("2", "b");
-    expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`440`);
+    expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`408`);
     expect(objectBuffer.foo).toMatchInlineSnapshot(`
         Map {
           1 => "a",
@@ -49,11 +49,11 @@ describe("Map", () => {
 
     objectBuffer.foo = new Map([[1, "a"]]);
     objectBuffer.foo.set("2", "b");
-    expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`440`);
+    expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`408`);
 
     objectBuffer.foo.delete(1);
 
-    expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`544`);
+    expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`520`);
 
     expect(objectBuffer.foo).toMatchInlineSnapshot(`
         Map {
@@ -68,11 +68,11 @@ describe("Map", () => {
 
     objectBuffer.foo = new Map();
     const availSizeAfterCreation = memoryStats(objectBuffer).available;
-    expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`664`);
+    expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`656`);
     objectBuffer.foo.set(1, "a");
-    expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`560`);
+    expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`544`);
     objectBuffer.foo.set("2", "b");
-    expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`440`);
+    expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`408`);
 
     objectBuffer.foo.clear();
 
@@ -88,7 +88,7 @@ describe("Map", () => {
     objectBuffer.foo = new Map([[1, "a"]]);
     objectBuffer.foo.set("2", "b");
 
-    expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`440`);
+    expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`408`);
 
     expect(objectBuffer.foo).toMatchInlineSnapshot(`
         Map {

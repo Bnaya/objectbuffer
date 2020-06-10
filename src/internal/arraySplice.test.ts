@@ -280,7 +280,7 @@ describe("arraySplice tests", () => {
 
     expect(
       availableCheckpoint - memoryStats(ob).available
-    ).toMatchInlineSnapshot(`24`);
+    ).toMatchInlineSnapshot(`48`);
   });
 
   test("arrayWrapper splice - start bigger than array", () => {

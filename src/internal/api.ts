@@ -1,4 +1,4 @@
-import { initializeArrayBuffer } from "./store";
+import { initializeArrayBuffer, incrementRefCount } from "./store";
 import { createObjectWrapper } from "./objectWrapper";
 import { ExternalArgsApi, GlobalCarrier, MemoryStats } from "./interfaces";
 import {
@@ -56,15 +56,21 @@ export function createObjectBuffer<T = any>(
     heap: createHeap(arrayBuffer),
   };
 
+  const referencedPointers: number[] = [];
+
   allocationsTransaction(() => {
     saveValueIterative(
       externalArgsApiToExternalArgsApi(externalArgs),
       carrier,
-      [],
+      referencedPointers,
       INITIAL_ENTRY_POINTER_TO_POINTER,
       initialValue
     );
   }, allocator);
+
+  for (const pointer of referencedPointers) {
+    incrementRefCount(carrier.heap, pointer);
+  }
 
   return createObjectWrapper(
     externalArgsApiToExternalArgsApi(externalArgs),
@@ -180,8 +186,6 @@ export function replaceUnderlyingArrayBuffer(
 
   getInternalAPI(objectBuffer).replaceCarrierContent(carrier);
 }
-
-export { sizeOf } from "./sizeOf";
 
 /**
  * Return the number of free & used bytes left in the given objectBuffer

@@ -3,11 +3,34 @@
 import { createObjectBuffer } from "../";
 import { memoryStats, disposeWrapperObject } from "../internal/api";
 import { externalArgsApiToExternalArgsApi } from "../internal/utils";
+import { jestExpectNoUseAfterFreeSubset } from "../internal/memoryAnalysisGraph/memoryGraphHelpers";
 
-// actually not very good, as the browser's TextEncoder won't work with SAB, but node will.
 describe("SharedArrayBuffer tests", () => {
   const externalArgs = externalArgsApiToExternalArgsApi({
     arrayAdditionalAllocation: 0,
+  });
+
+  test("disposeWrapperObject", () => {
+    const objectBuffer = createObjectBuffer<any>(
+      externalArgs,
+      1024,
+      {},
+      { useSharedArrayBuffer: true }
+    );
+
+    expect(memoryStats(objectBuffer).used).toMatchInlineSnapshot(`160`);
+    objectBuffer.o = { a: undefined };
+    expect(memoryStats(objectBuffer).used).toMatchInlineSnapshot(`456`);
+    disposeWrapperObject(objectBuffer.o);
+    objectBuffer.o = undefined;
+    expect(memoryStats(objectBuffer).used).toMatchInlineSnapshot(`248`);
+    expect(objectBuffer).toMatchInlineSnapshot(`
+      Object {
+        "o": undefined,
+      }
+    `);
+    delete objectBuffer.o;
+    expect(memoryStats(objectBuffer).used).toMatchInlineSnapshot(`160`);
   });
 
   test("basic", () => {
@@ -43,7 +66,7 @@ describe("SharedArrayBuffer tests", () => {
       }
     `);
 
-    expect(memoryStats(objectBuffer).used).toMatchInlineSnapshot(`512`);
+    expect(memoryStats(objectBuffer).used).toMatchInlineSnapshot(`528`);
 
     disposeWrapperObject(objectBuffer.arr[0]);
     disposeWrapperObject(objectBuffer.arr);
@@ -56,15 +79,17 @@ describe("SharedArrayBuffer tests", () => {
     const objectBuffer = createObjectBuffer<any>(
       externalArgs,
       1024,
-      { o: { a: { a: { v: [1] } } } },
+      { o: { b: { a: { v: [1] } } } },
       { useSharedArrayBuffer: true }
     );
+
+    expect(memoryStats(objectBuffer).used).toMatchInlineSnapshot(`944`);
 
     const prev1 = objectBuffer.o;
     objectBuffer.o = undefined;
 
-    const prev2 = prev1.a;
-    const prev3 = prev1.a.a;
+    const prev2 = prev1.b;
+    const prev3 = prev1.b.a;
     disposeWrapperObject(prev1);
     // disposeWrapperObject(prev2);
     // disposeWrapperObject(prev3);
@@ -72,7 +97,9 @@ describe("SharedArrayBuffer tests", () => {
     // objectBuffer.arr = [{ bar: 666 }];
 
     // objectBuffer.arr = [];
+    // console.log("98");
     objectBuffer.o = undefined;
+    // console.log("100");
 
     // disposeWrapperObject(objectBuffer.arr);
     expect(prev2).toMatchInlineSnapshot(`
@@ -98,6 +125,10 @@ describe("SharedArrayBuffer tests", () => {
       }
     `);
 
-    expect(memoryStats(objectBuffer).used).toMatchInlineSnapshot(`712`);
+    jestExpectNoUseAfterFreeSubset(objectBuffer);
+    jestExpectNoUseAfterFreeSubset(prev2);
+    jestExpectNoUseAfterFreeSubset(prev3);
+
+    expect(memoryStats(objectBuffer).used).toMatchInlineSnapshot(`736`);
   });
 });

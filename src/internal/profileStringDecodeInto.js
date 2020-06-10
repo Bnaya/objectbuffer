@@ -11,7 +11,7 @@ const strInputLength = strInput.length;
 const ab = new ArrayBuffer(strInputLength * 3);
 const uint8 = new Uint8Array(ab);
 
-function stringEncodeInto(uint8, from, str) {
+function stringEncodeInto2(uint8, from, str) {
   const strLen = str.length;
   let resPos = from - 1;
   const resArr = uint8;
@@ -65,7 +65,7 @@ function stringEncodeInto(uint8, from, str) {
 }
 
 for (let i = 0; i < 1000000; i++) {
-  stringEncodeInto(uint8, 0, strInput);
+  stringEncodeInto2(uint8, 0, strInput);
 }
 
 // eslint-disable-next-line no-undef
