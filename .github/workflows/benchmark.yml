@@ -1,7 +1,7 @@
 # https://github.com/rhysd/github-action-benchmark/blob/master/.github/workflows/benchmarkjs.yml
 name: Benchmark
 
-on: ["push", "pull_request"]
+on: ["pull_request"]
 
 jobs:
   benchmark:
@@ -24,7 +24,11 @@ jobs:
             ${{ runner.OS }}-
 
       - name: yarn install
-        run: yarn
+        run: yarn --frozen-lockfile
+        shell: bash
+
+      - name: yarn ensure dedup
+        run: yarn yarn-deduplicate -s fewer yarn.lock --fail --list
         shell: bash
 
       - name: build
@@ -43,6 +47,7 @@ jobs:
           auto-push: true
           # Show alert with commit comment on detecting possible performance regression
           alert-threshold: "110%"
+          comment-always: true
           comment-on-alert: true
           fail-on-alert: true
           alert-comment-cc-users: "@bnaya"

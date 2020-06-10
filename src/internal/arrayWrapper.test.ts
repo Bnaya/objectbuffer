@@ -21,7 +21,7 @@ describe("arrayWrapper tests", () => {
         ]
       `);
 
-      expect(memoryStats(arrayWrapper).available).toMatchInlineSnapshot(`24`);
+      expect(memoryStats(arrayWrapper).available).toMatchInlineSnapshot(`0`);
     });
 
     test("arrayWrapper array.keys()", () => {
@@ -35,7 +35,7 @@ describe("arrayWrapper tests", () => {
 
       expect([...arrayWrapper.keys()]).toEqual([0, 1, 2]);
 
-      expect(memoryStats(arrayWrapper).available).toMatchInlineSnapshot(`24`);
+      expect(memoryStats(arrayWrapper).available).toMatchInlineSnapshot(`0`);
     });
 
     test("arrayWrapper array.entries()", () => {
@@ -64,7 +64,7 @@ describe("arrayWrapper tests", () => {
         ]
       `);
 
-      expect(memoryStats(arrayWrapper).available).toMatchInlineSnapshot(`24`);
+      expect(memoryStats(arrayWrapper).available).toMatchInlineSnapshot(`0`);
     });
 
     test("arrayWrapper array.values() & iterator", () => {
@@ -91,7 +91,7 @@ describe("arrayWrapper tests", () => {
         ]
       `);
 
-      expect(memoryStats(arrayWrapper).available).toMatchInlineSnapshot(`24`);
+      expect(memoryStats(arrayWrapper).available).toMatchInlineSnapshot(`0`);
     });
 
     test("arrayWrapper set value in bound", () => {
@@ -119,7 +119,7 @@ describe("arrayWrapper tests", () => {
 
       const arrayWrapper = createObjectBuffer(
         { arrayAdditionalAllocation: 15 },
-        512,
+        768,
         { arrayToSave }
       ).arrayToSave;
 
@@ -168,7 +168,7 @@ describe("arrayWrapper tests", () => {
           "new value",
         ]
       `);
-      expect(memoryStats(arrayWrapper).available).toMatchInlineSnapshot(`496`);
+      expect(memoryStats(arrayWrapper).available).toMatchInlineSnapshot(`464`);
     });
   });
 
@@ -196,7 +196,7 @@ describe("arrayWrapper tests", () => {
       ]
     `);
 
-    expect(memoryStats(arrayWrapper).available).toMatchInlineSnapshot(`32`);
+    expect(memoryStats(arrayWrapper).available).toMatchInlineSnapshot(`24`);
   });
 
   test("arrayWrapper sort - with comparator", () => {
@@ -243,7 +243,7 @@ describe("arrayWrapper tests", () => {
       ]
     `);
 
-    expect(memoryStats(arrayWrapper).available).toMatchInlineSnapshot(`376`);
+    expect(memoryStats(arrayWrapper).available).toMatchInlineSnapshot(`560`);
   });
 
   test("arrayWrapper - reverse", () => {
@@ -273,7 +273,7 @@ describe("arrayWrapper tests", () => {
       ]
     `);
 
-    expect(memoryStats(arrayWrapper).available).toMatchInlineSnapshot(`16`);
+    expect(memoryStats(arrayWrapper).available).toMatchInlineSnapshot(`8`);
   });
 
   test("arrayWrapper - set length", () => {
@@ -320,6 +320,6 @@ describe("arrayWrapper tests", () => {
       arrayWrapper.length = 2.2;
     }).toThrowErrorMatchingInlineSnapshot(`"Invalid array length"`);
 
-    expect(memoryStats(arrayWrapper).available).toMatchInlineSnapshot(`160`);
+    expect(memoryStats(arrayWrapper).available).toMatchInlineSnapshot(`152`);
   });
 });

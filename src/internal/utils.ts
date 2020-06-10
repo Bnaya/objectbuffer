@@ -100,7 +100,8 @@ export function isTypeWithRC(type: ENTRY_TYPE) {
     type === ENTRY_TYPE.ARRAY ||
     type === ENTRY_TYPE.DATE ||
     type === ENTRY_TYPE.MAP ||
-    type === ENTRY_TYPE.SET
+    type === ENTRY_TYPE.SET ||
+    type === ENTRY_TYPE.STRING
   );
 }
 

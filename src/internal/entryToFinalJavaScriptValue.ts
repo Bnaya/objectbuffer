@@ -4,7 +4,7 @@ import { createObjectWrapper } from "./objectWrapper";
 import { createArrayWrapper } from "./arrayWrapper";
 import { createDateWrapper } from "./dateWrapper";
 import { getCacheFor } from "./externalObjectsCache";
-import { decrementRefCount } from "./store";
+import { decrementRefCount, decrementRefCountWithNum } from "./store";
 import { getAllLinkedAddresses } from "./getAllLinkedAddresses";
 import { createMapWrapper } from "./mapWrapper";
 import { createSetWrapper } from "./setWrapper";
@@ -110,8 +110,8 @@ function finalizer(memoryAddress: number, carrier: GlobalCarrier) {
       carrier.allocator.free(address);
     }
 
-    for (const address of freeUs.arcAddresses) {
-      decrementRefCount(carrier.heap, address);
+    for (const [address, count] of freeUs.arcAddresses) {
+      decrementRefCountWithNum(carrier.heap, address, count);
     }
   }
 }

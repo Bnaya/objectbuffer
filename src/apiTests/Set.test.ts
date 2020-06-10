@@ -12,7 +12,7 @@ describe("Set tests", () => {
     expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`864`);
 
     objectBuffer.foo = new Set(["a"]);
-    expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`584`);
+    expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`568`);
     expect(objectBuffer.foo).toMatchInlineSnapshot(`
       Set {
         "a",
@@ -26,7 +26,7 @@ describe("Set tests", () => {
 
     objectBuffer.foo = new Set(["a"]);
     objectBuffer.foo.add("b");
-    expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`504`);
+    expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`480`);
     expect(objectBuffer.foo).toMatchInlineSnapshot(`
       Set {
         "a",
@@ -49,11 +49,11 @@ describe("Set tests", () => {
 
     objectBuffer.foo = new Set(["a"]);
     objectBuffer.foo.add("b");
-    expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`504`);
+    expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`480`);
 
     objectBuffer.foo.delete(1);
 
-    expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`504`);
+    expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`480`);
 
     expect(objectBuffer.foo).toMatchInlineSnapshot(`
       Set {
@@ -69,11 +69,11 @@ describe("Set tests", () => {
 
     objectBuffer.foo = new Set(["a"]);
     objectBuffer.foo.add("b");
-    expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`504`);
+    expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`480`);
 
     objectBuffer.foo.clear();
 
-    expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`664`);
+    expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`656`);
 
     expect(objectBuffer.foo).toMatchInlineSnapshot(`Set {}`);
   });
@@ -85,7 +85,7 @@ describe("Set tests", () => {
     objectBuffer.foo = new Set(["a"]);
     objectBuffer.foo.add("b");
 
-    expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`504`);
+    expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`480`);
 
     expect(objectBuffer.foo).toMatchInlineSnapshot(`
       Set {

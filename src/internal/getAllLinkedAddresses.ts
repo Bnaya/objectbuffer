@@ -1,5 +1,5 @@
 import { ENTRY_TYPE } from "./entry-types";
-import { hashMapGetPointersToFree } from "./hashmap/hashmap";
+import { hashMapGetPointersToFreeV2 } from "./hashmap/hashmap";
 import { isKnownAddressValuePointer } from "./utils";
 import {
   typeOnly_type_get,
@@ -9,7 +9,7 @@ import {
   array_dataspacePointer_get,
   array_length_get,
 } from "./generatedStructs";
-import { Heap } from "../structsGenerator/consts";
+import type { Heap } from "../structsGenerator/consts";
 
 export function getAllLinkedAddresses(
   heap: Heap,
@@ -17,7 +17,7 @@ export function getAllLinkedAddresses(
   entryPointer: number
 ) {
   const leafAddresses: Set<number> = new Set<number>();
-  const arcAddresses: Set<number> = new Set<number>();
+  const arcAddresses: Map<number, number> = new Map<number, number>();
   const addressesToProcessQueue: number[] = [entryPointer];
 
   let addressToProcess: number | undefined = undefined;
@@ -54,20 +54,26 @@ function getAllLinkedAddressesStep(
   ignoreRefCount: boolean,
   entryPointer: number,
   leafAddresses: Set<number>,
-  arcAddresses: Set<number>,
+  arcAddresses: Map<number, number>,
   addressesToProcessQueue: number[]
 ) {
   if (
     isKnownAddressValuePointer(entryPointer) ||
-    leafAddresses.has(entryPointer) ||
-    arcAddresses.has(entryPointer)
+    leafAddresses.has(entryPointer)
   ) {
     return;
   }
 
+  if (arcAddresses.has(entryPointer)) {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    arcAddresses.set(entryPointer, arcAddresses.get(entryPointer)! + 1);
+  }
+
   const entryType = typeOnly_type_get(heap, entryPointer);
   // to be used ONLY if the type has ref counter
-  const refsCount = typeAndRc_refsCount_get(heap, entryPointer);
+  const refsCount =
+    typeAndRc_refsCount_get(heap, entryPointer) -
+    (arcAddresses.get(entryPointer) || 0);
 
   switch (entryType) {
     case ENTRY_TYPE.NUMBER:
@@ -77,8 +83,13 @@ function getAllLinkedAddressesStep(
       break;
 
     case ENTRY_TYPE.STRING:
-      leafAddresses.add(string_charsPointer_get(heap, entryPointer));
-      leafAddresses.add(entryPointer);
+      if (refsCount <= 1 || ignoreRefCount) {
+        leafAddresses.add(string_charsPointer_get(heap, entryPointer));
+        leafAddresses.add(entryPointer);
+        arcAddresses.delete(entryPointer);
+      } else {
+        arcAddresses.set(entryPointer, 1);
+      }
       break;
 
     case ENTRY_TYPE.OBJECT:
@@ -86,6 +97,7 @@ function getAllLinkedAddressesStep(
     case ENTRY_TYPE.SET:
       if (refsCount <= 1 || ignoreRefCount) {
         leafAddresses.add(entryPointer);
+        arcAddresses.delete(entryPointer);
         getObjectOrMapOrSetAddresses(
           heap,
           object_pointerToHashMap_get(heap, entryPointer),
@@ -93,7 +105,7 @@ function getAllLinkedAddressesStep(
           addressesToProcessQueue
         );
       } else {
-        arcAddresses.add(entryPointer);
+        arcAddresses.set(entryPointer, 1);
       }
       break;
 
@@ -101,6 +113,8 @@ function getAllLinkedAddressesStep(
       if (refsCount <= 1 || ignoreRefCount) {
         leafAddresses.add(entryPointer);
         leafAddresses.add(array_dataspacePointer_get(heap, entryPointer));
+        arcAddresses.delete(entryPointer);
+
         const arrayLength = array_length_get(heap, entryPointer);
         for (let i = 0; i < arrayLength; i += 1) {
           const valuePointer =
@@ -113,15 +127,16 @@ function getAllLinkedAddressesStep(
           addressesToProcessQueue.push(valuePointer);
         }
       } else {
-        arcAddresses.add(entryPointer);
+        arcAddresses.set(entryPointer, 1);
       }
       break;
 
     case ENTRY_TYPE.DATE:
       if (refsCount <= 1 || ignoreRefCount) {
+        arcAddresses.delete(entryPointer);
         leafAddresses.add(entryPointer);
       } else {
-        arcAddresses.add(entryPointer);
+        arcAddresses.set(entryPointer, 1);
       }
       break;
   }
@@ -133,18 +148,10 @@ export function getObjectOrMapOrSetAddresses(
   leafAddresses: Set<number>,
   addressesToProcessQueue: number[]
 ) {
-  const { pointersToValuePointers, pointers } = hashMapGetPointersToFree(
+  hashMapGetPointersToFreeV2(
     heap,
-    internalHashmapPointer
+    internalHashmapPointer,
+    leafAddresses,
+    addressesToProcessQueue
   );
-
-  for (const leafPointer of pointers) {
-    leafAddresses.add(leafPointer);
-  }
-
-  for (const pointer of pointersToValuePointers) {
-    addressesToProcessQueue.push(
-      heap.Uint32Array[pointer / Uint32Array.BYTES_PER_ELEMENT]
-    );
-  }
 }

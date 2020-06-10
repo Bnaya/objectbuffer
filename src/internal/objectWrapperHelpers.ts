@@ -2,7 +2,7 @@ import { ExternalArgs, GlobalCarrier } from "./interfaces";
 import {
   writeValueInPtrToPtrAndHandleMemory,
   handleArcForDeletedValuePointer,
-  decrementRefCount,
+  decrementRefCountWithNum,
 } from "./store";
 import { entryToFinalJavaScriptValue } from "./entryToFinalJavaScriptValue";
 import {
@@ -165,13 +165,13 @@ export function mapOrSetClear(
     carrier.allocator.free(address);
   }
 
-  for (const address of arcAddresses) {
+  for (const [address, count] of arcAddresses) {
     // don't dispose the address we need to reuse
     if (address === mapOrSetPtr) {
       continue;
     }
 
-    decrementRefCount(carrier.heap, address);
+    decrementRefCountWithNum(carrier.heap, address, count);
   }
 
   // Restore real ref count

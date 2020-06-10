@@ -5,8 +5,6 @@
 
 const objectBuffer = require("../");
 const Benchmark = require("benchmark");
-// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-// @ts-ignore
 const oneComment = require("./fixtures/oneComment.json");
 
 const ARR_SIZE = 200;

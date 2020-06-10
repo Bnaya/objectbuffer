@@ -1,6 +1,22 @@
 /* eslint-env jest */
 import { createObjectBuffer } from "../index";
 describe("ongoingrefactor", function () {
+  test("something", function () {
+    const ob = createObjectBuffer<any>({}, 1024, {
+      a: "a",
+      b: "a",
+    });
+
+    ob.a = undefined;
+
+    expect(ob).toMatchInlineSnapshot(`
+      Object {
+        "a": undefined,
+        "b": "a",
+      }
+    `);
+  });
+
   test("ongoingrefactor", function () {
     const ob = createObjectBuffer({}, 1024 * 4, {
       b: "some string",
@@ -73,30 +89,29 @@ describe("ongoingrefactor", function () {
           "b": 5,
         },
         "arr1": Object {
-          "b": 1,
+          "b": 5,
         },
         "b": Object {
-          "b": 1,
+          "b": 5,
         },
         "nestedObj": Object {
-          "b": 1,
+          "b": 5,
         },
         "propName123a": Object {
-          "b": 1,
+          "b": 5,
         },
         "y": Object {
-          "b": 1,
+          "b": 5,
         },
       }
     `);
   });
 
-  // circular saving not supported yet
-  test.skip("circular refs", function () {
+  test("circular refs", function () {
     const a: any = { a: null, b: {} };
     a.b.circle = a.b;
     const ob = createObjectBuffer({}, 2048 * 2, a);
 
-    expect(ob).toMatchInlineSnapshot();
+    expect(ob.b.circle).toEqual(ob.b);
   });
 });

@@ -3,8 +3,8 @@
 /* eslint-disable no-undef */
 import * as objectbufferModules from "../src";
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-// @ts-ignore
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-expect-error
 import Worker from "worker-loader!./Worker.js";
 
 /**
@@ -14,9 +14,9 @@ const externalArgs = {
   arrayAdditionalAllocation: 0,
 };
 
-const o = objectbufferModules.createObjectBuffer(
+const ob = objectbufferModules.createObjectBuffer(
   externalArgs,
-  512,
+  1024,
   {
     some: {
       nested: [
@@ -33,14 +33,14 @@ const o = objectbufferModules.createObjectBuffer(
 
 // console.log(JSON.stringify(o, null, 2));
 
-const ab = objectbufferModules.getUnderlyingArrayBuffer(o);
+const ab = objectbufferModules.getUnderlyingArrayBuffer(ob);
 
 const worker = new Worker();
 
 worker.postMessage(ab);
 
 // expose to the console
-globalThis.theObjectBuffer = o;
+globalThis.theObjectBuffer = ob;
 
 const input = document.createElement("input");
 const button = document.createElement("button");
@@ -52,11 +52,11 @@ document.body.appendChild(button);
 button.addEventListener("click", () => {
   if (
     ab instanceof SharedArrayBuffer &&
-    objectbufferModules.acquireLock(1, ab)
+    objectbufferModules.acquireLock(1, ob)
   ) {
-    o.some.nested[0].thing = input.value;
+    ob.some.nested[0].thing = input.value;
 
-    if (!objectbufferModules.releaseLock(1, ab)) {
+    if (!objectbufferModules.releaseLock(1, ob)) {
       console.warn("releaseLock failed ??");
     }
   } else {

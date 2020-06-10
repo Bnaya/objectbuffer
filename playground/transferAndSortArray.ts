@@ -27,7 +27,7 @@ const externalArgs: objectbufferModule.ExternalArgs = {
 async function main() {
   const data = await getData();
 
-  const dataSize = objectbufferModule.sizeOf(externalArgs, data);
+  const dataSize = 10 * 10000000
 
   const myObjectBuffer = objectbufferModule.createObjectBuffer(
     externalArgs,

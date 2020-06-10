@@ -59,7 +59,7 @@ describe("getAllLinkedAddresses", () => {
           ["a", 1],
           ["b", 2],
         ]),
-        s: new Set(["a", "b", "c"]),
+        s: new Set(["a1", "b2", "c"]),
       });
 
       const carrier = getInternalAPI(objectBuffer).getCarrier();
@@ -130,10 +130,10 @@ describe("getAllLinkedAddresses", () => {
 
       expect(memoryStats(objectBuffer)).toMatchInlineSnapshot(`
         Object {
-          "available": 656,
-          "top": 1392,
+          "available": 616,
+          "top": 1432,
           "total": 2048,
-          "used": 1392,
+          "used": 1432,
         }
       `);
 

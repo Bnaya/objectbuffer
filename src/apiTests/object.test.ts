@@ -14,7 +14,7 @@ describe("object tests", () => {
     expect(sizeBeforeSet).toMatchInlineSnapshot(`864`);
 
     objectBuffer.foo = "a";
-    expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`744`);
+    expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`728`);
 
     delete objectBuffer.foo;
 
@@ -35,7 +35,7 @@ describe("object tests", () => {
     };
 
     const objectBuffer = createObjectBuffer<any>(externalArgs, 2048, input);
-    expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`600`);
+    expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`736`);
     expect(input).toEqual(objectBuffer);
     expect(objectBuffer).toMatchInlineSnapshot(`
       Object {
@@ -57,8 +57,7 @@ describe("object tests", () => {
     `);
   });
 
-  // Not working. will make infinite loop
-  test.skip("With circular", () => {
+  test("With circular", () => {
     const input: any = {
       a: 1,
       b: true,
@@ -72,14 +71,55 @@ describe("object tests", () => {
     input.foo.circular = input.foo;
 
     const objectBuffer = createObjectBuffer<any>(externalArgs, 2048, input);
-    expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`1016`);
+    expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`904`);
     expect(input).toEqual(objectBuffer);
 
     expect(objectBuffer.foo.circular).toEqual(objectBuffer.foo);
-    expect(objectBuffer.foo.circular.d).toMatchInlineSnapshot();
+    expect(objectBuffer.foo.circular.d).toMatchInlineSnapshot(`null`);
 
     objectBuffer.foo.circular = "severe the circularity";
 
-    expect(objectBuffer).toMatchInlineSnapshot();
+    expect(objectBuffer).toMatchInlineSnapshot(`
+      Object {
+        "a": 1,
+        "b": true,
+        "c": false,
+        "d": null,
+        "e": undefined,
+        "foo": Object {
+          "a": 1,
+          "b": true,
+          "c": false,
+          "circular": "severe the circularity",
+          "d": null,
+          "e": undefined,
+        },
+      }
+    `);
+  });
+
+  test("Same strings, same memory", () => {
+    const input1: any = {
+      a: "STR",
+      b: undefined,
+      c: undefined,
+      d: undefined,
+      e: undefined,
+    };
+
+    const input2: any = {
+      a: "STR",
+      b: "STR",
+      c: "STR",
+      d: "STR",
+      e: "STR",
+    };
+
+    const ob1 = createObjectBuffer<any>(externalArgs, 2048, input1);
+    const ob2 = createObjectBuffer<any>(externalArgs, 2048, input2);
+
+    expect(memoryStats(ob1).available).toBe(memoryStats(ob2).available);
+
+    expect(memoryStats(ob1).available).toMatchInlineSnapshot(`1400`);
   });
 });

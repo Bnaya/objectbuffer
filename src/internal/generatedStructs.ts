@@ -351,11 +351,11 @@ export function string_type_set(
 export const string_type_place = 0;
 export const string_type_ctor = Float64Array;
 
-export function string_bytesLength_get(heap: Heap, structPointer: number) {
+export function string_refsCount_get(heap: Heap, structPointer: number) {
   return heap.Uint32Array[(structPointer + 8) / 4];
 }
 
-export function string_bytesLength_set(
+export function string_refsCount_set(
   heap: Heap,
   structPointer: number,
   value: number
@@ -363,14 +363,14 @@ export function string_bytesLength_set(
   return (heap.Uint32Array[(structPointer + 8) / 4] = value);
 }
 
-export const string_bytesLength_place = 8;
-export const string_bytesLength_ctor = Uint32Array;
+export const string_refsCount_place = 8;
+export const string_refsCount_ctor = Uint32Array;
 
-export function string_charsPointer_get(heap: Heap, structPointer: number) {
+export function string_bytesLength_get(heap: Heap, structPointer: number) {
   return heap.Uint32Array[(structPointer + 12) / 4];
 }
 
-export function string_charsPointer_set(
+export function string_bytesLength_set(
   heap: Heap,
   structPointer: number,
   value: number
@@ -378,22 +378,39 @@ export function string_charsPointer_set(
   return (heap.Uint32Array[(structPointer + 12) / 4] = value);
 }
 
-export const string_charsPointer_place = 12;
+export const string_bytesLength_place = 12;
+export const string_bytesLength_ctor = Uint32Array;
+
+export function string_charsPointer_get(heap: Heap, structPointer: number) {
+  return heap.Uint32Array[(structPointer + 16) / 4];
+}
+
+export function string_charsPointer_set(
+  heap: Heap,
+  structPointer: number,
+  value: number
+) {
+  return (heap.Uint32Array[(structPointer + 16) / 4] = value);
+}
+
+export const string_charsPointer_place = 16;
 export const string_charsPointer_ctor = Uint32Array;
 
 export function string_set_all(
   heap: Heap,
   structPointer: number,
   type: number,
+  refsCount: number,
   bytesLength: number,
   charsPointer: number
 ) {
   heap.Float64Array[(structPointer + 0) / 8] = type;
-  heap.Uint32Array[(structPointer + 8) / 4] = bytesLength;
-  heap.Uint32Array[(structPointer + 12) / 4] = charsPointer;
+  heap.Uint32Array[(structPointer + 8) / 4] = refsCount;
+  heap.Uint32Array[(structPointer + 12) / 4] = bytesLength;
+  heap.Uint32Array[(structPointer + 16) / 4] = charsPointer;
 }
 
-export const string_size = 16;
+export const string_size = 20;
 
 /** --- struct string end --- **/
 
