@@ -66,21 +66,6 @@ export function getInternalAPI(value: any): InternalAPI {
   return value[INTERNAL_API_SYMBOL];
 }
 
-/**
- * Incorrect length (too big) for emojis
- * @param str
- */
-export function strByteLength(str: string) {
-  let s = str.length;
-  for (let i = str.length - 1; i >= 0; i--) {
-    const code = str.charCodeAt(i);
-    if (code > 0x7f && code <= 0x7ff) s++;
-    else if (code > 0x7ff && code <= 0xffff) s += 2;
-  }
-
-  return s;
-}
-
 export function align(value: number, alignTo = 8) {
   return Math.ceil(value / alignTo) * alignTo;
 }

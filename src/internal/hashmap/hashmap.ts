@@ -5,7 +5,6 @@ import {
   getKeyStart,
   getKeyLength,
 } from "./hashmapUtils";
-import { strByteLength } from "../utils";
 import { stringEncodeInto } from "../stringEncodeInto";
 import {
   compareStringOrNumberEntriesInPlace,
@@ -53,6 +52,7 @@ import {
   hashmapNode_VALUE_POINTER_get,
 } from "../generatedStructs";
 import { Heap } from "../../structsGenerator/consts";
+import { stringLengthV2 } from "../stringLengthV2";
 
 export function createHashMap(
   carrier: GlobalCarrier,
@@ -228,7 +228,7 @@ export function hashMapInsertUpdate(
     keyDataMemoryLength = number_value_ctor.BYTES_PER_ELEMENT;
   } else {
     keyMemoryEntryPointer = allocator.calloc(string_size);
-    keyDataMemoryLength = strByteLength(externalKeyValue);
+    keyDataMemoryLength = stringLengthV2(externalKeyValue);
     keyDataMemoryStart = allocator.calloc(keyDataMemoryLength);
     stringEncodeInto(
       carrier.heap.Uint8Array,

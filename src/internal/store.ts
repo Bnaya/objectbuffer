@@ -1,10 +1,6 @@
 import { ENTRY_TYPE } from "./entry-types";
 import { GlobalCarrier } from "./interfaces";
-import {
-  isKnownAddressValuePointer,
-  isTypeWithRC,
-  strByteLength,
-} from "./utils";
+import { isKnownAddressValuePointer, isTypeWithRC } from "./utils";
 import { ExternalArgs } from "./interfaces";
 import {
   INITIAL_ENTRY_POINTER_TO_POINTER,
@@ -27,6 +23,7 @@ import { Heap } from "../structsGenerator/consts";
 import { readString } from "./readString";
 import { saveValueIterative } from "./saveValue";
 import { stringEncodeInto } from "./stringEncodeInto";
+import { stringLengthV2 } from "./stringLengthV2";
 
 export function initializeArrayBuffer(arrayBuffer: ArrayBuffer) {
   const uint32 = new Uint32Array(arrayBuffer);
@@ -62,7 +59,7 @@ export function saveStringOrNumber(
 }
 
 export function saveString({ heap, allocator }: GlobalCarrier, value: string) {
-  const stringBytesLength = strByteLength(value);
+  const stringBytesLength = stringLengthV2(value);
   const stringDataPointer = allocator.calloc(stringBytesLength);
   stringEncodeInto(heap.Uint8Array, stringDataPointer, value);
   const stringPointer = allocator.calloc(string_size);

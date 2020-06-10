@@ -1,4 +1,4 @@
-import { getOurPointerIfApplicable, strByteLength } from "./utils";
+import { getOurPointerIfApplicable } from "./utils";
 import { ExternalArgs, GlobalCarrier } from "./interfaces";
 import { ENTRY_TYPE } from "./entry-types";
 import {
@@ -25,6 +25,7 @@ import {
   setSaverIterative,
 } from "./objectSaverIterative";
 import { stringEncodeInto } from "./stringEncodeInto";
+import { stringLengthV2 } from "./stringLengthV2";
 
 export function saveValueIterative(
   externalArgs: ExternalArgs,
@@ -106,14 +107,23 @@ export function saveValueIterative(
 
       case "string":
         // eslint-disable-next-line no-case-declarations
-        const stringBytesLength = strByteLength(valueToSave);
+        const stringBytesLength = stringLengthV2(valueToSave);
         // eslint-disable-next-line no-case-declarations
         const stringDataPointer = allocator.calloc(stringBytesLength);
         uint32[
           ptrToPtrToSaveTo / Uint32Array.BYTES_PER_ELEMENT
         ] = allocator.calloc(string_size);
 
-        stringEncodeInto(heap.Uint8Array, stringDataPointer, valueToSave);
+        // if (
+        stringEncodeInto(
+          heap.Uint8Array,
+          stringDataPointer,
+          valueToSave
+        ); /*!==
+          stringBytesLength;*/
+        // ) {
+        //   console.warn("bad str length");
+        // }
 
         string_set_all(
           heap,
