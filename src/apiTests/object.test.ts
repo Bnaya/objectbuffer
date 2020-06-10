@@ -32,10 +32,11 @@ describe("object tests", () => {
       foo: { a: 1, b: true, c: false, d: null, e: undefined },
       bigintPositive: MAX_64_BIG_INT,
       bigintNegative: MAX_64_BIG_INT * BigInt("-1"),
+      "😌😌": "😌😌😌😌😌😌",
     };
 
     const objectBuffer = createObjectBuffer<any>(externalArgs, 2048, input);
-    expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`736`);
+    expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`584`);
     expect(input).toEqual(objectBuffer);
     expect(objectBuffer).toMatchInlineSnapshot(`
       Object {
@@ -53,6 +54,7 @@ describe("object tests", () => {
           "d": null,
           "e": undefined,
         },
+        "😌😌": "😌😌😌😌😌😌",
       }
     `);
   });
