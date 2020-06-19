@@ -514,4 +514,30 @@ describe("arraySplice tests", () => {
 
     expect(removedFromPlain).toEqual([...removed]);
   });
+
+  test("splice - out of bound", () => {
+    const plainJSArray: any[] = [1, 2, 3];
+    const ob = createObjectBuffer({}, 1024, {
+      arr: plainJSArray,
+    });
+
+    const arrayWrapper = ob.arr;
+
+    const removed = arrayWrapper.splice(10, 2, "a", "b");
+    const removedFromPlain = plainJSArray.splice(10, 2, "a", "b");
+
+    expect(plainJSArray).toEqual([...arrayWrapper]);
+    expect(removedFromPlain).toEqual([...removed]);
+
+    expect(arrayWrapper).toMatchInlineSnapshot(`
+      Array [
+        1,
+        2,
+        3,
+        "a",
+        "b",
+      ]
+    `);
+    expect(removed).toMatchInlineSnapshot(`Array []`);
+  });
 });

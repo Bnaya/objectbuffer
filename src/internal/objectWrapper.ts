@@ -11,7 +11,6 @@ import {
   IllegalObjectPropConfigError,
   UnsupportedOperationError,
 } from "./exceptions";
-import { allocationsTransaction } from "./allocationsTransaction";
 import { BaseProxyTrap } from "./BaseProxyTrap";
 import { hashMapNodeLookup } from "./hashmap/hashmap";
 import { object_pointerToHashMap_get } from "./generatedStructs";
@@ -106,15 +105,13 @@ export class ObjectWrapper extends BaseProxyTrap
       throw new IllegalObjectPropConfigError();
     }
 
-    allocationsTransaction(() => {
-      objectSet(
-        this.externalArgs,
-        this.carrier,
-        object_pointerToHashMap_get(this.carrier.heap, this.entryPointer),
-        p,
-        value
-      );
-    }, this.carrier.allocator);
+    objectSet(
+      this.externalArgs,
+      this.carrier,
+      object_pointerToHashMap_get(this.carrier.heap, this.entryPointer),
+      p,
+      value
+    );
 
     return true;
   }

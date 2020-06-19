@@ -17,10 +17,10 @@ describe("memoryStats test", () => {
 
     expect(memoryStats(objectBuffer)).toMatchInlineSnapshot(`
       Object {
-        "available": 304,
-        "top": 720,
+        "available": 296,
+        "top": 728,
         "total": 1024,
-        "used": 720,
+        "used": 728,
       }
     `);
   });
@@ -33,40 +33,40 @@ describe("memoryStats test", () => {
 
     expect(memoryStats(objectBuffer)).toMatchInlineSnapshot(`
       Object {
-        "available": 1328,
-        "top": 720,
+        "available": 1320,
+        "top": 728,
         "total": 2048,
-        "used": 720,
+        "used": 728,
       }
     `);
 
     resizeObjectBuffer(objectBuffer, 1024);
     expect(memoryStats(objectBuffer)).toMatchInlineSnapshot(`
       Object {
-        "available": 304,
-        "top": 720,
+        "available": 296,
+        "top": 728,
         "total": 1024,
-        "used": 720,
+        "used": 728,
       }
     `);
 
     resizeObjectBuffer(objectBuffer, 768);
     expect(memoryStats(objectBuffer)).toMatchInlineSnapshot(`
       Object {
-        "available": 48,
-        "top": 720,
+        "available": 40,
+        "top": 728,
         "total": 768,
-        "used": 720,
+        "used": 728,
       }
     `);
 
     resizeObjectBuffer(objectBuffer, 2048);
     expect(memoryStats(objectBuffer)).toMatchInlineSnapshot(`
       Object {
-        "available": 1328,
-        "top": 720,
+        "available": 1320,
+        "top": 728,
         "total": 2048,
-        "used": 720,
+        "used": 728,
       }
     `);
   });

@@ -1,6 +1,6 @@
 /* eslint-env jest */
 
-import { makeCarrier, makeAllocatorThrowOnOOM } from "../testUtils";
+import { makeCarrier } from "../testUtils";
 import {
   createHashMap,
   hashMapInsertUpdate,
@@ -21,12 +21,10 @@ describe("hashmap rehash", () => {
 
   let ab = new ArrayBuffer(128);
   let carrier: GlobalCarrier = makeCarrier(ab);
-  makeAllocatorThrowOnOOM(carrier.allocator);
 
   function setABSize(size: number) {
     ab = new ArrayBuffer(size);
     carrier = makeCarrier(ab);
-    makeAllocatorThrowOnOOM(carrier.allocator);
   }
 
   beforeEach(() => {
@@ -37,7 +35,6 @@ describe("hashmap rehash", () => {
     const abSize = 1024;
     setABSize(abSize);
     const mapPointer = createHashMap(carrier, 1);
-    makeAllocatorThrowOnOOM(carrier.allocator);
 
     expect(hashMapSize(carrier.heap, mapPointer)).toBe(0);
 
@@ -102,7 +99,6 @@ describe("hashmap rehash", () => {
     const abSize = 1024;
     setABSize(abSize);
     const mapPointer = createHashMap(carrier, 1);
-    makeAllocatorThrowOnOOM(carrier.allocator);
 
     expect(hashMapSize(carrier.heap, mapPointer)).toMatchInlineSnapshot(`0`);
     const memAvailableAfterEachStep = [carrier.allocator.stats().top];
@@ -136,14 +132,14 @@ describe("hashmap rehash", () => {
 
     expect(memAvailableAfterEachStep).toMatchInlineSnapshot(`
       Array [
-        112,
-        200,
-        312,
-        384,
-        512,
-        576,
-        664,
-        664,
+        120,
+        208,
+        320,
+        392,
+        520,
+        584,
+        672,
+        672,
       ]
     `);
   });

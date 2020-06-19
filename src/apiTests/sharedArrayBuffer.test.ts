@@ -18,19 +18,19 @@ describe("SharedArrayBuffer tests", () => {
       { useSharedArrayBuffer: true }
     );
 
-    expect(memoryStats(objectBuffer).used).toMatchInlineSnapshot(`160`);
+    expect(memoryStats(objectBuffer).used).toMatchInlineSnapshot(`168`);
     objectBuffer.o = { a: undefined };
-    expect(memoryStats(objectBuffer).used).toMatchInlineSnapshot(`456`);
+    expect(memoryStats(objectBuffer).used).toMatchInlineSnapshot(`464`);
     disposeWrapperObject(objectBuffer.o);
     objectBuffer.o = undefined;
-    expect(memoryStats(objectBuffer).used).toMatchInlineSnapshot(`248`);
+    expect(memoryStats(objectBuffer).used).toMatchInlineSnapshot(`256`);
     expect(objectBuffer).toMatchInlineSnapshot(`
       Object {
         "o": undefined,
       }
     `);
     delete objectBuffer.o;
-    expect(memoryStats(objectBuffer).used).toMatchInlineSnapshot(`160`);
+    expect(memoryStats(objectBuffer).used).toMatchInlineSnapshot(`168`);
   });
 
   test("basic", () => {
@@ -66,13 +66,13 @@ describe("SharedArrayBuffer tests", () => {
       }
     `);
 
-    expect(memoryStats(objectBuffer).used).toMatchInlineSnapshot(`528`);
+    expect(memoryStats(objectBuffer).used).toMatchInlineSnapshot(`536`);
 
     disposeWrapperObject(objectBuffer.arr[0]);
     disposeWrapperObject(objectBuffer.arr);
 
     delete objectBuffer.arr;
-    expect(memoryStats(objectBuffer).used).toMatchInlineSnapshot(`160`);
+    expect(memoryStats(objectBuffer).used).toMatchInlineSnapshot(`168`);
   });
 
   test("basic 2", () => {
@@ -83,7 +83,7 @@ describe("SharedArrayBuffer tests", () => {
       { useSharedArrayBuffer: true }
     );
 
-    expect(memoryStats(objectBuffer).used).toMatchInlineSnapshot(`944`);
+    expect(memoryStats(objectBuffer).used).toMatchInlineSnapshot(`952`);
 
     const prev1 = objectBuffer.o;
     objectBuffer.o = undefined;
@@ -129,6 +129,6 @@ describe("SharedArrayBuffer tests", () => {
     jestExpectNoUseAfterFreeSubset(prev2);
     jestExpectNoUseAfterFreeSubset(prev3);
 
-    expect(memoryStats(objectBuffer).used).toMatchInlineSnapshot(`736`);
+    expect(memoryStats(objectBuffer).used).toMatchInlineSnapshot(`744`);
   });
 });

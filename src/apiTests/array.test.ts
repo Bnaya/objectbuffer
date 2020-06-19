@@ -32,7 +32,7 @@ describe("SharedArrayBuffer tests", () => {
       }
     `);
 
-    expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`544`);
+    expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`536`);
   });
 
   test("splice 1", () => {
@@ -45,7 +45,7 @@ describe("SharedArrayBuffer tests", () => {
 
     const usedAfterCreate = memoryStats(ob).used;
 
-    expect(usedAfterCreate).toMatchInlineSnapshot(`328`);
+    expect(usedAfterCreate).toMatchInlineSnapshot(`336`);
 
     ob.arr.push(null, null, null, null, null, null, null, null, null, null);
     const usedAfterNullPush = memoryStats(ob).used;
@@ -102,7 +102,7 @@ describe("SharedArrayBuffer tests", () => {
 
     const usedAfterCreate = memoryStats(ob).used;
 
-    expect(usedAfterCreate).toMatchInlineSnapshot(`280`);
+    expect(usedAfterCreate).toMatchInlineSnapshot(`288`);
 
     ob.arr.push(null, null, null, null, null, null, null, null, null, null);
     const usedAfterNullPush = memoryStats(ob).used;

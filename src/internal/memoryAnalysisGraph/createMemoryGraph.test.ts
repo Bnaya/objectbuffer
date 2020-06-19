@@ -36,7 +36,7 @@ describe("createMemoryGraph. snapshot graph and ensure memory", () => {
     expect(nodesWithInternalMismatchRefCount(graph)).toMatchInlineSnapshot(`
       Array [
         Object {
-          "pointer": 48,
+          "pointer": 56,
           "refCount": 2,
           "size": 16,
           "type": "object",

@@ -91,14 +91,16 @@ export function objectSet(
   p: string | number,
   value: unknown
 ) {
-  const ptrToPtr = hashMapInsertUpdate(
-    externalArgs,
-    carrier,
-    hashMapPointer,
-    p
-  );
+  carrier.allocator.transaction(() => {
+    const ptrToPtr = hashMapInsertUpdate(
+      externalArgs,
+      carrier,
+      hashMapPointer,
+      p
+    );
 
-  writeValueInPtrToPtrAndHandleMemory(externalArgs, carrier, ptrToPtr, value);
+    writeValueInPtrToPtrAndHandleMemory(externalArgs, carrier, ptrToPtr, value);
+  });
 }
 
 export function objectGet(

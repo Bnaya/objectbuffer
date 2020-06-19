@@ -49,6 +49,6 @@ describe("equality.test tests. make sure our cache of proxies works", () => {
     expect(objectBuffer.obj2).toBe(objectBuffer.obj2);
     expect(objectBuffer.obj2).toBe(objectBuffer.obj);
 
-    expect(memoryStats(objectBuffer).used).toMatchInlineSnapshot(`896`);
+    expect(memoryStats(objectBuffer).used).toMatchInlineSnapshot(`904`);
   });
 });

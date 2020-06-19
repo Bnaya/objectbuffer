@@ -17,7 +17,7 @@ describe("no user after free tests", () => {
       o: { b: { a: { v: [1] } } },
     });
 
-    expect(memoryStats(objectBuffer).used).toMatchInlineSnapshot(`944`);
+    expect(memoryStats(objectBuffer).used).toMatchInlineSnapshot(`952`);
 
     const prev1 = objectBuffer.o;
     objectBuffer.o = undefined;
@@ -63,7 +63,7 @@ describe("no user after free tests", () => {
     jestExpectNoUseAfterFreeSubset(prev2);
     jestExpectNoUseAfterFreeSubset(prev3);
 
-    expect(memoryStats(objectBuffer).used).toMatchInlineSnapshot(`736`);
+    expect(memoryStats(objectBuffer).used).toMatchInlineSnapshot(`744`);
   });
 
   test("siblings", () => {
