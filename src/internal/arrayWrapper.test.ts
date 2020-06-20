@@ -9,7 +9,7 @@ describe("arrayWrapper tests", () => {
 
       const arrayWrapper = createObjectBuffer(
         { arrayAdditionalAllocation: 20 },
-        512,
+        520,
         { arrayToSave }
       ).arrayToSave;
 
@@ -29,7 +29,7 @@ describe("arrayWrapper tests", () => {
 
       const arrayWrapper = createObjectBuffer(
         { arrayAdditionalAllocation: 20 },
-        512,
+        520,
         { arrayToSave }
       ).arrayToSave;
 
@@ -43,7 +43,7 @@ describe("arrayWrapper tests", () => {
 
       const arrayWrapper = createObjectBuffer(
         { arrayAdditionalAllocation: 20 },
-        512,
+        520,
         { arrayToSave }
       ).arrayToSave;
 
@@ -72,7 +72,7 @@ describe("arrayWrapper tests", () => {
 
       const arrayWrapper = createObjectBuffer(
         { arrayAdditionalAllocation: 20 },
-        512,
+        520,
         { arrayToSave }
       ).arrayToSave;
 
@@ -168,7 +168,7 @@ describe("arrayWrapper tests", () => {
           "new value",
         ]
       `);
-      expect(memoryStats(arrayWrapper).available).toMatchInlineSnapshot(`464`);
+      expect(memoryStats(arrayWrapper).available).toMatchInlineSnapshot(`456`);
     });
   });
 
@@ -177,7 +177,7 @@ describe("arrayWrapper tests", () => {
 
     const arrayWrapper = createObjectBuffer(
       { arrayAdditionalAllocation: 3 },
-      512,
+      520,
       { arrayToSave }
     ).arrayToSave;
 
@@ -243,7 +243,7 @@ describe("arrayWrapper tests", () => {
       ]
     `);
 
-    expect(memoryStats(arrayWrapper).available).toMatchInlineSnapshot(`560`);
+    expect(memoryStats(arrayWrapper).available).toMatchInlineSnapshot(`552`);
   });
 
   test("arrayWrapper - reverse", () => {
@@ -251,7 +251,7 @@ describe("arrayWrapper tests", () => {
 
     const arrayWrapper = createObjectBuffer(
       { arrayAdditionalAllocation: 3 },
-      512,
+      520,
       { arrayToSave }
     ).arrayToSave;
 
@@ -281,7 +281,7 @@ describe("arrayWrapper tests", () => {
 
     const arrayWrapper = createObjectBuffer(
       { arrayAdditionalAllocation: 3 },
-      512,
+      520,
       { arrayToSave }
     ).arrayToSave;
 

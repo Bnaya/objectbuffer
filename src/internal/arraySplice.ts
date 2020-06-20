@@ -2,18 +2,17 @@ import {
   getFinalValueAtArrayIndex,
   shrinkArray,
   extendArrayIfNeeded,
-  arrayGetPointersToValueInIndex,
   setValuePointerAtArrayIndex,
+  arrayGetPointerToIndex,
+  arrayGetValuePointerInIndex,
 } from "./arrayHelpers";
-import { assertNonNull } from "./assertNonNull";
 import { ExternalArgs, GlobalCarrier } from "./interfaces";
-import { writeValueInPtrToPtr, handleArcForDeletedValuePointer } from "./store";
+import { handleArcForDeletedValuePointer, incrementRefCount } from "./store";
 import { array_length_get } from "./generatedStructs";
+import { saveValueIterativeReturnPointer } from "./saveValue";
 
 /**
   https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/splice#Syntax
-  this function is not OOM same yet unfortunately,
-  There's allocations after destructive mutations
  */
 export function arraySplice(
   externalArgs: ExternalArgs,
@@ -34,8 +33,30 @@ export function arraySplice(
   );
 
   const newLength = arrayLength + itemsToAddArg.length - calcedDeleteCount;
+  const newValuesPointers: number[] = [];
+  const referencedExistingPointers: number[] = [];
+
+  for (let i = 0; i < itemsToAddArg.length; i += 1) {
+    newValuesPointers.push(
+      saveValueIterativeReturnPointer(
+        externalArgs,
+        carrier,
+        referencedExistingPointers,
+        itemsToAddArg[i]
+      )
+    );
+  }
 
   extendArrayIfNeeded(externalArgs, carrier, pointerToArrayEntry, newLength);
+
+  // from this point, no more allocations are expected
+  // so means no OOMS
+
+  if (referencedExistingPointers.length > 0) {
+    for (const ptr of referencedExistingPointers) {
+      incrementRefCount(carrier.heap, ptr);
+    }
+  }
 
   const deletedItemsToReturn = [];
   // can be negative
@@ -56,12 +77,11 @@ export function arraySplice(
     );
     handleArcForDeletedValuePointer(
       carrier,
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      arrayGetPointersToValueInIndex(
+      arrayGetValuePointerInIndex(
         carrier,
         pointerToArrayEntry,
         deletedItemIndexToSave
-      )!.pointer
+      )
     );
   }
 
@@ -77,24 +97,20 @@ export function arraySplice(
       writeValueToIndex >= calcedStart + itemCountChange;
       writeValueToIndex -= 1
     ) {
-      const valueToCopyPointers = arrayGetPointersToValueInIndex(
+      const ptrToPtr = arrayGetPointerToIndex(
         carrier,
         pointerToArrayEntry,
         writeValueToIndex - itemCountChange
       );
 
-      assertNonNull(valueToCopyPointers);
-
       setValuePointerAtArrayIndex(
         carrier,
         pointerToArrayEntry,
         writeValueToIndex,
-        valueToCopyPointers.pointer
+        carrier.heap.Uint32Array[ptrToPtr / Uint32Array.BYTES_PER_ELEMENT]
       );
 
-      carrier.heap.Uint32Array[
-        valueToCopyPointers.pointerToThePointer / Uint32Array.BYTES_PER_ELEMENT
-      ] = 0;
+      carrier.heap.Uint32Array[ptrToPtr / Uint32Array.BYTES_PER_ELEMENT] = 0;
     }
   }
   // copy-down items
@@ -110,7 +126,7 @@ export function arraySplice(
       writeValueToIndex += 1
     ) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const valueToCopyPointers = arrayGetPointersToValueInIndex(
+      const valueToCopyPointer = arrayGetValuePointerInIndex(
         carrier,
         pointerToArrayEntry,
         writeValueToIndex - itemCountChange
@@ -120,26 +136,21 @@ export function arraySplice(
         carrier,
         pointerToArrayEntry,
         writeValueToIndex,
-        valueToCopyPointers.pointer
+        valueToCopyPointer
       );
     }
   }
 
-  for (let i = 0; i < itemsToAddArg.length; i += 1) {
-    const valueToSetPointers = arrayGetPointersToValueInIndex(
+  for (let i = 0; i < newValuesPointers.length; i += 1) {
+    const pointerToThePointer = arrayGetPointerToIndex(
       carrier,
       pointerToArrayEntry,
       calcedStart + i
     );
 
-    assertNonNull(valueToSetPointers);
-
-    writeValueInPtrToPtr(
-      externalArgs,
-      carrier,
-      valueToSetPointers.pointerToThePointer,
-      itemsToAddArg[i]
-    );
+    carrier.heap.Uint32Array[
+      pointerToThePointer / Uint32Array.BYTES_PER_ELEMENT
+    ] = newValuesPointers[i];
   }
 
   if (newLength < arrayLength) {

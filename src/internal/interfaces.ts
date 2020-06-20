@@ -1,5 +1,5 @@
 import type { Heap } from "../structsGenerator/consts";
-import type { IMemPool } from "@thi.ng/malloc";
+import { TransactionalAllocator } from "./TransactionalAllocator";
 
 export interface MemoryStats {
   available: number;
@@ -9,7 +9,7 @@ export interface MemoryStats {
 }
 
 export interface GlobalCarrier {
-  allocator: IMemPool;
+  allocator: TransactionalAllocator;
   heap: Heap;
 }
 

@@ -130,10 +130,10 @@ describe("getAllLinkedAddresses", () => {
 
       expect(memoryStats(objectBuffer)).toMatchInlineSnapshot(`
         Object {
-          "available": 616,
-          "top": 1432,
+          "available": 608,
+          "top": 1440,
           "total": 2048,
-          "used": 1432,
+          "used": 1440,
         }
       `);
 
@@ -154,10 +154,10 @@ describe("getAllLinkedAddresses", () => {
 
       expect(memoryStats(objectBuffer)).toMatchInlineSnapshot(`
         Object {
-          "available": 2008,
-          "top": 40,
+          "available": 2000,
+          "top": 48,
           "total": 2048,
-          "used": 40,
+          "used": 48,
         }
       `);
     });

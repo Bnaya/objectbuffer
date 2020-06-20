@@ -1,10 +1,6 @@
 /* eslint-env jest */
 
-import {
-  arrayBuffer2HexArray,
-  makeCarrier,
-  makeAllocatorThrowOnOOM,
-} from "../testUtils";
+import { arrayBuffer2HexArray, makeCarrier } from "../testUtils";
 import {
   createHashMap,
   hashMapInsertUpdate,
@@ -29,7 +25,6 @@ describe("hashmap", () => {
   function setABSize(size: number) {
     ab = new ArrayBuffer(size);
     carrier = makeCarrier(ab);
-    makeAllocatorThrowOnOOM(carrier.allocator);
   }
 
   beforeEach(() => {
@@ -38,7 +33,7 @@ describe("hashmap", () => {
 
   test("createHashMap", () => {
     const mapPointer = createHashMap(carrier, 8);
-    expect(mapPointer).toMatchInlineSnapshot(`48`);
+    expect(mapPointer).toMatchInlineSnapshot(`56`);
     expect(
       arrayBuffer2HexArray(ab.slice(0, carrier.allocator.stats().top), true)
     ).toMatchSnapshot("simple create empty");
@@ -118,7 +113,7 @@ describe("hashmap", () => {
       key
     );
 
-    expect(firstValuePointer).toMatchInlineSnapshot(`144`);
+    expect(firstValuePointer).toMatchInlineSnapshot(`152`);
 
     const foundValuePointer = hashMapValueLookup(carrier.heap, mapPointer, key);
 
@@ -137,7 +132,7 @@ describe("hashmap", () => {
       key
     );
 
-    expect(memoryOfOverWrittenValue).toMatchInlineSnapshot(`152`);
+    expect(memoryOfOverWrittenValue).toMatchInlineSnapshot(`160`);
 
     const foundValuePointer = hashMapValueLookup(
       carrier.heap,
@@ -247,34 +242,34 @@ describe("hashmap", () => {
 
     expect(memAvailableAfterEachStep).toMatchInlineSnapshot(`
       Array [
-        144,
-        232,
-        320,
-        408,
-        496,
-        584,
-        672,
-        760,
-        936,
-        984,
-        1072,
-        1160,
-        1248,
-        1336,
-        1424,
-        1512,
-        1768,
-        1768,
-        1856,
-        1944,
-        2032,
-        2120,
-        2208,
-        2296,
-        2384,
-        2472,
-        2560,
-        2560,
+        152,
+        240,
+        328,
+        416,
+        504,
+        592,
+        680,
+        768,
+        944,
+        992,
+        1080,
+        1168,
+        1256,
+        1344,
+        1432,
+        1520,
+        1776,
+        1776,
+        1864,
+        1952,
+        2040,
+        2128,
+        2216,
+        2304,
+        2392,
+        2480,
+        2568,
+        2568,
       ]
     `);
   });

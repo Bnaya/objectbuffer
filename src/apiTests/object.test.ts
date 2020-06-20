@@ -11,10 +11,10 @@ describe("object tests", () => {
   test("delete object prop", () => {
     const objectBuffer = createObjectBuffer<any>(externalArgs, 1024, {});
     const sizeBeforeSet = memoryStats(objectBuffer).available;
-    expect(sizeBeforeSet).toMatchInlineSnapshot(`864`);
+    expect(sizeBeforeSet).toMatchInlineSnapshot(`856`);
 
     objectBuffer.foo = "a";
-    expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`728`);
+    expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`720`);
 
     delete objectBuffer.foo;
 
@@ -36,7 +36,7 @@ describe("object tests", () => {
     };
 
     const objectBuffer = createObjectBuffer<any>(externalArgs, 2048, input);
-    expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`584`);
+    expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`576`);
     expect(input).toEqual(objectBuffer);
     expect(objectBuffer).toMatchInlineSnapshot(`
       Object {
@@ -73,7 +73,7 @@ describe("object tests", () => {
     input.foo.circular = input.foo;
 
     const objectBuffer = createObjectBuffer<any>(externalArgs, 2048, input);
-    expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`904`);
+    expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`896`);
     expect(input).toEqual(objectBuffer);
 
     expect(objectBuffer.foo.circular).toEqual(objectBuffer.foo);
@@ -122,6 +122,6 @@ describe("object tests", () => {
 
     expect(memoryStats(ob1).available).toBe(memoryStats(ob2).available);
 
-    expect(memoryStats(ob1).available).toMatchInlineSnapshot(`1400`);
+    expect(memoryStats(ob1).available).toMatchInlineSnapshot(`1392`);
   });
 });

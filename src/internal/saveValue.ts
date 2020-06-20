@@ -17,6 +17,7 @@ import {
   TRUE_KNOWN_ADDRESS,
   FALSE_KNOWN_ADDRESS,
   MAX_64_BIG_INT,
+  TEMP_SAVE_POINTER,
 } from "./consts";
 import { arraySaverIterative } from "./arraySaverIterative";
 import {
@@ -26,6 +27,29 @@ import {
 } from "./objectSaverIterative";
 import { stringEncodeInto } from "./stringEncodeInto";
 import { stringLengthV2 } from "./stringLengthV2";
+
+export function saveValueIterativeReturnPointer(
+  externalArgs: ExternalArgs,
+  carrier: GlobalCarrier,
+  referencedExistingPointers: number[],
+  initialValue: unknown
+) {
+  saveValueIterative(
+    externalArgs,
+    carrier,
+    referencedExistingPointers,
+    TEMP_SAVE_POINTER,
+    initialValue
+  );
+
+  const p =
+    carrier.heap.Uint32Array[TEMP_SAVE_POINTER / Uint32Array.BYTES_PER_ELEMENT];
+  carrier.heap.Uint32Array[
+    TEMP_SAVE_POINTER / Uint32Array.BYTES_PER_ELEMENT
+  ] = 0;
+
+  return p;
+}
 
 export function saveValueIterative(
   externalArgs: ExternalArgs,

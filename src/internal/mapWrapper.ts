@@ -7,8 +7,6 @@ import {
 } from "./objectWrapperHelpers";
 
 import { INTERNAL_API_SYMBOL } from "./symbols";
-
-import { allocationsTransaction } from "./allocationsTransaction";
 import { BaseProxyTrap } from "./BaseProxyTrap";
 import {
   hashMapNodeLookup,
@@ -163,15 +161,13 @@ export class MapWrapper<K extends string | number, V> extends BaseProxyTrap
       return this;
     }
 
-    allocationsTransaction(() => {
-      objectSet(
-        this.externalArgs,
-        this.carrier,
-        object_pointerToHashMap_get(this.carrier.heap, this.entryPointer),
-        p,
-        value
-      );
-    }, this.carrier.allocator);
+    objectSet(
+      this.externalArgs,
+      this.carrier,
+      object_pointerToHashMap_get(this.carrier.heap, this.entryPointer),
+      p,
+      value
+    );
 
     return this;
   }

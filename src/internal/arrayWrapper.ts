@@ -12,7 +12,6 @@ import {
   IllegalArrayIndexError,
   UnsupportedOperationError,
 } from "./exceptions";
-import { allocationsTransaction } from "./allocationsTransaction";
 import { BaseProxyTrap } from "./BaseProxyTrap";
 import { array_length_get } from "./generatedStructs";
 
@@ -101,42 +100,14 @@ export class ArrayWrapper extends BaseProxyTrap
   public set(
     target: Record<string, unknown>,
     accessedProp: PropertyKey,
-    value: any
+    value: unknown
   ): boolean {
     if (typeof accessedProp === "symbol") {
       throw new IllegalArrayIndexError();
     }
 
     if (accessedProp === "length") {
-      if (!Number.isSafeInteger(value) || value < 0) {
-        throw new RangeError("Invalid array length");
-      }
-
-      const currentLength = array_length_get(
-        this.carrier.heap,
-        this.entryPointer
-      );
-
-      if (currentLength === value) {
-        return true;
-      }
-
-      allocationsTransaction(() => {
-        if (currentLength > value) {
-          this.splice(value, currentLength - value);
-
-          return true;
-        }
-
-        extendArrayIfNeeded(
-          this.externalArgs,
-          this.carrier,
-          this.entryPointer,
-          value
-        );
-      }, this.carrier.allocator);
-
-      return true;
+      return this.handleLengthChange(value);
     }
 
     const possibleIndex = Number.parseInt(accessedProp as string, 10);
@@ -145,14 +116,7 @@ export class ArrayWrapper extends BaseProxyTrap
       throw new IllegalArrayIndexError();
     }
 
-    allocationsTransaction(() => {
-      extendArrayIfNeeded(
-        this.externalArgs,
-        this.carrier,
-        this.entryPointer,
-        possibleIndex + 1
-      );
-
+    this.carrier.allocator.transaction(() => {
       setValueAtArrayIndex(
         this.externalArgs,
         this.carrier,
@@ -160,7 +124,7 @@ export class ArrayWrapper extends BaseProxyTrap
         possibleIndex,
         value
       );
-    }, this.carrier.allocator);
+    });
 
     return true;
   }
@@ -225,8 +189,8 @@ export class ArrayWrapper extends BaseProxyTrap
     arraySort(this.externalArgs, this.carrier, this.entryPointer, comparator);
   }
 
-  public splice(start: number, deleteCount?: number, ...items: any[]) {
-    return allocationsTransaction(() => {
+  public splice(start: number, deleteCount?: number, ...items: any[]): any[] {
+    return this.carrier.allocator.transaction(() => {
       return arraySplice(
         this.externalArgs,
         this.carrier,
@@ -235,7 +199,7 @@ export class ArrayWrapper extends BaseProxyTrap
         deleteCount,
         ...items
       );
-    }, this.carrier.allocator);
+    });
   }
 
   public reverse() {
@@ -290,6 +254,42 @@ export class ArrayWrapper extends BaseProxyTrap
     // }
 
     // return Object.defineProperty(target, p, attributes);
+  }
+
+  private handleLengthChange(newLength: unknown): boolean {
+    if (
+      typeof newLength !== "number" ||
+      !Number.isSafeInteger(newLength) ||
+      newLength < 0
+    ) {
+      throw new RangeError("Invalid array length");
+    }
+
+    const currentLength = array_length_get(
+      this.carrier.heap,
+      this.entryPointer
+    );
+
+    if (currentLength === newLength) {
+      return true;
+    }
+
+    this.carrier.allocator.transaction(() => {
+      if (currentLength > newLength) {
+        this.splice(newLength, currentLength - newLength);
+
+        return;
+      }
+
+      extendArrayIfNeeded(
+        this.externalArgs,
+        this.carrier,
+        this.entryPointer,
+        newLength
+      );
+    });
+
+    return true;
   }
 }
 

@@ -13,7 +13,7 @@ import { MemPool } from "@thi.ng/malloc";
 import { UnsupportedOperationError } from "./exceptions";
 import { createHeap } from "../structsGenerator/consts";
 import { saveValueIterative } from "./saveValue";
-import { allocationsTransaction } from "./allocationsTransaction";
+import { TransactionalAllocator } from "./TransactionalAllocator";
 
 export interface CreateObjectBufferOptions {
   /**
@@ -45,7 +45,7 @@ export function createObjectBuffer<T = any>(
     : ArrayBuffer)(size);
   initializeArrayBuffer(arrayBuffer);
 
-  const allocator = new MemPool({
+  const allocator = new TransactionalAllocator({
     align: 8,
     buf: arrayBuffer,
     start: MEM_POOL_START,
@@ -58,7 +58,7 @@ export function createObjectBuffer<T = any>(
 
   const referencedPointers: number[] = [];
 
-  allocationsTransaction(() => {
+  allocator.transaction(() => {
     saveValueIterative(
       externalArgsApiToExternalArgsApi(externalArgs),
       carrier,
@@ -66,7 +66,7 @@ export function createObjectBuffer<T = any>(
       INITIAL_ENTRY_POINTER_TO_POINTER,
       initialValue
     );
-  }, allocator);
+  });
 
   for (const pointer of referencedPointers) {
     incrementRefCount(carrier.heap, pointer);
@@ -123,7 +123,7 @@ export function loadObjectBuffer<T = any>(
   externalArgs: ExternalArgsApi,
   arrayBuffer: ArrayBuffer | SharedArrayBuffer
 ): T {
-  const allocator = new MemPool({
+  const allocator = new TransactionalAllocator({
     align: 8,
     buf: arrayBuffer,
     start: MEM_POOL_START,
@@ -168,7 +168,7 @@ export function replaceUnderlyingArrayBuffer(
     oldCache.delete(entry[0]);
   }
 
-  const allocator = new MemPool({
+  const allocator = new TransactionalAllocator({
     align: 8,
     buf: newArrayBuffer,
     start: MEM_POOL_START,

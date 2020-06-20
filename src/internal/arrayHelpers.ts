@@ -1,8 +1,7 @@
-import { writeValueInPtrToPtrAndHandleMemory } from "./store";
+import { incrementRefCount, handleArcForDeletedValuePointer } from "./store";
 import { ExternalArgs, GlobalCarrier } from "./interfaces";
 import { entryToFinalJavaScriptValue } from "./entryToFinalJavaScriptValue";
 import { ENTRY_TYPE } from "./entry-types";
-import { assertNonNull } from "./assertNonNull";
 import {
   array_length_get,
   array_dataspacePointer_get,
@@ -12,31 +11,34 @@ import {
   array_refsCount_get,
 } from "./generatedStructs";
 import { Heap } from "../structsGenerator/consts";
+import { saveValueIterativeReturnPointer } from "./saveValue";
 
-export function arrayGetPointersToValueInIndex(
+export function arrayGetPointerToIndex(
   carrier: GlobalCarrier,
   pointerToArrayEntry: number,
   indexToGet: number
 ) {
   // out of bound
   if (indexToGet >= array_length_get(carrier.heap, pointerToArrayEntry)) {
-    return undefined;
+    throw new Error("NOT MAKES SENSE");
   }
 
   const pointerToThePointer =
     array_dataspacePointer_get(carrier.heap, pointerToArrayEntry) +
     indexToGet * Uint32Array.BYTES_PER_ELEMENT;
 
-  const pointer =
-    carrier.heap.Uint32Array[
-      pointerToThePointer / Uint32Array.BYTES_PER_ELEMENT
-    ];
+  return pointerToThePointer;
+}
 
-  // @todo avoid intermediate object
-  return {
-    pointer,
-    pointerToThePointer,
-  };
+export function arrayGetValuePointerInIndex(
+  carrier: GlobalCarrier,
+  pointerToArrayEntry: number,
+  indexToGet: number
+) {
+  return carrier.heap.Uint32Array[
+    arrayGetPointerToIndex(carrier, pointerToArrayEntry, indexToGet) /
+      Uint32Array.BYTES_PER_ELEMENT
+  ];
 }
 
 export function getFinalValueAtArrayIndex(
@@ -45,21 +47,13 @@ export function getFinalValueAtArrayIndex(
   pointerToArrayEntry: number,
   indexToGet: number
 ) {
-  const pointers = arrayGetPointersToValueInIndex(
+  const pointer = arrayGetValuePointerInIndex(
     globalCarrier,
     pointerToArrayEntry,
     indexToGet
   );
 
-  if (pointers === undefined) {
-    return undefined;
-  }
-
-  return entryToFinalJavaScriptValue(
-    externalArgs,
-    globalCarrier,
-    pointers.pointer
-  );
+  return entryToFinalJavaScriptValue(externalArgs, globalCarrier, pointer);
 }
 
 export function setValuePointerAtArrayIndex(
@@ -68,15 +62,14 @@ export function setValuePointerAtArrayIndex(
   indexToSet: number,
   pointerToEntry: number
 ) {
-  const pointers = arrayGetPointersToValueInIndex(
+  const pointer = arrayGetPointerToIndex(
     carrier,
     pointerToArrayEntry,
     indexToSet
   );
 
-  assertNonNull(pointers);
   carrier.heap.Uint32Array[
-    pointers.pointerToThePointer / Uint32Array.BYTES_PER_ELEMENT
+    pointer / Uint32Array.BYTES_PER_ELEMENT
   ] = pointerToEntry;
 }
 
@@ -85,21 +78,45 @@ export function setValueAtArrayIndex(
   carrier: GlobalCarrier,
   pointerToArrayEntry: number,
   indexToSet: number,
-  value: any
+  value: unknown
 ) {
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-  const pointers = arrayGetPointersToValueInIndex(
+  const refedPointers: number[] = [];
+
+  const newValuePointer = saveValueIterativeReturnPointer(
+    externalArgs,
+    carrier,
+    refedPointers,
+    value
+  );
+
+  extendArrayIfNeeded(
+    externalArgs,
+    carrier,
+    pointerToArrayEntry,
+    indexToSet + 1
+  );
+  // no OOM is possible after this point
+
+  for (const pointer of refedPointers) {
+    incrementRefCount(carrier.heap, pointer);
+  }
+
+  const pointerToThePointer = arrayGetPointerToIndex(
     carrier,
     pointerToArrayEntry,
     indexToSet
-  )!;
-
-  writeValueInPtrToPtrAndHandleMemory(
-    externalArgs,
-    carrier,
-    pointers.pointerToThePointer,
-    value
   );
+
+  handleArcForDeletedValuePointer(
+    carrier,
+    carrier.heap.Uint32Array[
+      pointerToThePointer / Uint32Array.BYTES_PER_ELEMENT
+    ]
+  );
+
+  carrier.heap.Uint32Array[
+    pointerToThePointer / Uint32Array.BYTES_PER_ELEMENT
+  ] = newValuePointer;
 }
 
 /**
@@ -263,22 +280,17 @@ export function arrayReverse(
       array_length_get(carrier.heap, pointerToArrayEntry) - i - 1;
 
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const a = arrayGetPointersToValueInIndex(carrier, pointerToArrayEntry, i)!;
+    const a = arrayGetValuePointerInIndex(carrier, pointerToArrayEntry, i)!;
 
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const b = arrayGetPointersToValueInIndex(
+    const b = arrayGetValuePointerInIndex(
       carrier,
       pointerToArrayEntry,
       theOtherIndex
     )!;
 
-    setValuePointerAtArrayIndex(carrier, pointerToArrayEntry, i, b.pointer);
+    setValuePointerAtArrayIndex(carrier, pointerToArrayEntry, i, b);
 
-    setValuePointerAtArrayIndex(
-      carrier,
-      pointerToArrayEntry,
-      theOtherIndex,
-      a.pointer
-    );
+    setValuePointerAtArrayIndex(carrier, pointerToArrayEntry, theOtherIndex, a);
   }
 }

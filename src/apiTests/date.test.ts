@@ -41,6 +41,6 @@ describe("Date test", () => {
       `"2000-04-10T00:00:00.000Z"`
     );
 
-    expect(memoryStats(objectBuffer).used).toMatchInlineSnapshot(`280`);
+    expect(memoryStats(objectBuffer).used).toMatchInlineSnapshot(`288`);
   });
 });
