@@ -6,9 +6,14 @@ import {
   externalArgsApiToExternalArgsApi,
   getInternalAPI,
   isSupportedTopLevelValue,
+  getEndiannessOfSystem,
 } from "./utils";
 import { getCacheFor } from "./externalObjectsCache";
-import { INITIAL_ENTRY_POINTER_TO_POINTER, MEM_POOL_START } from "./consts";
+import {
+  INITIAL_ENTRY_POINTER_TO_POINTER,
+  MEM_POOL_START,
+  ENDIANNESS_FLAG_POINTER,
+} from "./consts";
 import { MemPool } from "@thi.ng/malloc";
 import { UnsupportedOperationError } from "./exceptions";
 import { createHeap } from "../structsGenerator/consts";
@@ -71,6 +76,10 @@ export function createObjectBuffer<T = any>(
   for (const pointer of referencedPointers) {
     incrementRefCount(carrier.heap, pointer);
   }
+
+  const dv = new DataView(arrayBuffer);
+  // endianness flag is always saved in little endian so we can read in every system endianness
+  dv.setUint32(ENDIANNESS_FLAG_POINTER, getEndiannessOfSystem(), true);
 
   return createObjectWrapper(
     externalArgsApiToExternalArgsApi(externalArgs),
@@ -135,6 +144,14 @@ export function loadObjectBuffer<T = any>(
     heap: createHeap(arrayBuffer),
   };
 
+  const dv = new DataView(arrayBuffer);
+  // endianness flag is always saved in little endian so we can read in every system endianness
+  const endiannessOfGivenAb = dv.getUint32(ENDIANNESS_FLAG_POINTER, true);
+
+  if (endiannessOfGivenAb !== getEndiannessOfSystem()) {
+    throw new Error("Endianness miss-match");
+  }
+
   return createObjectWrapper(
     externalArgsApiToExternalArgsApi(externalArgs),
     carrier,
@@ -180,9 +197,15 @@ export function replaceUnderlyingArrayBuffer(
     heap: createHeap(newArrayBuffer),
   };
 
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-expect-error
-  allocator.end = newArrayBuffer.byteLength;
+  const dv = new DataView(newArrayBuffer);
+  // endianness flag is always saved in little endian so we can read in every system endianness
+  const endiannessOfGivenAb = dv.getUint32(ENDIANNESS_FLAG_POINTER, true);
+
+  if (endiannessOfGivenAb !== getEndiannessOfSystem()) {
+    throw new Error("Endianness miss-match");
+  }
+
+  allocator.setNewEnd(newArrayBuffer.byteLength);
 
   getInternalAPI(objectBuffer).replaceCarrierContent(carrier);
 }
