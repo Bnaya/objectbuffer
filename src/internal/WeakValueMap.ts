@@ -1,7 +1,4 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-/* istanbul ignore file */
-
-// We can't run test with weakrefs yet
 
 const KEYS = 1;
 const VALUES = 2;
@@ -35,7 +32,7 @@ export class WeakValueMap<K, V> implements Map<K, V> {
     this.group = new FinalizationSomething(
       (iteratorOrKey: Iterable<unknown> | unknown) => {
         // @ts-expect-error
-        if (Symbol.iterator in iterable) {
+        if (Symbol.iterator in iteratorOrKey) {
           // @ts-expect-error
           for (const key of iteratorOrKey) {
             this.map.delete(key);

@@ -8,7 +8,6 @@ import {
   isSupportedTopLevelValue,
   getEndiannessOfSystem,
 } from "./utils";
-import { getCacheFor } from "./externalObjectsCache";
 import {
   INITIAL_ENTRY_POINTER_TO_POINTER,
   MEM_POOL_START,
@@ -19,6 +18,7 @@ import { UnsupportedOperationError } from "./exceptions";
 import { createHeap } from "../structsGenerator/consts";
 import { saveValueIterative } from "./saveValue";
 import { TransactionalAllocator } from "./TransactionalAllocator";
+import { freeNoLongerUsedAddresses } from "./freeNoLongerUsedAddresses";
 
 export interface CreateObjectBufferOptions {
   /**
@@ -175,16 +175,6 @@ export function replaceUnderlyingArrayBuffer(
   objectBuffer: unknown,
   newArrayBuffer: ArrayBuffer | SharedArrayBuffer
 ) {
-  const oldArrayBuffer = getUnderlyingArrayBuffer(objectBuffer);
-
-  const oldCache = getCacheFor(oldArrayBuffer);
-  const newCache = getCacheFor(newArrayBuffer);
-
-  for (const entry of oldCache) {
-    newCache.set(entry[0], entry[1]);
-    oldCache.delete(entry[0]);
-  }
-
   const allocator = new TransactionalAllocator({
     align: 8,
     buf: newArrayBuffer,
@@ -238,4 +228,17 @@ export function updateExternalArgs(
   options: Partial<ExternalArgsApi>
 ) {
   Object.assign(getInternalAPI(objectBuffer).getExternalArgs(), options);
+}
+
+/**
+ * Free all the addresses collected using FinalizationRegistry
+ * When no FinalizationRegistry/WeakRef available, use disposeWrapperObject
+ * https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/FinalizationRegistry
+ *
+ * This is not called automatic by FinalizationRegistry,
+ * because It's only safe to call it when you have a lock/similar (As any other operation)
+ * And FinalizationRegistry might run when ever
+ */
+export function collectGarbage(objectBuffer: unknown) {
+  freeNoLongerUsedAddresses(getInternalAPI(objectBuffer).getCarrier());
 }

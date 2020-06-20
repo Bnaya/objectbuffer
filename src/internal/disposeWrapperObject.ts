@@ -1,11 +1,12 @@
 import { getInternalAPI } from "./utils";
-import { getCacheFor } from "./externalObjectsCache";
 import { getAllLinkedAddresses } from "./getAllLinkedAddresses";
 import { decrementRefCountWithNum } from "./store";
+import { getCacheFor } from "./stateModule";
 
 /**
  *  Dispose the given objectWrapper, and re-claim the memory
- *  This is not needed on systems that supports weak-refs
+ *  @see collectGarbage for systems that supports WeakRef
+ *
  */
 export function disposeWrapperObject(value: any) {
   const internalApi = getInternalAPI(value);

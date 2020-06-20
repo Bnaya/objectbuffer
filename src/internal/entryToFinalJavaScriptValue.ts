@@ -3,9 +3,6 @@ import { ENTRY_TYPE } from "./entry-types";
 import { createObjectWrapper } from "./objectWrapper";
 import { createArrayWrapper } from "./arrayWrapper";
 import { createDateWrapper } from "./dateWrapper";
-import { getCacheFor } from "./externalObjectsCache";
-import { decrementRefCount, decrementRefCountWithNum } from "./store";
-import { getAllLinkedAddresses } from "./getAllLinkedAddresses";
 import { createMapWrapper } from "./mapWrapper";
 import { createSetWrapper } from "./setWrapper";
 import {
@@ -20,6 +17,7 @@ import {
   bigint_value_get,
 } from "./generatedStructs";
 import { readString } from "./readString";
+import { getAddressesNoLongerUsed, getCacheFor } from "./stateModule";
 
 const TYPE_TO_FACTORY = {
   [ENTRY_TYPE.OBJECT]: createObjectWrapper,
@@ -83,9 +81,7 @@ export function entryToFinalJavaScriptValue(
     throw new Error("Nope Nope Nope");
   }
 
-  const cache = getCacheFor(carrier, (key) => {
-    finalizer(key, carrier);
-  });
+  const cache = getCacheFor(carrier, finalizer);
 
   let ret = cache.get(pointerToEntry);
 
@@ -99,19 +95,6 @@ export function entryToFinalJavaScriptValue(
   return ret;
 }
 
-/* istanbul ignore next */
-function finalizer(memoryAddress: number, carrier: GlobalCarrier) {
-  const newRefsCount = decrementRefCount(carrier.heap, memoryAddress);
-
-  if (newRefsCount === 0) {
-    const freeUs = getAllLinkedAddresses(carrier.heap, false, memoryAddress);
-
-    for (const address of freeUs.leafAddresses) {
-      carrier.allocator.free(address);
-    }
-
-    for (const [address, count] of freeUs.arcAddresses) {
-      decrementRefCountWithNum(carrier.heap, address, count);
-    }
-  }
+function finalizer(carrier: GlobalCarrier, memoryAddress: number) {
+  getAddressesNoLongerUsed(carrier).push(memoryAddress);
 }
