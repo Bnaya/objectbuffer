@@ -6,8 +6,20 @@ import {
   NULL_KNOWN_ADDRESS,
   TRUE_KNOWN_ADDRESS,
   FALSE_KNOWN_ADDRESS,
+  ENDIANNESS,
 } from "./consts";
 import { IMemPool } from "@thi.ng/malloc";
+
+export function getEndiannessOfSystem() {
+  const F64 = new Float64Array(1);
+  const U32 = new Uint32Array(F64.buffer);
+  F64[0] = 2;
+  if (U32[1] === 0x40000000) {
+    return ENDIANNESS.LITTLE;
+  } else {
+    return ENDIANNESS.BIG;
+  }
+}
 
 export function createKnownTypeGuard<T>(arr: ReadonlyArray<T>) {
   return function knownTypeGuard(v: unknown): v is T {

@@ -30,13 +30,6 @@ export function arrayBuffer2HexArray(
   );
 }
 
-export function wait(time: number) {
-  return new Promise((res) => {
-    // eslint-disable-next-line no-undef
-    setTimeout(res, time);
-  });
-}
-
 // extend pool and not monkey patch? need to think about it
 export function recordAllocations(operation: () => void, pool: IMemPool) {
   const allocations = new Set<number>();
@@ -119,4 +112,10 @@ export function makeCarrier(arrayBuffer: ArrayBuffer) {
   };
 
   return carrier;
+}
+
+export function sleep(ms: number) {
+  return new Promise((res) => {
+    setTimeout(res, ms);
+  });
 }

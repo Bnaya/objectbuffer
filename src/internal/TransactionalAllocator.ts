@@ -5,6 +5,10 @@ export class TransactionalAllocator extends MemPool {
   protected inTransaction = false;
   protected transactionAddresses: number[] = [];
 
+  public setNewEnd(newEnd: number) {
+    this.end = newEnd;
+  }
+
   public malloc(bytes: number): number {
     if (bytes === 0) {
       return 0;

@@ -1,75 +1,94 @@
-/* eslint-disable */
-import { ExternalArgs } from "../internal/interfaces";
-
-import { createObjectBuffer } from "..";
-import { memoryStats } from "../internal/api";
-import { wait } from "../internal/testUtils";
-import { externalArgsApiToExternalArgsApi } from "../internal/utils";
-
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-env jest, node */
+import { createObjectBuffer } from "..";
+import { memoryStats, collectGarbage } from "../internal/api";
+import { sleep } from "../internal/testUtils";
+import { getInternalAPI } from "../internal/utils";
+import { getAddressesNoLongerUsed } from "../internal/stateModule";
 
 // declare const FinalizationGroup: any;
 // declare const WeakRef: any;
 
-describe.skip("memoryGCTest.test", () => {
-  // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-  // @ts-ignore
+describe("memory GC related tests", () => {
+  // @ts-expect-error
   if (typeof gc === "undefined") {
     throw new Error("must --expose-gc");
   }
 
-  // @ts-ignore
-  if (typeof FinalizationGroup === "undefined") {
+  if (
+    // @ts-expect-error
+    typeof FinalizationRegistry === "undefined" &&
+    // @ts-expect-error
+    typeof FinalizationGroup === "undefined"
+  ) {
     throw new Error("must --harmony-weak-refs");
   }
 
-  const externalArgs = externalArgsApiToExternalArgsApi({
-
-
-    arrayAdditionalAllocation: 0,
-
-  });
-
-  test("internal ArrayBuffer GC", async () => {
-    // @ts-ignore
-    gc();
-
-    const { external: initialExternal } = process.memoryUsage();
-
-    let objectBuffer: any = createObjectBuffer(externalArgs, 1000, {
-      foo: { a: "123abc" }
+  test("Test FinalizationRegistry kicks in", async function () {
+    const objectBuffer: any = createObjectBuffer({}, 1024, {
+      foo: { a: "123abc" },
     });
+
+    const carrier = getInternalAPI(objectBuffer).getCarrier();
 
     let foo = objectBuffer.foo;
 
-    // @ts-ignore
-    gc();
-
-    expect(
-      process.memoryUsage().external - initialExternal
-    ).toMatchInlineSnapshot(`1025`);
-
-    expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`856`);
-
-    // disposeWrapperObject(foo);
     objectBuffer.foo = undefined;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     foo = undefined;
 
-    // foo = undefined;
-
-    // @ts-ignore
+    // @ts-expect-error
     gc();
 
-    await wait(4000);
+    await sleep(1000);
+    // @ts-expect-error
+    gc();
 
-    expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`912`);
+    await sleep(1000);
 
-    // debugger;
+    const addressesNoLongerUsed = getAddressesNoLongerUsed(carrier);
+
+    expect(addressesNoLongerUsed).toMatchInlineSnapshot(`
+      Array [
+        264,
+      ]
+    `);
+  }, 10000);
+
+  test("Test collectGarbage works", async function () {
+    const objectBuffer: any = createObjectBuffer({}, 1024, {
+      foo: undefined,
+    });
+
+    const initialMemoryStats = memoryStats(objectBuffer);
+
+    objectBuffer.foo = { a: "1234567890" };
+
+    const secondMemoryStats = memoryStats(objectBuffer);
 
     expect(
-      process.memoryUsage().external - initialExternal
-    ).toMatchInlineSnapshot(`35782`);
-  });
+      initialMemoryStats.available - secondMemoryStats.available
+    ).toMatchInlineSnapshot(`264`);
 
-  test("FinalizationGroup internal reference count", () => {});
+    let foo = objectBuffer.foo;
+
+    objectBuffer.foo = undefined;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    foo = undefined;
+
+    // @ts-expect-error
+    gc();
+
+    await sleep(100);
+
+    // @ts-expect-error
+    gc();
+
+    await sleep(100);
+
+    collectGarbage(objectBuffer);
+    const finalMemoryStats = memoryStats(objectBuffer);
+
+    expect(finalMemoryStats.available).toBe(initialMemoryStats.available);
+  }, 10000);
 });
