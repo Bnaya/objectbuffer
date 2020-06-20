@@ -1,3 +1,5 @@
+// Most of file is not used
+/* istanbul ignore file */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 
 const KEYS = 1;
