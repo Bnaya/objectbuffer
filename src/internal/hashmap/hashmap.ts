@@ -1,10 +1,5 @@
 import { GlobalCarrier, ExternalArgs } from "../interfaces";
-import {
-  hashCodeInPlace,
-  hashCodeExternalValue,
-  getKeyStart,
-  getKeyLength,
-} from "./hashmapUtils";
+import { getKeyStart, getKeyLength } from "./hashmapUtils";
 import { stringEncodeInto } from "../stringEncodeInto";
 import {
   compareStringOrNumberEntriesInPlace,
@@ -53,6 +48,10 @@ import {
 } from "../generatedStructs";
 import { Heap } from "../../structsGenerator/consts";
 import { stringLengthV2 } from "../stringLengthV2";
+import {
+  hashUint8CodeInPlace,
+  hashCodeExternalValue,
+} from "./hashFunctionsStuff";
 
 export function createHashMap(
   carrier: GlobalCarrier,
@@ -108,12 +107,12 @@ export function hashMapInsertUpdateKeyIsPointerReturnNode(
     keyDataMemoryStart = string_charsPointer_get(heap, keyPointer);
   }
 
-  const bucket = hashCodeInPlace(
-    heap.Uint8Array,
-    hashmap_CAPACITY_get(heap, mapPointer),
-    keyDataMemoryStart,
-    keyDataMemoryLength
-  );
+  const bucket =
+    hashUint8CodeInPlace(
+      heap.Uint8Array,
+      keyDataMemoryStart,
+      keyDataMemoryLength
+    ) % hashmap_CAPACITY_get(heap, mapPointer);
 
   const bucketStartPointer =
     hashmap_ARRAY_POINTER_get(heap, mapPointer) +
@@ -246,12 +245,12 @@ export function hashMapInsertUpdate(
     );
   }
 
-  const bucket = hashCodeInPlace(
-    heap.Uint8Array,
-    hashmap_CAPACITY_get(heap, mapPointer),
-    keyDataMemoryStart,
-    keyDataMemoryLength
-  );
+  const bucket =
+    hashUint8CodeInPlace(
+      heap.Uint8Array,
+      keyDataMemoryStart,
+      keyDataMemoryLength
+    ) % hashmap_CAPACITY_get(heap, mapPointer);
 
   const bucketStartPointer =
     hashmap_ARRAY_POINTER_get(heap, mapPointer) +
@@ -357,10 +356,9 @@ export function hashMapNodeLookup(
   mapPointer: number,
   externalKeyValue: number | string
 ) {
-  const bucket = hashCodeExternalValue(
-    hashmap_CAPACITY_get(heap, mapPointer),
-    externalKeyValue
-  );
+  const bucket =
+    hashCodeExternalValue(externalKeyValue) %
+    hashmap_CAPACITY_get(heap, mapPointer);
 
   const bucketStartPtrToPtr =
     hashmap_ARRAY_POINTER_get(heap, mapPointer) +
@@ -575,12 +573,12 @@ function hashMapRehashInsert(
   hashmapPointer: number,
   nodePointer: number
 ) {
-  const bucket = hashCodeInPlace(
-    heap.Uint8Array,
-    hashmap_CAPACITY_get(heap, hashmapPointer),
-    getKeyStart(heap, hashmapNode_KEY_POINTER_get(heap, nodePointer)),
-    getKeyLength(heap, hashmapNode_KEY_POINTER_get(heap, nodePointer))
-  );
+  const bucket =
+    hashUint8CodeInPlace(
+      heap.Uint8Array,
+      getKeyStart(heap, hashmapNode_KEY_POINTER_get(heap, nodePointer)),
+      getKeyLength(heap, hashmapNode_KEY_POINTER_get(heap, nodePointer))
+    ) % hashmap_CAPACITY_get(heap, hashmapPointer);
 
   const bucketStartPointer =
     hashmap_ARRAY_POINTER_get(heap, hashmapPointer) +
