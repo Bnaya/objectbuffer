@@ -19,7 +19,7 @@ export default {
         inline: 3,
         // passes: 3,
       },
-      // mangle: false,
+      mangle: false,
       toplevel: true,
       module: true,
       output: {
