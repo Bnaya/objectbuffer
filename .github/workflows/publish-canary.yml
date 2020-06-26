@@ -1,6 +1,6 @@
 name: Publish Canary
 
-on: ["pull_request"]
+on: ["push"]
 
 jobs:
   lint:
@@ -103,7 +103,7 @@ jobs:
         shell: bash
 
       - name: Publish with primer/publish
-        uses: primer/publish@v2.0.0
+        uses: primer/publish@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
