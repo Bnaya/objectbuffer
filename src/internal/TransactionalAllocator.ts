@@ -1,9 +1,15 @@
-import { MemPool } from "@thi.ng/malloc";
+import { MemPool, MemPoolOpts } from "@thi.ng/malloc";
 import { OutOfMemoryError } from "./exceptions";
 
 export class TransactionalAllocator extends MemPool {
-  protected inTransaction = false;
-  protected transactionAddresses: number[] = [];
+  protected inTransaction: boolean;
+  protected transactionAddresses: number[];
+
+  constructor(opts?: Partial<MemPoolOpts>) {
+    super(opts);
+    this.inTransaction = false;
+    this.transactionAddresses = [];
+  }
 
   public setNewEnd(newEnd: number) {
     this.end = newEnd;
