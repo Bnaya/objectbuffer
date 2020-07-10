@@ -27,3 +27,9 @@ jobs:
 
       - name: test ${{ matrix.os }}
         run: yarn test
+
+      - name: test again 1 ${{ matrix.os }}
+        run: yarn test
+
+      - name: test again 2 ${{ matrix.os }}
+        run: yarn test
