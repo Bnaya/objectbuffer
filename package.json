@@ -23,7 +23,6 @@
     "object-buffer"
   ],
   "scripts": {
-    "deduplicate": "yarn-deduplicate -s fewer yarn.lock",
     "lint": "concurrently \"eslint src --ext .js,.jsx,.ts,.tsx\" \"tsc --noEmit --emitDeclarationOnly false\"",
     "test": "node --expose-gc --harmony-weak-refs $(yarn bin jest)",
     "jest": "node --expose-gc --harmony-weak-refs $(yarn bin jest)",
@@ -74,8 +73,7 @@
     "webpack": "^4.43.0",
     "webpack-cli": "^3.3.12",
     "webpack-dev-server": "^3.11.0",
-    "worker-loader": "^2.0.0",
-    "yarn-deduplicate": "^2.0.0"
+    "worker-loader": "^2.0.0"
   },
   "husky": {
     "hooks": {

@@ -1252,7 +1252,6 @@ __metadata:
     webpack-cli: ^3.3.12
     webpack-dev-server: ^3.11.0
     worker-loader: ^2.0.0
-    yarn-deduplicate: ^2.0.0
   languageName: unknown
   linkType: soft
 
@@ -2100,13 +2099,6 @@ __metadata:
   version: 4.2.2
   resolution: "@xtuc/long@npm:4.2.2"
   checksum: ec09a359f98e9f8c47bf6c965e73b520a1a65e93f1febf6472babc8b6b0b425a2084452be103da5be11aec8c502ecfa29400713d55ef774579d04f691db44a2d
-  languageName: node
-  linkType: hard
-
-"@yarnpkg/lockfile@npm:^1.1.0":
-  version: 1.1.0
-  resolution: "@yarnpkg/lockfile@npm:1.1.0"
-  checksum: 76f3f2625334fb4d37881408643b61ae08e1cfcdeb5db3e3e92f626b3535f99e963df8bafe5c07d85aa1dd09a308939eb4d0667ed4a4e93e645417b6af6e9a2f
   languageName: node
   linkType: hard
 
@@ -9590,15 +9582,6 @@ fsevents@^1.2.7:
   languageName: node
   linkType: hard
 
-"semver@npm:7.1.3":
-  version: 7.1.3
-  resolution: "semver@npm:7.1.3"
-  bin:
-    semver: bin/semver.js
-  checksum: a3e1074182f6acb79aba09ac0547000b6bdc12bf793b47236bdf00dbb1b13d4b574c8f1bc55d89b149a19fbb77351e93f9f254082732d41a959acbe99b1a42b9
-  languageName: node
-  linkType: hard
-
 "semver@npm:^6.0.0, semver@npm:^6.1.2, semver@npm:^6.3.0":
   version: 6.3.0
   resolution: "semver@npm:6.3.0"
@@ -11603,18 +11586,5 @@ fsevents@^1.2.7:
     y18n: ^4.0.0
     yargs-parser: ^18.1.1
   checksum: 6504a0bb4e6f5933ebaaa52307943a9cdb44da6200cd1ca8794aaa1d18b70f0acd2f49f46630b07bd4d2aa12cb1fe666b186d367c36fa1b4998f7ce8bdc9ffdf
-  languageName: node
-  linkType: hard
-
-"yarn-deduplicate@npm:^2.0.0":
-  version: 2.0.0
-  resolution: "yarn-deduplicate@npm:2.0.0"
-  dependencies:
-    "@yarnpkg/lockfile": ^1.1.0
-    commander: ^4.1.1
-    semver: 7.1.3
-  bin:
-    yarn-deduplicate: cli.js
-  checksum: 14aad820f96cba5a15d17fadc162f5b31b08fb912875c9720778e6493d5de54f5aa6157e194328c045a9c95c8a3392ffba2d2f0cbd13d18d6cdbda98022fd8d4
   languageName: node
   linkType: hard
