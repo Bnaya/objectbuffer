@@ -25,10 +25,6 @@ jobs:
         run: yarn
         shell: bash
 
-      - name: yarn ensure dedup
-        run: yarn yarn-deduplicate -s fewer yarn.lock --fail --list
-        shell: bash
-
       - name: Lint
         run: yarn lint
         shell: bash
@@ -52,11 +48,7 @@ jobs:
             ${{ runner.OS }}-
 
       - name: yarn install
-        run: yarn --frozen-lockfile
-        shell: bash
-
-      - name: yarn ensure dedup
-        run: yarn yarn-deduplicate -s fewer yarn.lock --fail --list
+        run: yarn install
         shell: bash
 
       - name: test + coverage
@@ -91,11 +83,7 @@ jobs:
             ${{ runner.OS }}-
 
       - name: yarn install
-        run: yarn --frozen-lockfile
-        shell: bash
-
-      - name: yarn ensure dedup
-        run: yarn yarn-deduplicate -s fewer yarn.lock --fail --list
+        run: yarn install
         shell: bash
 
       - name: build

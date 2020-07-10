@@ -3,6 +3,8 @@
     "orta.vscode-jest",
     "editorconfig.editorconfig",
     "dbaeumer.vscode-eslint",
-    "davidanson.vscode-markdownlint"
+    "davidanson.vscode-markdownlint",
+    "esbenp.prettier-vscode",
+    "arcanis.vscode-zipfs"
   ]
 }

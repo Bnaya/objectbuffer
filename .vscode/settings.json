@@ -1,5 +1,5 @@
 {
-  "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.tsdk": ".yarn/sdks/typescript/lib",
   "debug.node.autoAttach": "off",
   "search.exclude": {
     "**/bower_components": true,
@@ -17,7 +17,13 @@
   //   "src/**/*.js": false,
   //   "src/**/*.js.map": true
   // },
-  "cSpell.words": ["objectbuffer", "ormconfig", "phin", "pubsub", "typedoc"],
+  "cSpell.words": [
+    "objectbuffer",
+    "ormconfig",
+    "phin",
+    "pubsub",
+    "typedoc"
+  ],
   // "eslint.autoFixOnSave": true,
   // "eslint.validate": [
   //   "javascript",
@@ -45,10 +51,22 @@
     "editor.formatOnSave": false
   },
   "jest.autoEnable": false,
-  "jest.debugCodeLens.showWhenTestStateIn": ["fail", "unknown", "pass", "skip"],
+  "jest.debugCodeLens.showWhenTestStateIn": [
+    "fail",
+    "unknown",
+    "pass",
+    "skip"
+  ],
   "jest.enableSnapshotUpdateMessages": true,
-  "editor.rulers": [80, 120, 140],
+  "editor.rulers": [
+    80,
+    120,
+    140
+  ],
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": true
-  }
+  },
+  "eslint.nodePath": ".yarn/sdks",
+  "prettier.prettierPath": ".yarn/sdks/prettier/index.js",
+  "typescript.enablePromptUseWorkspaceTsdk": true
 }
