@@ -54,33 +54,6 @@ jobs:
         with:
           github-token: ${{ secrets.github_token }}
 
-  test-no-coverage:
-    runs-on: ${{ matrix.os }}
-
-    strategy:
-      matrix:
-        os: [macos-10.15, ubuntu-18.04, windows-2019]
-
-    steps:
-      - uses: actions/checkout@v1
-      - uses: actions/setup-node@v1
-        with:
-          node-version: 12.x
-
-      - name: Cache .yarn folder
-        uses: actions/cache@v1
-        with:
-          path: .yarn/cache
-          key: ${{ runner.OS }}-build-${{ hashFiles('**/yarn.lock') }}-${{ hashFiles('.github/workflows/**') }}
-
-      - name: yarn install
-        run: yarn install --immutable
-        shell: bash
-
-      - name: test ${{ matrix.os }}
-        run: yarn test
-        shell: bash
-
   build:
     runs-on: ubuntu-18.04
     needs: [lint, test]
