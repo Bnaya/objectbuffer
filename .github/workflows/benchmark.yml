@@ -17,19 +17,15 @@ jobs:
         uses: actions/cache@v1
         with:
           path: node_modules
-          key: ${{ runner.OS }}-build-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.OS }}-build-${{ env.cache-name }}-
-            ${{ runner.OS }}-build-
-            ${{ runner.OS }}-
+          key: ${{ runner.OS }}-build-${{ hashFiles('**/yarn.lock') }}-${{ hashFiles('.github/workflows/*.yml') }}
 
       - name: yarn install
-        run: yarn --frozen-lockfile
+        run: yarn --immutable
         shell: bash
 
-      - name: yarn ensure dedup
-        run: yarn yarn-deduplicate -s fewer yarn.lock --fail --list
-        shell: bash
+      # - name: yarn ensure dedup
+      #   run: yarn yarn-deduplicate -s fewer yarn.lock --fail --list
+      #   shell: bash
 
       - name: build
         run: yarn build
