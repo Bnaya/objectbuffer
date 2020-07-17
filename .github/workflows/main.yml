@@ -21,10 +21,6 @@ jobs:
         run: yarn --immutable
         shell: bash
 
-      # - name: yarn ensure dedup
-      #   run: yarn yarn-deduplicate -s fewer yarn.lock --fail --list
-      #   shell: bash
-
       - name: Lint
         run: yarn lint
         shell: bash
@@ -46,10 +42,6 @@ jobs:
       - name: yarn install
         run: yarn --immutable
         shell: bash
-
-      # - name: yarn ensure dedup
-      #   run: yarn yarn-deduplicate -s fewer yarn.lock --fail --list
-      #   shell: bash
 
       - name: test + coverage
         run: yarn test-coverage
@@ -80,10 +72,6 @@ jobs:
       - name: yarn install
         run: yarn --immutable
         shell: bash
-
-      # - name: yarn ensure dedup
-      #   run: yarn yarn-deduplicate -s fewer yarn.lock --fail --list
-      #   shell: bash
 
       - name: build
         run: yarn build

@@ -23,10 +23,6 @@ jobs:
         run: yarn --immutable
         shell: bash
 
-      # - name: yarn ensure dedup
-      #   run: yarn yarn-deduplicate -s fewer yarn.lock --fail --list
-      #   shell: bash
-
       - name: build
         run: yarn build
         shell: bash
