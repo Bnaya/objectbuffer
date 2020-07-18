@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1595009231424,
+  "lastUpdate": 1595052881036,
   "repoUrl": "https://github.com/Bnaya/objectbuffer",
   "entries": {
     "Benchmark": [
@@ -5667,6 +5667,33 @@ window.BENCHMARK_DATA = {
             "range": "±3.71%",
             "unit": "ops/sec",
             "extra": "35 samples"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "name": "Bnaya",
+            "username": "Bnaya"
+          },
+          "committer": {
+            "name": "Bnaya",
+            "username": "Bnaya"
+          },
+          "id": "9643e61e45a9240882e321338e07fc511e64364a",
+          "message": "Bump lodash from 4.17.15 to 4.17.19",
+          "timestamp": "2020-07-06T09:20:57Z",
+          "url": "https://github.com/Bnaya/objectbuffer/pull/126/commits/9643e61e45a9240882e321338e07fc511e64364a"
+        },
+        "date": 1595052880675,
+        "tool": "benchmarkjs",
+        "benches": [
+          {
+            "name": "createObjectBuffer with 200 comments",
+            "value": 572,
+            "range": "±3.36%",
+            "unit": "ops/sec",
+            "extra": "32 samples"
           }
         ]
       }
