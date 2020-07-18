@@ -16,7 +16,9 @@ jobs:
       - name: Cache node modules
         uses: actions/cache@v1
         with:
-          path: node_modules
+          path: |
+            node_modules
+            .yarn/cache
           key: ${{ runner.OS }}-build-${{ hashFiles('**/yarn.lock') }}-${{ hashFiles('.github/workflows/*.yml') }}
 
       - name: yarn install
