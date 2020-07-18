@@ -40,7 +40,7 @@ jobs:
           key: ${{ runner.OS }}-build-${{ hashFiles('**/yarn.lock') }}-${{ hashFiles('.github/workflows/*.yml') }}
 
       - name: yarn install
-        run: yarn --frozen-lockfile
+        run: yarn --immutable
         shell: bash
 
       - name: test + coverage
@@ -71,7 +71,7 @@ jobs:
           key: ${{ runner.OS }}-build-${{ hashFiles('**/yarn.lock') }}-${{ hashFiles('.github/workflows/*.yml') }}
 
       - name: yarn install
-        run: yarn --frozen-lockfile
+        run: yarn --immutable
         shell: bash
 
       - name: build
