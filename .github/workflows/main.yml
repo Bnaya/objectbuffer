@@ -12,7 +12,7 @@ jobs:
           node-version: 12.x
 
       - name: Cache node modules
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
           path: |
             node_modules
@@ -36,7 +36,7 @@ jobs:
           node-version: 12.x
 
       - name: Cache node modules
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
           path: |
             node_modules
@@ -68,7 +68,7 @@ jobs:
           node-version: 12.x
 
       - name: Cache node modules
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
           path: |
             node_modules
