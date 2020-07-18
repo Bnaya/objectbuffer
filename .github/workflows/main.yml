@@ -12,21 +12,15 @@ jobs:
           node-version: 12.x
 
       - name: Cache node modules
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
-          path: node_modules
-          key: ${{ runner.OS }}-build-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.OS }}-build-${{ env.cache-name }}-
-            ${{ runner.OS }}-build-
-            ${{ runner.OS }}-
+          path: |
+            node_modules
+            .yarn/cache
+          key: ${{ runner.OS }}-build-${{ hashFiles('**/yarn.lock') }}-${{ hashFiles('.github/workflows/*.yml') }}
 
       - name: yarn install
-        run: yarn --frozen-lockfile
-        shell: bash
-
-      - name: yarn ensure dedup
-        run: yarn yarn-deduplicate -s fewer yarn.lock --fail --list
+        run: yarn --immutable
         shell: bash
 
       - name: Lint
@@ -42,21 +36,15 @@ jobs:
           node-version: 12.x
 
       - name: Cache node modules
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
-          path: node_modules
-          key: ${{ runner.OS }}-build-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.OS }}-build-${{ env.cache-name }}-
-            ${{ runner.OS }}-build-
-            ${{ runner.OS }}-
+          path: |
+            node_modules
+            .yarn/cache
+          key: ${{ runner.OS }}-build-${{ hashFiles('**/yarn.lock') }}-${{ hashFiles('.github/workflows/*.yml') }}
 
       - name: yarn install
-        run: yarn --frozen-lockfile
-        shell: bash
-
-      - name: yarn ensure dedup
-        run: yarn yarn-deduplicate -s fewer yarn.lock --fail --list
+        run: yarn --immutable
         shell: bash
 
       - name: test + coverage
@@ -80,21 +68,15 @@ jobs:
           node-version: 12.x
 
       - name: Cache node modules
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
-          path: node_modules
-          key: ${{ runner.OS }}-build-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.OS }}-build-${{ env.cache-name }}-
-            ${{ runner.OS }}-build-
-            ${{ runner.OS }}-
+          path: |
+            node_modules
+            .yarn/cache
+          key: ${{ runner.OS }}-build-${{ hashFiles('**/yarn.lock') }}-${{ hashFiles('.github/workflows/*.yml') }}
 
       - name: yarn install
-        run: yarn --frozen-lockfile
-        shell: bash
-
-      - name: yarn ensure dedup
-        run: yarn yarn-deduplicate -s fewer yarn.lock --fail --list
+        run: yarn --immutable
         shell: bash
 
       - name: build
