@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1595064569773,
+  "lastUpdate": 1595064677730,
   "repoUrl": "https://github.com/Bnaya/objectbuffer",
   "entries": {
     "Benchmark": [
@@ -5748,6 +5748,33 @@ window.BENCHMARK_DATA = {
             "range": "±5.15%",
             "unit": "ops/sec",
             "extra": "30 samples"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "name": "Bnaya",
+            "username": "Bnaya"
+          },
+          "committer": {
+            "name": "Bnaya",
+            "username": "Bnaya"
+          },
+          "id": "2a908e55ca12493aa54149206757d1ecd914ddcb",
+          "message": "Use yarn berry",
+          "timestamp": "2020-07-06T09:20:57Z",
+          "url": "https://github.com/Bnaya/objectbuffer/pull/125/commits/2a908e55ca12493aa54149206757d1ecd914ddcb"
+        },
+        "date": 1595064677138,
+        "tool": "benchmarkjs",
+        "benches": [
+          {
+            "name": "createObjectBuffer with 200 comments",
+            "value": 596,
+            "range": "±3.02%",
+            "unit": "ops/sec",
+            "extra": "32 samples"
           }
         ]
       }
