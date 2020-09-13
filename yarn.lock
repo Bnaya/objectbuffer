@@ -4501,10 +4501,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eventemitter3@npm:^3.0.0":
-  version: 3.1.2
-  resolution: "eventemitter3@npm:3.1.2"
-  checksum: fa1a206c4e4e8e427542f7fdfa10bd073a4ddf2510fb22e2f9a33b9aa7a0d5669bffba9b889e22d8c1c976af51a92dab274845e58d626ddb2d3563ed4d5d50dc
+"eventemitter3@npm:^4.0.0":
+  version: 4.0.7
+  resolution: "eventemitter3@npm:4.0.7"
+  checksum: 1fc12c7bc3b4194c50975827e72d56ff57c32b75a4c7dbf4d5eebf3c8371f6f1aad6799150b609de1b867c0d8a9885c08b6ca5e7e0dc437d6152f3063b2607dd
   languageName: node
   linkType: hard
 
@@ -5636,13 +5636,13 @@ fsevents@^1.2.7:
   linkType: hard
 
 "http-proxy@npm:^1.17.0":
-  version: 1.17.0
-  resolution: "http-proxy@npm:1.17.0"
+  version: 1.18.1
+  resolution: "http-proxy@npm:1.18.1"
   dependencies:
-    eventemitter3: ^3.0.0
+    eventemitter3: ^4.0.0
     follow-redirects: ^1.0.0
     requires-port: ^1.0.0
-  checksum: 107bb95b4dc393dd665abc5500aab311cb8238447e04e25936218f38cbc9ecd382c99881e68f5dfb6675a61609d515e79581933ca4c78bf2076d7cbda46d603b
+  checksum: fc2062718d77868eff0d2707652d7e0d302a0f85d90f317daa410df5c41fbe009589c80bc73cc72a44368bb37d071c8f52aaa5b3ce82a08f3524a79ddf178b9b
   languageName: node
   linkType: hard
 
