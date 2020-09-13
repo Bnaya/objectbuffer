@@ -15,7 +15,8 @@ import { BaseProxyTrap } from "./BaseProxyTrap";
 import { hashMapNodeLookup } from "./hashmap/hashmap";
 import { object_pointerToHashMap_get } from "./generatedStructs";
 
-export class ObjectWrapper extends BaseProxyTrap
+export class ObjectWrapper
+  extends BaseProxyTrap
   implements ProxyHandler<Record<string, unknown>> {
   public get(target: Record<string, unknown>, p: PropertyKey): any {
     if (p === INTERNAL_API_SYMBOL) {
