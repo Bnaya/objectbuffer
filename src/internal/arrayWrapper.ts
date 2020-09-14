@@ -15,7 +15,8 @@ import {
 import { BaseProxyTrap } from "./BaseProxyTrap";
 import { array_length_get } from "./generatedStructs";
 
-export class ArrayWrapper extends BaseProxyTrap
+export class ArrayWrapper
+  extends BaseProxyTrap
   implements ProxyHandler<Record<string, unknown>> {
   public get(target: Record<string, unknown>, p: PropertyKey): any {
     if (p === INTERNAL_API_SYMBOL) {

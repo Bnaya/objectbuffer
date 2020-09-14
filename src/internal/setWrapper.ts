@@ -17,7 +17,8 @@ import {
 import { entryToFinalJavaScriptValue } from "./entryToFinalJavaScriptValue";
 import { object_pointerToHashMap_get } from "./generatedStructs";
 
-export class SetWrapper<K extends string | number> extends BaseProxyTrap
+export class SetWrapper<K extends string | number>
+  extends BaseProxyTrap
   implements Set<K> {
   clear(): void {
     mapOrSetClear(this.externalArgs, this.carrier, this.entryPointer);
