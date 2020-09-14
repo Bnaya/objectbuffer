@@ -16,7 +16,7 @@ import {
   // LINKED_LIST_ITEM_MACHINE
 } from "./linkedList";
 
-describe("LinkedList", () => {
+describe.skip("LinkedList", () => {
   let ab = new ArrayBuffer(64);
   let carrier = makeCarrier(ab);
 
