@@ -1,0 +1,17 @@
+{
+  "targets": {
+    "debug": {
+      "binaryFile": "assemblyscript-allocator-experiment/build/untouched.wasm",
+      "textFile": "assemblyscript-allocator-experiment/build/untouched.wat",
+      "sourceMap": true,
+      "debug": true
+    },
+    "release": {
+      "binaryFile": "assemblyscript-allocator-experiment/build/optimized.wasm",
+      "textFile": "assemblyscript-allocator-experiment/build/optimized.wat",
+      "sourceMap": true,
+      "optimize": true
+    }
+  },
+  "options": {}
+}
