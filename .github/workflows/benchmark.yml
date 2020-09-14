@@ -20,6 +20,9 @@ jobs:
             node_modules
             .yarn/cache
           key: ${{ runner.OS }}-build-${{ hashFiles('**/yarn.lock') }}-${{ hashFiles('.github/workflows/*.yml') }}
+          restore-keys: |
+            ${{ runner.OS }}-build-${{ hashFiles('**/yarn.lock') }}
+            ${{ runner.OS }}-build
 
       - name: yarn install
         run: yarn --immutable
