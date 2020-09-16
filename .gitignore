@@ -1,5 +1,5 @@
 node_modules
-dist
+dist/*
 coverage
 COMMIT
 yarn-error.log
@@ -9,3 +9,4 @@ yarn-error.log
 !.yarn/sdks
 !.yarn/versions
 .pnp.*
+!dist/objectbuffer.esm.js
