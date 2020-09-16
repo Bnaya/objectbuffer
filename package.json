@@ -92,8 +92,5 @@
     "README",
     "COMMIT",
     "LICENSE"
-  ],
-  "dependencies": {
-    "@thi.ng/malloc": "^4.1.25"
-  }
+  ]
 }

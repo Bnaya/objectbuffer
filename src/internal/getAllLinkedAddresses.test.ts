@@ -1,8 +1,8 @@
 /* eslint-env jest */
 
-import { MemPool } from "@thi.ng/malloc";
 import { createObjectBuffer, memoryStats } from "./api";
 import { getAllLinkedAddresses } from "./getAllLinkedAddresses";
+import { TransactionalAllocator } from "./TransactionalAllocator";
 import { getInternalAPI, externalArgsApiToExternalArgsApi } from "./utils";
 
 describe("getAllLinkedAddresses", () => {
@@ -13,14 +13,23 @@ describe("getAllLinkedAddresses", () => {
   describe("Make sure all allocated are discovered", () => {
     test("Small object", () => {
       const allocatedAddresses: number[] = [];
-      const origMalloc = MemPool.prototype.malloc;
-      MemPool.prototype.malloc = function malloc(dataSize: number) {
-        const address = origMalloc.call(this, dataSize);
 
-        allocatedAddresses.push(address);
+      const wrapAllocationsIn = ["malloc", "calloc", "realloc"] as const;
 
-        return address;
-      };
+      for (const funcName of wrapAllocationsIn) {
+        const origFunc = TransactionalAllocator.prototype[funcName];
+        TransactionalAllocator.prototype[funcName] = function wrappedXlocFunc(
+          dataSize: number
+        ) {
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-expect-error
+          const address = origFunc.call(this, dataSize);
+
+          allocatedAddresses.push(address);
+
+          return address;
+        };
+      }
 
       const objectBuffer = createObjectBuffer(externalArgs, 2048, {
         smallObject: [{ a: "6" }],
@@ -45,14 +54,23 @@ describe("getAllLinkedAddresses", () => {
 
     test("With Map & Set", () => {
       const allocatedAddresses: number[] = [];
-      const origMalloc = MemPool.prototype.malloc;
-      MemPool.prototype.malloc = function malloc(dataSize: number) {
-        const address = origMalloc.call(this, dataSize);
 
-        allocatedAddresses.push(address);
+      const wrapAllocationsIn = ["malloc", "calloc", "realloc"] as const;
 
-        return address;
-      };
+      for (const funcName of wrapAllocationsIn) {
+        const origFunc = TransactionalAllocator.prototype[funcName];
+        TransactionalAllocator.prototype[funcName] = function wrappedXlocFunc(
+          dataSize: number
+        ) {
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-expect-error
+          const address = origFunc.call(this, dataSize);
+
+          allocatedAddresses.push(address);
+
+          return address;
+        };
+      }
 
       const objectBuffer = createObjectBuffer(externalArgs, 2048, {
         m: new Map([
@@ -80,14 +98,23 @@ describe("getAllLinkedAddresses", () => {
 
     test("object with more stuff", () => {
       const allocatedAddresses: number[] = [];
-      const origMalloc = MemPool.prototype.malloc;
-      MemPool.prototype.malloc = function malloc(dataSize: number) {
-        const address = origMalloc.call(this, dataSize);
 
-        allocatedAddresses.push(address);
+      const wrapAllocationsIn = ["malloc", "calloc", "realloc"] as const;
 
-        return address;
-      };
+      for (const funcName of wrapAllocationsIn) {
+        const origFunc = TransactionalAllocator.prototype[funcName];
+        TransactionalAllocator.prototype[funcName] = function wrappedXlocFunc(
+          dataSize: number
+        ) {
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-expect-error
+          const address = origFunc.call(this, dataSize);
+
+          allocatedAddresses.push(address);
+
+          return address;
+        };
+      }
 
       const objectBuffer = createObjectBuffer(externalArgs, 2048, {
         nestedObject: { a: 1, b: null, c: "string", bigint: BigInt("100") },
@@ -112,16 +139,25 @@ describe("getAllLinkedAddresses", () => {
 
     test("getAllLinkedAddresses free all from outside", () => {
       const allocatedAddresses: number[] = [];
-      const origMalloc = MemPool.prototype.malloc;
-      let pool: MemPool;
-      MemPool.prototype.malloc = function malloc(dataSize: number) {
-        pool = this;
-        const address = origMalloc.call(this, dataSize);
 
-        allocatedAddresses.push(address);
+      const wrapAllocationsIn = ["malloc", "calloc", "realloc"] as const;
 
-        return address;
-      };
+      let pool: TransactionalAllocator;
+      for (const funcName of wrapAllocationsIn) {
+        const origFunc = TransactionalAllocator.prototype[funcName];
+        TransactionalAllocator.prototype[funcName] = function wrappedXlocFunc(
+          dataSize: number
+        ) {
+          pool = this;
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-expect-error
+          const address = origFunc.call(this, dataSize);
+
+          allocatedAddresses.push(address);
+
+          return address;
+        };
+      }
 
       const objectBuffer = createObjectBuffer(externalArgs, 2048, {
         nestedObject: { a: 1, b: null, c: "string", bigint: BigInt("100") },

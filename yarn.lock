@@ -1281,7 +1281,6 @@ __metadata:
     "@babel/preset-typescript": ^7.10.4
     "@rollup/plugin-babel": ^5.2.1
     "@rollup/plugin-node-resolve": ^9.0.0
-    "@thi.ng/malloc": ^4.1.25
     "@types/benchmark": ^1.0.33
     "@types/jest": ^26.0.13
     "@types/node": ^12.12.58
@@ -1668,55 +1667,6 @@ __metadata:
   dependencies:
     "@sinonjs/commons": ^1.7.0
   checksum: 64458b908773638dda08b555a00e6fbbbc679735348291dc1b7f437ada2f60242537fdc48e4ee82d2573d86984ec87e755b66a96c0ed9ebf0f46b4c6687ccde2
-  languageName: node
-  linkType: hard
-
-"@thi.ng/api@npm:^6.13.0":
-  version: 6.13.0
-  resolution: "@thi.ng/api@npm:6.13.0"
-  dependencies:
-    tslib: ^2.0.1
-  checksum: 868158175a0a6d9dd4e195d999229c6b61e645d6848e7a23a8a9ea4d874c3d027fe8bad060772f0d11f6b2d2c4001462d8c28560dc22791882a84821dd5565e6
-  languageName: node
-  linkType: hard
-
-"@thi.ng/binary@npm:^2.0.15":
-  version: 2.0.15
-  resolution: "@thi.ng/binary@npm:2.0.15"
-  dependencies:
-    "@thi.ng/api": ^6.13.0
-    tslib: ^2.0.1
-  checksum: 5082cde171d624a8692884ba01a82c4bd5fbed9f3db768e2580a8b2617bfe06cec9a20cf58b9b9126e59ca3ee53455b506d86d03d952123ed195c20d004e7e52
-  languageName: node
-  linkType: hard
-
-"@thi.ng/checks@npm:^2.7.8":
-  version: 2.7.8
-  resolution: "@thi.ng/checks@npm:2.7.8"
-  dependencies:
-    tslib: ^2.0.1
-  checksum: 371ab7c0aaf3cf8853623c4dfed975547d59c9842113505e7606cdf4021b0378cebada5c7f155919f82269127dd0b716c2a16543cc5429df9730d8454eb56465
-  languageName: node
-  linkType: hard
-
-"@thi.ng/errors@npm:^1.2.21":
-  version: 1.2.21
-  resolution: "@thi.ng/errors@npm:1.2.21"
-  dependencies:
-    tslib: ^2.0.1
-  checksum: 94a0ac082535dd923c9fad7a7f7e15164bd97a0823d52229166d3e2da6742648e44157764a46db801803610b625b0630e41b3efec06d382d7d49e9ae2fb94463
-  languageName: node
-  linkType: hard
-
-"@thi.ng/malloc@npm:^4.1.25":
-  version: 4.1.25
-  resolution: "@thi.ng/malloc@npm:4.1.25"
-  dependencies:
-    "@thi.ng/api": ^6.13.0
-    "@thi.ng/binary": ^2.0.15
-    "@thi.ng/checks": ^2.7.8
-    "@thi.ng/errors": ^1.2.21
-  checksum: a0434dbd5774c4a3acade78c1ea5df2f4dc6170ea519608d0ba126c1d4cb702a0a14fed5aea1d7fd7f6787e12befee89da5fce139d315ffb1f851f3d2d34a277
   languageName: node
   linkType: hard
 
@@ -10125,13 +10075,6 @@ fsevents@^1.2.7:
   version: 1.13.0
   resolution: "tslib@npm:1.13.0"
   checksum: 5dc3bdaea3b67c76ef4a14c28fcb2171da7bcf292fd9c59a260098729626b1ce766c52b588f08e324ed9a0c52ea8a93a815920f980d75981abc9d850fbf310fb
-  languageName: node
-  linkType: hard
-
-"tslib@npm:^2.0.1":
-  version: 2.0.1
-  resolution: "tslib@npm:2.0.1"
-  checksum: 7b42337a07f536c9650c72471cdf51317f07eb981692e91b8979fee3f6e20136a8f047e6ecdc5f2f3201132a6cc4e0096fa3c58655eba3803bf7fe739ccd088e
   languageName: node
   linkType: hard
 

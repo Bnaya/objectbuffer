@@ -5,7 +5,8 @@
     "**/bower_components": true,
     "**/node_modules": true,
     "node_modules/**": true,
-    "dist": true
+    "dist": true,
+    ".yarn": true,
     // "src/**/*.js": true,
     // "src/**/*.js.map": true
   },
@@ -17,7 +18,13 @@
   //   "src/**/*.js": false,
   //   "src/**/*.js.map": true
   // },
-  "cSpell.words": ["objectbuffer", "ormconfig", "phin", "pubsub", "typedoc"],
+  "cSpell.words": [
+    "objectbuffer",
+    "ormconfig",
+    "phin",
+    "pubsub",
+    "typedoc"
+  ],
   // "eslint.autoFixOnSave": true,
   // "eslint.validate": [
   //   "javascript",
@@ -45,9 +52,18 @@
     "editor.formatOnSave": false
   },
   "jest.autoEnable": false,
-  "jest.debugCodeLens.showWhenTestStateIn": ["fail", "unknown", "pass", "skip"],
+  "jest.debugCodeLens.showWhenTestStateIn": [
+    "fail",
+    "unknown",
+    "pass",
+    "skip"
+  ],
   "jest.enableSnapshotUpdateMessages": true,
-  "editor.rulers": [80, 120, 140],
+  "editor.rulers": [
+    80,
+    120,
+    140
+  ],
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": true
   }

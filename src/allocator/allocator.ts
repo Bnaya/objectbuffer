@@ -6,5 +6,10 @@ export {
   free,
   freeAll,
   stats,
+  setEnd,
 } from "./functional";
-export type { AllocatorState, AllocatorInitOpts } from "./functionalInterfaces";
+export type {
+  AllocatorState,
+  AllocatorInitOpts,
+  AllocatorStats,
+} from "./functionalInterfaces";
