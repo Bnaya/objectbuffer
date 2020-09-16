@@ -17,7 +17,7 @@ export default {
     terser({
       compress: {
         inline: 3,
-        // passes: 3,
+        passes: 5,
       },
       mangle: false,
       toplevel: true,
@@ -26,6 +26,7 @@ export default {
         beautify: true,
       },
       keep_classnames: true,
+      keep_fnames: true,
     }),
   ],
   output: [
