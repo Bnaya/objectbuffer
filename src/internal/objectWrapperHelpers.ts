@@ -8,10 +8,11 @@ import { entryToFinalJavaScriptValue } from "./entryToFinalJavaScriptValue";
 import {
   hashMapDelete,
   hashMapLowLevelIterator,
-  hashMapNodePointerToKeyValue,
   hashMapInsertUpdate,
   hashMapValueLookup,
   createHashMap,
+  hashMapNodePointerToKey,
+  hashMapNodePointerToValue,
 } from "./hashmap/hashmap";
 import { getAllLinkedAddresses } from "./getAllLinkedAddresses";
 import {
@@ -60,10 +61,8 @@ export function getObjectPropertiesEntries(
   while (
     (iterator = hashMapLowLevelIterator(carrier.heap, hashmapPointer, iterator))
   ) {
-    const { valuePointer, keyPointer } = hashMapNodePointerToKeyValue(
-      carrier.heap,
-      iterator
-    );
+    const valuePointer = hashMapNodePointerToValue(iterator);
+    const keyPointer = hashMapNodePointerToKey(carrier.heap, iterator);
 
     const typeOfKeyEntry:
       | ENTRY_TYPE.NUMBER

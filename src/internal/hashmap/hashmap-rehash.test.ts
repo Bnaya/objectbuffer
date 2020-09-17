@@ -5,10 +5,11 @@ import {
   createHashMap,
   hashMapInsertUpdate,
   hashMapLowLevelIterator,
-  hashMapNodePointerToKeyValue,
   hashMapSize,
   hashMapDelete,
   hashMapValueLookup,
+  hashMapNodePointerToKey,
+  hashMapNodePointerToValue,
 } from "./hashmap";
 import { GlobalCarrier } from "../interfaces";
 import { externalArgsApiToExternalArgsApi } from "../utils";
@@ -78,7 +79,10 @@ describe("hashmap rehash", () => {
         iteratorToken
       )) !== 0
     ) {
-      values.push(hashMapNodePointerToKeyValue(carrier.heap, iteratorToken));
+      values.push({
+        valuePointer: hashMapNodePointerToValue(iteratorToken),
+        keyPointer: hashMapNodePointerToKey(carrier.heap, iteratorToken),
+      });
     }
     expect(values.map((v) => readString(carrier.heap, v.keyPointer)))
       .toMatchInlineSnapshot(`
