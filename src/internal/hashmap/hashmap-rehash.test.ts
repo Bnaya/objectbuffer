@@ -19,12 +19,10 @@ describe("hashmap rehash", () => {
     arrayAdditionalAllocation: 20,
   });
 
-  let ab = new ArrayBuffer(128);
-  let carrier: GlobalCarrier = makeCarrier(ab);
+  let carrier: GlobalCarrier = makeCarrier(128);
 
   function setABSize(size: number) {
-    ab = new ArrayBuffer(size);
-    carrier = makeCarrier(ab);
+    carrier = makeCarrier(size);
   }
 
   beforeEach(() => {

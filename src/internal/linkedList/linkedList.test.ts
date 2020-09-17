@@ -17,12 +17,12 @@ import {
 } from "./linkedList";
 
 describe("LinkedList", () => {
-  let ab = new ArrayBuffer(64);
-  let carrier = makeCarrier(ab);
+  let carrier = makeCarrier(64);
+  let ab = carrier.allocator.getArrayBuffer();
 
   function setABSize(size: number) {
-    ab = new ArrayBuffer(size);
-    carrier = makeCarrier(ab);
+    carrier = makeCarrier(size);
+    ab = carrier.allocator.getArrayBuffer();
   }
 
   beforeEach(() => {

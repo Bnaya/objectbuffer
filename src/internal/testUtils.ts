@@ -1,13 +1,14 @@
 /* istanbul ignore file */
 
-import { IMemPool } from "@thi.ng/malloc";
 import { OutOfMemoryError } from "./exceptions";
 import { GlobalCarrier } from "./interfaces";
-import { MEM_POOL_START } from "./consts";
 import { createHeap } from "../structsGenerator/consts";
 import { getInternalAPI } from "./utils";
 import { memoryStats } from "./api";
-import { TransactionalAllocator } from "./TransactionalAllocator";
+import {
+  FunctionalAllocatorWrapper,
+  TransactionalAllocator,
+} from "./TransactionalAllocator";
 
 export function getArrayBufferOnTopSize(ob: unknown) {
   const stats = memoryStats(ob);
@@ -31,7 +32,10 @@ export function arrayBuffer2HexArray(
 }
 
 // extend pool and not monkey patch? need to think about it
-export function recordAllocations(operation: () => void, pool: IMemPool) {
+export function recordAllocations(
+  operation: () => void,
+  pool: FunctionalAllocatorWrapper
+) {
   const allocations = new Set<number>();
   const deallocations = new Set<number>();
 
@@ -100,15 +104,14 @@ export function recordAllocations(operation: () => void, pool: IMemPool) {
   return { allocations: [...allocations], deallocations: [...deallocations] };
 }
 
-export function makeCarrier(arrayBuffer: ArrayBuffer) {
+export function makeCarrier(size: number) {
   const allocator = new TransactionalAllocator({
-    buf: arrayBuffer,
-    start: MEM_POOL_START,
+    size,
   });
 
   const carrier: GlobalCarrier = {
     allocator,
-    heap: createHeap(arrayBuffer),
+    heap: createHeap(allocator.getArrayBuffer()),
   };
 
   return carrier;

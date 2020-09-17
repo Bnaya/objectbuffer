@@ -12,8 +12,8 @@ describe("Runtime errors", () => {
 
   test("Fail to create when not enough memory", () => {
     expect(() => {
-      createObjectBuffer(externalArgs, 8, { value: "" });
-    }).toThrowErrorMatchingInlineSnapshot(`"Invalid typed array length: 7"`);
+      createObjectBuffer(externalArgs, 64, { value: "1".repeat(512) });
+    }).toThrowErrorMatchingInlineSnapshot(`"OutOfMemoryError"`);
   });
 
   test("Fail to set new data when enough memory", () => {

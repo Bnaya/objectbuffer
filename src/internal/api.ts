@@ -13,7 +13,6 @@ import {
   MEM_POOL_START,
   ENDIANNESS_FLAG_POINTER,
 } from "./consts";
-import { MemPool } from "@thi.ng/malloc";
 import { UnsupportedOperationError } from "./exceptions";
 import { createHeap } from "../structsGenerator/consts";
 import { saveValueIterative } from "./saveValue";
@@ -45,16 +44,17 @@ export function createObjectBuffer<T = any>(
     throw new UnsupportedOperationError();
   }
 
-  const arrayBuffer = new (options.useSharedArrayBuffer
-    ? SharedArrayBuffer
-    : ArrayBuffer)(size);
-  initializeArrayBuffer(arrayBuffer);
+  const allocator = new TransactionalAllocator(
+    {
+      start: MEM_POOL_START,
+      size,
+    },
+    !!options.useSharedArrayBuffer
+  );
 
-  const allocator = new TransactionalAllocator({
-    align: 8,
-    buf: arrayBuffer,
-    start: MEM_POOL_START,
-  });
+  const arrayBuffer = allocator.getArrayBuffer();
+
+  initializeArrayBuffer(arrayBuffer);
 
   const carrier: GlobalCarrier = {
     allocator,
@@ -132,12 +132,7 @@ export function loadObjectBuffer<T = any>(
   externalArgs: ExternalArgsApi,
   arrayBuffer: ArrayBuffer | SharedArrayBuffer
 ): T {
-  const allocator = new TransactionalAllocator({
-    align: 8,
-    buf: arrayBuffer,
-    start: MEM_POOL_START,
-    skipInitialization: true,
-  });
+  const allocator = TransactionalAllocator.load(arrayBuffer);
 
   const carrier: GlobalCarrier = {
     allocator,
@@ -175,13 +170,7 @@ export function replaceUnderlyingArrayBuffer(
   objectBuffer: unknown,
   newArrayBuffer: ArrayBuffer | SharedArrayBuffer
 ) {
-  const allocator = new TransactionalAllocator({
-    align: 8,
-    buf: newArrayBuffer,
-    start: MEM_POOL_START,
-    skipInitialization: true,
-  });
-
+  const allocator = TransactionalAllocator.load(newArrayBuffer);
   const carrier: GlobalCarrier = {
     allocator,
     heap: createHeap(newArrayBuffer),
@@ -204,16 +193,9 @@ export function replaceUnderlyingArrayBuffer(
  * Return the number of free & used bytes left in the given objectBuffer
  */
 export function memoryStats(objectBuffer: unknown): MemoryStats {
-  const buf = getUnderlyingArrayBuffer(objectBuffer);
-
-  const pool = new MemPool({
-    align: 8,
-    buf,
-    skipInitialization: true,
-    start: MEM_POOL_START,
-  });
-
-  const { available, total, top } = pool.stats();
+  const { available, total, top } = getInternalAPI(objectBuffer)
+    .getCarrier()
+    .allocator.stats();
 
   return { available, used: total - available, total, top };
 }

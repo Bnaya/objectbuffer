@@ -19,12 +19,12 @@ describe("hashmap", () => {
     arrayAdditionalAllocation: 20,
   });
 
-  let ab = new ArrayBuffer(128);
-  let carrier: GlobalCarrier = makeCarrier(ab);
+  let carrier: GlobalCarrier = makeCarrier(128);
+  let ab = carrier.allocator.getArrayBuffer();
 
   function setABSize(size: number) {
-    ab = new ArrayBuffer(size);
-    carrier = makeCarrier(ab);
+    carrier = makeCarrier(size);
+    ab = carrier.allocator.getArrayBuffer();
   }
 
   beforeEach(() => {

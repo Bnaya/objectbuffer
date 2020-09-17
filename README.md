@@ -12,8 +12,8 @@ In other words, It's an implementation of javascript objects in user-land.
 That's enables us to `transfer` or share objects in-memory with `WebWorker` without additional memory or serialization
 While the library is not `1.0`, it is usable. 
 
-A core part of the library is an allocator, that allocates & free memory on the `ArrayBuffer` for us!  
-The allocator in use is [@thi.ng/malloc](https://www.npmjs.com/package/@thi.ng/malloc), part of the amazing [thi.ng/umbrella](https://github.com/thi-ng/umbrella) project
+A core part of the library is the allocator, that allocates & free memory on the `ArrayBuffer` for us!  
+The allocator in use is functional variant/refactor of [@thi.ng/malloc](https://www.npmjs.com/package/@thi.ng/malloc), part of the amazing [thi.ng/umbrella](https://github.com/thi-ng/umbrella) project
 
 ## 🐉🐉🐉 Adventurers Beware 🐉🐉🐉
 Using this library, and workers in general, will not necessarily make you code faster.  

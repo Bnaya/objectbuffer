@@ -8,7 +8,7 @@ import {
   FALSE_KNOWN_ADDRESS,
   ENDIANNESS,
 } from "./consts";
-import { IMemPool } from "@thi.ng/malloc";
+import { FunctionalAllocatorWrapper } from "./TransactionalAllocator";
 
 export function getEndiannessOfSystem() {
   const F64 = new Float64Array(1);
@@ -46,7 +46,10 @@ export function arrayBufferCopyTo(
   copyTo.set(copyFrom.subarray(startByte, startByte + length), toTargetByte);
 }
 
-export function getOurPointerIfApplicable(value: any, ourAllocator: IMemPool) {
+export function getOurPointerIfApplicable(
+  value: any,
+  ourAllocator: FunctionalAllocatorWrapper
+) {
   if (INTERNAL_API_SYMBOL in value) {
     const api = getInternalAPI(value);
     if (api.getCarrier().allocator === ourAllocator) {

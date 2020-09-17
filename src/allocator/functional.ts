@@ -31,8 +31,8 @@ export function allocatorInit(
   invariant(options.align % 8 === 0, "align must be multiplication of 8");
 
   const buf = useShareArrayBuffer
-    ? new SharedArrayBuffer(options.size || 0x1000)
-    : new ArrayBuffer(options.size || 0x1000);
+    ? new SharedArrayBuffer(options.size)
+    : new ArrayBuffer(options.size);
 
   const u8 = new Uint8Array(buf);
   const u32 = new Uint32Array(buf);
@@ -60,6 +60,62 @@ export function allocatorInit(
       )} - 0x${resolvedEnd.toString(16)})`
     );
   }
+
+  return {
+    options,
+    u8,
+    u32,
+    state,
+  };
+}
+
+export function listAllAllocatedPointers(allocatorState: AllocatorState) {
+  const pointers: Array<{
+    blockPointer: number;
+    pointer: number;
+    size: number;
+  }> = [];
+
+  const { u32, state } = allocatorState;
+
+  let iteratedBlock = get__used(state);
+
+  while (iteratedBlock !== 0) {
+    pointers.push({
+      blockPointer: iteratedBlock,
+      pointer: iteratedBlock + SIZEOF_MEM_BLOCK,
+      size: blockSize(u32, iteratedBlock),
+    });
+
+    iteratedBlock = blockNext(u32, iteratedBlock);
+  }
+
+  return pointers;
+}
+
+/**
+ * When we want to create allocator from an existing array buffer
+ * The array buffer is expected to already be initialized!
+ * @param buf
+ * @param start
+ */
+export function loadAllocator(
+  buf: ArrayBuffer | SharedArrayBuffer,
+  start: number
+): Readonly<AllocatorState> {
+  const u8 = new Uint8Array(buf);
+  const u32 = new Uint32Array(buf);
+  const state = new Uint32Array(buf, start, SIZEOF_STATE / 4);
+
+  const options: AllocatorInitOpts = {
+    start,
+    end: get_end(state),
+    size: buf.byteLength,
+    align: get_align(state),
+    split: get_doSplit(state),
+    minSplit: get_minSplit(state),
+    compact: get_doCompact(state),
+  };
 
   return {
     options,
@@ -250,6 +306,13 @@ export function stats(
       get_end(allocatorState.state) - get_top(allocatorState.state) + free.size,
     total: allocatorState.u8.buffer.byteLength,
   };
+}
+
+/**
+ * To be used after ArrayBuffer change
+ */
+export function setEnd(allocatorState: AllocatorState, newEnd: number) {
+  set_end(allocatorState.state, newEnd);
 }
 
 // export function release() {

@@ -1,27 +1,8 @@
-import { MemPool } from "@thi.ng/malloc";
+import { listAllAllocatedPointers } from "../../allocator/functional";
+import { TransactionalAllocator } from "../TransactionalAllocator";
 
-const SIZEOF_MEM_BLOCK = 2 * 4;
-
-export class MemPoolWithTricks extends MemPool {
+export class MemPoolWithTricks extends TransactionalAllocator {
   public listAllAllocatedPointers() {
-    const pointers: Array<{
-      blockPointer: number;
-      pointer: number;
-      size: number;
-    }> = [];
-
-    let block = this._used;
-
-    while (block !== 0) {
-      pointers.push({
-        blockPointer: block,
-        pointer: block + SIZEOF_MEM_BLOCK,
-        size: this.blockSize(block),
-      });
-
-      block = this.blockNext(block);
-    }
-
-    return pointers;
+    return listAllAllocatedPointers(this.allocatorState);
   }
 }
