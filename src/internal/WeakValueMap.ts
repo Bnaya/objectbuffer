@@ -32,13 +32,13 @@ export class WeakValueMap<K, V> implements Map<K, V> {
         : FinalizationGroup;
 
     this.group = new FinalizationSomething(
-      (iteratorOrKey: Iterable<unknown> | unknown) => {
-        // @ts-expect-error
-        if (Symbol.iterator in iteratorOrKey) {
-          // @ts-expect-error
+      (iteratorOrKey: Iterable<number> | number) => {
+        if (typeof iteratorOrKey !== "number") {
           for (const key of iteratorOrKey) {
+            // @ts-expect-error
             this.map.delete(key);
             if (this.externalFinalizer) {
+              // @ts-expect-error
               this.externalFinalizer(key);
             }
           }
