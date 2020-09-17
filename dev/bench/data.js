@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1600339708600,
+  "lastUpdate": 1600344816062,
   "repoUrl": "https://github.com/Bnaya/objectbuffer",
   "entries": {
     "Benchmark": [
@@ -6288,6 +6288,33 @@ window.BENCHMARK_DATA = {
             "range": "±4.64%",
             "unit": "ops/sec",
             "extra": "29 samples"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "name": "Bnaya",
+            "username": "Bnaya"
+          },
+          "committer": {
+            "name": "Bnaya",
+            "username": "Bnaya"
+          },
+          "id": "b5561f9bdf8aaeaae5573ab2a6b3c1a0db95a868",
+          "message": "Test array flat and flat map",
+          "timestamp": "2020-09-17T10:49:48Z",
+          "url": "https://github.com/Bnaya/objectbuffer/pull/135/commits/b5561f9bdf8aaeaae5573ab2a6b3c1a0db95a868"
+        },
+        "date": 1600344815723,
+        "tool": "benchmarkjs",
+        "benches": [
+          {
+            "name": "createObjectBuffer with 200 comments",
+            "value": 508,
+            "range": "±3.77%",
+            "unit": "ops/sec",
+            "extra": "23 samples"
           }
         ]
       }
