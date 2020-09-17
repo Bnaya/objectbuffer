@@ -1,6 +1,6 @@
 {
   "typescript.tsdk": "node_modules/typescript/lib",
-  "debug.node.autoAttach": "off",
+  "debug.node.autoAttach": "on",
   "search.exclude": {
     "**/bower_components": true,
     "**/node_modules": true,
@@ -66,5 +66,7 @@
   ],
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": true
-  }
+  },
+  "debug.javascript.usePreviewAutoAttach": false,
+  "debug.javascript.usePreview": false
 }
