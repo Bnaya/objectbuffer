@@ -15,6 +15,17 @@ import {
 import { BaseProxyTrap } from "./BaseProxyTrap";
 import { array_length_get } from "./generatedStructs";
 
+const getOwnPropertyDescriptorLENGTH = {
+  configurable: false,
+  enumerable: false,
+  writable: true,
+} as const;
+
+const getOwnPropertyDescriptorHAS = {
+  configurable: false,
+  enumerable: true,
+} as const;
+
 export class ArrayWrapper
   extends BaseProxyTrap
   implements ProxyHandler<Record<string, unknown>> {
@@ -72,14 +83,14 @@ export class ArrayWrapper
 
   public getOwnPropertyDescriptor(target: Record<string, unknown>, prop: any) {
     if (prop === "length") {
-      return { configurable: false, enumerable: false, writable: true };
+      return getOwnPropertyDescriptorLENGTH;
     }
 
     if (!this.has(target, prop)) {
       return undefined;
     }
 
-    return { configurable: false, enumerable: true };
+    return getOwnPropertyDescriptorHAS;
   }
 
   public has(target: Record<string, unknown>, p: PropertyKey): boolean {

@@ -151,10 +151,15 @@ export function mapOrSetClear(
   const prevCount = typeAndRc_refsCount_get(carrier.heap, mapOrSetPtr);
   typeAndRc_refsCount_set(carrier.heap, mapOrSetPtr, 0);
 
-  const { leafAddresses, arcAddresses } = getAllLinkedAddresses(
+  const leafAddresses = new Set<number>();
+  const arcAddresses = new Map<number, number>();
+
+  getAllLinkedAddresses(
     carrier.heap,
     false,
-    mapOrSetPtr
+    mapOrSetPtr,
+    leafAddresses,
+    arcAddresses
   );
 
   for (const address of leafAddresses) {

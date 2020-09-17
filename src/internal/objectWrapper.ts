@@ -15,6 +15,11 @@ import { BaseProxyTrap } from "./BaseProxyTrap";
 import { hashMapNodeLookup } from "./hashmap/hashmap";
 import { object_pointerToHashMap_get } from "./generatedStructs";
 
+const getOwnPropertyDescriptorHAS = {
+  configurable: true,
+  enumerable: true,
+} as const;
+
 export class ObjectWrapper
   extends BaseProxyTrap
   implements ProxyHandler<Record<string, unknown>> {
@@ -73,7 +78,7 @@ export class ObjectWrapper
     p: PropertyKey
   ) {
     if (this.has(target, p)) {
-      return { configurable: true, enumerable: true };
+      return getOwnPropertyDescriptorHAS;
     }
 
     return undefined;

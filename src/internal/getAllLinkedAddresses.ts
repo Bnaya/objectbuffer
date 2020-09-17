@@ -14,10 +14,10 @@ import type { Heap } from "../structsGenerator/consts";
 export function getAllLinkedAddresses(
   heap: Heap,
   ignoreRefCount: boolean,
-  entryPointer: number
-) {
-  const leafAddresses: Set<number> = new Set<number>();
-  const arcAddresses: Map<number, number> = new Map<number, number>();
+  entryPointer: number,
+  leafAddresses: Set<number>,
+  arcAddresses: Map<number, number>
+): void {
   const addressesToProcessQueue: number[] = [entryPointer];
 
   let addressToProcess: number | undefined = undefined;
@@ -44,9 +44,6 @@ export function getAllLinkedAddresses(
   }
 
   // console.log(diffs);
-
-  // @todo avoid intermediate object
-  return { leafAddresses, arcAddresses };
 }
 
 function getAllLinkedAddressesStep(
