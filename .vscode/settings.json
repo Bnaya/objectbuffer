@@ -67,6 +67,6 @@
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": true
   },
-  "debug.javascript.usePreviewAutoAttach": false,
-  "debug.javascript.usePreview": false
+  "debug.javascript.usePreviewAutoAttach": true,
+  "debug.javascript.usePreview": true
 }

@@ -36,11 +36,13 @@
     "browser-playground": "webpack-dev-server --mode=development --config playground/webpack.config.js playground/main.js --open",
     "webpack-playground": "webpack-dev-server --mode=development --config playground/webpack.config.js --open",
     "generate-docs": "rimraf -f docs/generated/ && typedoc --mode library --readme none --out docs/generated/ --excludeNotExported --ignoreCompilerErrors src/index.ts",
-    "generate-structs": "npx ts-node src/structsGenerator/run.ts",
+    "generate-structs": "yarn ts-node src/structsGenerator/run.ts",
     "asbuild:untouched": "asc assemblyscript-allocator-experiment/assembly/index.ts --target debug",
     "asbuild:optimized": "asc assemblyscript-allocator-experiment/assembly/index.ts --target release",
     "asbuild": "yarn asbuild:untouched && yarn asbuild:optimized",
-    "as:test": "node tests"
+    "as:test": "node tests",
+    "deoptigate-benchmarks": "npx deoptigate benchmarks/main-register-ts-node.js",
+    "v8-deopt-viewer-benchmarks": "npx v8-deopt-viewer benchmarks/main-register-ts-node.js --open"
   },
   "devDependencies": {
     "@babel/cli": "^7.11.6",
@@ -73,6 +75,7 @@
     "rimraf": "^3.0.2",
     "rollup": "^2.27.1",
     "rollup-plugin-terser": "^7.0.2",
+    "ts-node": "^9.0.0",
     "typedoc": "^0.17.0-3",
     "typedoc-plugin-markdown": "^2.4.2",
     "typescript": "^4.0.2",
