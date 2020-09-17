@@ -1,6 +1,6 @@
 import babel from "@rollup/plugin-babel";
 import nodeResolve from "@rollup/plugin-node-resolve";
-import { terser } from "rollup-plugin-terser";
+// import { terser } from "rollup-plugin-terser";
 
 const extensions = [".js", ".jsx", ".ts", ".tsx"];
 
@@ -14,19 +14,20 @@ export default {
       extensions,
       exclude: "node_modules/**",
     }),
-    terser({
-      compress: {
-        inline: 3,
-        // passes: 3,
-      },
-      mangle: false,
-      toplevel: true,
-      module: true,
-      output: {
-        beautify: true,
-      },
-      keep_classnames: true,
-    }),
+    // Terser issue: https://github.com/terser/terser/issues/828
+    // terser({
+    //   compress: {
+    //     inline: 3,
+    //     // passes: 3,
+    //   },
+    //   mangle: false,
+    //   toplevel: true,
+    //   module: true,
+    //   output: {
+    //     beautify: true,
+    //   },
+    //   keep_classnames: true,
+    // }),
   ],
   output: [
     {
