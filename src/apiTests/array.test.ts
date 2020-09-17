@@ -190,4 +190,50 @@ describe("SharedArrayBuffer tests", () => {
     const usedDisposeArrays = memoryStats(ob).used;
     expect(usedDisposeArrays - usedAfterCreate).toMatchInlineSnapshot(`48`);
   });
+
+  test("flat", () => {
+    const input = [[{ v: 1 }], [{ v: 2 }], [{ v: 3 }], [{ v: 4 }]];
+
+    const o = createObjectBuffer({ arrayAdditionalAllocation: 0 }, 1024 * 2, {
+      arr: input,
+    });
+
+    const output = o.arr.flat();
+
+    expect(output).toMatchInlineSnapshot(`
+      Array [
+        Object {
+          "v": 1,
+        },
+        Object {
+          "v": 2,
+        },
+        Object {
+          "v": 3,
+        },
+        Object {
+          "v": 4,
+        },
+      ]
+    `);
+  });
+
+  test("flatMap", () => {
+    const input = [[{ v: 1 }], [{ v: 2 }], [{ v: 3 }], [{ v: 4 }]];
+
+    const o = createObjectBuffer({ arrayAdditionalAllocation: 0 }, 1024 * 2, {
+      arr: input,
+    });
+
+    const output = o.arr.flatMap((v) => v[0].v + 1);
+
+    expect(output).toMatchInlineSnapshot(`
+      Array [
+        2,
+        3,
+        4,
+        5,
+      ]
+    `);
+  });
 });
