@@ -5,10 +5,12 @@ import {
   createHashMap,
   hashMapInsertUpdate,
   hashMapLowLevelIterator,
-  hashMapNodePointerToKeyValue,
   hashMapSize,
   hashMapDelete,
   hashMapValueLookup,
+  hashMapNodePointerToKey,
+  hashMapNodePointerToValue,
+  hashMapCapacity,
 } from "./hashmap";
 import { GlobalCarrier } from "../interfaces";
 import { externalArgsApiToExternalArgsApi } from "../utils";
@@ -33,14 +35,38 @@ describe("hashmap rehash", () => {
     const abSize = 1024;
     setABSize(abSize);
     const mapPointer = createHashMap(carrier, 1);
+    expect(hashMapCapacity(carrier.heap, mapPointer)).toBe(1);
 
     expect(hashMapSize(carrier.heap, mapPointer)).toBe(0);
 
     const aPtr = hashMapInsertUpdate(externalArgs, carrier, mapPointer, "a");
     expect(hashMapValueLookup(carrier.heap, mapPointer, "a")).toBe(aPtr);
 
+    expect(hashMapCapacity(carrier.heap, mapPointer)).toBe(2);
+
     const bPtr = hashMapInsertUpdate(externalArgs, carrier, mapPointer, "b");
     expect(hashMapValueLookup(carrier.heap, mapPointer, "b")).toBe(bPtr);
+
+    expect(hashMapCapacity(carrier.heap, mapPointer)).toBe(4);
+
+    const ptr1 = hashMapInsertUpdate(externalArgs, carrier, mapPointer, 1);
+    expect(hashMapValueLookup(carrier.heap, mapPointer, 1)).toBe(ptr1);
+
+    expect(hashMapCapacity(carrier.heap, mapPointer)).toBe(4);
+
+    const ptr2 = hashMapInsertUpdate(externalArgs, carrier, mapPointer, 2);
+    expect(hashMapValueLookup(carrier.heap, mapPointer, 2)).toBe(ptr2);
+
+    expect(hashMapCapacity(carrier.heap, mapPointer)).toBe(8);
+
+    const ptr3 = hashMapInsertUpdate(externalArgs, carrier, mapPointer, 3);
+    expect(hashMapValueLookup(carrier.heap, mapPointer, 3)).toBe(ptr3);
+    const ptr4 = hashMapInsertUpdate(externalArgs, carrier, mapPointer, 4);
+    expect(hashMapValueLookup(carrier.heap, mapPointer, 4)).toBe(ptr4);
+    const ptr5 = hashMapInsertUpdate(externalArgs, carrier, mapPointer, 5);
+    expect(hashMapValueLookup(carrier.heap, mapPointer, 5)).toBe(ptr5);
+    const ptr6 = hashMapInsertUpdate(externalArgs, carrier, mapPointer, 6);
+    expect(hashMapValueLookup(carrier.heap, mapPointer, 6)).toBe(ptr6);
 
     expect(hashMapValueLookup(carrier.heap, mapPointer, "a")).toBe(aPtr);
   });
@@ -78,7 +104,10 @@ describe("hashmap rehash", () => {
         iteratorToken
       )) !== 0
     ) {
-      values.push(hashMapNodePointerToKeyValue(carrier.heap, iteratorToken));
+      values.push({
+        valuePointer: hashMapNodePointerToValue(iteratorToken),
+        keyPointer: hashMapNodePointerToKey(carrier.heap, iteratorToken),
+      });
     }
     expect(values.map((v) => readString(carrier.heap, v.keyPointer)))
       .toMatchInlineSnapshot(`

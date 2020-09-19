@@ -75,6 +75,7 @@ export function arraySplice(
         deletedItemIndexToSave
       )
     );
+    // @todo hoist pointers map/set out of the loop
     handleArcForDeletedValuePointer(
       carrier,
       arrayGetValuePointerInIndex(

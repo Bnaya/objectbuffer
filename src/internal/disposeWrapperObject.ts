@@ -16,20 +16,25 @@ export function disposeWrapperObject(value: any) {
   const newRefCount = internalApi.destroy();
   getCacheFor(internalApi.getCarrier()).delete(entryPointer);
 
+  const leafAddresses = new Set<number>();
+  const arcAddresses = new Map<number, number>();
+
   if (newRefCount === 0) {
-    const addressesToFree = getAllLinkedAddresses(
+    getAllLinkedAddresses(
       internalApi.getCarrier().heap,
       false,
-      entryPointer
+      entryPointer,
+      leafAddresses,
+      arcAddresses
     );
 
     const { allocator, heap } = internalApi.getCarrier();
 
-    for (const address of addressesToFree.leafAddresses) {
+    for (const address of leafAddresses) {
       allocator.free(address);
     }
 
-    for (const [address, count] of addressesToFree.arcAddresses) {
+    for (const [address, count] of arcAddresses) {
       decrementRefCountWithNum(heap, address, count);
     }
 

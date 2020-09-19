@@ -13,13 +13,23 @@ export function freeNoLongerUsedAddresses(carrier: GlobalCarrier) {
   while ((memoryAddress = l.pop()) !== undefined) {
     const newRefsCount = decrementRefCount(carrier.heap, memoryAddress);
     if (newRefsCount === 0) {
-      const freeUs = getAllLinkedAddresses(carrier.heap, false, memoryAddress);
+      // @todo hoist it out of the loop
+      const leafAddresses = new Set<number>();
+      const arcAddresses = new Map<number, number>();
 
-      for (const address of freeUs.leafAddresses) {
+      getAllLinkedAddresses(
+        carrier.heap,
+        false,
+        memoryAddress,
+        leafAddresses,
+        arcAddresses
+      );
+
+      for (const address of leafAddresses) {
         carrier.allocator.free(address);
       }
 
-      for (const [address, count] of freeUs.arcAddresses) {
+      for (const [address, count] of arcAddresses) {
         decrementRefCountWithNum(carrier.heap, address, count);
       }
     }

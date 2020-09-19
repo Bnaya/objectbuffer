@@ -1,3 +1,5 @@
+/* istanbul ignore file */
+
 import { MemoryGraph, NodeType } from "./types";
 import { Heap } from "../../structsGenerator/consts";
 import {

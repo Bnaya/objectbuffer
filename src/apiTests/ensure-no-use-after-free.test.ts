@@ -108,4 +108,18 @@ describe("no user after free tests", () => {
 
     jestExpectNoUseAfterFreePartsAreEqulesTheWhole([ob, a1, a2]);
   });
+
+  test("use after dispose", () => {
+    const ob = createObjectBuffer(externalArgs, 1024, {
+      str: "str1",
+      o: { a1: [1, 2, 3], a2: [4, 5, 6] },
+    });
+
+    const { o } = ob;
+
+    disposeWrapperObject(o);
+    expect(() => {
+      o.a1;
+    }).toThrowErrorMatchingInlineSnapshot(`"WrapperDestroyed"`);
+  });
 });

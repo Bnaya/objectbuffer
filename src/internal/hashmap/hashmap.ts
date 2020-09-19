@@ -492,16 +492,20 @@ export function hashMapLowLevelIterator(
   return linkedListGetValue(heap, pointerToNextLinkedListItem);
 }
 
-export function hashMapNodePointerToKeyValue(heap: Heap, nodePointer: number) {
-  // @todo avoid intermediate object
-  return {
-    valuePointer: nodePointer + hashmapNode_VALUE_POINTER_place,
-    keyPointer: hashmapNode_KEY_POINTER_get(heap, nodePointer),
-  };
+export function hashMapNodePointerToValue(nodePointer: number) {
+  return nodePointer + hashmapNode_VALUE_POINTER_place;
+}
+
+export function hashMapNodePointerToKey(heap: Heap, nodePointer: number) {
+  return hashmapNode_KEY_POINTER_get(heap, nodePointer);
 }
 
 export function hashMapSize(heap: Heap, mapPointer: number) {
   return hashmap_LINKED_LIST_SIZE_get(heap, mapPointer);
+}
+
+export function hashMapCapacity(heap: Heap, mapPointer: number) {
+  return hashmap_CAPACITY_get(heap, mapPointer);
 }
 
 export function hashMapGetPointersToFreeV2(

@@ -11,8 +11,8 @@ import { BaseProxyTrap } from "./BaseProxyTrap";
 import {
   hashMapNodeLookup,
   hashMapSize,
-  hashMapNodePointerToKeyValue,
   hashmapNodesPointerIterator,
+  hashMapNodePointerToKey,
 } from "./hashmap/hashmap";
 import { entryToFinalJavaScriptValue } from "./entryToFinalJavaScriptValue";
 import { object_pointerToHashMap_get } from "./generatedStructs";
@@ -49,12 +49,12 @@ export class SetWrapper<K extends string | number>
       this.carrier.heap,
       object_pointerToHashMap_get(this.carrier.heap, this.entryPointer)
     )) {
-      const t = hashMapNodePointerToKeyValue(this.carrier.heap, nodePointer);
+      const t = hashMapNodePointerToKey(this.carrier.heap, nodePointer);
 
       const key = entryToFinalJavaScriptValue(
         this.externalArgs,
         this.carrier,
-        t.keyPointer
+        t
       );
 
       yield [key, key];
@@ -66,13 +66,9 @@ export class SetWrapper<K extends string | number>
       this.carrier.heap,
       object_pointerToHashMap_get(this.carrier.heap, this.entryPointer)
     )) {
-      const t = hashMapNodePointerToKeyValue(this.carrier.heap, nodePointer);
+      const t = hashMapNodePointerToKey(this.carrier.heap, nodePointer);
 
-      yield entryToFinalJavaScriptValue(
-        this.externalArgs,
-        this.carrier,
-        t.keyPointer
-      );
+      yield entryToFinalJavaScriptValue(this.externalArgs, this.carrier, t);
     }
   }
   *values(): IterableIterator<K> {
@@ -80,13 +76,9 @@ export class SetWrapper<K extends string | number>
       this.carrier.heap,
       object_pointerToHashMap_get(this.carrier.heap, this.entryPointer)
     )) {
-      const t = hashMapNodePointerToKeyValue(this.carrier.heap, nodePointer);
+      const t = hashMapNodePointerToKey(this.carrier.heap, nodePointer);
 
-      yield entryToFinalJavaScriptValue(
-        this.externalArgs,
-        this.carrier,
-        t.keyPointer
-      );
+      yield entryToFinalJavaScriptValue(this.externalArgs, this.carrier, t);
     }
   }
 

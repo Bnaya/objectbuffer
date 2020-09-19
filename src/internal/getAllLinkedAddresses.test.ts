@@ -40,14 +40,19 @@ describe("getAllLinkedAddresses", () => {
       const entryPointer = getInternalAPI(objectBuffer).getEntryPointer();
       getInternalAPI(objectBuffer).destroy();
 
-      const linkedAddresses = getAllLinkedAddresses(
+      const leafAddresses = new Set<number>();
+      const arcAddresses = new Map<number, number>();
+
+      getAllLinkedAddresses(
         carrier.heap,
         false,
         // allocatedAddresses[allocatedAddresses.length - 1]
-        entryPointer
+        entryPointer,
+        leafAddresses,
+        arcAddresses
       );
 
-      expect([...linkedAddresses.leafAddresses].slice().sort()).toEqual(
+      expect([...leafAddresses].slice().sort()).toEqual(
         allocatedAddresses.slice().sort()
       );
     });
@@ -85,13 +90,18 @@ describe("getAllLinkedAddresses", () => {
       const entryPointer = getInternalAPI(objectBuffer).getEntryPointer();
       getInternalAPI(objectBuffer).destroy();
 
-      const linkedAddresses = getAllLinkedAddresses(
+      const leafAddresses = new Set<number>();
+      const arcAddresses = new Map<number, number>();
+
+      getAllLinkedAddresses(
         carrier.heap,
         false,
-        entryPointer
+        entryPointer,
+        leafAddresses,
+        arcAddresses
       );
 
-      expect([...linkedAddresses.leafAddresses].slice().sort()).toEqual(
+      expect([...leafAddresses].slice().sort()).toEqual(
         allocatedAddresses.slice().sort()
       );
     });
@@ -126,13 +136,18 @@ describe("getAllLinkedAddresses", () => {
       const entryPointer = getInternalAPI(objectBuffer).getEntryPointer();
       getInternalAPI(objectBuffer).destroy();
 
-      const linkedAddresses = getAllLinkedAddresses(
+      const leafAddresses = new Set<number>();
+      const arcAddresses = new Map<number, number>();
+
+      getAllLinkedAddresses(
         carrier.heap,
         false,
-        entryPointer
+        entryPointer,
+        leafAddresses,
+        arcAddresses
       );
 
-      expect([...linkedAddresses.leafAddresses].slice().sort()).toEqual(
+      expect([...leafAddresses].slice().sort()).toEqual(
         allocatedAddresses.slice().sort()
       );
     });
@@ -178,13 +193,18 @@ describe("getAllLinkedAddresses", () => {
 
       getInternalAPI(objectBuffer).destroy();
 
-      const linkedAddresses = getAllLinkedAddresses(
+      const leafAddresses = new Set<number>();
+      const arcAddresses = new Map<number, number>();
+
+      getAllLinkedAddresses(
         carrier.heap,
         false,
-        entryPointer
+        entryPointer,
+        leafAddresses,
+        arcAddresses
       );
 
-      linkedAddresses.leafAddresses.forEach((address) => {
+      leafAddresses.forEach((address) => {
         pool.free(address);
       });
 

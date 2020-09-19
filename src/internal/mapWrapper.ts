@@ -11,8 +11,9 @@ import { BaseProxyTrap } from "./BaseProxyTrap";
 import {
   hashMapNodeLookup,
   hashMapSize,
-  hashMapNodePointerToKeyValue,
   hashmapNodesPointerIterator,
+  hashMapNodePointerToKey,
+  hashMapNodePointerToValue,
 } from "./hashmap/hashmap";
 import { entryToFinalJavaScriptValue } from "./entryToFinalJavaScriptValue";
 import { object_pointerToHashMap_get } from "./generatedStructs";
@@ -49,7 +50,8 @@ export class MapWrapper<K extends string | number, V>
       this.carrier.heap,
       object_pointerToHashMap_get(this.carrier.heap, this.entryPointer)
     )) {
-      const { valuePointer, keyPointer } = hashMapNodePointerToKeyValue(
+      const valuePointer = hashMapNodePointerToValue(nodePointer);
+      const keyPointer = hashMapNodePointerToKey(
         this.carrier.heap,
         nodePointer
       );
@@ -76,13 +78,9 @@ export class MapWrapper<K extends string | number, V>
       this.carrier.heap,
       object_pointerToHashMap_get(this.carrier.heap, this.entryPointer)
     )) {
-      const t = hashMapNodePointerToKeyValue(this.carrier.heap, nodePointer);
+      const t = hashMapNodePointerToKey(this.carrier.heap, nodePointer);
 
-      yield entryToFinalJavaScriptValue(
-        this.externalArgs,
-        this.carrier,
-        t.keyPointer
-      );
+      yield entryToFinalJavaScriptValue(this.externalArgs, this.carrier, t);
     }
   }
 
@@ -91,10 +89,7 @@ export class MapWrapper<K extends string | number, V>
       this.carrier.heap,
       object_pointerToHashMap_get(this.carrier.heap, this.entryPointer)
     )) {
-      const { valuePointer } = hashMapNodePointerToKeyValue(
-        this.carrier.heap,
-        nodePointer
-      );
+      const valuePointer = hashMapNodePointerToValue(nodePointer);
 
       yield entryToFinalJavaScriptValue(
         this.externalArgs,

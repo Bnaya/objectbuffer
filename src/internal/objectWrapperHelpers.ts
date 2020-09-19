@@ -8,10 +8,11 @@ import { entryToFinalJavaScriptValue } from "./entryToFinalJavaScriptValue";
 import {
   hashMapDelete,
   hashMapLowLevelIterator,
-  hashMapNodePointerToKeyValue,
   hashMapInsertUpdate,
   hashMapValueLookup,
   createHashMap,
+  hashMapNodePointerToKey,
+  hashMapNodePointerToValue,
 } from "./hashmap/hashmap";
 import { getAllLinkedAddresses } from "./getAllLinkedAddresses";
 import {
@@ -60,10 +61,8 @@ export function getObjectPropertiesEntries(
   while (
     (iterator = hashMapLowLevelIterator(carrier.heap, hashmapPointer, iterator))
   ) {
-    const { valuePointer, keyPointer } = hashMapNodePointerToKeyValue(
-      carrier.heap,
-      iterator
-    );
+    const valuePointer = hashMapNodePointerToValue(iterator);
+    const keyPointer = hashMapNodePointerToKey(carrier.heap, iterator);
 
     const typeOfKeyEntry:
       | ENTRY_TYPE.NUMBER
@@ -152,10 +151,15 @@ export function mapOrSetClear(
   const prevCount = typeAndRc_refsCount_get(carrier.heap, mapOrSetPtr);
   typeAndRc_refsCount_set(carrier.heap, mapOrSetPtr, 0);
 
-  const { leafAddresses, arcAddresses } = getAllLinkedAddresses(
+  const leafAddresses = new Set<number>();
+  const arcAddresses = new Map<number, number>();
+
+  getAllLinkedAddresses(
     carrier.heap,
     false,
-    mapOrSetPtr
+    mapOrSetPtr,
+    leafAddresses,
+    arcAddresses
   );
 
   for (const address of leafAddresses) {

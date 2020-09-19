@@ -151,12 +151,25 @@ export function handleArcForDeletedValuePointer(
     return;
   }
 
-  const { leafAddresses, arcAddresses } = getAllLinkedAddresses(
+  const leafAddresses = new Set<number>();
+  const arcAddresses = new Map<number, number>();
+
+  getAllLinkedAddresses(
     carrier.heap,
     false,
-    deletedValuePointer
+    deletedValuePointer,
+    leafAddresses,
+    arcAddresses
   );
 
+  handleLeafAddressesAndArcAddresses(carrier, leafAddresses, arcAddresses);
+}
+
+export function handleLeafAddressesAndArcAddresses(
+  { heap, allocator }: GlobalCarrier,
+  leafAddresses: Set<number>,
+  arcAddresses: Map<number, number>
+) {
   for (const address of leafAddresses) {
     allocator.free(address);
   }
@@ -165,6 +178,38 @@ export function handleArcForDeletedValuePointer(
     decrementRefCountWithNum(heap, address, count);
   }
 }
+
+// export function collectArcDataForDeletedValuePointer(
+//   carrier: GlobalCarrier,
+//   deletedValuePointer: number,
+//   leafAddresses: Set<number>,
+//   arcAddresses: Map<number, number>
+// ): void {
+//   const { heap, allocator } = carrier;
+//   // No memory to free/ARC
+//   if (isKnownAddressValuePointer(deletedValuePointer)) {
+//     return;
+//   }
+
+//   const entryType = typeOnly_type_get(heap, deletedValuePointer);
+//   if (!isTypeWithRC(entryType)) {
+//     allocator.free(deletedValuePointer);
+//     return;
+//   }
+
+//   const refCountAfterDec = decrementRefCount(heap, deletedValuePointer);
+//   if (refCountAfterDec > 0) {
+//     return;
+//   }
+
+//   getAllLinkedAddresses(
+//     carrier.heap,
+//     false,
+//     deletedValuePointer,
+//     leafAddresses,
+//     arcAddresses
+//   );
+// }
 
 export function incrementRefCount(heap: Heap, entryPointer: number) {
   typeAndRc_refsCount_set(
