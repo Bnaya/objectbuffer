@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1600519089387,
+  "lastUpdate": 1600519541248,
   "repoUrl": "https://github.com/Bnaya/objectbuffer",
   "entries": {
     "Benchmark": [
@@ -6756,6 +6756,117 @@ window.BENCHMARK_DATA = {
             "range": "±2.20%",
             "unit": "ops/sec",
             "extra": "33 samples"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "name": "Bnaya",
+            "username": "Bnaya"
+          },
+          "committer": {
+            "name": "Bnaya",
+            "username": "Bnaya"
+          },
+          "id": "60360cbd23180d73706f6328fb45f2ded7e2740c",
+          "message": "Deopts and benchmarks",
+          "timestamp": "2020-09-19T12:41:25Z",
+          "url": "https://github.com/Bnaya/objectbuffer/pull/137/commits/60360cbd23180d73706f6328fb45f2ded7e2740c"
+        },
+        "date": 1600519540896,
+        "tool": "benchmarkjs",
+        "benches": [
+          {
+            "name": "createObjectBuffer with 200 comments",
+            "value": 496,
+            "range": "±1.75%",
+            "unit": "ops/sec",
+            "extra": "66 samples"
+          },
+          {
+            "name": "createObjectBuffer and then set 200 comments",
+            "value": 480,
+            "range": "±0.53%",
+            "unit": "ops/sec",
+            "extra": "113 samples"
+          },
+          {
+            "name": "static Top Level Object Lookup",
+            "value": 933237,
+            "range": "±0.78%",
+            "unit": "ops/sec",
+            "extra": "134 samples"
+          },
+          {
+            "name": "static + Top Level Object Lookup + array length",
+            "value": 963578,
+            "range": "±0.97%",
+            "unit": "ops/sec",
+            "extra": "132 samples"
+          },
+          {
+            "name": "static + Top Level Object Lookup + array length no toString",
+            "value": 1061089,
+            "range": "±1.02%",
+            "unit": "ops/sec",
+            "extra": "134 samples"
+          },
+          {
+            "name": "duplicate + Top Level Object Lookup",
+            "value": 371,
+            "range": "±0.64%",
+            "unit": "ops/sec",
+            "extra": "131 samples"
+          },
+          {
+            "name": "duplicate + Top Level Object Lookup + array length",
+            "value": 370,
+            "range": "±0.59%",
+            "unit": "ops/sec",
+            "extra": "127 samples"
+          },
+          {
+            "name": "STATIC_AB.slice(0)",
+            "value": 393,
+            "range": "±0.72%",
+            "unit": "ops/sec",
+            "extra": "125 samples"
+          },
+          {
+            "name": "new AB",
+            "value": 521,
+            "range": "±0.67%",
+            "unit": "ops/sec",
+            "extra": "104 samples"
+          },
+          {
+            "name": "js object lookup flat",
+            "value": 817175927,
+            "range": "±0.67%",
+            "unit": "ops/sec",
+            "extra": "135 samples"
+          },
+          {
+            "name": "js object lookup flat + toString()",
+            "value": 46153,
+            "range": "±0.91%",
+            "unit": "ops/sec",
+            "extra": "133 samples"
+          },
+          {
+            "name": "static ob object lookup",
+            "value": 1259266,
+            "range": "±0.78%",
+            "unit": "ops/sec",
+            "extra": "136 samples"
+          },
+          {
+            "name": "static ob object lookup + toString()",
+            "value": 914133,
+            "range": "±0.84%",
+            "unit": "ops/sec",
+            "extra": "136 samples"
           }
         ]
       }
