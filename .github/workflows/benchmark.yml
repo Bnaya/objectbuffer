@@ -7,11 +7,14 @@ jobs:
   benchmark:
     name: Run JavaScript benchmark
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: [12, 14]
     steps:
       - uses: actions/checkout@v1
       - uses: actions/setup-node@v1
         with:
-          node-version: 12.x
+          node-version: ${{ matrix.node }}
 
       - name: Cache node modules
         uses: actions/cache@v2
@@ -37,7 +40,7 @@ jobs:
       - name: Store benchmark result
         uses: rhysd/github-action-benchmark@v1
         with:
-          name: Benchmark
+          name: benchmarkjs, node ${{ matrix.node }}
           tool: "benchmarkjs"
           output-file-path: benchmarks/output.txt
           github-token: ${{ secrets.PERSONAL_GITHUB_TOKEN }}
