@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1600510795793,
+  "lastUpdate": 1600519089387,
   "repoUrl": "https://github.com/Bnaya/objectbuffer",
   "entries": {
     "Benchmark": [
@@ -6729,6 +6729,33 @@ window.BENCHMARK_DATA = {
             "range": "±4.13%",
             "unit": "ops/sec",
             "extra": "30 samples"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "name": "Bnaya",
+            "username": "Bnaya"
+          },
+          "committer": {
+            "name": "Bnaya",
+            "username": "Bnaya"
+          },
+          "id": "6d581f64b04939fae08944917485849c69342133",
+          "message": "General iteration",
+          "timestamp": "2020-09-17T12:22:39Z",
+          "url": "https://github.com/Bnaya/objectbuffer/pull/136/commits/6d581f64b04939fae08944917485849c69342133"
+        },
+        "date": 1600519088981,
+        "tool": "benchmarkjs",
+        "benches": [
+          {
+            "name": "createObjectBuffer with 200 comments",
+            "value": 601,
+            "range": "±2.20%",
+            "unit": "ops/sec",
+            "extra": "33 samples"
           }
         ]
       }
