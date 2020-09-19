@@ -1,9 +1,3 @@
-export class BigInt64OverflowError extends RangeError {
-  constructor() {
-    super("BigInt64OverflowError");
-  }
-}
-
 export class IllegalObjectPropConfigError extends RangeError {
   constructor() {
     super("IllegalObjectPropConfigError");

@@ -235,10 +235,6 @@ export class ArrayWrapper
     return array_length_get(this.carrier.heap, this.entryPointer);
   }
 
-  public getEntryPointer() {
-    return this.entryPointer;
-  }
-
   public isExtensible() {
     return true;
   }

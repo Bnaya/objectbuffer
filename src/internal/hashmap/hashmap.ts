@@ -504,6 +504,10 @@ export function hashMapSize(heap: Heap, mapPointer: number) {
   return hashmap_LINKED_LIST_SIZE_get(heap, mapPointer);
 }
 
+export function hashMapCapacity(heap: Heap, mapPointer: number) {
+  return hashmap_CAPACITY_get(heap, mapPointer);
+}
+
 export function hashMapGetPointersToFreeV2(
   heap: Heap,
   hashmapPointer: number,

@@ -57,10 +57,6 @@ export class TransactionalAllocator implements FunctionalAllocatorWrapper {
     return this.allocatorState.u32.buffer;
   }
 
-  release(): boolean {
-    return true;
-  }
-
   calloc(bytes: number, fill?: number): number {
     if (bytes === 0) {
       return 0;
@@ -174,7 +170,6 @@ export class TransactionalAllocator implements FunctionalAllocatorWrapper {
 }
 
 export interface FunctionalAllocatorWrapper {
-  release(opt?: any): boolean;
   /**
    * Attempts to allocate a new memory block of given `size` (in
    * bytes). Returns block address or zero if unsuccessful

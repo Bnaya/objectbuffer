@@ -212,6 +212,10 @@ export function updateExternalArgs(
   Object.assign(getInternalAPI(objectBuffer).getExternalArgs(), options);
 }
 
+export function readExternalArgs(objectBuffer: unknown) {
+  return getInternalAPI(objectBuffer).getExternalArgs();
+}
+
 /**
  * Free all the addresses collected using FinalizationRegistry
  * When no FinalizationRegistry/WeakRef available, use disposeWrapperObject

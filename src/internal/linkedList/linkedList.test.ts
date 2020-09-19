@@ -348,4 +348,38 @@ describe("LinkedList", () => {
     expect(r.pointers.sort()).toEqual(allocations.sort());
     expect(r.valuePointers.sort()).toEqual(toAddItems.sort());
   });
+
+  test("linkedList linkedListGetPointersToFree empty list", () => {
+    setABSize(144);
+    let linkedListPointer = 0;
+    const toAddItems: number[] = [];
+    const toAddItemsCopy = toAddItems.slice();
+
+    const { allocations } = recordAllocations(() => {
+      linkedListPointer = initLinkedList(carrier);
+
+      expect(carrier.allocator.stats().top).toMatchInlineSnapshot(`80`);
+
+      let toAdd: undefined | number = 0;
+
+      while ((toAdd = toAddItemsCopy.pop()) !== undefined) {
+        linkedListItemInsert(carrier, linkedListPointer, toAdd);
+      }
+    }, carrier.allocator);
+
+    const r = linkedListGetPointersToFree(carrier.heap, linkedListPointer);
+
+    expect(r).toMatchInlineSnapshot(`
+      Object {
+        "pointers": Array [
+          56,
+          72,
+        ],
+        "valuePointers": Array [],
+      }
+    `);
+
+    expect(r.pointers.sort()).toEqual(allocations.sort());
+    expect(r.valuePointers.sort()).toEqual(toAddItems.sort());
+  });
 });
