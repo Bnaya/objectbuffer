@@ -1,0 +1,11 @@
+{
+  "extends": "../tsconfig",
+  "compilerOptions": {
+    "rootDir": "../",
+    "target": "ES2019"
+  },
+  "include": [
+    "../src",
+    "../benchmarks"
+  ]
+}

@@ -19,14 +19,6 @@ import {
 import { readString } from "./readString";
 import { getAddressesNoLongerUsed, getCacheFor } from "./stateModule";
 
-const TYPE_TO_FACTORY = {
-  [ENTRY_TYPE.OBJECT]: createObjectWrapper,
-  [ENTRY_TYPE.DATE]: createDateWrapper,
-  [ENTRY_TYPE.ARRAY]: createArrayWrapper,
-  [ENTRY_TYPE.MAP]: createMapWrapper,
-  [ENTRY_TYPE.SET]: createSetWrapper,
-} as const;
-
 export function entryToFinalJavaScriptValue(
   externalArgs: ExternalArgs,
   carrier: GlobalCarrier,
@@ -86,9 +78,28 @@ export function entryToFinalJavaScriptValue(
   let ret = cache.get(pointerToEntry);
 
   if (!ret) {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-expect-error
-    ret = TYPE_TO_FACTORY[entryType](externalArgs, carrier, pointerToEntry);
+    switch (entryType) {
+      case ENTRY_TYPE.OBJECT:
+        ret = createObjectWrapper(externalArgs, carrier, pointerToEntry);
+        break;
+
+      case ENTRY_TYPE.DATE:
+        ret = createDateWrapper(externalArgs, carrier, pointerToEntry);
+        break;
+
+      case ENTRY_TYPE.ARRAY:
+        ret = createArrayWrapper(externalArgs, carrier, pointerToEntry);
+        break;
+
+      case ENTRY_TYPE.MAP:
+        ret = createMapWrapper(externalArgs, carrier, pointerToEntry);
+        break;
+
+      case ENTRY_TYPE.SET:
+        ret = createSetWrapper(externalArgs, carrier, pointerToEntry);
+        break;
+    }
+
     cache.set(pointerToEntry, ret);
   }
 
