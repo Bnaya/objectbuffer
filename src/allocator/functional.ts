@@ -266,7 +266,9 @@ export function free(allocatorState: AllocatorState, ptr: number): boolean {
         set__used(state, blockNext(u32, block));
       }
       insert(state, u32, block);
-      get_doCompact(state) && compact(state, u32);
+      if (get_doCompact(state)) {
+        compact(state, u32);
+      }
       return true;
     }
     prev = block;
