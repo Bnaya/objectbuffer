@@ -42,7 +42,8 @@
     "asbuild": "yarn asbuild:untouched && yarn asbuild:optimized",
     "as:test": "node tests",
     "deoptigate-benchmarks": "npx deoptigate benchmarks/main-register-ts-node.js",
-    "v8-deopt-viewer-benchmarks": "npx v8-deopt-viewer benchmarks/main-register-ts-node.js --open"
+    "v8-deopt-viewer-benchmarks": "npx v8-deopt-viewer benchmarks/main-register-ts-node.js --open",
+    "benchmark": "node benchmarks/main-register-ts-node.js"
   },
   "devDependencies": {
     "@babel/cli": "^7.11.6",

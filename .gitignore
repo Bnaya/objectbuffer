@@ -13,3 +13,4 @@ yarn-error.log
 v8-deopt-viewer/
 
 isolate-0x*-*-v8.log
+*.cpuprofile
