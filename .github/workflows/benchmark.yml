@@ -47,7 +47,7 @@ jobs:
           auto-push: true
           # Show alert with commit comment on detecting possible performance regression
           alert-threshold: "110%"
-          comment-always: true
+          comment-always: ${{ matrix.node == 14 }}
           comment-on-alert: true
           fail-on-alert: true
           alert-comment-cc-users: "@bnaya"
