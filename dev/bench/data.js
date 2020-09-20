@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1600576375776,
+  "lastUpdate": 1600644073016,
   "repoUrl": "https://github.com/Bnaya/objectbuffer",
   "entries": {
     "benchmarkjs, node 14": [
@@ -752,6 +752,138 @@ window.BENCHMARK_DATA = {
             "range": "±1.10%",
             "unit": "ops/sec",
             "extra": "88 samples"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "name": "Bnaya",
+            "username": "Bnaya"
+          },
+          "committer": {
+            "name": "Bnaya",
+            "username": "Bnaya"
+          },
+          "id": "ab625c846103dc296f0e3639bff2b021ea2651bd",
+          "message": "benchmarks-and-pref-iteration",
+          "timestamp": "2020-09-20T04:35:49Z",
+          "url": "https://github.com/Bnaya/objectbuffer/pull/138/commits/ab625c846103dc296f0e3639bff2b021ea2651bd"
+        },
+        "date": 1600644072624,
+        "tool": "benchmarkjs",
+        "benches": [
+          {
+            "name": "create empty, size: 1e6",
+            "value": 2011,
+            "range": "±5.73%",
+            "unit": "ops/sec",
+            "extra": "53 samples"
+          },
+          {
+            "name": "create with 2500 comments. size: 1e6",
+            "value": 104,
+            "range": "±0.45%",
+            "unit": "ops/sec",
+            "extra": "74 samples"
+          },
+          {
+            "name": "save 2500 comments into pre-created OB, size: 1e6",
+            "value": 101,
+            "range": "±1.34%",
+            "unit": "ops/sec",
+            "extra": "72 samples"
+          },
+          {
+            "name": "create with all mock data rows. size: 1e6",
+            "value": 110,
+            "range": "±0.45%",
+            "unit": "ops/sec",
+            "extra": "80 samples"
+          },
+          {
+            "name": "A-Z object keys",
+            "value": 25698,
+            "range": "±0.48%",
+            "unit": "ops/sec",
+            "extra": "95 samples"
+          },
+          {
+            "name": "A-Z object prop Lookup in operator - non-existing",
+            "value": 6755452,
+            "range": "±0.68%",
+            "unit": "ops/sec",
+            "extra": "96 samples"
+          },
+          {
+            "name": "A-Z object prop Lookup in operator - existing",
+            "value": 1731608,
+            "range": "±0.29%",
+            "unit": "ops/sec",
+            "extra": "91 samples"
+          },
+          {
+            "name": "A-Z object prop access T",
+            "value": 1660921,
+            "range": "±0.25%",
+            "unit": "ops/sec",
+            "extra": "94 samples"
+          },
+          {
+            "name": "A-Z object prop access Z",
+            "value": 1614533,
+            "range": "±2.98%",
+            "unit": "ops/sec",
+            "extra": "93 samples"
+          },
+          {
+            "name": "OB_WITH_NA2Z_KEYS object keys",
+            "value": 15099,
+            "range": "±0.16%",
+            "unit": "ops/sec",
+            "extra": "95 samples"
+          },
+          {
+            "name": "OB_WITH_NA2Z_KEYS object prop Lookup in operator - non-existing",
+            "value": 910648,
+            "range": "±0.17%",
+            "unit": "ops/sec",
+            "extra": "95 samples"
+          },
+          {
+            "name": "OB_WITH_NA2Z_KEYS object prop Lookup in operator - existing",
+            "value": 895667,
+            "range": "±0.35%",
+            "unit": "ops/sec",
+            "extra": "95 samples"
+          },
+          {
+            "name": "OB_WITH_NA2Z_KEYS object prop access 14ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+            "value": 880892,
+            "range": "±0.22%",
+            "unit": "ops/sec",
+            "extra": "91 samples"
+          },
+          {
+            "name": "OB_WITH_NA2Z_KEYS object prop access 3ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+            "value": 898432,
+            "range": "±0.25%",
+            "unit": "ops/sec",
+            "extra": "92 samples"
+          },
+          {
+            "name": "Array access. length: 1000",
+            "value": 2867869,
+            "range": "±0.19%",
+            "unit": "ops/sec",
+            "extra": "96 samples"
+          },
+          {
+            "name": "object memory free. K1000RowsMockData, pre-created OB, size: 1e6",
+            "value": 1.22,
+            "range": "±1.35%",
+            "unit": "ops/sec",
+            "extra": "8 samples"
           }
         ]
       }
