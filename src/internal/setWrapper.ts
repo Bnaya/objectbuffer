@@ -1,4 +1,4 @@
-import { ExternalArgs, GlobalCarrier, InternalAPI } from "./interfaces";
+import type { ExternalArgs, GlobalCarrier, InternalAPI } from "./interfaces";
 import {
   deleteObjectPropertyEntryByKey,
   objectSet,

@@ -86,7 +86,7 @@ describe("hashmap rehash", () => {
         hashMapInsertUpdate(externalArgs, carrier, mapPointer, value)
       );
 
-      carrier.heap.Uint32Array[
+      carrier.heap.u32[
         inserts[inserts.length - 1] / Uint32Array.BYTES_PER_ELEMENT
       ] = index;
     }
@@ -140,7 +140,7 @@ describe("hashmap rehash", () => {
       ptrsToPtrs.push(
         hashMapInsertUpdate(externalArgs, carrier, mapPointer, useThatAsKey)
       );
-      carrier.heap.Uint32Array[ptrsToPtrs[ptrsToPtrs.length - 1]] = index;
+      carrier.heap.u32[ptrsToPtrs[ptrsToPtrs.length - 1]] = index;
 
       memAvailableAfterEachStep.push(carrier.allocator.stats().top);
     }

@@ -1,6 +1,6 @@
 import { initializeArrayBuffer, incrementRefCount } from "./store";
 import { createObjectWrapper } from "./objectWrapper";
-import { ExternalArgsApi, GlobalCarrier, MemoryStats } from "./interfaces";
+import type { ExternalArgsApi, GlobalCarrier, MemoryStats } from "./interfaces";
 import {
   arrayBufferCopyTo,
   externalArgsApiToExternalArgsApi,
@@ -14,7 +14,6 @@ import {
   ENDIANNESS_FLAG_POINTER,
 } from "./consts";
 import { UnsupportedOperationError } from "./exceptions";
-import { createHeap } from "../structsGenerator/consts";
 import { saveValueIterative } from "./saveValue";
 import { TransactionalAllocator } from "./TransactionalAllocator";
 import { freeNoLongerUsedAddresses } from "./freeNoLongerUsedAddresses";
@@ -58,7 +57,7 @@ export function createObjectBuffer<T = any>(
 
   const carrier: GlobalCarrier = {
     allocator,
-    heap: createHeap(arrayBuffer),
+    heap: allocator.getHeap(),
   };
 
   const referencedPointers: number[] = [];
@@ -84,7 +83,7 @@ export function createObjectBuffer<T = any>(
   return createObjectWrapper(
     externalArgsApiToExternalArgsApi(externalArgs),
     carrier,
-    carrier.heap.Uint32Array[
+    carrier.heap.u32[
       INITIAL_ENTRY_POINTER_TO_POINTER / Uint32Array.BYTES_PER_ELEMENT
     ]
   );
@@ -116,7 +115,7 @@ export function resizeObjectBuffer(objectBuffer: unknown, newSize: number) {
 export function getUnderlyingArrayBuffer(
   objectBuffer: unknown
 ): ArrayBuffer | SharedArrayBuffer {
-  return getInternalAPI(objectBuffer).getCarrier().heap.Uint8Array.buffer;
+  return getInternalAPI(objectBuffer).getCarrier().heap.u8.buffer;
 }
 
 /**
@@ -136,7 +135,7 @@ export function loadObjectBuffer<T = any>(
 
   const carrier: GlobalCarrier = {
     allocator,
-    heap: createHeap(arrayBuffer),
+    heap: allocator.getHeap(),
   };
 
   const dv = new DataView(arrayBuffer);
@@ -150,7 +149,7 @@ export function loadObjectBuffer<T = any>(
   return createObjectWrapper(
     externalArgsApiToExternalArgsApi(externalArgs),
     carrier,
-    carrier.heap.Uint32Array[
+    carrier.heap.u32[
       INITIAL_ENTRY_POINTER_TO_POINTER / Uint32Array.BYTES_PER_ELEMENT
     ]
   );
@@ -173,7 +172,7 @@ export function replaceUnderlyingArrayBuffer(
   const allocator = TransactionalAllocator.load(newArrayBuffer);
   const carrier: GlobalCarrier = {
     allocator,
-    heap: createHeap(newArrayBuffer),
+    heap: allocator.getHeap(),
   };
 
   const dv = new DataView(newArrayBuffer);

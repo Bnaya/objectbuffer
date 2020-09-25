@@ -1,4 +1,4 @@
-import { ExternalArgs, GlobalCarrier, InternalAPI } from "./interfaces";
+import type { ExternalArgs, GlobalCarrier, InternalAPI } from "./interfaces";
 import { incrementRefCount, decrementRefCount } from "./store";
 import { WrapperDestroyed } from "./exceptions";
 

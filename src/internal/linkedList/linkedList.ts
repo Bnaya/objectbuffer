@@ -10,7 +10,7 @@ import {
   linkedListItem_VALUE_get,
   linkedList_START_POINTER_get,
 } from "../generatedStructs";
-import { Heap } from "../../structsGenerator/consts";
+import type { Heap } from "../../structsGenerator/consts";
 
 /*
 

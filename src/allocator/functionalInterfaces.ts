@@ -1,3 +1,5 @@
+import type { Heap } from "../structsGenerator/consts";
+
 export type Pow2 =
   | 0x1
   | 0x2
@@ -32,10 +34,8 @@ export type Pow2 =
   | 0x40000000
   | 0x80000000;
 
-export interface AllocatorState {
+export interface AllocatorState extends Heap {
   options: Readonly<AllocatorInitOpts>;
-  u8: Uint8Array;
-  u32: Uint32Array;
   state: Uint32Array;
 }
 export interface AllocatorInitOpts {

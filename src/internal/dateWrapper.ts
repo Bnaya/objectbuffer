@@ -1,4 +1,4 @@
-import { ExternalArgs, GlobalCarrier } from "./interfaces";
+import type { ExternalArgs, GlobalCarrier } from "./interfaces";
 
 import { ENTRY_TYPE } from "./entry-types";
 import { INTERNAL_API_SYMBOL } from "./symbols";

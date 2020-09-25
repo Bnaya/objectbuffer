@@ -115,7 +115,7 @@ function getAllLinkedAddressesStep(
         const arrayLength = array_length_get(heap, entryPointer);
         for (let i = 0; i < arrayLength; i += 1) {
           const valuePointer =
-            heap.Uint32Array[
+            heap.u32[
               (array_dataspacePointer_get(heap, entryPointer) +
                 i * Uint32Array.BYTES_PER_ELEMENT) /
                 Uint32Array.BYTES_PER_ELEMENT

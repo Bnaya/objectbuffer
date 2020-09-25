@@ -1,4 +1,4 @@
-import { ExternalArgs, InternalAPI, ExternalArgsApi } from "./interfaces";
+import type { ExternalArgs, InternalAPI, ExternalArgsApi } from "./interfaces";
 import { ENTRY_TYPE } from "./entry-types";
 import { INTERNAL_API_SYMBOL } from "./symbols";
 import {
@@ -120,4 +120,12 @@ export function isSupportedTopLevelValue(value: unknown) {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     value!.constructor.name !== "Object"
   );
+}
+
+export function fromEntries(iterable: Iterable<unknown>): unknown {
+  // @ts-expect-error we don't care
+  return [...iterable].reduce(function (obj: any, [key, val]) {
+    obj[key] = val;
+    return obj;
+  }, {});
 }

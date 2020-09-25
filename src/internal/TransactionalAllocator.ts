@@ -15,6 +15,7 @@ import {
   freeAll,
 } from "../allocator/allocator";
 import { loadAllocator, setEnd } from "../allocator/functional";
+import type { Heap } from "../structsGenerator/consts";
 
 export class TransactionalAllocator implements FunctionalAllocatorWrapper {
   protected inTransaction: boolean;
@@ -51,6 +52,10 @@ export class TransactionalAllocator implements FunctionalAllocatorWrapper {
 
     this.inTransaction = false;
     this.transactionAddresses = [];
+  }
+
+  getHeap(): Heap {
+    return this.allocatorState;
   }
 
   getArrayBuffer(): ArrayBuffer | SharedArrayBuffer {

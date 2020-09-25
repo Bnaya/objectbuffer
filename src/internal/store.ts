@@ -19,7 +19,7 @@ import {
   number_set_all,
   number_size,
 } from "./generatedStructs";
-import { Heap } from "../structsGenerator/consts";
+import type { Heap } from "../structsGenerator/consts";
 import { readString } from "./readString";
 import { saveValueIterative } from "./saveValue";
 import { stringEncodeInto } from "./stringEncodeInto";
@@ -61,7 +61,7 @@ export function saveStringOrNumber(
 export function saveString({ heap, allocator }: GlobalCarrier, value: string) {
   const stringBytesLength = stringLengthV2(value);
   const stringDataPointer = allocator.calloc(stringBytesLength);
-  stringEncodeInto(heap.Uint8Array, stringDataPointer, value);
+  stringEncodeInto(heap.u8, stringDataPointer, value);
   const stringPointer = allocator.calloc(string_size);
 
   string_set_all(
@@ -110,7 +110,7 @@ export function writeValueInPtrToPtrAndHandleMemory(
   value: unknown
 ) {
   const existingEntryPointer =
-    carrier.heap.Uint32Array[ptrToPtr / Uint32Array.BYTES_PER_ELEMENT];
+    carrier.heap.u32[ptrToPtr / Uint32Array.BYTES_PER_ELEMENT];
   // Might oom here
   const referencedPointers = writeValueInPtrToPtr(
     externalArgs,
@@ -300,7 +300,7 @@ export function compareStringOrNumberEntriesInPlace(
     }
 
     return memComp(
-      heap.Uint8Array,
+      heap.u8,
       string_charsPointer_get(heap, entryAPointer),
       string_charsPointer_get(heap, entryBPointer),
       aLength

@@ -13,7 +13,7 @@ import {
 export function getArrayBufferOnTopSize(ob: unknown) {
   const stats = memoryStats(ob);
   const carrier = getInternalAPI(ob).getCarrier();
-  return carrier.heap.Uint8Array.slice(0, stats.top);
+  return carrier.heap.u8.slice(0, stats.top);
 }
 
 export function arrayBuffer2HexArray(

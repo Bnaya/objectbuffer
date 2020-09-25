@@ -46,7 +46,7 @@ import {
   linkedList_END_POINTER_get,
   hashmapNode_VALUE_POINTER_get,
 } from "../generatedStructs";
-import { Heap } from "../../structsGenerator/consts";
+import type { Heap } from "../../structsGenerator/consts";
 import { stringLengthV2 } from "../stringLengthV2";
 import {
   hashUint8CodeInPlace,
@@ -108,11 +108,8 @@ export function hashMapInsertUpdateKeyIsPointerReturnNode(
   }
 
   const bucket =
-    hashUint8CodeInPlace(
-      heap.Uint8Array,
-      keyDataMemoryStart,
-      keyDataMemoryLength
-    ) % hashmap_CAPACITY_get(heap, mapPointer);
+    hashUint8CodeInPlace(heap.u8, keyDataMemoryStart, keyDataMemoryLength) %
+    hashmap_CAPACITY_get(heap, mapPointer);
 
   const bucketStartPointer =
     hashmap_ARRAY_POINTER_get(heap, mapPointer) +
@@ -121,7 +118,7 @@ export function hashMapInsertUpdateKeyIsPointerReturnNode(
   let ptrToPtrToSaveTheNodeTo = bucketStartPointer;
 
   let iteratedNodePointer =
-    heap.Uint32Array[ptrToPtrToSaveTheNodeTo / Uint32Array.BYTES_PER_ELEMENT];
+    heap.u32[ptrToPtrToSaveTheNodeTo / Uint32Array.BYTES_PER_ELEMENT];
 
   // todo: share code with hashMapNodeLookup?
   while (
@@ -169,7 +166,7 @@ export function hashMapInsertUpdateKeyIsPointerReturnNode(
       )
     );
 
-    heap.Uint32Array[
+    heap.u32[
       ptrToPtrToSaveTheNodeTo / Uint32Array.BYTES_PER_ELEMENT
     ] = memoryForNewNode;
 
@@ -229,11 +226,7 @@ export function hashMapInsertUpdate(
     keyMemoryEntryPointer = allocator.calloc(string_size);
     keyDataMemoryLength = stringLengthV2(externalKeyValue);
     keyDataMemoryStart = allocator.calloc(keyDataMemoryLength);
-    stringEncodeInto(
-      carrier.heap.Uint8Array,
-      keyDataMemoryStart,
-      externalKeyValue
-    );
+    stringEncodeInto(carrier.heap.u8, keyDataMemoryStart, externalKeyValue);
 
     string_set_all(
       carrier.heap,
@@ -246,11 +239,8 @@ export function hashMapInsertUpdate(
   }
 
   const bucket =
-    hashUint8CodeInPlace(
-      heap.Uint8Array,
-      keyDataMemoryStart,
-      keyDataMemoryLength
-    ) % hashmap_CAPACITY_get(heap, mapPointer);
+    hashUint8CodeInPlace(heap.u8, keyDataMemoryStart, keyDataMemoryLength) %
+    hashmap_CAPACITY_get(heap, mapPointer);
 
   const bucketStartPointer =
     hashmap_ARRAY_POINTER_get(heap, mapPointer) +
@@ -259,7 +249,7 @@ export function hashMapInsertUpdate(
   let ptrToPtrToSaveTheNodeTo = bucketStartPointer;
 
   let iteratedNodePointer =
-    heap.Uint32Array[ptrToPtrToSaveTheNodeTo / Uint32Array.BYTES_PER_ELEMENT];
+    heap.u32[ptrToPtrToSaveTheNodeTo / Uint32Array.BYTES_PER_ELEMENT];
 
   // todo: share code with hashMapNodeLookup?
   while (
@@ -320,7 +310,7 @@ export function hashMapInsertUpdate(
       )
     );
 
-    heap.Uint32Array[
+    heap.u32[
       ptrToPtrToSaveTheNodeTo / Uint32Array.BYTES_PER_ELEMENT
     ] = memoryForNewNode;
 
@@ -366,7 +356,7 @@ export function hashMapNodeLookup(
 
   let ptrToPtr = bucketStartPtrToPtr;
   let iteratedNode =
-    heap.Uint32Array[bucketStartPtrToPtr / Uint32Array.BYTES_PER_ELEMENT];
+    heap.u32[bucketStartPtrToPtr / Uint32Array.BYTES_PER_ELEMENT];
 
   while (iteratedNode !== 0) {
     const keyValue = readNumberOrString(
@@ -397,7 +387,7 @@ export function hashMapValueLookup(
   }
 
   return (
-    heap.Uint32Array[nodePtrToPtr / Uint32Array.BYTES_PER_ELEMENT] +
+    heap.u32[nodePtrToPtr / Uint32Array.BYTES_PER_ELEMENT] +
     hashmapNode_VALUE_POINTER_place
   );
 }
@@ -422,7 +412,7 @@ export function hashMapDelete(
   }
 
   const nodeToDeletePointer =
-    heap.Uint32Array[foundNodePtrToPtr / Uint32Array.BYTES_PER_ELEMENT];
+    heap.u32[foundNodePtrToPtr / Uint32Array.BYTES_PER_ELEMENT];
   const valuePointer = nodeToDeletePointer + hashmapNode_VALUE_POINTER_place;
 
   linkedListItemRemove(
@@ -431,7 +421,7 @@ export function hashMapDelete(
   );
 
   // remove node from bucket
-  heap.Uint32Array[
+  heap.u32[
     foundNodePtrToPtr / Uint32Array.BYTES_PER_ELEMENT
   ] = hashmapNode_NEXT_NODE_POINTER_get(heap, nodeToDeletePointer);
 
@@ -579,7 +569,7 @@ function hashMapRehashInsert(
 ) {
   const bucket =
     hashUint8CodeInPlace(
-      heap.Uint8Array,
+      heap.u8,
       getKeyStart(heap, hashmapNode_KEY_POINTER_get(heap, nodePointer)),
       getKeyLength(heap, hashmapNode_KEY_POINTER_get(heap, nodePointer))
     ) % hashmap_CAPACITY_get(heap, hashmapPointer);
@@ -589,11 +579,9 @@ function hashMapRehashInsert(
     bucket * Uint32Array.BYTES_PER_ELEMENT;
 
   const prevFirstNodeInBucket =
-    heap.Uint32Array[bucketStartPointer / Uint32Array.BYTES_PER_ELEMENT];
+    heap.u32[bucketStartPointer / Uint32Array.BYTES_PER_ELEMENT];
 
-  heap.Uint32Array[
-    bucketStartPointer / Uint32Array.BYTES_PER_ELEMENT
-  ] = nodePointer;
+  heap.u32[bucketStartPointer / Uint32Array.BYTES_PER_ELEMENT] = nodePointer;
 
   if (prevFirstNodeInBucket !== 0) {
     hashmapNode_NEXT_NODE_POINTER_set(heap, nodePointer, prevFirstNodeInBucket);

@@ -1,5 +1,5 @@
 import { ENTRY_TYPE } from "./entry-types";
-import { ExternalArgs, GlobalCarrier } from "./interfaces";
+import type { ExternalArgs, GlobalCarrier } from "./interfaces";
 import {
   createHashMap,
   hashMapInsertUpdateKeyIsPointerReturnNode,

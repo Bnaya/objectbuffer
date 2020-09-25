@@ -7,7 +7,7 @@ import {
 } from "./arrayHelpers";
 import { INTERNAL_API_SYMBOL } from "./symbols";
 import { arraySplice } from "./arraySplice";
-import { ExternalArgs, GlobalCarrier } from "./interfaces";
+import type { ExternalArgs, GlobalCarrier } from "./interfaces";
 import {
   IllegalArrayIndexError,
   UnsupportedOperationError,

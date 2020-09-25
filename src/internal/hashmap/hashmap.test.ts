@@ -50,7 +50,7 @@ describe("hashmap", () => {
       3
     );
 
-    carrier.heap.Uint32Array[valuePointer / Uint32Array.BYTES_PER_ELEMENT] = 5;
+    carrier.heap.u32[valuePointer / Uint32Array.BYTES_PER_ELEMENT] = 5;
 
     expect(
       arrayBuffer2HexArray(ab.slice(0, carrier.allocator.stats().top), true)
@@ -67,7 +67,7 @@ describe("hashmap", () => {
       "abc"
     );
 
-    carrier.heap.Uint32Array[pointer / Uint32Array.BYTES_PER_ELEMENT] = 6;
+    carrier.heap.u32[pointer / Uint32Array.BYTES_PER_ELEMENT] = 6;
 
     expect(
       arrayBuffer2HexArray(ab.slice(0, carrier.allocator.stats().top), true)
@@ -158,7 +158,7 @@ describe("hashmap", () => {
         hashMapInsertUpdate(externalArgs, carrier, mapPointer, value)
       );
 
-      carrier.heap.Uint32Array[
+      carrier.heap.u32[
         inserts[inserts.length - 1] / Uint32Array.BYTES_PER_ELEMENT
       ] = index;
     }
@@ -227,7 +227,7 @@ describe("hashmap", () => {
       .map((n) => String.fromCharCode(n));
 
     for (const [index, useThatAsKey] of input.entries()) {
-      carrier.heap.Uint32Array[
+      carrier.heap.u32[
         hashMapInsertUpdate(externalArgs, carrier, mapPointer, useThatAsKey) /
           Uint32Array.BYTES_PER_ELEMENT
       ] = index;
