@@ -90,6 +90,7 @@ export function objectSet(
   p: string | number,
   value: unknown
 ) {
+  // @todo: avoid closure/function runtime allocation
   carrier.allocator.transaction(() => {
     const ptrToPtr = hashMapInsertUpdate(
       externalArgs,
