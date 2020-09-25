@@ -7,7 +7,7 @@ import {
 } from "./arrayHelpers";
 import { INTERNAL_API_SYMBOL } from "./symbols";
 import { arraySplice } from "./arraySplice";
-import { ExternalArgs, GlobalCarrier } from "./interfaces";
+import type { ExternalArgs, GlobalCarrier } from "./interfaces";
 import {
   IllegalArrayIndexError,
   UnsupportedOperationError,
@@ -128,6 +128,7 @@ export class ArrayWrapper
       throw new IllegalArrayIndexError();
     }
 
+    // @todo: avoid closure/function runtime allocation
     this.carrier.allocator.transaction(() => {
       setValueAtArrayIndex(
         this.externalArgs,
@@ -202,6 +203,7 @@ export class ArrayWrapper
   }
 
   public splice(start: number, deleteCount?: number, ...items: any[]): any[] {
+    // @todo: avoid closure/function runtime allocation
     return this.carrier.allocator.transaction(() => {
       return arraySplice(
         this.externalArgs,
@@ -282,6 +284,7 @@ export class ArrayWrapper
       return true;
     }
 
+    // @todo: avoid closure/function runtime allocation
     this.carrier.allocator.transaction(() => {
       if (currentLength > newLength) {
         this.splice(newLength, currentLength - newLength);

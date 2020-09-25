@@ -1,7 +1,7 @@
 /* istanbul ignore file */
 
 import { MemoryGraph, NodeType } from "./types";
-import { Heap } from "../../structsGenerator/consts";
+import type { Heap } from "../../structsGenerator/consts";
 import {
   typeAndRc_refsCount_get,
   string_size,
@@ -196,7 +196,7 @@ function visitPointerIteration(
       // Maybe pass also array length and not only allocated length
       for (let i = 0; i < sizeOfBlock; i += Uint32Array.BYTES_PER_ELEMENT) {
         const pointerToElement =
-          heap.Uint32Array[(pointer + i) / Uint32Array.BYTES_PER_ELEMENT];
+          heap.u32[(pointer + i) / Uint32Array.BYTES_PER_ELEMENT];
 
         const entryTypeOfElement = typeOnly_type_get(heap, pointerToElement);
         const typeOfElement = entryTypeToNodeType(entryTypeOfElement);

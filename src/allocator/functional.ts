@@ -1,3 +1,4 @@
+import { createHeap } from "../structsGenerator/consts";
 import type {
   AllocatorInitOpts,
   AllocatorStats,
@@ -34,8 +35,6 @@ export function allocatorInit(
     ? new SharedArrayBuffer(options.size)
     : new ArrayBuffer(options.size);
 
-  const u8 = new Uint8Array(buf);
-  const u32 = new Uint32Array(buf);
   const state = new Uint32Array(buf, options.start, SIZEOF_STATE / 4);
 
   const top = initialTop(options.start, options.align as Pow2);
@@ -63,8 +62,7 @@ export function allocatorInit(
 
   return {
     options,
-    u8,
-    u32,
+    ...createHeap(buf),
     state,
   };
 }
@@ -103,8 +101,6 @@ export function loadAllocator(
   buf: ArrayBuffer | SharedArrayBuffer,
   start: number
 ): Readonly<AllocatorState> {
-  const u8 = new Uint8Array(buf);
-  const u32 = new Uint32Array(buf);
   const state = new Uint32Array(buf, start, SIZEOF_STATE / 4);
 
   const options: AllocatorInitOpts = {
@@ -119,8 +115,7 @@ export function loadAllocator(
 
   return {
     options,
-    u8,
-    u32,
+    ...createHeap(buf),
     state,
   };
 }

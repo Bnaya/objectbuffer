@@ -1,4 +1,9 @@
-import { StructManifest, TypedArrayNameToType, typedArrays } from "./consts";
+import {
+  StructManifest,
+  typedArrayNameToHeapProp,
+  TypedArrayPropNameToCtorType,
+  typedArraysPropNameToCtorMap,
+} from "./consts";
 
 export function createStructDeclaration<T extends StructManifest>(
   manifest: T
@@ -39,8 +44,18 @@ export function generateFunctionsCodeForManifest(
 
   for (const [propName, TypedArray] of Object.entries(manifest)) {
     functions.push(
-      getTemplate(structName, propName, TypedArray.name as any, startInStruct),
-      setTemplate(structName, propName, TypedArray.name as any, startInStruct),
+      getTemplate(
+        structName,
+        propName,
+        typedArrayNameToHeapProp[TypedArray.name as any],
+        startInStruct
+      ),
+      setTemplate(
+        structName,
+        propName,
+        typedArrayNameToHeapProp[TypedArray.name as any],
+        startInStruct
+      ),
       `export const ${structName}_${propName}_place = ${startInStruct};`,
       `export const ${structName}_${propName}_ctor = ${TypedArray.name};`
     );
@@ -61,14 +76,14 @@ export function generateFunctionsCodeForManifest(
 function getTemplate(
   structName: string,
   propName: string,
-  typedArrayName: keyof TypedArrayNameToType,
+  typedArrayName: keyof TypedArrayPropNameToCtorType,
   startPointerInsideOfStruct: number
 ) {
   return `
   export function ${structName}_${propName}_get(heap: Heap, structPointer: number) {
     return heap.${typedArrayName}[(
           structPointer + ${startPointerInsideOfStruct}
-          ) / ${typedArrays[typedArrayName].BYTES_PER_ELEMENT}];
+          ) / ${typedArraysPropNameToCtorMap[typedArrayName].BYTES_PER_ELEMENT}];
   }
   `;
 }
@@ -76,19 +91,17 @@ function getTemplate(
 function setTemplate(
   structName: string,
   propName: string,
-  typedArrayName: keyof TypedArrayNameToType,
+  typedArrayName: keyof TypedArrayPropNameToCtorType,
   startPointerInsideOfStruct: number
 ) {
   const valueType =
-    typedArrayName === "BigInt64Array" || typedArrayName === "BigUint64Array"
-      ? "bigint"
-      : "number";
+    typedArrayName === "b64" || typedArrayName === "u64" ? "bigint" : "number";
 
   return `
   export function ${structName}_${propName}_set(heap: Heap, structPointer: number, value: ${valueType}) {
     return heap.${typedArrayName}[(
           structPointer + ${startPointerInsideOfStruct}
-          ) / ${typedArrays[typedArrayName].BYTES_PER_ELEMENT}] = value;
+          ) / ${typedArraysPropNameToCtorMap[typedArrayName].BYTES_PER_ELEMENT}] = value;
   }
   `;
 }
@@ -120,11 +133,11 @@ function setAllTemplate(structName: string, manifest: StructManifest) {
 
   let startPointerInsideOfStruct = 0;
   for (const [paramName, ctor] of Object.entries(manifest)) {
-    const typedArrayName = ctor.name;
+    const typedArrayName = typedArrayNameToHeapProp[ctor.name];
     const BYTES_PER_ELEMENT: number =
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-expect-error
-      typedArrays[typedArrayName].BYTES_PER_ELEMENT;
+      typedArraysPropNameToCtorMap[typedArrayName].BYTES_PER_ELEMENT;
     setValues.push(
       `heap.${typedArrayName}[(
       structPointer + ${startPointerInsideOfStruct}

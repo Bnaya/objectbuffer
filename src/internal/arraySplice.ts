@@ -6,7 +6,7 @@ import {
   arrayGetPointerToIndex,
   arrayGetValuePointerInIndex,
 } from "./arrayHelpers";
-import { ExternalArgs, GlobalCarrier } from "./interfaces";
+import type { ExternalArgs, GlobalCarrier } from "./interfaces";
 import { handleArcForDeletedValuePointer, incrementRefCount } from "./store";
 import { array_length_get } from "./generatedStructs";
 import { saveValueIterativeReturnPointer } from "./saveValue";
@@ -108,10 +108,10 @@ export function arraySplice(
         carrier,
         pointerToArrayEntry,
         writeValueToIndex,
-        carrier.heap.Uint32Array[ptrToPtr / Uint32Array.BYTES_PER_ELEMENT]
+        carrier.heap.u32[ptrToPtr / Uint32Array.BYTES_PER_ELEMENT]
       );
 
-      carrier.heap.Uint32Array[ptrToPtr / Uint32Array.BYTES_PER_ELEMENT] = 0;
+      carrier.heap.u32[ptrToPtr / Uint32Array.BYTES_PER_ELEMENT] = 0;
     }
   }
   // copy-down items
@@ -149,9 +149,8 @@ export function arraySplice(
       calcedStart + i
     );
 
-    carrier.heap.Uint32Array[
-      pointerToThePointer / Uint32Array.BYTES_PER_ELEMENT
-    ] = newValuesPointers[i];
+    carrier.heap.u32[pointerToThePointer / Uint32Array.BYTES_PER_ELEMENT] =
+      newValuesPointers[i];
   }
 
   if (newLength < arrayLength) {

@@ -1,4 +1,4 @@
-import { ExternalArgs, GlobalCarrier, InternalAPI } from "./interfaces";
+import type { ExternalArgs, GlobalCarrier, InternalAPI } from "./interfaces";
 import {
   deleteObjectPropertyEntryByKey,
   objectGet,
@@ -65,9 +65,7 @@ export class MapWrapper<K extends string | number, V>
         entryToFinalJavaScriptValue(
           this.externalArgs,
           this.carrier,
-          this.carrier.heap.Uint32Array[
-            valuePointer / Uint32Array.BYTES_PER_ELEMENT
-          ]
+          this.carrier.heap.u32[valuePointer / Uint32Array.BYTES_PER_ELEMENT]
         ),
       ];
     }
@@ -94,9 +92,7 @@ export class MapWrapper<K extends string | number, V>
       yield entryToFinalJavaScriptValue(
         this.externalArgs,
         this.carrier,
-        this.carrier.heap.Uint32Array[
-          valuePointer / Uint32Array.BYTES_PER_ELEMENT
-        ]
+        this.carrier.heap.u32[valuePointer / Uint32Array.BYTES_PER_ELEMENT]
       );
     }
   }

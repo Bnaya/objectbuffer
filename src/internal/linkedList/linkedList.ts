@@ -10,7 +10,7 @@ import {
   linkedListItem_VALUE_get,
   linkedList_START_POINTER_get,
 } from "../generatedStructs";
-import { Heap } from "../../structsGenerator/consts";
+import type { Heap } from "../../structsGenerator/consts";
 
 /*
 
@@ -114,6 +114,9 @@ export function linkedListGetValue(heap: Heap, itemPointer: number) {
   return linkedListItem_VALUE_get(heap, itemPointer);
 }
 
+/**
+ * this code is not in use, was baked into the hashmap
+ */
 export function linkedListGetPointersToFree(
   heap: Heap,
   linkedListPointer: number
@@ -142,6 +145,7 @@ export function linkedListGetPointersToFree(
     iterator = linkedListItem_NEXT_POINTER_get(heap, iterator);
   }
 
+  // this code is not in use, was baked into the hashmap
   // @todo avoid intermediate object
   return {
     pointers,

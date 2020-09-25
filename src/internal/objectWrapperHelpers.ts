@@ -1,4 +1,4 @@
-import { ExternalArgs, GlobalCarrier } from "./interfaces";
+import type { ExternalArgs, GlobalCarrier } from "./interfaces";
 import {
   writeValueInPtrToPtrAndHandleMemory,
   handleArcForDeletedValuePointer,
@@ -42,7 +42,7 @@ export function deleteObjectPropertyEntryByKey(
   }
 
   const deletedValuePointer =
-    carrier.heap.Uint32Array[
+    carrier.heap.u32[
       deletedValuePointerToPointer / Uint32Array.BYTES_PER_ELEMENT
     ];
 
@@ -75,7 +75,7 @@ export function getObjectPropertiesEntries(
 
     foundValues.push({
       valuePointer:
-        carrier.heap.Uint32Array[valuePointer / Uint32Array.BYTES_PER_ELEMENT],
+        carrier.heap.u32[valuePointer / Uint32Array.BYTES_PER_ELEMENT],
       key,
     });
   }
@@ -90,6 +90,7 @@ export function objectSet(
   p: string | number,
   value: unknown
 ) {
+  // @todo: avoid closure/function runtime allocation
   carrier.allocator.transaction(() => {
     const ptrToPtr = hashMapInsertUpdate(
       externalArgs,
@@ -113,7 +114,7 @@ export function objectGet(
   return entryToFinalJavaScriptValue(
     externalArgs,
     carrier,
-    carrier.heap.Uint32Array[valuePointer / Uint32Array.BYTES_PER_ELEMENT]
+    carrier.heap.u32[valuePointer / Uint32Array.BYTES_PER_ELEMENT]
   );
 }
 

@@ -1,5 +1,5 @@
 import { ENTRY_TYPE } from "../entry-types";
-import { Heap } from "../../structsGenerator/consts";
+import type { Heap } from "../../structsGenerator/consts";
 import {
   number_value_place,
   string_charsPointer_get,

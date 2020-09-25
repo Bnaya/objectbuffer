@@ -1,4 +1,4 @@
-import { ExternalArgs, GlobalCarrier } from "./interfaces";
+import type { ExternalArgs, GlobalCarrier } from "./interfaces";
 import {
   getObjectPropertiesEntries,
   deleteObjectPropertyEntryByKey,

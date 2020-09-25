@@ -1,5 +1,5 @@
 import { incrementRefCount, handleArcForDeletedValuePointer } from "./store";
-import { ExternalArgs, GlobalCarrier } from "./interfaces";
+import type { ExternalArgs, GlobalCarrier } from "./interfaces";
 import { entryToFinalJavaScriptValue } from "./entryToFinalJavaScriptValue";
 import { ENTRY_TYPE } from "./entry-types";
 import {
@@ -10,7 +10,7 @@ import {
   array_set_all,
   array_refsCount_get,
 } from "./generatedStructs";
-import { Heap } from "../structsGenerator/consts";
+import type { Heap } from "../structsGenerator/consts";
 import { saveValueIterativeReturnPointer } from "./saveValue";
 
 export function arrayGetPointerToIndex(
@@ -35,7 +35,7 @@ export function arrayGetValuePointerInIndex(
   pointerToArrayEntry: number,
   indexToGet: number
 ) {
-  return carrier.heap.Uint32Array[
+  return carrier.heap.u32[
     arrayGetPointerToIndex(carrier, pointerToArrayEntry, indexToGet) /
       Uint32Array.BYTES_PER_ELEMENT
   ];
@@ -68,9 +68,7 @@ export function setValuePointerAtArrayIndex(
     indexToSet
   );
 
-  carrier.heap.Uint32Array[
-    pointer / Uint32Array.BYTES_PER_ELEMENT
-  ] = pointerToEntry;
+  carrier.heap.u32[pointer / Uint32Array.BYTES_PER_ELEMENT] = pointerToEntry;
 }
 
 export function setValueAtArrayIndex(
@@ -109,12 +107,10 @@ export function setValueAtArrayIndex(
 
   handleArcForDeletedValuePointer(
     carrier,
-    carrier.heap.Uint32Array[
-      pointerToThePointer / Uint32Array.BYTES_PER_ELEMENT
-    ]
+    carrier.heap.u32[pointerToThePointer / Uint32Array.BYTES_PER_ELEMENT]
   );
 
-  carrier.heap.Uint32Array[
+  carrier.heap.u32[
     pointerToThePointer / Uint32Array.BYTES_PER_ELEMENT
   ] = newValuePointer;
 }
@@ -206,9 +202,7 @@ export function arraySort(
     .map((index) => arrayDataSpace + index * Uint32Array.BYTES_PER_ELEMENT)
     .map(
       (pointerToPointer) =>
-        carrier.heap.Uint32Array[
-          pointerToPointer / Uint32Array.BYTES_PER_ELEMENT
-        ]
+        carrier.heap.u32[pointerToPointer / Uint32Array.BYTES_PER_ELEMENT]
     );
 
   const sortMe = pointersToValues.map((pointer) => {
@@ -223,7 +217,7 @@ export function arraySort(
   });
 
   for (let i = 0; i < sortMe.length; i += 1) {
-    carrier.heap.Uint32Array[
+    carrier.heap.u32[
       (arrayDataSpace + i * Uint32Array.BYTES_PER_ELEMENT) /
         Uint32Array.BYTES_PER_ELEMENT
     ] = sortMe[i][0];

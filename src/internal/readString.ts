@@ -1,4 +1,4 @@
-import { Heap } from "../structsGenerator/consts";
+import type { Heap } from "../structsGenerator/consts";
 import { stringDecode } from "./stringDecode";
 import {
   string_bytesLength_get,
@@ -7,7 +7,7 @@ import {
 
 export function readString(heap: Heap, stringEntryPointer: number) {
   return stringDecode(
-    heap.Uint8Array,
+    heap.u8,
     string_charsPointer_get(heap, stringEntryPointer),
     string_bytesLength_get(heap, stringEntryPointer)
   );

@@ -1,5 +1,5 @@
 import { getOurPointerIfApplicable } from "./utils";
-import { ExternalArgs, GlobalCarrier } from "./interfaces";
+import type { ExternalArgs, GlobalCarrier } from "./interfaces";
 import { ENTRY_TYPE } from "./entry-types";
 import {
   number_size,
@@ -42,11 +42,8 @@ export function saveValueIterativeReturnPointer(
     initialValue
   );
 
-  const p =
-    carrier.heap.Uint32Array[TEMP_SAVE_POINTER / Uint32Array.BYTES_PER_ELEMENT];
-  carrier.heap.Uint32Array[
-    TEMP_SAVE_POINTER / Uint32Array.BYTES_PER_ELEMENT
-  ] = 0;
+  const p = carrier.heap.u32[TEMP_SAVE_POINTER / Uint32Array.BYTES_PER_ELEMENT];
+  carrier.heap.u32[TEMP_SAVE_POINTER / Uint32Array.BYTES_PER_ELEMENT] = 0;
 
   return p;
 }
@@ -64,7 +61,7 @@ export function saveValueIterative(
   // const savedValuesRefCount = new Map<unknown, number>();
 
   const {
-    heap: { Uint32Array: uint32 },
+    heap: { u32 },
     allocator,
     heap,
   } = carrier;
@@ -77,40 +74,40 @@ export function saveValueIterative(
 
     // Handler well-known values
     if (valueToSave === undefined) {
-      uint32[
+      u32[
         ptrToPtrToSaveTo / Uint32Array.BYTES_PER_ELEMENT
       ] = UNDEFINED_KNOWN_ADDRESS;
       continue;
     }
 
     if (valueToSave === null) {
-      uint32[
+      u32[
         ptrToPtrToSaveTo / Uint32Array.BYTES_PER_ELEMENT
       ] = NULL_KNOWN_ADDRESS;
       continue;
     }
 
     if (valueToSave === true) {
-      uint32[
+      u32[
         ptrToPtrToSaveTo / Uint32Array.BYTES_PER_ELEMENT
       ] = TRUE_KNOWN_ADDRESS;
       continue;
     }
 
     if (valueToSave === false) {
-      uint32[
+      u32[
         ptrToPtrToSaveTo / Uint32Array.BYTES_PER_ELEMENT
       ] = FALSE_KNOWN_ADDRESS;
       continue;
     }
 
     if (savedValuesToPointer.has(valueToSave)) {
-      uint32[
+      u32[
         ptrToPtrToSaveTo / Uint32Array.BYTES_PER_ELEMENT
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       ] = savedValuesToPointer.get(valueToSave)!;
       referencedExistingPointers.push(
-        uint32[ptrToPtrToSaveTo / Uint32Array.BYTES_PER_ELEMENT]
+        u32[ptrToPtrToSaveTo / Uint32Array.BYTES_PER_ELEMENT]
       );
 
       continue;
@@ -118,12 +115,12 @@ export function saveValueIterative(
 
     switch (typeof valueToSave) {
       case "number":
-        uint32[
+        u32[
           ptrToPtrToSaveTo / Uint32Array.BYTES_PER_ELEMENT
         ] = allocator.calloc(number_size);
         number_set_all(
           heap,
-          uint32[ptrToPtrToSaveTo / Uint32Array.BYTES_PER_ELEMENT],
+          u32[ptrToPtrToSaveTo / Uint32Array.BYTES_PER_ELEMENT],
           ENTRY_TYPE.NUMBER,
           valueToSave
         );
@@ -134,13 +131,13 @@ export function saveValueIterative(
         const stringBytesLength = stringLengthV2(valueToSave);
         // eslint-disable-next-line no-case-declarations
         const stringDataPointer = allocator.calloc(stringBytesLength);
-        uint32[
+        u32[
           ptrToPtrToSaveTo / Uint32Array.BYTES_PER_ELEMENT
         ] = allocator.calloc(string_size);
 
         // if (
         stringEncodeInto(
-          heap.Uint8Array,
+          heap.u8,
           stringDataPointer,
           valueToSave
         ); /*!==
@@ -151,7 +148,7 @@ export function saveValueIterative(
 
         string_set_all(
           heap,
-          uint32[ptrToPtrToSaveTo / Uint32Array.BYTES_PER_ELEMENT],
+          u32[ptrToPtrToSaveTo / Uint32Array.BYTES_PER_ELEMENT],
           ENTRY_TYPE.STRING,
           1,
           stringBytesLength,
@@ -160,13 +157,13 @@ export function saveValueIterative(
 
         savedValuesToPointer.set(
           valueToSave,
-          uint32[ptrToPtrToSaveTo / Uint32Array.BYTES_PER_ELEMENT]
+          u32[ptrToPtrToSaveTo / Uint32Array.BYTES_PER_ELEMENT]
         );
         continue;
 
       case "bigint":
         if (valueToSave > MAX_64_BIG_INT || valueToSave < -MAX_64_BIG_INT) {
-          uint32[
+          u32[
             ptrToPtrToSaveTo / Uint32Array.BYTES_PER_ELEMENT
           ] = UNDEFINED_KNOWN_ADDRESS;
           continue;
@@ -174,12 +171,12 @@ export function saveValueIterative(
           // throw new Error("MAX_64_BIG_INT");
         }
 
-        uint32[
+        u32[
           ptrToPtrToSaveTo / Uint32Array.BYTES_PER_ELEMENT
         ] = allocator.calloc(bigint_size);
         bigint_set_all(
           heap,
-          uint32[ptrToPtrToSaveTo / Uint32Array.BYTES_PER_ELEMENT],
+          u32[ptrToPtrToSaveTo / Uint32Array.BYTES_PER_ELEMENT],
           valueToSave > 0
             ? ENTRY_TYPE.BIGINT_POSITIVE
             : ENTRY_TYPE.BIGINT_NEGATIVE,
@@ -190,14 +187,14 @@ export function saveValueIterative(
 
       case "function":
         // Nope Nope Nope
-        uint32[
+        u32[
           ptrToPtrToSaveTo / Uint32Array.BYTES_PER_ELEMENT
         ] = UNDEFINED_KNOWN_ADDRESS;
         continue;
 
       case "symbol":
         // not supported, write undefined
-        uint32[
+        u32[
           ptrToPtrToSaveTo / Uint32Array.BYTES_PER_ELEMENT
         ] = UNDEFINED_KNOWN_ADDRESS;
         continue;
@@ -217,14 +214,14 @@ export function saveValueIterative(
 
     if (maybeOurPointerFromSymbol) {
       referencedExistingPointers.push(maybeOurPointerFromSymbol);
-      heap.Uint32Array[
+      heap.u32[
         ptrToPtrToSaveTo / Uint32Array.BYTES_PER_ELEMENT
       ] = maybeOurPointerFromSymbol;
       continue;
     }
 
     if (Array.isArray(valueToSave)) {
-      heap.Uint32Array[
+      heap.u32[
         ptrToPtrToSaveTo / Uint32Array.BYTES_PER_ELEMENT
       ] = arraySaverIterative(
         externalArgs.arrayAdditionalAllocation,
@@ -236,18 +233,18 @@ export function saveValueIterative(
 
       savedValuesToPointer.set(
         valueToSave,
-        uint32[ptrToPtrToSaveTo / Uint32Array.BYTES_PER_ELEMENT]
+        u32[ptrToPtrToSaveTo / Uint32Array.BYTES_PER_ELEMENT]
       );
       continue;
     }
 
     if (valueToSave instanceof Date) {
-      heap.Uint32Array[
+      heap.u32[
         ptrToPtrToSaveTo / Uint32Array.BYTES_PER_ELEMENT
       ] = allocator.calloc(date_size);
       date_set_all(
         heap,
-        heap.Uint32Array[ptrToPtrToSaveTo / Uint32Array.BYTES_PER_ELEMENT],
+        heap.u32[ptrToPtrToSaveTo / Uint32Array.BYTES_PER_ELEMENT],
         ENTRY_TYPE.DATE,
         1,
         0,
@@ -256,13 +253,13 @@ export function saveValueIterative(
 
       savedValuesToPointer.set(
         valueToSave,
-        uint32[ptrToPtrToSaveTo / Uint32Array.BYTES_PER_ELEMENT]
+        u32[ptrToPtrToSaveTo / Uint32Array.BYTES_PER_ELEMENT]
       );
       continue;
     }
 
     if (valueToSave instanceof Map) {
-      heap.Uint32Array[
+      heap.u32[
         ptrToPtrToSaveTo / Uint32Array.BYTES_PER_ELEMENT
       ] = mapSaverIterative(
         externalArgs,
@@ -276,13 +273,13 @@ export function saveValueIterative(
 
       savedValuesToPointer.set(
         valueToSave,
-        uint32[ptrToPtrToSaveTo / Uint32Array.BYTES_PER_ELEMENT]
+        u32[ptrToPtrToSaveTo / Uint32Array.BYTES_PER_ELEMENT]
       );
       continue;
     }
 
     if (valueToSave instanceof Set) {
-      heap.Uint32Array[
+      heap.u32[
         ptrToPtrToSaveTo / Uint32Array.BYTES_PER_ELEMENT
       ] = setSaverIterative(
         externalArgs,
@@ -294,13 +291,13 @@ export function saveValueIterative(
 
       savedValuesToPointer.set(
         valueToSave,
-        uint32[ptrToPtrToSaveTo / Uint32Array.BYTES_PER_ELEMENT]
+        u32[ptrToPtrToSaveTo / Uint32Array.BYTES_PER_ELEMENT]
       );
       continue;
     }
 
     // Plain object? I hope so
-    heap.Uint32Array[
+    heap.u32[
       ptrToPtrToSaveTo / Uint32Array.BYTES_PER_ELEMENT
     ] = objectSaverIterative(
       externalArgs,
@@ -314,7 +311,7 @@ export function saveValueIterative(
 
     savedValuesToPointer.set(
       valueToSave,
-      uint32[ptrToPtrToSaveTo / Uint32Array.BYTES_PER_ELEMENT]
+      u32[ptrToPtrToSaveTo / Uint32Array.BYTES_PER_ELEMENT]
     );
   }
 }
