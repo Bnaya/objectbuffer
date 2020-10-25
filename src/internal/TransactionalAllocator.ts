@@ -43,7 +43,7 @@ export class TransactionalAllocator implements FunctionalAllocatorWrapper {
           align: 8,
           compact: true,
           split: true,
-          minSplit: 16,
+          minSplit: 24,
           ...optsOrState,
         },
         useSharedArrayBuffer
