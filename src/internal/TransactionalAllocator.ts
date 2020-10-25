@@ -14,7 +14,12 @@ import {
   free,
   freeAll,
 } from "../allocator/allocator";
-import { loadAllocator, setEnd } from "../allocator/functional";
+import {
+  listAllocatedBlocks,
+  listFreeBlocks,
+  loadAllocator,
+  setEnd,
+} from "../allocator/functional";
 import type { Heap } from "../structsGenerator/consts";
 
 export class TransactionalAllocator implements FunctionalAllocatorWrapper {
@@ -70,13 +75,7 @@ export class TransactionalAllocator implements FunctionalAllocatorWrapper {
     const address = calloc(this.allocatorState, bytes, fill);
 
     if (address === 0) {
-      if (this.transactionAddresses.length > 0) {
-        for (const block of this.transactionAddresses) {
-          this.free(block);
-        }
-      }
-
-      this.endTransaction();
+      this.rollbackTransaction();
 
       throw new OutOfMemoryError();
     }
@@ -94,13 +93,7 @@ export class TransactionalAllocator implements FunctionalAllocatorWrapper {
     const address = realloc(this.allocatorState, ptr, size);
 
     if (address === 0) {
-      if (this.transactionAddresses.length > 0) {
-        for (const block of this.transactionAddresses) {
-          this.free(block);
-        }
-      }
-
-      this.endTransaction();
+      this.rollbackTransaction();
 
       throw new OutOfMemoryError();
     }
@@ -113,9 +106,14 @@ export class TransactionalAllocator implements FunctionalAllocatorWrapper {
   }
 
   free(ptr: number): boolean {
-    // if (this.inTransaction) {
-    //   throw new Error("invariant: Free during transaction is not expected");
-    // }
+    if (this.inTransaction) {
+      const ptrMaybeIndex = this.transactionAddresses.indexOf(ptr);
+
+      if (ptrMaybeIndex !== undefined) {
+        this.transactionAddresses.splice(ptrMaybeIndex, 1);
+      }
+    }
+
     return free(this.allocatorState, ptr);
   }
 
@@ -125,6 +123,14 @@ export class TransactionalAllocator implements FunctionalAllocatorWrapper {
 
   stats(): Readonly<AllocatorStats> {
     return stats(this.allocatorState);
+  }
+
+  private _allocatedBlocks() {
+    return listAllocatedBlocks(this.allocatorState);
+  }
+
+  private _freeBlocks() {
+    return listFreeBlocks(this.allocatorState);
   }
 
   public setNewEnd(newEnd: number) {
@@ -139,13 +145,7 @@ export class TransactionalAllocator implements FunctionalAllocatorWrapper {
     const address = malloc(this.allocatorState, bytes);
 
     if (address === 0) {
-      if (this.transactionAddresses.length > 0) {
-        for (const block of this.transactionAddresses) {
-          this.free(block);
-        }
-      }
-
-      this.endTransaction();
+      this.rollbackTransaction();
 
       throw new OutOfMemoryError();
     }
@@ -171,6 +171,18 @@ export class TransactionalAllocator implements FunctionalAllocatorWrapper {
   protected endTransaction() {
     this.inTransaction = false;
     this.transactionAddresses = [];
+  }
+
+  protected rollbackTransaction() {
+    const { transactionAddresses } = this;
+    this.transactionAddresses = [];
+    this.inTransaction = false;
+
+    if (transactionAddresses.length > 0) {
+      for (const block of transactionAddresses) {
+        this.free(block);
+      }
+    }
   }
 }
 
