@@ -1,6 +1,6 @@
 {
   "typescript.tsdk": "node_modules/typescript/lib",
-  "debug.node.autoAttach": "off",
+  "debug.javascript.autoAttachFilter": "disabled",
   "search.exclude": {
     "**/bower_components": true,
     "**/node_modules": true,

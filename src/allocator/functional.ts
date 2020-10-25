@@ -14,15 +14,32 @@ const STATE_ALIGN = 4;
 const STATE_FLAGS = 5;
 const STATE_MIN_SPLIT = 6;
 
+/**
+ * @deprecated
+ */
 const MASK_COMPACT = 1;
+
 const MASK_SPLIT = 2;
 
 const SIZEOF_STATE = 7 * 4;
 
 const MEM_BLOCK_SIZE = 0;
 const MEM_BLOCK_NEXT = 1;
+const MEM_BLOCK_PREV = 2;
+const MEM_BLOCK_FLAGS = 3;
 
-const SIZEOF_MEM_BLOCK = 2 * 4;
+const SIZEOF_MEM_BLOCK_HEADER =
+  // MEM_BLOCK_SIZE
+  4 +
+  // MEM_BLOCK_NEXT
+  4 +
+  // MEM_BLOCK_PREV
+  4 +
+  // PADDING_OR_PLACEHOLDER
+  4;
+
+// eg: 16 + 1 + 7 = 24
+const MIN_MIN_SPLIT = align(SIZEOF_MEM_BLOCK_HEADER + 1, 8);
 
 export function allocatorInit(
   options: Readonly<AllocatorInitOpts>,
@@ -30,6 +47,10 @@ export function allocatorInit(
 ): Readonly<AllocatorState> {
   invariant(options.align >= 8, "align must be >= 8");
   invariant(options.align % 8 === 0, "align must be multiplication of 8");
+  invariant(
+    options.minSplit >= MIN_MIN_SPLIT,
+    `illegal min split threshold: ${options.minSplit}, require at least ${MIN_MIN_SPLIT}`
+  );
 
   const buf = useShareArrayBuffer
     ? new SharedArrayBuffer(options.size)
@@ -67,6 +88,9 @@ export function allocatorInit(
   };
 }
 
+/**
+ * For testing purposes
+ */
 export function listAllAllocatedPointers(allocatorState: AllocatorState) {
   const pointers: Array<{
     blockPointer: number;
@@ -81,14 +105,79 @@ export function listAllAllocatedPointers(allocatorState: AllocatorState) {
   while (iteratedBlock !== 0) {
     pointers.push({
       blockPointer: iteratedBlock,
-      pointer: iteratedBlock + SIZEOF_MEM_BLOCK,
-      size: blockSize(u32, iteratedBlock),
+      pointer: iteratedBlock + SIZEOF_MEM_BLOCK_HEADER,
+      size: readBlockSize(u32, iteratedBlock),
     });
 
-    iteratedBlock = blockNext(u32, iteratedBlock);
+    iteratedBlock = readBlockNext(u32, iteratedBlock);
   }
 
   return pointers;
+}
+
+interface ForTestingBlock {
+  blockPointer: number;
+  dataPointer: number;
+  next: number;
+  prev: number;
+  size: number;
+  dataSize: number;
+}
+
+/**
+ * For testing purposes
+ */
+export function listAllocatedBlocks(
+  allocatorState: AllocatorState
+): ForTestingBlock[] {
+  const blocks: ForTestingBlock[] = [];
+
+  const { u32, state } = allocatorState;
+
+  let iteratedBlock = get__used(state);
+
+  while (iteratedBlock !== 0) {
+    blocks.push({
+      blockPointer: iteratedBlock,
+      dataPointer: iteratedBlock + SIZEOF_MEM_BLOCK_HEADER,
+      size: readBlockSize(u32, iteratedBlock),
+      dataSize: readBlockSize(u32, iteratedBlock) - SIZEOF_MEM_BLOCK_HEADER,
+      next: readBlockNext(u32, iteratedBlock),
+      prev: readBlockPrev(u32, iteratedBlock),
+    });
+
+    iteratedBlock = readBlockNext(u32, iteratedBlock);
+  }
+
+  return blocks;
+}
+
+/**
+ * For testing purposes
+ */
+export function listFreeBlocks(
+  allocatorState: AllocatorState
+): ForTestingBlock[] {
+  const blocks: ForTestingBlock[] = [];
+
+  const { u32, state } = allocatorState;
+
+  let iteratedBlock = get__free(state);
+
+  while (iteratedBlock !== 0) {
+    blocks.push({
+      blockPointer: iteratedBlock,
+      dataPointer: iteratedBlock + SIZEOF_MEM_BLOCK_HEADER,
+      size: readBlockSize(u32, iteratedBlock),
+      dataSize: readBlockSize(u32, iteratedBlock) - SIZEOF_MEM_BLOCK_HEADER,
+      next: readBlockNext(u32, iteratedBlock),
+      prev: readBlockPrev(u32, iteratedBlock),
+    });
+
+    iteratedBlock = readBlockNext(u32, iteratedBlock);
+  }
+
+  return blocks;
 }
 
 /**
@@ -126,7 +215,11 @@ export function calloc(
   fill = 0
 ): number {
   const addr = malloc(allocatorState, bytes);
-  addr && allocatorState.u8.fill(fill, addr, addr + bytes);
+
+  if (addr !== 0) {
+    allocatorState.u8.fill(fill, addr, addr + bytes);
+  }
+
   return addr;
 }
 
@@ -138,46 +231,76 @@ export function malloc(allocatorState: AllocatorState, bytes: number): number {
   const state = allocatorState.state;
   const u32 = allocatorState.u32;
 
-  const paddedSize = align(bytes + SIZEOF_MEM_BLOCK, get_align(state));
+  const paddedSize = align(bytes + SIZEOF_MEM_BLOCK_HEADER, get_align(state));
   const end = get_end(state);
   let top = get_top(state);
-  let block = get__free(state);
+  let itrBlock = get__free(state);
   let prev = 0;
-  while (block) {
-    const itrBlockSize = blockSize(u32, block);
-    const isTop = block + itrBlockSize >= top;
+
+  // look for suitable pointer in freelist blocks before eating more of the heap/top
+  // one day this will be a search tree
+  while (itrBlock) {
+    const itrBlockSize = readBlockSize(u32, itrBlock);
+
+    // blocks in used list are ordered by address, ascending
+    // when we reach to top, means we are in the end of the list
+    // the itrBlock is the last block physically before top
+    const isTop = itrBlock + itrBlockSize >= top;
+
+    // If we are in top, or the block is in a good size, we can use it
+    // if it's top and the block is small, we can enlarge it in-place
     if (isTop || itrBlockSize >= paddedSize) {
-      if (isTop && block + paddedSize > end) {
+      // Check if have enough memory
+      if (isTop && itrBlock + paddedSize > end) {
         return 0;
       }
-      if (prev) {
-        unlinkBlock(u32, prev, block);
-      } else {
-        set__free(state, blockNext(u32, block));
+
+      removeBlockFromList(u32, itrBlock);
+
+      // Block was the first in list
+      if (prev === 0) {
+        set__free(state, readBlockNext(u32, itrBlock));
       }
-      setBlockNext(u32, block, get__used(state));
-      set__used(state, block);
+
+      // add block to the beginning of used blocks list
+      setBlockPrev(u32, get__used(state), itrBlock);
+      setBlockNext(u32, itrBlock, get__used(state));
+      setBlockPrev(u32, itrBlock, 0);
+      set__used(state, itrBlock);
+
+      // We are the last block, so we can enlarge the block into top
+      // Resize-up the block to the requested size
       if (isTop) {
-        set_top(state, block + setBlockSize(u32, block, paddedSize));
-        // this.top = block + this.setBlockSize(block, paddedSize);
+        set_top(state, itrBlock + setBlockSize(u32, itrBlock, paddedSize));
       } else if (get_doSplit(state)) {
         const excess = itrBlockSize - paddedSize;
-        excess >= get_minSplit(state) &&
-          splitBlock(state, u32, block, paddedSize, excess);
+        if (excess >= get_minSplit(state)) {
+          splitBlock(state, u32, itrBlock, excess);
+        }
       }
-      return blockDataAddress(block);
+
+      return blockDataAddress(itrBlock);
     }
-    prev = block;
-    block = blockNext(u32, block);
+
+    prev = itrBlock;
+    itrBlock = readBlockNext(u32, itrBlock);
   }
-  block = top;
-  top = block + paddedSize;
+
+  // We didn't use any block from the free-list,
+  // try to create new block from top
+  const newBlock = top;
+  top = newBlock + paddedSize;
+
   if (top <= end) {
-    initBlock(u32, block, paddedSize, get__used(state));
-    set__used(state, block);
+    initBlock(u32, newBlock, paddedSize, get__used(state), 0);
+    setBlockPrev(u32, get__used(state), newBlock);
+    set__used(state, newBlock);
     set_top(state, top);
-    return blockDataAddress(block);
+
+    return blockDataAddress(newBlock);
   }
+
+  // Out of memory / memory is fragmented, no free block big enough
   return 0;
 }
 
@@ -189,87 +312,136 @@ export function realloc(
   if (bytes <= 0) {
     return 0;
   }
+  const { state, u32, u8 } = allocatorState;
 
-  const state = allocatorState.state;
-  const u32 = allocatorState.u32;
-  const u8 = allocatorState.u8;
-
-  const oldAddr = blockSelfAddress(ptr);
-  let newAddr = 0;
-  let block = get__used(state);
+  const originalBlockAddr = blockSelfAddress(ptr);
+  let maybeNewAddr = 0;
   let blockEnd = 0;
-  while (block) {
-    if (block === oldAddr) {
-      const itrBlockSize = blockSize(u32, block);
-      blockEnd = oldAddr + itrBlockSize;
-      const isTop = blockEnd >= get_top(state);
-      const paddedSize = align(bytes + SIZEOF_MEM_BLOCK, get_align(state));
-      // shrink & possibly split existing block
-      if (paddedSize <= itrBlockSize) {
-        if (get_doSplit(state)) {
-          const excess = itrBlockSize - paddedSize;
-          if (excess >= get_minSplit(state)) {
-            splitBlock(state, u32, block, paddedSize, excess);
-          } else if (isTop) {
-            set_top(state, oldAddr + paddedSize);
-            // this.top = oldAddr + paddedSize;
-          }
-        } else if (isTop) {
-          set_top(state, oldAddr + paddedSize);
-          // this.top = oldAddr + paddedSize;
-        }
-        newAddr = oldAddr;
-        break;
-      }
-      // try to enlarge block if current top
-      if (isTop && oldAddr + paddedSize < get_end(state)) {
-        set_top(state, oldAddr + setBlockSize(u32, block, paddedSize));
-        newAddr = oldAddr;
-        break;
-      }
-      // fallback to free & malloc
-      free(allocatorState, oldAddr);
-      newAddr = blockSelfAddress(malloc(allocatorState, bytes));
-      break;
-    }
-    block = blockNext(u32, block);
-  }
-  // copy old block contents to new addr
-  if (newAddr && newAddr !== oldAddr) {
-    u8.copyWithin(
-      blockDataAddress(newAddr),
-      blockDataAddress(oldAddr),
-      blockEnd
+
+  const newWishedPaddedSize = align(
+    bytes + SIZEOF_MEM_BLOCK_HEADER,
+    get_align(state)
+  );
+
+  const originalBlockSize = readBlockSize(u32, originalBlockAddr);
+  blockEnd = originalBlockAddr + originalBlockSize;
+  const isTop = blockEnd === get_top(state);
+
+  // no change is needed
+  if (newWishedPaddedSize === originalBlockSize) {
+    // noop
+    maybeNewAddr = originalBlockAddr;
+  } else if (
+    // The block is the last one before top
+    isTop &&
+    // we need to shrink
+    (newWishedPaddedSize < originalBlockSize ||
+      // we need to enlarge and we have enough memory on top for it
+      (newWishedPaddedSize > originalBlockSize &&
+        originalBlockAddr + newWishedPaddedSize <= get_end(state)))
+  ) {
+    // very easy, no matter if we need to enlarge or shrink.
+    // just change the block size & move top
+
+    set_top(
+      state,
+      originalBlockAddr +
+        setBlockSize(u32, originalBlockAddr, newWishedPaddedSize)
     );
+    maybeNewAddr = originalBlockAddr;
   }
-  return blockDataAddress(newAddr);
+  // Smaller size is needed, try to split, or leave it as is
+  else if (newWishedPaddedSize < originalBlockSize) {
+    const excess = originalBlockSize - newWishedPaddedSize;
+    if (get_doSplit(state) && excess >= get_minSplit(state)) {
+      splitBlock(state, u32, originalBlockAddr, excess);
+    } else {
+      // here we just stay with the same block size
+      // noop
+    }
+    maybeNewAddr = originalBlockAddr;
+  } else {
+    // fallback to free & malloc
+    const newAllocatedBlock = malloc(allocatorState, bytes);
+    if (newAllocatedBlock === 0) {
+      // OOM :(
+      // short circuit return
+      return 0;
+    } else {
+      maybeNewAddr = blockSelfAddress(newAllocatedBlock);
+      u8.copyWithin(
+        blockDataAddress(maybeNewAddr),
+        blockDataAddress(originalBlockAddr),
+        blockEnd
+      );
+
+      // Free only after the data copy
+      free(allocatorState, blockDataAddress(originalBlockAddr));
+    }
+  }
+
+  return blockDataAddress(maybeNewAddr);
 }
 
-export function free(allocatorState: AllocatorState, ptr: number): boolean {
+export function free(
+  allocatorState: AllocatorState,
+  blockDataSpacePtr: number
+): boolean {
   const state = allocatorState.state;
   const u32 = allocatorState.u32;
 
-  let addr: number = ptr;
-  addr = blockSelfAddress(addr);
-  let block = get__used(state);
-  let prev = 0;
-  while (block) {
-    if (block === addr) {
-      if (prev) {
-        unlinkBlock(u32, prev, block);
-      } else {
-        set__used(state, blockNext(u32, block));
-      }
-      insert(state, u32, block);
-      if (get_doCompact(state)) {
-        compact(state, u32);
-      }
-      return true;
+  const blockToFree = blockSelfAddress(blockDataSpacePtr);
+  const firstUsedBlock = get__used(state);
+
+  const next = readBlockNext(u32, blockToFree);
+  const prev = readBlockPrev(u32, blockToFree);
+
+  // This block is the first one in the used-list
+  if (blockToFree === firstUsedBlock) {
+    set__used(state, next);
+    if (next !== 0) {
+      setBlockPrev(u32, next, 0);
     }
-    prev = block;
-    block = blockNext(u32, block);
+  } else {
+    if (prev !== 0) {
+      setBlockNext(u32, prev, next);
+    }
+    if (next !== 0) {
+      setBlockPrev(u32, next, prev);
+    }
   }
-  return false;
+
+  tryToMergeWithOtherFreeBlocksMeldToTopInsertToFreeList(
+    state,
+    u32,
+    blockToFree
+  );
+
+  return true;
+}
+
+function isBlockConsecutivePrev(
+  u32: Uint32Array,
+  blockToCheck: number,
+  prevBlock: number
+): boolean {
+  return prevBlock + readBlockSize(u32, prevBlock) === blockToCheck;
+}
+
+function isBlockConsecutiveNext(
+  u32: Uint32Array,
+  blockToCheck: number,
+  nextBlock: number
+): boolean {
+  return blockToCheck + readBlockSize(u32, blockToCheck) === nextBlock;
+}
+
+function isBlockConsecutiveTop(
+  u32: Uint32Array,
+  blockToCheck: number,
+  top: number
+) {
+  return blockToCheck + readBlockSize(u32, blockToCheck) === top;
 }
 
 export function freeAll(allocatorState: AllocatorState): void {
@@ -288,8 +460,8 @@ export function stats(
     let size = 0;
     while (block) {
       count++;
-      size += blockSize(allocatorState.u32, block);
-      block = blockNext(allocatorState.u32, block);
+      size += readBlockSize(allocatorState.u32, block);
+      block = readBlockNext(allocatorState.u32, block);
     }
     return { count, size };
   };
@@ -436,18 +608,13 @@ function get_minSplit(state: Uint32Array): number {
 }
 
 function set_minSplit(state: Uint32Array, x: number): void {
-  invariant(
-    x > SIZEOF_MEM_BLOCK,
-    `illegal min split threshold: ${x}, require at least ${
-      SIZEOF_MEM_BLOCK + 1
-    }`
-  );
   state[STATE_MIN_SPLIT] = x;
 }
 
 function initialTop(start: number, _align: Pow2): number {
   return (
-    align(start + SIZEOF_STATE + SIZEOF_MEM_BLOCK, _align) - SIZEOF_MEM_BLOCK
+    align(start + SIZEOF_STATE + SIZEOF_MEM_BLOCK_HEADER, _align) -
+    SIZEOF_MEM_BLOCK_HEADER
   );
 }
 
@@ -458,7 +625,7 @@ function initialTop(start: number, _align: Pow2): number {
  * @param u32
  * @param block
  */
-export function blockSize(u32: Uint32Array, block: number): number {
+export function readBlockSize(u32: Uint32Array, block: number): number {
   return u32[(block >> 2) + MEM_BLOCK_SIZE];
 }
 
@@ -479,7 +646,7 @@ function setBlockSize(u32: Uint32Array, block: number, size: number): number {
  * @param u32
  * @param block
  */
-export function blockNext(u32: Uint32Array, block: number): number {
+export function readBlockNext(u32: Uint32Array, block: number): number {
   return u32[(block >> 2) + MEM_BLOCK_NEXT];
 }
 
@@ -493,6 +660,25 @@ function setBlockNext(u32: Uint32Array, block: number, next: number): void {
 }
 
 /**
+ * Exported for testing proposes only
+ * @private
+ * @param u32
+ * @param block
+ */
+export function readBlockPrev(u32: Uint32Array, block: number): number {
+  return u32[(block >> 2) + MEM_BLOCK_PREV];
+}
+
+/**
+ * Sets block next pointer to `next`. Use zero to indicate list end.
+ *
+ * @param block -
+ */
+function setBlockPrev(u32: Uint32Array, block: number, prev: number): void {
+  u32[(block >> 2) + MEM_BLOCK_PREV] = prev;
+}
+
+/**
  * Initializes block header with given `size` and `next` pointer. Returns `block`.
  *
  * @param block -
@@ -503,104 +689,152 @@ function initBlock(
   u32: Uint32Array,
   block: number,
   size: number,
-  next: number
+  next: number,
+  prev: number
 ): number {
   const idx = block >>> 2;
   u32[idx + MEM_BLOCK_SIZE] = size;
   u32[idx + MEM_BLOCK_NEXT] = next;
+  u32[idx + MEM_BLOCK_PREV] = prev;
+  u32[idx + MEM_BLOCK_FLAGS] = 0;
+
   return block;
 }
 
-function unlinkBlock(u32: Uint32Array, prev: number, block: number): void {
-  setBlockNext(u32, prev, blockNext(u32, block));
+function removeBlockFromList(u32: Uint32Array, block: number): void {
+  const prev = readBlockPrev(u32, block);
+  const next = readBlockNext(u32, block);
+  if (prev !== 0) {
+    setBlockNext(u32, prev, next);
+  }
+
+  if (next !== 0) {
+    setBlockPrev(u32, next, prev);
+  }
 }
 
 function splitBlock(
   stateU32: Uint32Array,
   u32: Uint32Array,
-  block: number,
-  blockSize: number,
-  excess: number
+  blockToSplitFrom: number,
+  howMuchToSplitIntoNewBlock: number
 ): void {
-  insert(
+  const blockSizeAfterSplit =
+    readBlockSize(u32, blockToSplitFrom) - howMuchToSplitIntoNewBlock;
+  const splittedBlockPtr = blockToSplitFrom + blockSizeAfterSplit;
+
+  setBlockSize(u32, blockToSplitFrom, blockSizeAfterSplit);
+
+  initBlock(u32, splittedBlockPtr, howMuchToSplitIntoNewBlock, 0, 0);
+
+  // revisit: we may simply insert this block, do need to the whole afterRemovedFromUsedListFindBetterName
+  // As we are sure it's not going to merge/meld it because it's a split
+  tryToMergeWithOtherFreeBlocksMeldToTopInsertToFreeList(
     stateU32,
     u32,
-    initBlock(u32, block + setBlockSize(u32, block, blockSize), excess, 0)
+    splittedBlockPtr
   );
-  get_doCompact(stateU32) && compact(stateU32, u32);
 }
 
-/**
- * Traverses free list and attempts to recursively merge blocks
- * occupying consecutive memory regions. Returns true if any blocks
- * have been merged. Only called if `compact` option is enabled.
- */
-function compact(stateU32: Uint32Array, u32: Uint32Array): boolean {
-  let block = get__free(stateU32);
+function tryToMergeWithOtherFreeBlocksMeldToTopInsertToFreeList(
+  stateU32: Uint32Array,
+  u32: Uint32Array,
+  blockThatIsNowFree: number
+) {
+  let nextBlockItr = get__free(stateU32);
   let prev = 0;
-  let scan = 0;
-  let scanPrev: number;
-  let res = false;
-  while (block) {
-    scanPrev = block;
-    scan = blockNext(u32, block);
-    while (scan && scanPrev + blockSize(u32, scanPrev) === scan) {
-      // console.log("merge:", scan.addr, scan.size);
-      scanPrev = scan;
-      scan = blockNext(u32, scan);
-    }
-    if (scanPrev !== block) {
-      const newSize = scanPrev - block + blockSize(u32, scanPrev);
-      // console.log("merged size:", newSize);
-      setBlockSize(u32, block, newSize);
-      const next = blockNext(u32, scanPrev);
-      let tmp = blockNext(u32, block);
-      while (tmp && tmp !== next) {
-        // console.log("release:", tmp.addr);
-        const tn = blockNext(u32, tmp);
-        setBlockNext(u32, tmp, 0);
-        tmp = tn;
-      }
-      setBlockNext(u32, block, next);
-      res = true;
-    }
-    // re-adjust top if poss
-    if (block + blockSize(u32, block) >= get_top(stateU32)) {
-      set_top(stateU32, block);
-      if (prev !== 0) {
-        unlinkBlock(u32, prev, block);
-      } else {
-        set__free(stateU32, blockNext(u32, block));
-      }
-      // prev
-      //     ? this.unlinkBlock(prev, block)
-      //     : (this._free = this.blockNext(block));
-    }
-    prev = block;
-    block = blockNext(u32, block);
-  }
-  return res;
-}
 
-/**
- * Inserts given block into list of free blocks, sorted by address.
- *
- * @param block -
- */
-function insert(stateU32: Uint32Array, u32: Uint32Array, block: number): void {
-  let ptr = get__free(stateU32);
-  let prev = 0;
-  while (ptr) {
-    if (block <= ptr) break;
-    prev = ptr;
-    ptr = blockNext(u32, ptr);
+  // We don't want to mutate blockThatIsNowFree
+  let blockNowFreeMaybeMergedWithPrev = blockThatIsNowFree;
+
+  // find possible before & after blocks
+  while (nextBlockItr) {
+    if (blockNowFreeMaybeMergedWithPrev <= nextBlockItr) {
+      break;
+    }
+
+    prev = nextBlockItr;
+    nextBlockItr = readBlockNext(u32, nextBlockItr);
   }
-  if (prev) {
-    setBlockNext(u32, prev, block);
+
+  // first, we try to insert the block and merge it with prev if applicable
+  if (prev !== 0) {
+    if (isBlockConsecutivePrev(u32, blockNowFreeMaybeMergedWithPrev, prev)) {
+      // merge current block and the prev block
+      setBlockSize(
+        u32,
+        prev,
+        readBlockSize(u32, prev) +
+          readBlockSize(u32, blockNowFreeMaybeMergedWithPrev)
+      );
+
+      blockNowFreeMaybeMergedWithPrev = prev;
+    } else {
+      // insert block. nextBlockItr may be zero!
+      setBlockNext(u32, prev, blockNowFreeMaybeMergedWithPrev);
+      if (nextBlockItr !== 0) {
+        setBlockPrev(u32, nextBlockItr, blockNowFreeMaybeMergedWithPrev);
+      }
+
+      setBlockNext(u32, blockNowFreeMaybeMergedWithPrev, nextBlockItr);
+      setBlockPrev(u32, blockNowFreeMaybeMergedWithPrev, prev);
+    }
   } else {
-    set__free(stateU32, block);
+    // prev is 0, insert at the beginning of free-list. nextBlockItr may be zero!
+    if (nextBlockItr !== 0) {
+      setBlockPrev(u32, nextBlockItr, blockNowFreeMaybeMergedWithPrev);
+    }
+
+    set__free(stateU32, blockNowFreeMaybeMergedWithPrev);
+
+    setBlockNext(u32, blockNowFreeMaybeMergedWithPrev, nextBlockItr);
+
+    // prev = 0
+    setBlockPrev(u32, blockNowFreeMaybeMergedWithPrev, 0);
   }
-  setBlockNext(u32, block, ptr);
+
+  // now let's see if we can meld into top
+  if (
+    isBlockConsecutiveTop(
+      u32,
+      blockNowFreeMaybeMergedWithPrev,
+      get_top(stateU32)
+    )
+  ) {
+    // may be 0!
+    const theNewLastBlockInList = readBlockPrev(
+      u32,
+      blockNowFreeMaybeMergedWithPrev
+    );
+
+    set_top(stateU32, blockNowFreeMaybeMergedWithPrev);
+
+    if (theNewLastBlockInList === 0) {
+      set__free(stateU32, 0);
+    } else {
+      setBlockNext(u32, theNewLastBlockInList, 0);
+    }
+  }
+  // Then we try to merge with next
+  else if (
+    nextBlockItr !== 0 &&
+    isBlockConsecutiveNext(u32, blockNowFreeMaybeMergedWithPrev, nextBlockItr)
+  ) {
+    // may be zero, but it's ok!
+    const nextOfNext = readBlockNext(u32, nextBlockItr);
+
+    setBlockSize(
+      u32,
+      blockNowFreeMaybeMergedWithPrev,
+      readBlockSize(u32, blockNowFreeMaybeMergedWithPrev) +
+        readBlockSize(u32, nextBlockItr)
+    );
+
+    if (nextOfNext !== 0) {
+      setBlockPrev(u32, nextOfNext, blockNowFreeMaybeMergedWithPrev);
+    }
+    setBlockNext(u32, blockNowFreeMaybeMergedWithPrev, nextOfNext);
+  }
 }
 
 /**
@@ -609,7 +843,7 @@ function insert(stateU32: Uint32Array, u32: Uint32Array, block: number): void {
  * @param blockAddress -
  */
 function blockDataAddress(blockAddress: number): number {
-  return blockAddress + SIZEOF_MEM_BLOCK;
+  return blockAddress + SIZEOF_MEM_BLOCK_HEADER;
 }
 
 /**
@@ -618,7 +852,7 @@ function blockDataAddress(blockAddress: number): number {
  * @param dataAddress -
  */
 function blockSelfAddress(dataAddress: number): number {
-  return dataAddress - SIZEOF_MEM_BLOCK;
+  return dataAddress - SIZEOF_MEM_BLOCK_HEADER;
 }
 
 /**

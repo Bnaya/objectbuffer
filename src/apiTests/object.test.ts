@@ -14,6 +14,7 @@ describe("object tests", () => {
     expect(sizeBeforeSet).toMatchInlineSnapshot(`856`);
 
     objectBuffer.foo = "a";
+    objectBuffer.foo.toString();
     expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`720`);
 
     delete objectBuffer.foo;
