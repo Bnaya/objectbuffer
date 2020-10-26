@@ -15,7 +15,7 @@ export function freeAndDisposeSuite(
 ) {
   const tests: BenchmarkTest[] = [
     {
-      name: `object memory free. K1000RowsMockData, pre-created OB, size: 1e6`,
+      name: `object memory free. K1000RowsMockData, pre-created OB, size: 2e6`,
       fn: () => {
         // delete prop from pre created objectbuffer
         // will free the memory in use for K1000RowsMockData
@@ -34,7 +34,7 @@ export function freeAndDisposeSuite(
 
           for (let i = 0; i < 300; i++) {
             global.testTargets.push(
-              createObjectBuffer({}, 1e6, { K1000RowsMockData })
+              createObjectBuffer({}, 2e6, { K1000RowsMockData })
             );
           }
 
