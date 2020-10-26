@@ -29,12 +29,12 @@ describe("hashmap", () => {
   }
 
   beforeEach(() => {
-    setABSize(256);
+    setABSize(512);
   });
 
   test("createHashMap", () => {
     const mapPointer = createHashMap(carrier, 8);
-    expect(mapPointer).toMatchInlineSnapshot(`56`);
+    expect(mapPointer).toMatchInlineSnapshot(`64`);
     expect(
       arrayBuffer2HexArray(ab.slice(0, carrier.allocator.stats().top), true)
     ).toMatchSnapshot("simple create empty");
@@ -114,7 +114,7 @@ describe("hashmap", () => {
       key
     );
 
-    expect(firstValuePointer).toMatchInlineSnapshot(`152`);
+    expect(firstValuePointer).toMatchInlineSnapshot(`192`);
 
     const foundValuePointer = hashMapValueLookup(carrier.heap, mapPointer, key);
 
@@ -133,7 +133,7 @@ describe("hashmap", () => {
       key
     );
 
-    expect(memoryOfOverWrittenValue).toMatchInlineSnapshot(`160`);
+    expect(memoryOfOverWrittenValue).toMatchInlineSnapshot(`200`);
 
     const foundValuePointer = hashMapValueLookup(
       carrier.heap,
@@ -246,34 +246,34 @@ describe("hashmap", () => {
 
     expect(memAvailableAfterEachStep).toMatchInlineSnapshot(`
       Array [
-        152,
-        240,
-        328,
-        416,
-        504,
-        592,
-        680,
-        768,
-        944,
-        992,
-        1080,
-        1168,
-        1256,
-        1344,
-        1432,
-        1520,
-        1776,
-        1776,
-        1864,
-        1952,
-        2040,
-        2128,
-        2216,
-        2304,
-        2392,
-        2480,
-        2568,
-        2568,
+        184,
+        304,
+        424,
+        544,
+        664,
+        784,
+        904,
+        1024,
+        1240,
+        1304,
+        1424,
+        1544,
+        1664,
+        1784,
+        1904,
+        2024,
+        2320,
+        2344,
+        2464,
+        2584,
+        2704,
+        2824,
+        2944,
+        3064,
+        3184,
+        3304,
+        3424,
+        3424,
       ]
     `);
   });

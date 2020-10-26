@@ -17,10 +17,10 @@ describe("memoryStats test", () => {
 
     expect(memoryStats(objectBuffer)).toMatchInlineSnapshot(`
       Object {
-        "available": 296,
-        "top": 728,
+        "available": 64,
+        "top": 960,
         "total": 1024,
-        "used": 728,
+        "used": 960,
       }
     `);
   });
@@ -33,40 +33,40 @@ describe("memoryStats test", () => {
 
     expect(memoryStats(objectBuffer)).toMatchInlineSnapshot(`
       Object {
-        "available": 1320,
-        "top": 728,
+        "available": 1088,
+        "top": 960,
         "total": 2048,
-        "used": 728,
+        "used": 960,
       }
     `);
 
     resizeObjectBuffer(objectBuffer, 1024);
     expect(memoryStats(objectBuffer)).toMatchInlineSnapshot(`
       Object {
-        "available": 296,
-        "top": 728,
+        "available": 64,
+        "top": 960,
         "total": 1024,
-        "used": 728,
+        "used": 960,
       }
     `);
 
-    resizeObjectBuffer(objectBuffer, 768);
+    resizeObjectBuffer(objectBuffer, 960);
     expect(memoryStats(objectBuffer)).toMatchInlineSnapshot(`
       Object {
-        "available": 40,
-        "top": 728,
-        "total": 768,
-        "used": 728,
+        "available": 0,
+        "top": 960,
+        "total": 960,
+        "used": 960,
       }
     `);
 
     resizeObjectBuffer(objectBuffer, 2048);
     expect(memoryStats(objectBuffer)).toMatchInlineSnapshot(`
       Object {
-        "available": 1320,
-        "top": 728,
+        "available": 1088,
+        "top": 960,
         "total": 2048,
-        "used": 728,
+        "used": 960,
       }
     `);
   });

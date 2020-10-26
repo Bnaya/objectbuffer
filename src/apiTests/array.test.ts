@@ -32,7 +32,7 @@ describe("SharedArrayBuffer tests", () => {
       }
     `);
 
-    expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`536`);
+    expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`424`);
   });
 
   test("splice 1", () => {
@@ -45,7 +45,7 @@ describe("SharedArrayBuffer tests", () => {
 
     const usedAfterCreate = memoryStats(ob).used;
 
-    expect(usedAfterCreate).toMatchInlineSnapshot(`336`);
+    expect(usedAfterCreate).toMatchInlineSnapshot(`424`);
 
     ob.arr.push(null, null, null, null, null, null, null, null, null, null);
     const usedAfterNullPush = memoryStats(ob).used;
@@ -70,7 +70,7 @@ describe("SharedArrayBuffer tests", () => {
 
     expect(
       usedAfterReplaceNullsWithNumbers - usedAfterCreate
-    ).toMatchInlineSnapshot(`240`);
+    ).toMatchInlineSnapshot(`320`);
 
     const removedNumbers = ob.arr.splice(0, 10);
     expect(removedNumbers).toMatchInlineSnapshot(`
@@ -102,11 +102,11 @@ describe("SharedArrayBuffer tests", () => {
 
     const usedAfterCreate = memoryStats(ob).used;
 
-    expect(usedAfterCreate).toMatchInlineSnapshot(`288`);
+    expect(usedAfterCreate).toMatchInlineSnapshot(`368`);
 
     ob.arr.push(null, null, null, null, null, null, null, null, null, null);
     const usedAfterNullPush = memoryStats(ob).used;
-    expect(usedAfterNullPush - usedAfterCreate).toMatchInlineSnapshot(`48`);
+    expect(usedAfterNullPush - usedAfterCreate).toMatchInlineSnapshot(`56`);
 
     const removedNulls = ob.arr.splice(
       0,
@@ -140,7 +140,7 @@ describe("SharedArrayBuffer tests", () => {
 
     expect(
       usedAfterReplaceNullsWithNumbers - usedAfterCreate
-    ).toMatchInlineSnapshot(`768`);
+    ).toMatchInlineSnapshot(`1016`);
 
     const removedArrays = ob.arr.splice(0, 10);
     expect(removedArrays).toMatchInlineSnapshot(`
@@ -180,7 +180,7 @@ describe("SharedArrayBuffer tests", () => {
 
     const usedAfterRemovedArrays = memoryStats(ob).used;
     expect(usedAfterRemovedArrays - usedAfterCreate).toMatchInlineSnapshot(
-      `768`
+      `1016`
     );
 
     disposeWrapperObject(ob.arr);
@@ -188,7 +188,7 @@ describe("SharedArrayBuffer tests", () => {
     removedArrays.forEach((a: any) => disposeWrapperObject(a));
 
     const usedDisposeArrays = memoryStats(ob).used;
-    expect(usedDisposeArrays - usedAfterCreate).toMatchInlineSnapshot(`48`);
+    expect(usedDisposeArrays - usedAfterCreate).toMatchInlineSnapshot(`56`);
   });
 
   test("flat", () => {

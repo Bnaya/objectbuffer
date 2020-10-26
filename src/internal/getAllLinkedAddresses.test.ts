@@ -181,10 +181,10 @@ describe("getAllLinkedAddresses", () => {
 
       expect(memoryStats(objectBuffer)).toMatchInlineSnapshot(`
         Object {
-          "available": 608,
-          "top": 1440,
+          "available": 160,
+          "top": 1888,
           "total": 2048,
-          "used": 1440,
+          "used": 1888,
         }
       `);
 

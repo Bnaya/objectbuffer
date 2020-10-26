@@ -24,6 +24,7 @@ import { readString } from "./readString";
 import { saveValueIterative } from "./saveValue";
 import { stringEncodeInto } from "./stringEncodeInto";
 import { stringLengthV2 } from "./stringLengthV2";
+import { OutOfMemoryError } from "./exceptions";
 
 export function initializeArrayBuffer(arrayBuffer: ArrayBuffer) {
   const uint32 = new Uint32Array(arrayBuffer);
@@ -111,23 +112,32 @@ export function writeValueInPtrToPtrAndHandleMemory(
 ) {
   const existingEntryPointer =
     carrier.heap.u32[ptrToPtr / Uint32Array.BYTES_PER_ELEMENT];
-  // Might oom here
-  const referencedPointers = writeValueInPtrToPtr(
-    externalArgs,
-    carrier,
-    ptrToPtr,
-    value
-  );
-  // -- end of might oom
 
-  // commit ref count changes of existing objects
-  if (referencedPointers.length > 0) {
-    for (const ptr of referencedPointers) {
-      incrementRefCount(carrier.heap, ptr);
+  try {
+    const referencedPointers = writeValueInPtrToPtr(
+      externalArgs,
+      carrier,
+      ptrToPtr,
+      value
+    );
+
+    // commit ref count changes of existing objects
+    if (referencedPointers.length > 0) {
+      for (const ptr of referencedPointers) {
+        incrementRefCount(carrier.heap, ptr);
+      }
     }
-  }
 
-  handleArcForDeletedValuePointer(carrier, existingEntryPointer);
+    handleArcForDeletedValuePointer(carrier, existingEntryPointer);
+  } catch (ProbablyOutOfMemoryError) {
+    if (ProbablyOutOfMemoryError instanceof OutOfMemoryError) {
+      carrier.heap.u32[
+        ptrToPtr / Uint32Array.BYTES_PER_ELEMENT
+      ] = existingEntryPointer;
+    }
+
+    throw ProbablyOutOfMemoryError;
+  }
 }
 
 export function handleArcForDeletedValuePointer(

@@ -17,7 +17,7 @@ describe("Runtime errors", () => {
   });
 
   test("Fail to set new data when enough memory", () => {
-    const objectBuffer = createObjectBuffer<any>(externalArgs, 312, {
+    const objectBuffer = createObjectBuffer<any>(externalArgs, 400, {
       value: "first value 123",
     });
     const freeSpaceLeft = memoryStats(objectBuffer).available;

@@ -95,7 +95,7 @@ export interface AllocatorInitOpts {
    * excess bytes available in a block for memory block splitting to
    * occur.
    *
-   * @defaultValue 16, MUST be > 8
+   * @defaultValue 24, MUST be >= 24
    */
   minSplit: number;
 }

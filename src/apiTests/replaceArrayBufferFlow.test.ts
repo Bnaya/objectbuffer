@@ -32,7 +32,7 @@ describe("replaceArrayBufferFlow", () => {
 
     replaceUnderlyingArrayBuffer(objectBuffer, newAb);
 
-    expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`744`);
+    expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`664`);
     expect(objectBuffer).toMatchInlineSnapshot(`
       Object {
         "a": 1,
@@ -41,20 +41,20 @@ describe("replaceArrayBufferFlow", () => {
   });
 
   test("test resizeObjectBuffer works", () => {
-    const objectBuffer = createObjectBuffer<any>(externalArgs, 1024, {
+    const objectBuffer = createObjectBuffer<any>(externalArgs, 4096, {
       obj1: { a: 1 },
     });
 
     const oldAb = getUnderlyingArrayBuffer(objectBuffer);
-    expect(oldAb.byteLength).toMatchInlineSnapshot(`1024`);
+    expect(oldAb.byteLength).toMatchInlineSnapshot(`4096`);
 
     const obj1Proxy = objectBuffer.obj1;
 
     expect(obj1Proxy).toBe(objectBuffer.obj1);
 
-    const newAb = resizeObjectBuffer(objectBuffer, 768);
+    const newAb = resizeObjectBuffer(objectBuffer, 2048);
 
-    expect(newAb.byteLength).toMatchInlineSnapshot(`768`);
+    expect(newAb.byteLength).toMatchInlineSnapshot(`2048`);
     expect(newAb).not.toBe(oldAb);
 
     expect(obj1Proxy).toBe(objectBuffer.obj1);

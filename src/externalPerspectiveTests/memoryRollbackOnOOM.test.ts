@@ -10,13 +10,13 @@ describe("memory OOM transactions", () => {
   });
 
   test("Object set (covers also Map & Set)", () => {
-    const objectBuffer = createObjectBuffer<any>(externalArgs, 512, {
+    const objectBuffer = createObjectBuffer<any>(externalArgs, 1024, {
       foo: null,
     });
 
-    const initialFreeSpace = memoryStats(objectBuffer).available;
+    const initialSpaceTaken = memoryStats(objectBuffer).used;
 
-    expect(initialFreeSpace).toBe(256);
+    expect(initialSpaceTaken).toBe(328);
 
     expect(() => {
       objectBuffer.foo = {
@@ -26,7 +26,7 @@ describe("memory OOM transactions", () => {
       };
     }).toThrowErrorMatchingInlineSnapshot(`"OutOfMemoryError"`);
 
-    expect(memoryStats(objectBuffer).available).toBe(initialFreeSpace);
+    expect(memoryStats(objectBuffer).used).toBe(initialSpaceTaken);
 
     expect(objectBuffer).toMatchInlineSnapshot(`
       Object {
@@ -54,7 +54,7 @@ describe("memory OOM transactions", () => {
 
     const initialFreeSpace = memoryStats(objectBuffer).available;
 
-    expect(initialFreeSpace).toBe(184);
+    expect(initialFreeSpace).toBe(88);
 
     expect(() => {
       objectBuffer.arr[1] = "a".repeat(512);
@@ -85,13 +85,27 @@ describe("memory OOM transactions", () => {
       arr: [1],
     });
 
+    // const memoryStatsBefore = getInternalAPI(objectBuffer)
+    //   .getCarrier()
+    //   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    //   // @ts-ignore
+    //   .allocator._allocatedBlocks();
+
     const initialFreeSpace = memoryStats(objectBuffer).available;
 
-    expect(initialFreeSpace).toBe(184);
+    expect(initialFreeSpace).toBe(88);
 
     expect(() => {
       objectBuffer.arr.splice(0, 0, "a", "b", "c", "d", "e", "f", "g");
     }).toThrowErrorMatchingInlineSnapshot(`"OutOfMemoryError"`);
+
+    // expect(memoryStatsBefore).toEqual(
+    //   getInternalAPI(objectBuffer)
+    //     .getCarrier()
+    //     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    //     // @ts-ignore
+    //     .allocator._allocatedBlocks()
+    // );
 
     expect(memoryStats(objectBuffer).available).toBe(initialFreeSpace);
 

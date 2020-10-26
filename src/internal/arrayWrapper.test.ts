@@ -9,7 +9,7 @@ describe("arrayWrapper tests", () => {
 
       const arrayWrapper = createObjectBuffer(
         { arrayAdditionalAllocation: 20 },
-        520,
+        1024,
         { arrayToSave }
       ).arrayToSave;
 
@@ -21,7 +21,7 @@ describe("arrayWrapper tests", () => {
         ]
       `);
 
-      expect(memoryStats(arrayWrapper).available).toMatchInlineSnapshot(`0`);
+      expect(memoryStats(arrayWrapper).available).toMatchInlineSnapshot(`376`);
     });
 
     test("arrayWrapper array.keys()", () => {
@@ -29,13 +29,13 @@ describe("arrayWrapper tests", () => {
 
       const arrayWrapper = createObjectBuffer(
         { arrayAdditionalAllocation: 20 },
-        520,
+        1024,
         { arrayToSave }
       ).arrayToSave;
 
       expect([...arrayWrapper.keys()]).toEqual([0, 1, 2]);
 
-      expect(memoryStats(arrayWrapper).available).toMatchInlineSnapshot(`0`);
+      expect(memoryStats(arrayWrapper).available).toMatchInlineSnapshot(`376`);
     });
 
     test("arrayWrapper array.entries()", () => {
@@ -43,7 +43,7 @@ describe("arrayWrapper tests", () => {
 
       const arrayWrapper = createObjectBuffer(
         { arrayAdditionalAllocation: 20 },
-        520,
+        1024,
         { arrayToSave }
       ).arrayToSave;
 
@@ -64,7 +64,7 @@ describe("arrayWrapper tests", () => {
         ]
       `);
 
-      expect(memoryStats(arrayWrapper).available).toMatchInlineSnapshot(`0`);
+      expect(memoryStats(arrayWrapper).available).toMatchInlineSnapshot(`376`);
     });
 
     test("arrayWrapper array.values() & iterator", () => {
@@ -72,7 +72,7 @@ describe("arrayWrapper tests", () => {
 
       const arrayWrapper = createObjectBuffer(
         { arrayAdditionalAllocation: 20 },
-        520,
+        1024,
         { arrayToSave }
       ).arrayToSave;
 
@@ -91,7 +91,7 @@ describe("arrayWrapper tests", () => {
         ]
       `);
 
-      expect(memoryStats(arrayWrapper).available).toMatchInlineSnapshot(`0`);
+      expect(memoryStats(arrayWrapper).available).toMatchInlineSnapshot(`376`);
     });
 
     test("arrayWrapper set value in bound", () => {
@@ -168,7 +168,7 @@ describe("arrayWrapper tests", () => {
           "new value",
         ]
       `);
-      expect(memoryStats(arrayWrapper).available).toMatchInlineSnapshot(`456`);
+      expect(memoryStats(arrayWrapper).available).toMatchInlineSnapshot(`344`);
     });
   });
 
@@ -177,7 +177,7 @@ describe("arrayWrapper tests", () => {
 
     const arrayWrapper = createObjectBuffer(
       { arrayAdditionalAllocation: 3 },
-      520,
+      1024,
       { arrayToSave }
     ).arrayToSave;
 
@@ -196,7 +196,7 @@ describe("arrayWrapper tests", () => {
       ]
     `);
 
-    expect(memoryStats(arrayWrapper).available).toMatchInlineSnapshot(`24`);
+    expect(memoryStats(arrayWrapper).available).toMatchInlineSnapshot(`392`);
   });
 
   test("arrayWrapper sort - with comparator", () => {
@@ -243,7 +243,7 @@ describe("arrayWrapper tests", () => {
       ]
     `);
 
-    expect(memoryStats(arrayWrapper).available).toMatchInlineSnapshot(`552`);
+    expect(memoryStats(arrayWrapper).available).toMatchInlineSnapshot(`64`);
   });
 
   test("arrayWrapper - reverse", () => {
@@ -251,7 +251,7 @@ describe("arrayWrapper tests", () => {
 
     const arrayWrapper = createObjectBuffer(
       { arrayAdditionalAllocation: 3 },
-      520,
+      1024,
       { arrayToSave }
     ).arrayToSave;
 
@@ -273,7 +273,7 @@ describe("arrayWrapper tests", () => {
       ]
     `);
 
-    expect(memoryStats(arrayWrapper).available).toMatchInlineSnapshot(`8`);
+    expect(memoryStats(arrayWrapper).available).toMatchInlineSnapshot(`368`);
   });
 
   test("arrayWrapper - set length", () => {
@@ -281,7 +281,7 @@ describe("arrayWrapper tests", () => {
 
     const arrayWrapper = createObjectBuffer(
       { arrayAdditionalAllocation: 3 },
-      520,
+      1024,
       { arrayToSave }
     ).arrayToSave;
 
@@ -320,6 +320,6 @@ describe("arrayWrapper tests", () => {
       arrayWrapper.length = 2.2;
     }).toThrowErrorMatchingInlineSnapshot(`"Invalid array length"`);
 
-    expect(memoryStats(arrayWrapper).available).toMatchInlineSnapshot(`152`);
+    expect(memoryStats(arrayWrapper).available).toMatchInlineSnapshot(`560`);
   });
 });
