@@ -13,11 +13,11 @@ describe("no user after free tests", () => {
   const externalArgs = externalArgsApiToExternalArgsApi({});
 
   test("basic 2", () => {
-    const objectBuffer = createObjectBuffer<any>(externalArgs, 1024, {
+    const objectBuffer = createObjectBuffer<any>(externalArgs, 2048, {
       o: { b: { a: { v: [1] } } },
     });
 
-    expect(memoryStats(objectBuffer).used).toMatchInlineSnapshot(`952`);
+    expect(memoryStats(objectBuffer).used).toMatchInlineSnapshot(`1264`);
 
     const prev1 = objectBuffer.o;
     objectBuffer.o = undefined;
@@ -63,11 +63,11 @@ describe("no user after free tests", () => {
     jestExpectNoUseAfterFreeSubset(prev2);
     jestExpectNoUseAfterFreeSubset(prev3);
 
-    expect(memoryStats(objectBuffer).used).toMatchInlineSnapshot(`744`);
+    expect(memoryStats(objectBuffer).used).toMatchInlineSnapshot(`984`);
   });
 
   test("siblings", () => {
-    const ob = createObjectBuffer(externalArgs, 1024, {
+    const ob = createObjectBuffer(externalArgs, 2048, {
       str: "str1",
       o: { a1: [1, 2, 3], a2: [4, 5, 6] },
     });
@@ -110,7 +110,7 @@ describe("no user after free tests", () => {
   });
 
   test("use after dispose", () => {
-    const ob = createObjectBuffer(externalArgs, 1024, {
+    const ob = createObjectBuffer(externalArgs, 2048, {
       str: "str1",
       o: { a1: [1, 2, 3], a2: [4, 5, 6] },
     });

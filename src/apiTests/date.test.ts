@@ -15,6 +15,8 @@ describe("Date test", () => {
       myDate: new Date(946684800000),
     });
 
+    const usedBefore = memoryStats(objectBuffer).used;
+
     expect(objectBuffer).toMatchInlineSnapshot(`
       Object {
         "myDate": "2000-01-01T00:00:00.000Z",
@@ -41,6 +43,6 @@ describe("Date test", () => {
       `"2000-04-10T00:00:00.000Z"`
     );
 
-    expect(memoryStats(objectBuffer).used).toMatchInlineSnapshot(`288`);
+    expect(memoryStats(objectBuffer).used).toBe(usedBefore);
   });
 });
