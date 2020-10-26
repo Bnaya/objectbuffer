@@ -214,7 +214,7 @@ describe("arraySplice tests", () => {
 
   test("arrayWrapper splice - add + delete - array will get shorter", () => {
     const plainJSArray: any[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-    const ob = createObjectBuffer({ arrayAdditionalAllocation: 20 }, 1024, {
+    const ob = createObjectBuffer({ arrayAdditionalAllocation: 20 }, 2048, {
       arr: plainJSArray,
     });
 
@@ -280,7 +280,7 @@ describe("arraySplice tests", () => {
 
     expect(
       availableCheckpoint - memoryStats(ob).available
-    ).toMatchInlineSnapshot(`48`);
+    ).toMatchInlineSnapshot(`64`);
   });
 
   test("arrayWrapper splice - start bigger than array", () => {

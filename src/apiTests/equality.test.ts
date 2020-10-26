@@ -12,7 +12,7 @@ describe("equality.test tests. make sure our cache of proxies works", () => {
   test("equality.test tests", () => {
     const objectBuffer = createObjectBuffer<any>(
       externalArgs,
-      1024,
+      2048,
       { arr: [1, 2, 3, 4], obj: { a: 1 } },
       { useSharedArrayBuffer: false }
     );
@@ -49,6 +49,6 @@ describe("equality.test tests. make sure our cache of proxies works", () => {
     expect(objectBuffer.obj2).toBe(objectBuffer.obj2);
     expect(objectBuffer.obj2).toBe(objectBuffer.obj);
 
-    expect(memoryStats(objectBuffer).used).toMatchInlineSnapshot(`904`);
+    expect(memoryStats(objectBuffer).used).toMatchInlineSnapshot(`1200`);
   });
 });

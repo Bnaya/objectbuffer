@@ -50,7 +50,7 @@ describe("memory GC related tests", () => {
 
     expect(addressesNoLongerUsed).toMatchInlineSnapshot(`
       Array [
-        264,
+        344,
       ]
     `);
   }, 10000);
@@ -68,7 +68,7 @@ describe("memory GC related tests", () => {
 
     expect(
       initialMemoryStats.available - secondMemoryStats.available
-    ).toMatchInlineSnapshot(`264`);
+    ).toMatchInlineSnapshot(`352`);
 
     let foo = objectBuffer.foo;
 
