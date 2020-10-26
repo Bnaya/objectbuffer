@@ -23,18 +23,18 @@ export function savingAndCreatingSuite(
 
   return suite
     .add(
-      `create empty, size: 1e6`,
+      `create empty, size: 2e6`,
       () => {
-        createObjectBuffer({}, 1e6, {});
+        createObjectBuffer({}, 2e6, {});
       },
       {
         minSamples: MIN_SAMPLES,
       }
     )
     .add(
-      `create with ${COMMENTS_ARR_SIZE} comments. size: 1e6`,
+      `create with ${COMMENTS_ARR_SIZE} comments. size: 2e6`,
       () => {
-        createObjectBuffer({}, 1e6, {
+        createObjectBuffer({}, 2e6, {
           arrOfComments,
         });
       },
@@ -43,7 +43,7 @@ export function savingAndCreatingSuite(
       }
     )
     .add(
-      `save ${COMMENTS_ARR_SIZE} comments into pre-created OB, size: 1e6`,
+      `save ${COMMENTS_ARR_SIZE} comments into pre-created OB, size: 2e6`,
       () => {
         // use pre created object buffer
         global.testTargets[
@@ -62,7 +62,7 @@ export function savingAndCreatingSuite(
           global.testTargets = [];
 
           for (let i = 0; i < EXPECTED_MAX_ITERATIONS; i++) {
-            global.testTargets.push(createObjectBuffer({}, 1e6, {}));
+            global.testTargets.push(createObjectBuffer({}, 2e6, {}));
           }
 
           if (typeof global.gc !== "undefined") {
@@ -79,9 +79,9 @@ export function savingAndCreatingSuite(
       }
     )
     .add(
-      `create with all mock data rows. size: 1e6`,
+      `create with all mock data rows. size: 2e6`,
       () => {
-        createObjectBuffer<any>({}, 1e6, { K1000RowsMockData });
+        createObjectBuffer<any>({}, 2e6, { K1000RowsMockData });
       },
       {
         minSamples: MIN_SAMPLES,
