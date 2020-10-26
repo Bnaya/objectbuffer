@@ -17,7 +17,6 @@ import { OutOfMemoryError, UnsupportedOperationError } from "./exceptions";
 import { saveValueIterative } from "./saveValue";
 import { TransactionalAllocator } from "./TransactionalAllocator";
 import { freeNoLongerUsedAddresses } from "./freeNoLongerUsedAddresses";
-import { stats } from "../allocator/allocator";
 
 export interface CreateObjectBufferOptions {
   /**
