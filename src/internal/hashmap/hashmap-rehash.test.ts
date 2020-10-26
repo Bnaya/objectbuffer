@@ -159,14 +159,14 @@ describe("hashmap rehash", () => {
 
     expect(memAvailableAfterEachStep).toMatchInlineSnapshot(`
       Array [
-        120,
-        208,
-        320,
-        392,
+        152,
+        272,
+        424,
         520,
-        584,
-        672,
-        672,
+        688,
+        776,
+        896,
+        896,
       ]
     `);
   });
