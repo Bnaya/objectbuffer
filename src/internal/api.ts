@@ -13,10 +13,11 @@ import {
   MEM_POOL_START,
   ENDIANNESS_FLAG_POINTER,
 } from "./consts";
-import { UnsupportedOperationError } from "./exceptions";
+import { OutOfMemoryError, UnsupportedOperationError } from "./exceptions";
 import { saveValueIterative } from "./saveValue";
 import { TransactionalAllocator } from "./TransactionalAllocator";
 import { freeNoLongerUsedAddresses } from "./freeNoLongerUsedAddresses";
+import { stats } from "../allocator/allocator";
 
 export interface CreateObjectBufferOptions {
   /**
@@ -96,6 +97,10 @@ export function createObjectBuffer<T = any>(
  * @param newSize
  */
 export function resizeObjectBuffer(objectBuffer: unknown, newSize: number) {
+  if (newSize < memoryStats(objectBuffer).top) {
+    throw new OutOfMemoryError();
+  }
+
   const oldArrayBuffer = getUnderlyingArrayBuffer(objectBuffer);
   const newArrayBuffer = new ArrayBuffer(newSize);
 
