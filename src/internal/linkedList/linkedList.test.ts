@@ -17,7 +17,7 @@ import {
 } from "./linkedList";
 
 describe("LinkedList", () => {
-  let carrier = makeCarrier(64);
+  let carrier = makeCarrier(512);
   let ab = carrier.allocator.getArrayBuffer();
 
   function setABSize(size: number) {
@@ -26,12 +26,10 @@ describe("LinkedList", () => {
   }
 
   beforeEach(() => {
-    setABSize(136);
+    setABSize(512);
   });
 
   test("linkedList init & add", () => {
-    setABSize(96);
-
     const linkedListPointer = initLinkedList(carrier);
 
     expect(
@@ -40,7 +38,7 @@ describe("LinkedList", () => {
 
     const itemPointer = linkedListItemInsert(carrier, linkedListPointer, 7);
 
-    expect(itemPointer).toBe(72);
+    expect(itemPointer).toBe(88);
 
     expect(
       arrayBuffer2HexArray(ab.slice(0, carrier.allocator.stats().top), true)
@@ -51,15 +49,15 @@ describe("LinkedList", () => {
     const linkedListPointer = initLinkedList(carrier);
     // const copyToCompare = ab.slice(0);
 
-    expect(carrier.allocator.stats().top).toMatchInlineSnapshot(`80`);
+    expect(carrier.allocator.stats().top).toMatchInlineSnapshot(`96`);
 
     const pointer1 = linkedListItemInsert(carrier, linkedListPointer, 7);
     const pointer2 = linkedListItemInsert(carrier, linkedListPointer, 8);
 
-    expect(carrier.allocator.stats().top).toMatchInlineSnapshot(`112`);
+    expect(carrier.allocator.stats().top).toMatchInlineSnapshot(`144`);
 
-    expect(pointer1).toBe(72);
-    expect(pointer2).toBe(88);
+    expect(pointer1).toBe(88);
+    expect(pointer2).toBe(112);
 
     linkedListItemRemove(carrier, pointer2);
     linkedListItemRemove(carrier, pointer1);
@@ -86,14 +84,13 @@ describe("LinkedList", () => {
     //   [31m+   \\"80:0x10\\",[39m"
     // `);
 
-    expect(carrier.allocator.stats().top).toMatchInlineSnapshot(`80`);
+    expect(carrier.allocator.stats().top).toMatchInlineSnapshot(`96`);
   });
 
   test("linkedList linkedListLowLevelIterator test 1", () => {
-    setABSize(264);
     const linkedListPointer = initLinkedList(carrier);
 
-    expect(carrier.allocator.stats().top).toMatchInlineSnapshot(`80`);
+    expect(carrier.allocator.stats().top).toMatchInlineSnapshot(`96`);
 
     const itemsPointers = [
       linkedListItemInsert(carrier, linkedListPointer, 7),
@@ -124,18 +121,17 @@ describe("LinkedList", () => {
       ]
     `);
 
-    expect(carrier.allocator.stats().top).toMatchInlineSnapshot(`144`);
+    expect(carrier.allocator.stats().top).toMatchInlineSnapshot(`192`);
 
     itemsPointers.forEach((p) => linkedListItemRemove(carrier, p));
 
-    expect(carrier.allocator.stats().top).toMatchInlineSnapshot(`80`);
+    expect(carrier.allocator.stats().top).toMatchInlineSnapshot(`96`);
   });
 
   test("linkedList linkedListLowLevelIterator - delete while iteration", () => {
-    setABSize(264);
     const linkedListPointer = initLinkedList(carrier);
 
-    expect(carrier.allocator.stats().top).toMatchInlineSnapshot(`80`);
+    expect(carrier.allocator.stats().top).toMatchInlineSnapshot(`96`);
 
     const itemsPointers = [
       linkedListItemInsert(carrier, linkedListPointer, 7),
@@ -173,15 +169,14 @@ describe("LinkedList", () => {
       ]
     `);
 
-    expect(carrier.allocator.stats().top).toMatchInlineSnapshot(`144`);
+    expect(carrier.allocator.stats().top).toMatchInlineSnapshot(`192`);
 
     itemsPointers.forEach((p) => linkedListItemRemove(carrier, p));
 
-    expect(carrier.allocator.stats().top).toMatchInlineSnapshot(`80`);
+    expect(carrier.allocator.stats().top).toMatchInlineSnapshot(`168`);
   });
 
   test.skip("linkedList linkedListLowLevelIterator - delete while iteration - delete current value", () => {
-    setABSize(264);
     const linkedListPointer = initLinkedList(carrier);
 
     expect(carrier.allocator.stats().top).toMatchInlineSnapshot(`184`);
@@ -238,10 +233,9 @@ describe("LinkedList", () => {
   });
 
   test("linkedList linkedListLowLevelIterator - add while iteration", () => {
-    setABSize(264);
     const linkedListPointer = initLinkedList(carrier);
 
-    expect(carrier.allocator.stats().top).toMatchInlineSnapshot(`80`);
+    expect(carrier.allocator.stats().top).toMatchInlineSnapshot(`96`);
 
     const itemsPointers = [
       linkedListItemInsert(carrier, linkedListPointer, 7),
@@ -288,7 +282,7 @@ describe("LinkedList", () => {
       ]
     `);
 
-    expect(carrier.allocator.stats().top).toMatchInlineSnapshot(`144`);
+    expect(carrier.allocator.stats().top).toMatchInlineSnapshot(`192`);
 
     itemsPointers.forEach((p) => linkedListItemRemove(carrier, p));
 
@@ -303,11 +297,10 @@ describe("LinkedList", () => {
       linkedListItemRemove(carrier, iteratorPointer);
     }
 
-    expect(carrier.allocator.stats().top).toMatchInlineSnapshot(`80`);
+    expect(carrier.allocator.stats().top).toMatchInlineSnapshot(`120`);
   });
 
   test("linkedList linkedListGetPointersToFree", () => {
-    setABSize(144);
     let linkedListPointer = 0;
     const toAddItems = [8, 9, 10, 11];
     const toAddItemsCopy = toAddItems.slice();
@@ -315,7 +308,7 @@ describe("LinkedList", () => {
     const { allocations } = recordAllocations(() => {
       linkedListPointer = initLinkedList(carrier);
 
-      expect(carrier.allocator.stats().top).toMatchInlineSnapshot(`80`);
+      expect(carrier.allocator.stats().top).toMatchInlineSnapshot(`96`);
 
       let toAdd: undefined | number = 0;
 
@@ -329,12 +322,12 @@ describe("LinkedList", () => {
     expect(r).toMatchInlineSnapshot(`
       Object {
         "pointers": Array [
-          56,
-          72,
+          64,
           88,
-          104,
-          120,
+          112,
           136,
+          160,
+          184,
         ],
         "valuePointers": Array [
           11,
@@ -350,7 +343,6 @@ describe("LinkedList", () => {
   });
 
   test("linkedList linkedListGetPointersToFree empty list", () => {
-    setABSize(144);
     let linkedListPointer = 0;
     const toAddItems: number[] = [];
     const toAddItemsCopy = toAddItems.slice();
@@ -358,7 +350,7 @@ describe("LinkedList", () => {
     const { allocations } = recordAllocations(() => {
       linkedListPointer = initLinkedList(carrier);
 
-      expect(carrier.allocator.stats().top).toMatchInlineSnapshot(`80`);
+      expect(carrier.allocator.stats().top).toMatchInlineSnapshot(`96`);
 
       let toAdd: undefined | number = 0;
 
@@ -372,8 +364,8 @@ describe("LinkedList", () => {
     expect(r).toMatchInlineSnapshot(`
       Object {
         "pointers": Array [
-          56,
-          72,
+          64,
+          88,
         ],
         "valuePointers": Array [],
       }
