@@ -5,23 +5,20 @@ import { memoryStats, collectGarbage } from "../internal/api";
 import { sleep } from "../internal/testUtils";
 import { getInternalAPI } from "../internal/utils";
 import { getAddressesNoLongerUsed } from "../internal/stateModule";
+// @ts-expect-error package have no types
+import runGc from "expose-gc/function";
 
 // declare const FinalizationGroup: any;
 // declare const WeakRef: any;
 
 describe("memory GC related tests", () => {
-  // @ts-expect-error
-  if (typeof gc === "undefined") {
-    throw new Error("must --expose-gc");
-  }
-
   if (
     // @ts-expect-error
     typeof FinalizationRegistry === "undefined" &&
     // @ts-expect-error
     typeof FinalizationGroup === "undefined"
   ) {
-    throw new Error("must --harmony-weak-refs");
+    throw new Error("must --harmony-weak-refs or node 14");
   }
 
   test("Test FinalizationRegistry kicks in", async function () {
@@ -37,12 +34,11 @@ describe("memory GC related tests", () => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     foo = undefined;
 
-    // @ts-expect-error
-    gc();
+    runGc();
 
     await sleep(1000);
-    // @ts-expect-error
-    gc();
+
+    runGc();
 
     await sleep(1000);
 
@@ -76,13 +72,11 @@ describe("memory GC related tests", () => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     foo = undefined;
 
-    // @ts-expect-error
-    gc();
+    runGc();
 
     await sleep(100);
 
-    // @ts-expect-error
-    gc();
+    runGc();
 
     await sleep(100);
 

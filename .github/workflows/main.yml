@@ -4,12 +4,12 @@ on: ["push"]
 
 jobs:
   lint:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v1
       - uses: actions/setup-node@v1
         with:
-          node-version: 12.x
+          node-version: 14.x
 
       - name: Cache node modules
         uses: actions/cache@v2
@@ -31,10 +31,10 @@ jobs:
         shell: bash
 
   test:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     strategy:
       matrix:
-        node: [12, 14]
+        node: [14, 15]
     steps:
       - uses: actions/checkout@v1
       - uses: actions/setup-node@v1
@@ -68,13 +68,13 @@ jobs:
           github-token: ${{ secrets.github_token }}
 
   build:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     needs: [lint, test]
     steps:
       - uses: actions/checkout@v1
       - uses: actions/setup-node@v1
         with:
-          node-version: 12.x
+          node-version: 14.x
 
       - name: Cache node modules
         uses: actions/cache@v2

@@ -1,10 +1,11 @@
-import type { createObjectBuffer as createObjectBufferType } from "../src";
-
 import { Suite } from "benchmark";
-// @ts-expect-error arbitrary json
-import oneComment from "./fixtures/oneComment.json";
+// @ts-expect-error package have no types
+import runGc from "expose-gc/function";
+import type { createObjectBuffer as createObjectBufferType } from "../src";
 // @ts-expect-error arbitrary json
 import K1000RowsMockData from "./fixtures/MOCK_DATA.json";
+// @ts-expect-error arbitrary json
+import oneComment from "./fixtures/oneComment.json";
 
 const EXPECTED_MAX_ITERATIONS = 1000;
 const COMMENTS_ARR_SIZE = 2500;
@@ -65,16 +66,12 @@ export function savingAndCreatingSuite(
             global.testTargets.push(createObjectBuffer({}, 2e6, {}));
           }
 
-          if (typeof global.gc !== "undefined") {
-            global.gc();
-          }
+          runGc();
         },
         onComplete() {
           global.testTargetIndex = 0;
           global.testTargets = [];
-          if (typeof global.gc !== "undefined") {
-            global.gc();
-          }
+          runGc();
         },
       }
     )

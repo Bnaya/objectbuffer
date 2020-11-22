@@ -1,6 +1,7 @@
 import { Suite } from "benchmark";
+// @ts-expect-error package have no types
+import runGc from "expose-gc/function";
 import type { createObjectBuffer as createObjectBufferType } from "../src";
-
 // @ts-expect-error arbitrary json
 import K1000RowsMockData from "./fixtures/MOCK_DATA.json";
 import type { BenchmarkTest } from "./interfaces";
@@ -38,16 +39,12 @@ export function freeAndDisposeSuite(
             );
           }
 
-          if (typeof global.gc !== "undefined") {
-            global.gc();
-          }
+          runGc();
         },
         onComplete() {
           global.testTargetIndex = 0;
           global.testTargets = [];
-          if (typeof global.gc !== "undefined") {
-            global.gc();
-          }
+          runGc();
         },
       },
     },

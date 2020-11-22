@@ -1294,6 +1294,7 @@ __metadata:
     eslint: ^7.12.0
     eslint-config-prettier: ^6.14.0
     eslint-plugin-prettier: ^3.1.4
+    expose-gc: ^1.0.0
     gh-pages: ^3.1.0
     html-webpack-plugin: ^4.5.0
     husky: ^4.3.0
@@ -4609,6 +4610,13 @@ __metadata:
     jest-message-util: ^26.6.1
     jest-regex-util: ^26.0.0
   checksum: e5873de5ec4e76defb80d37e3370d74f3802eccf63f85f17ec7d02428fc4822bd499e2d61c654052ff726a22e6bf3c7dfd4332dc90c61f68eaf8c4d971ce90c7
+  languageName: node
+  linkType: hard
+
+"expose-gc@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "expose-gc@npm:1.0.0"
+  checksum: cd60baf95e41c77c438bc4999316aca137686c98088783999e817c8a169e8020d7e7971ffc74cdd928200ffcbd73a9d96d1c739d628a40218377063b9c3a5c8c
   languageName: node
   linkType: hard
 
