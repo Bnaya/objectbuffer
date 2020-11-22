@@ -13,7 +13,6 @@ import runGc from "expose-gc/function";
 
 describe("memory GC related tests", () => {
   if (
-    // @ts-expect-error
     typeof FinalizationRegistry === "undefined" &&
     // @ts-expect-error
     typeof FinalizationGroup === "undefined"
