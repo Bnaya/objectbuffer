@@ -12,6 +12,7 @@ export {
   getUnderlyingArrayBuffer,
   loadObjectBuffer,
   memoryStats,
+  processQueuedReclaims,
   reclaim,
   unstable_replaceUnderlyingArrayBuffer,
   unstable_resizeObjectBuffer,
