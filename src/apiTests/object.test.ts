@@ -2,14 +2,11 @@
 
 import { createObjectBuffer } from "../";
 import { memoryStats } from "../internal/api";
-import { externalArgsApiToExternalArgsApi } from "../internal/utils";
 import { MAX_64_BIG_INT } from "../internal/consts";
 
 describe("object tests", () => {
-  const externalArgs = externalArgsApiToExternalArgsApi({});
-
   test("delete object prop", () => {
-    const objectBuffer = createObjectBuffer<any>(externalArgs, 1024, {});
+    const objectBuffer = createObjectBuffer<any>(1024, {});
     const sizeBeforeSet = memoryStats(objectBuffer).available;
     expect(sizeBeforeSet).toMatchInlineSnapshot(`816`);
 
@@ -36,7 +33,7 @@ describe("object tests", () => {
       "😌😌": "😌😌😌😌😌😌",
     };
 
-    const objectBuffer = createObjectBuffer<any>(externalArgs, 2048, input);
+    const objectBuffer = createObjectBuffer<any>(2048, input);
     expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`80`);
     expect(input).toEqual(objectBuffer);
     expect(objectBuffer).toMatchInlineSnapshot(`
@@ -73,7 +70,7 @@ describe("object tests", () => {
     // Create circularity
     input.foo.circular = input.foo;
 
-    const objectBuffer = createObjectBuffer<any>(externalArgs, 2048, input);
+    const objectBuffer = createObjectBuffer<any>(2048, input);
     expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`496`);
     expect(input).toEqual(objectBuffer);
 
@@ -118,8 +115,8 @@ describe("object tests", () => {
       e: "STR",
     };
 
-    const ob1 = createObjectBuffer<any>(externalArgs, 2048, input1);
-    const ob2 = createObjectBuffer<any>(externalArgs, 2048, input2);
+    const ob1 = createObjectBuffer<any>(2048, input1);
+    const ob2 = createObjectBuffer<any>(2048, input2);
 
     expect(memoryStats(ob1).available).toBe(memoryStats(ob2).available);
 

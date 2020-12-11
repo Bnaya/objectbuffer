@@ -2,13 +2,10 @@
 
 import { createObjectBuffer } from "../";
 import { memoryStats } from "../internal/api";
-import { externalArgsApiToExternalArgsApi } from "../internal/utils";
 
 describe("Set tests", () => {
-  const externalArgs = externalArgsApiToExternalArgsApi({});
-
   test("creation", () => {
-    const objectBuffer = createObjectBuffer<any>(externalArgs, 1024, {});
+    const objectBuffer = createObjectBuffer<any>(1024, {});
     expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`816`);
 
     objectBuffer.foo = new Set(["a"]);
@@ -21,7 +18,7 @@ describe("Set tests", () => {
   });
 
   test("add", () => {
-    const objectBuffer = createObjectBuffer<any>(externalArgs, 1024, {});
+    const objectBuffer = createObjectBuffer<any>(1024, {});
     expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`816`);
 
     objectBuffer.foo = new Set(["a"]);
@@ -36,7 +33,7 @@ describe("Set tests", () => {
   });
 
   test("has", () => {
-    const objectBuffer = createObjectBuffer<any>(externalArgs, 1024, {});
+    const objectBuffer = createObjectBuffer<any>(1024, {});
     objectBuffer.foo = new Set(["a"]);
     objectBuffer.foo.add("b");
     expect(objectBuffer.foo.has("b")).toEqual(true);
@@ -44,7 +41,7 @@ describe("Set tests", () => {
   });
 
   test("delete", () => {
-    const objectBuffer = createObjectBuffer<any>(externalArgs, 1024, {});
+    const objectBuffer = createObjectBuffer<any>(1024, {});
     expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`816`);
 
     objectBuffer.foo = new Set(["a"]);
@@ -64,7 +61,7 @@ describe("Set tests", () => {
   });
 
   test("clear", () => {
-    const objectBuffer = createObjectBuffer<any>(externalArgs, 1024, {});
+    const objectBuffer = createObjectBuffer<any>(1024, {});
     expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`816`);
 
     objectBuffer.foo = new Set(["a"]);
@@ -79,7 +76,7 @@ describe("Set tests", () => {
   });
 
   test("iterate", () => {
-    const objectBuffer = createObjectBuffer<any>(externalArgs, 1024, {});
+    const objectBuffer = createObjectBuffer<any>(1024, {});
     expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`816`);
 
     objectBuffer.foo = new Set(["a"]);
@@ -115,7 +112,7 @@ describe("Set tests", () => {
       nativeMap.delete(key);
     }
 
-    const objectBuffer = createObjectBuffer<any>(externalArgs, 1024, {
+    const objectBuffer = createObjectBuffer<any>(1024, {
       foo: new Set(["a", "b"]),
     });
     for (const [key] of objectBuffer.foo) {
@@ -126,7 +123,7 @@ describe("Set tests", () => {
   });
 
   test("forEach", () => {
-    const objectBuffer = createObjectBuffer<any>(externalArgs, 1024, {});
+    const objectBuffer = createObjectBuffer<any>(1024, {});
     expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`816`);
 
     objectBuffer.foo = new Set(["a"]);

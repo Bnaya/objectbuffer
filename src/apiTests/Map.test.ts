@@ -2,13 +2,10 @@
 
 import { createObjectBuffer } from "../";
 import { memoryStats } from "../internal/api";
-import { externalArgsApiToExternalArgsApi } from "../internal/utils";
 
 describe("Map", () => {
-  const externalArgs = externalArgsApiToExternalArgsApi({});
-
   test("creation", () => {
-    const objectBuffer = createObjectBuffer<any>(externalArgs, 1024, {});
+    const objectBuffer = createObjectBuffer<any>(1024, {});
     expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`816`);
 
     objectBuffer.foo = new Map([[1, "a"]]);
@@ -21,7 +18,7 @@ describe("Map", () => {
   });
 
   test("add", () => {
-    const objectBuffer = createObjectBuffer<any>(externalArgs, 1024, {});
+    const objectBuffer = createObjectBuffer<any>(1024, {});
     expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`816`);
 
     objectBuffer.foo = new Map([[1, "a"]]);
@@ -36,7 +33,7 @@ describe("Map", () => {
   });
 
   test("has", () => {
-    const objectBuffer = createObjectBuffer<any>(externalArgs, 1024, {});
+    const objectBuffer = createObjectBuffer<any>(1024, {});
     objectBuffer.foo = new Map([[1, "a"]]);
     objectBuffer.foo.set("2", "b");
     expect(objectBuffer.foo.has("2")).toEqual(true);
@@ -44,7 +41,7 @@ describe("Map", () => {
   });
 
   test("delete", () => {
-    const objectBuffer = createObjectBuffer<any>(externalArgs, 1024, {});
+    const objectBuffer = createObjectBuffer<any>(1024, {});
     expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`816`);
 
     objectBuffer.foo = new Map([[1, "a"]]);
@@ -63,7 +60,7 @@ describe("Map", () => {
   });
 
   test("clear", () => {
-    const objectBuffer = createObjectBuffer<any>(externalArgs, 1024, {});
+    const objectBuffer = createObjectBuffer<any>(1024, {});
     expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`816`);
 
     objectBuffer.foo = new Map();
@@ -82,7 +79,7 @@ describe("Map", () => {
   });
 
   test("iterate", () => {
-    const objectBuffer = createObjectBuffer<any>(externalArgs, 1024, {});
+    const objectBuffer = createObjectBuffer<any>(1024, {});
     expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`816`);
 
     objectBuffer.foo = new Map([[1, "a"]]);
@@ -121,7 +118,7 @@ describe("Map", () => {
       nativeMap.delete(key);
     }
 
-    const objectBuffer = createObjectBuffer<any>(externalArgs, 1024, {
+    const objectBuffer = createObjectBuffer<any>(1024, {
       foo: new Map([
         [1, "a"],
         [2, "b"],
@@ -135,7 +132,7 @@ describe("Map", () => {
   });
 
   test("forEach", () => {
-    const objectBuffer = createObjectBuffer<any>(externalArgs, 1024, {});
+    const objectBuffer = createObjectBuffer<any>(1024, {});
     expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`816`);
 
     objectBuffer.foo = new Map([[1, "a"]]);

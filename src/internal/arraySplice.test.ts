@@ -6,9 +6,13 @@ import { memoryStats } from "./api";
 describe("arraySplice tests", () => {
   test("arrayWrapper splice - add + delete - array stay in same length", () => {
     const plainJSArray: any[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-    const ob = createObjectBuffer({ arrayAdditionalAllocation: 20 }, 1024, {
-      arr: plainJSArray,
-    });
+    const ob = createObjectBuffer(
+      1024,
+      {
+        arr: plainJSArray,
+      },
+      { arrayAdditionalAllocation: 20 }
+    );
 
     const arrayWrapper = ob.arr;
 
@@ -66,9 +70,13 @@ describe("arraySplice tests", () => {
 
   test("arrayWrapper splice - Just delete items from the middle", () => {
     const plainJSArray: any[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-    const ob = createObjectBuffer({ arrayAdditionalAllocation: 20 }, 1024, {
-      arr: plainJSArray,
-    });
+    const ob = createObjectBuffer(
+      1024,
+      {
+        arr: plainJSArray,
+      },
+      { arrayAdditionalAllocation: 20 }
+    );
 
     const arrayWrapper = ob.arr;
 
@@ -103,9 +111,13 @@ describe("arraySplice tests", () => {
 
   test("arrayWrapper splice - Just add items in the middle", () => {
     const plainJSArray: any[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-    const ob = createObjectBuffer({ arrayAdditionalAllocation: 20 }, 1024, {
-      arr: plainJSArray,
-    });
+    const ob = createObjectBuffer(
+      1024,
+      {
+        arr: plainJSArray,
+      },
+      { arrayAdditionalAllocation: 20 }
+    );
 
     const arrayWrapper = ob.arr;
 
@@ -150,9 +162,13 @@ describe("arraySplice tests", () => {
 
   test("arrayWrapper splice - add + delete - array will get longer", () => {
     const plainJSArray: any[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-    const ob = createObjectBuffer({ arrayAdditionalAllocation: 3 }, 1024, {
-      arr: plainJSArray,
-    });
+    const ob = createObjectBuffer(
+      1024,
+      {
+        arr: plainJSArray,
+      },
+      { arrayAdditionalAllocation: 3 }
+    );
 
     const arrayWrapper = ob.arr;
 
@@ -214,9 +230,13 @@ describe("arraySplice tests", () => {
 
   test("arrayWrapper splice - add + delete - array will get shorter", () => {
     const plainJSArray: any[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-    const ob = createObjectBuffer({ arrayAdditionalAllocation: 20 }, 2048, {
-      arr: plainJSArray,
-    });
+    const ob = createObjectBuffer(
+      2048,
+      {
+        arr: plainJSArray,
+      },
+      { arrayAdditionalAllocation: 20 }
+    );
 
     const availableCheckpoint = memoryStats(ob).available;
 
@@ -285,9 +305,13 @@ describe("arraySplice tests", () => {
 
   test("arrayWrapper splice - start bigger than array", () => {
     const plainJSArray: any[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-    const ob = createObjectBuffer({ arrayAdditionalAllocation: 20 }, 1024, {
-      arr: plainJSArray,
-    });
+    const ob = createObjectBuffer(
+      1024,
+      {
+        arr: plainJSArray,
+      },
+      { arrayAdditionalAllocation: 20 }
+    );
 
     const arrayWrapper = ob.arr;
 
@@ -340,9 +364,13 @@ describe("arraySplice tests", () => {
 
   test("arrayWrapper splice - delete bigger than array", () => {
     const plainJSArray: any[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-    const ob = createObjectBuffer({ arrayAdditionalAllocation: 20 }, 1024, {
-      arr: plainJSArray,
-    });
+    const ob = createObjectBuffer(
+      1024,
+      {
+        arr: plainJSArray,
+      },
+      { arrayAdditionalAllocation: 20 }
+    );
 
     const arrayWrapper = ob.arr;
 
@@ -401,9 +429,13 @@ describe("arraySplice tests", () => {
 
   test("arrayWrapper splice - negative start", () => {
     const plainJSArray: any[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-    const ob = createObjectBuffer({ arrayAdditionalAllocation: 20 }, 1024, {
-      arr: plainJSArray,
-    });
+    const ob = createObjectBuffer(
+      1024,
+      {
+        arr: plainJSArray,
+      },
+      { arrayAdditionalAllocation: 20 }
+    );
 
     const arrayWrapper = ob.arr;
 
@@ -462,9 +494,13 @@ describe("arraySplice tests", () => {
 
   test("arrayWrapper splice - negative delete", () => {
     const plainJSArray: any[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-    const ob = createObjectBuffer({ arrayAdditionalAllocation: 3 }, 1024, {
-      arr: plainJSArray,
-    });
+    const ob = createObjectBuffer(
+      1024,
+      {
+        arr: plainJSArray,
+      },
+      { arrayAdditionalAllocation: 3 }
+    );
 
     const arrayWrapper = ob.arr;
 
@@ -517,7 +553,7 @@ describe("arraySplice tests", () => {
 
   test("splice - out of bound", () => {
     const plainJSArray: any[] = [1, 2, 3];
-    const ob = createObjectBuffer({}, 1024, {
+    const ob = createObjectBuffer(1024, {
       arr: plainJSArray,
     });
 

@@ -1,27 +1,17 @@
 /* eslint-env jest */
 
 import { createObjectBuffer } from "../";
-import { memoryStats, disposeWrapperObject } from "../internal/api";
-import { externalArgsApiToExternalArgsApi } from "../internal/utils";
+import { memoryStats, reclaim } from "../internal/api";
 import { jestExpectNoUseAfterFreeSubset } from "../internal/memoryAnalysisGraph/memoryGraphHelpers";
 
 describe("SharedArrayBuffer tests", () => {
-  const externalArgs = externalArgsApiToExternalArgsApi({
-    arrayAdditionalAllocation: 0,
-  });
-
-  test("disposeWrapperObject", () => {
-    const objectBuffer = createObjectBuffer<any>(
-      externalArgs,
-      1024,
-      {},
-      { useSharedArrayBuffer: true }
-    );
+  test("reclaim", () => {
+    const objectBuffer = createObjectBuffer<any>(1024, {}, {}, "shared");
 
     expect(memoryStats(objectBuffer).used).toMatchInlineSnapshot(`208`);
     objectBuffer.o = { a: undefined };
     expect(memoryStats(objectBuffer).used).toMatchInlineSnapshot(`608`);
-    disposeWrapperObject(objectBuffer.o);
+    reclaim(objectBuffer.o);
     objectBuffer.o = undefined;
     expect(memoryStats(objectBuffer).used).toMatchInlineSnapshot(`328`);
     expect(objectBuffer).toMatchInlineSnapshot(`
@@ -35,10 +25,10 @@ describe("SharedArrayBuffer tests", () => {
 
   test("basic", () => {
     const objectBuffer = createObjectBuffer<any>(
-      externalArgs,
       2048,
       { arr: [{ a: 1 }] },
-      { useSharedArrayBuffer: true }
+      {},
+      "shared"
     );
 
     // expect(objectBuffer).toMatchInlineSnapshot(`
@@ -51,8 +41,8 @@ describe("SharedArrayBuffer tests", () => {
     //   }
     // `);
 
-    // disposeWrapperObject(objectBuffer.arr[0]);
-    // disposeWrapperObject(objectBuffer.arr);
+    // reclaim(objectBuffer.arr[0]);
+    // reclaim(objectBuffer.arr);
 
     objectBuffer.arr = [{ bar: 666 }];
 
@@ -68,8 +58,8 @@ describe("SharedArrayBuffer tests", () => {
 
     expect(memoryStats(objectBuffer).used).toMatchInlineSnapshot(`704`);
 
-    disposeWrapperObject(objectBuffer.arr[0]);
-    disposeWrapperObject(objectBuffer.arr);
+    reclaim(objectBuffer.arr[0]);
+    reclaim(objectBuffer.arr);
 
     delete objectBuffer.arr;
     expect(memoryStats(objectBuffer).used).toMatchInlineSnapshot(`208`);
@@ -77,10 +67,10 @@ describe("SharedArrayBuffer tests", () => {
 
   test("basic 2", () => {
     const objectBuffer = createObjectBuffer<any>(
-      externalArgs,
       2048,
       { o: { b: { a: { v: [1] } } } },
-      { useSharedArrayBuffer: true }
+      {},
+      "shared"
     );
 
     expect(memoryStats(objectBuffer).used).toMatchInlineSnapshot(`1264`);
@@ -90,9 +80,9 @@ describe("SharedArrayBuffer tests", () => {
 
     const prev2 = prev1.b;
     const prev3 = prev1.b.a;
-    disposeWrapperObject(prev1);
-    // disposeWrapperObject(prev2);
-    // disposeWrapperObject(prev3);
+    reclaim(prev1);
+    // reclaim(prev2);
+    // reclaim(prev3);
 
     // objectBuffer.arr = [{ bar: 666 }];
 
@@ -101,7 +91,7 @@ describe("SharedArrayBuffer tests", () => {
     objectBuffer.o = undefined;
     // console.log("100");
 
-    // disposeWrapperObject(objectBuffer.arr);
+    // reclaim(objectBuffer.arr);
     expect(prev2).toMatchInlineSnapshot(`
       Object {
         "a": Object {

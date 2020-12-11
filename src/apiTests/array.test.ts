@@ -1,22 +1,12 @@
 /* eslint-env jest */
 
 import { createObjectBuffer } from "../";
-import { memoryStats, disposeWrapperObject } from "../internal/api";
-import { externalArgsApiToExternalArgsApi } from "../internal/utils";
+import { memoryStats, reclaim } from "../internal/api";
 
 // actually not very good, as the browser's TextEncoder won't work with SAB, but node will.
 describe("SharedArrayBuffer tests", () => {
-  const externalArgs = externalArgsApiToExternalArgsApi({
-    arrayAdditionalAllocation: 0,
-  });
-
   test("basic", () => {
-    const objectBuffer = createObjectBuffer<any>(
-      externalArgs,
-      1024,
-      { arr: [1, 2, 3, 4] },
-      { useSharedArrayBuffer: false }
-    );
+    const objectBuffer = createObjectBuffer<any>(1024, { arr: [1, 2, 3, 4] });
 
     objectBuffer.arr.unshift("a");
 
@@ -37,10 +27,9 @@ describe("SharedArrayBuffer tests", () => {
 
   test("splice 1", () => {
     const ob = createObjectBuffer<{ arr: (number | null)[] }>(
-      { arrayAdditionalAllocation: 10 },
       1024,
       { arr: [] },
-      { useSharedArrayBuffer: false }
+      { arrayAdditionalAllocation: 10 }
     );
 
     const usedAfterCreate = memoryStats(ob).used;
@@ -94,10 +83,9 @@ describe("SharedArrayBuffer tests", () => {
 
   test("splice 2", () => {
     const ob = createObjectBuffer<{ arr: any }>(
-      { arrayAdditionalAllocation: 0 },
       1024 * 2,
       { arr: [] },
-      { useSharedArrayBuffer: false }
+      { arrayAdditionalAllocation: 0 }
     );
 
     const usedAfterCreate = memoryStats(ob).used;
@@ -183,9 +171,9 @@ describe("SharedArrayBuffer tests", () => {
       `1016`
     );
 
-    disposeWrapperObject(ob.arr);
+    reclaim(ob.arr);
 
-    removedArrays.forEach((a: any) => disposeWrapperObject(a));
+    removedArrays.forEach((a: any) => reclaim(a));
 
     const usedDisposeArrays = memoryStats(ob).used;
     expect(usedDisposeArrays - usedAfterCreate).toMatchInlineSnapshot(`56`);
@@ -194,9 +182,13 @@ describe("SharedArrayBuffer tests", () => {
   test("flat", () => {
     const input = [[{ v: 1 }], [{ v: 2 }], [{ v: 3 }], [{ v: 4 }]];
 
-    const o = createObjectBuffer({ arrayAdditionalAllocation: 0 }, 1024 * 2, {
-      arr: input,
-    });
+    const o = createObjectBuffer(
+      1024 * 2,
+      {
+        arr: input,
+      },
+      { arrayAdditionalAllocation: 0 }
+    );
 
     const output = o.arr.flat();
 
@@ -221,7 +213,7 @@ describe("SharedArrayBuffer tests", () => {
   test("flatMap", () => {
     const input = [[{ v: 1 }], [{ v: 2 }], [{ v: 3 }], [{ v: 4 }]];
 
-    const o = createObjectBuffer({ arrayAdditionalAllocation: 0 }, 1024 * 2, {
+    const o = createObjectBuffer(1024 * 2, {
       arr: input,
     });
 

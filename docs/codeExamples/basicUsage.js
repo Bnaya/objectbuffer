@@ -5,7 +5,7 @@ const initialValue = {
   arrayInside: [1, "a", null],
   arrayBufferRocks: 1,
 };
-const myObject = createObjectBuffer({}, 1024, initialValue);
+const myObject = createObjectBuffer(1024, initialValue);
 
 myObject.arrayInside.push("another entry");
 myObject.foo.anotherProperty = "value";

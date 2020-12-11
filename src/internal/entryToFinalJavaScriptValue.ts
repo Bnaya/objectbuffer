@@ -17,7 +17,10 @@ import {
   bigint_value_get,
 } from "./generatedStructs";
 import { readString } from "./readString";
-import { getAddressesNoLongerUsed, getCacheFor } from "./stateModule";
+import {
+  getAddressesNoLongerUsedArrayForCarrier,
+  getCacheFor,
+} from "./stateModule";
 
 export function entryToFinalJavaScriptValue(
   externalArgs: ExternalArgs,
@@ -107,5 +110,5 @@ export function entryToFinalJavaScriptValue(
 }
 
 function finalizer(carrier: GlobalCarrier, memoryAddress: number) {
-  getAddressesNoLongerUsed(carrier).push(memoryAddress);
+  getAddressesNoLongerUsedArrayForCarrier(carrier).push(memoryAddress);
 }

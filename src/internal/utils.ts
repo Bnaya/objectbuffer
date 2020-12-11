@@ -1,4 +1,8 @@
-import type { ExternalArgs, InternalAPI, ExternalArgsApi } from "./interfaces";
+import type {
+  ExternalArgs,
+  InternalAPI,
+  ObjectBufferSettings,
+} from "./interfaces";
 import { ENTRY_TYPE } from "./entry-types";
 import { INTERNAL_API_SYMBOL } from "./symbols";
 import {
@@ -59,7 +63,7 @@ export function getOurPointerIfApplicable(
 }
 
 export function externalArgsApiToExternalArgsApi(
-  p: ExternalArgsApi
+  p: ObjectBufferSettings
 ): ExternalArgs {
   return {
     ...p,

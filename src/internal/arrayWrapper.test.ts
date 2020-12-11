@@ -8,9 +8,9 @@ describe("arrayWrapper tests", () => {
       const arrayToSave = ["a", "b", 1];
 
       const arrayWrapper = createObjectBuffer(
-        { arrayAdditionalAllocation: 20 },
         1024,
-        { arrayToSave }
+        { arrayToSave },
+        { arrayAdditionalAllocation: 20 }
       ).arrayToSave;
 
       expect(arrayWrapper).toMatchInlineSnapshot(`
@@ -28,9 +28,9 @@ describe("arrayWrapper tests", () => {
       const arrayToSave = ["a", "b", 1];
 
       const arrayWrapper = createObjectBuffer(
-        { arrayAdditionalAllocation: 20 },
         1024,
-        { arrayToSave }
+        { arrayToSave },
+        { arrayAdditionalAllocation: 20 }
       ).arrayToSave;
 
       expect([...arrayWrapper.keys()]).toEqual([0, 1, 2]);
@@ -42,9 +42,9 @@ describe("arrayWrapper tests", () => {
       const arrayToSave = ["a", "b", 1];
 
       const arrayWrapper = createObjectBuffer(
-        { arrayAdditionalAllocation: 20 },
         1024,
-        { arrayToSave }
+        { arrayToSave },
+        { arrayAdditionalAllocation: 20 }
       ).arrayToSave;
 
       expect([...arrayWrapper.entries()]).toMatchInlineSnapshot(`
@@ -71,9 +71,9 @@ describe("arrayWrapper tests", () => {
       const arrayToSave = ["a", "b", 1];
 
       const arrayWrapper = createObjectBuffer(
-        { arrayAdditionalAllocation: 20 },
         1024,
-        { arrayToSave }
+        { arrayToSave },
+        { arrayAdditionalAllocation: 20 }
       ).arrayToSave;
 
       expect([...arrayWrapper.values()]).toMatchInlineSnapshot(`
@@ -98,9 +98,9 @@ describe("arrayWrapper tests", () => {
       const arrayToSave = ["a", "b", 1];
 
       const arrayWrapper = createObjectBuffer(
-        { arrayAdditionalAllocation: 20 },
         1024,
-        { arrayToSave }
+        { arrayToSave },
+        { arrayAdditionalAllocation: 20 }
       ).arrayToSave;
 
       arrayWrapper[1] = "new value";
@@ -118,9 +118,9 @@ describe("arrayWrapper tests", () => {
       const arrayToSave = ["a", "b", 1];
 
       const arrayWrapper = createObjectBuffer(
-        { arrayAdditionalAllocation: 15 },
         768,
-        { arrayToSave }
+        { arrayToSave },
+        { arrayAdditionalAllocation: 15 }
       ).arrayToSave;
 
       arrayWrapper[10] = "new value";
@@ -146,9 +146,9 @@ describe("arrayWrapper tests", () => {
       const arrayToSave = ["a", "b", 1];
 
       const arrayWrapper = createObjectBuffer(
-        { arrayAdditionalAllocation: 3 },
         1024,
-        { arrayToSave }
+        { arrayToSave },
+        { arrayAdditionalAllocation: 3 }
       ).arrayToSave;
 
       arrayWrapper[10] = "new value";
@@ -176,9 +176,9 @@ describe("arrayWrapper tests", () => {
     const arrayToSave = [2, 1, null, 3, 10, undefined, 6, 77];
 
     const arrayWrapper = createObjectBuffer(
-      { arrayAdditionalAllocation: 3 },
       1024,
-      { arrayToSave }
+      { arrayToSave },
+      { arrayAdditionalAllocation: 3 }
     ).arrayToSave;
 
     arrayWrapper.sort();
@@ -205,9 +205,9 @@ describe("arrayWrapper tests", () => {
     }));
 
     const arrayWrapper = createObjectBuffer(
-      { arrayAdditionalAllocation: 3 },
       1024 * 2,
-      { arrayToSave }
+      { arrayToSave },
+      { arrayAdditionalAllocation: 3 }
     ).arrayToSave;
 
     arrayWrapper.sort((a, b) => {
@@ -250,9 +250,9 @@ describe("arrayWrapper tests", () => {
     const arrayToSave = [1, 2, 3, 4, 5, 6, 7];
 
     const arrayWrapper = createObjectBuffer(
-      { arrayAdditionalAllocation: 3 },
       1024,
-      { arrayToSave }
+      { arrayToSave },
+      { arrayAdditionalAllocation: 3 }
     ).arrayToSave;
 
     arrayWrapper.reverse();
@@ -280,9 +280,9 @@ describe("arrayWrapper tests", () => {
     const arrayToSave = [1, 2, 3, 4, 5, 6, 7];
 
     const arrayWrapper = createObjectBuffer(
-      { arrayAdditionalAllocation: 3 },
       1024,
-      { arrayToSave }
+      { arrayToSave },
+      { arrayAdditionalAllocation: 3 }
     ).arrayToSave;
 
     arrayWrapper.length = 10;

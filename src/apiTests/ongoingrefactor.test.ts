@@ -2,7 +2,7 @@
 import { createObjectBuffer } from "../index";
 describe("ongoingrefactor", function () {
   test("something", function () {
-    const ob = createObjectBuffer<any>({}, 1024, {
+    const ob = createObjectBuffer<any>(1024, {
       a: "a",
       b: "a",
     });
@@ -18,7 +18,7 @@ describe("ongoingrefactor", function () {
   });
 
   test("ongoingrefactor", function () {
-    const ob = createObjectBuffer({}, 1024 * 4, {
+    const ob = createObjectBuffer(1024 * 4, {
       b: "some string",
       propName123a: undefined,
       a: 1,
@@ -69,7 +69,7 @@ describe("ongoingrefactor", function () {
 
   test("several refs to the same object", function () {
     const a = { b: 1 };
-    const ob = createObjectBuffer({}, 2048 * 2, {
+    const ob = createObjectBuffer(2048 * 2, {
       b: a,
       propName123a: a,
       a: a,
@@ -110,7 +110,7 @@ describe("ongoingrefactor", function () {
   test("circular refs", function () {
     const a: any = { a: null, b: {} };
     a.b.circle = a.b;
-    const ob = createObjectBuffer({}, 2048 * 2, a);
+    const ob = createObjectBuffer(2048 * 2, a);
 
     expect(ob.b.circle).toEqual(ob.b);
   });

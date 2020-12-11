@@ -31,9 +31,13 @@ describe("getAllLinkedAddresses", () => {
         };
       }
 
-      const objectBuffer = createObjectBuffer(externalArgs, 2048, {
-        smallObject: [{ a: "6" }],
-      });
+      const objectBuffer = createObjectBuffer(
+        2048,
+        {
+          smallObject: [{ a: "6" }],
+        },
+        externalArgs
+      );
 
       const carrier = getInternalAPI(objectBuffer).getCarrier();
 
@@ -77,13 +81,17 @@ describe("getAllLinkedAddresses", () => {
         };
       }
 
-      const objectBuffer = createObjectBuffer(externalArgs, 2048, {
-        m: new Map([
-          ["a", 1],
-          ["b", 2],
-        ]),
-        s: new Set(["a1", "b2", "c"]),
-      });
+      const objectBuffer = createObjectBuffer(
+        2048,
+        {
+          m: new Map([
+            ["a", 1],
+            ["b", 2],
+          ]),
+          s: new Set(["a1", "b2", "c"]),
+        },
+        externalArgs
+      );
 
       const carrier = getInternalAPI(objectBuffer).getCarrier();
 
@@ -126,10 +134,14 @@ describe("getAllLinkedAddresses", () => {
         };
       }
 
-      const objectBuffer = createObjectBuffer(externalArgs, 2048, {
-        nestedObject: { a: 1, b: null, c: "string", bigint: BigInt("100") },
-        arr: [new Date(0), "somestring", { a: "6", h: null }],
-      });
+      const objectBuffer = createObjectBuffer(
+        2048,
+        {
+          nestedObject: { a: 1, b: null, c: "string", bigint: BigInt("100") },
+          arr: [new Date(0), "somestring", { a: "6", h: null }],
+        },
+        externalArgs
+      );
 
       const carrier = getInternalAPI(objectBuffer).getCarrier();
 
@@ -174,10 +186,14 @@ describe("getAllLinkedAddresses", () => {
         };
       }
 
-      const objectBuffer = createObjectBuffer(externalArgs, 2048, {
-        nestedObject: { a: 1, b: null, c: "string", bigint: BigInt("100") },
-        arr: [new Date(0), "somestring", { a: "6", h: null }],
-      });
+      const objectBuffer = createObjectBuffer(
+        2048,
+        {
+          nestedObject: { a: 1, b: null, c: "string", bigint: BigInt("100") },
+          arr: [new Date(0), "somestring", { a: "6", h: null }],
+        },
+        externalArgs
+      );
 
       expect(memoryStats(objectBuffer)).toMatchInlineSnapshot(`
         Object {

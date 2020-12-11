@@ -1,23 +1,16 @@
 /* eslint-env jest */
 
-import { createObjectBuffer, resizeObjectBuffer } from "../";
+import { createObjectBuffer, unstable_resizeObjectBuffer } from "../";
 import {
   getUnderlyingArrayBuffer,
-  replaceUnderlyingArrayBuffer,
+  unstable_replaceUnderlyingArrayBuffer,
   memoryStats,
 } from "../internal/api";
-import {
-  arrayBufferCopyTo,
-  externalArgsApiToExternalArgsApi,
-} from "../internal/utils";
+import { arrayBufferCopyTo } from "../internal/utils";
 
 describe("replaceArrayBufferFlow", () => {
-  const externalArgs = externalArgsApiToExternalArgsApi({
-    arrayAdditionalAllocation: 0,
-  });
-
-  test("test replaceUnderlyingArrayBuffer works", () => {
-    const objectBuffer = createObjectBuffer<any>(externalArgs, 512, {
+  test("test unstable_replaceUnderlyingArrayBuffer works", () => {
+    const objectBuffer = createObjectBuffer<any>(512, {
       a: 1,
     });
 
@@ -30,7 +23,7 @@ describe("replaceArrayBufferFlow", () => {
     const destroyer = new Uint8Array(oldAb);
     destroyer.set(destroyer.map(() => 0));
 
-    replaceUnderlyingArrayBuffer(objectBuffer, newAb);
+    unstable_replaceUnderlyingArrayBuffer(objectBuffer, newAb);
 
     expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`664`);
     expect(objectBuffer).toMatchInlineSnapshot(`
@@ -40,8 +33,8 @@ describe("replaceArrayBufferFlow", () => {
     `);
   });
 
-  test("test resizeObjectBuffer works", () => {
-    const objectBuffer = createObjectBuffer<any>(externalArgs, 4096, {
+  test("test unstable_resizeObjectBuffer works", () => {
+    const objectBuffer = createObjectBuffer<any>(4096, {
       obj1: { a: 1 },
     });
 
@@ -52,7 +45,7 @@ describe("replaceArrayBufferFlow", () => {
 
     expect(obj1Proxy).toBe(objectBuffer.obj1);
 
-    const newAb = resizeObjectBuffer(objectBuffer, 2048);
+    const newAb = unstable_resizeObjectBuffer(objectBuffer, 2048);
 
     expect(newAb.byteLength).toMatchInlineSnapshot(`2048`);
     expect(newAb).not.toBe(oldAb);

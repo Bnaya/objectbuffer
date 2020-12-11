@@ -2,15 +2,10 @@
 
 import { createObjectBuffer } from "..";
 import { memoryStats } from "../internal/api";
-import { externalArgsApiToExternalArgsApi } from "../internal/utils";
 
 describe("memory OOM transactions", () => {
-  const externalArgs = externalArgsApiToExternalArgsApi({
-    arrayAdditionalAllocation: 0,
-  });
-
   test("Object set (covers also Map & Set)", () => {
-    const objectBuffer = createObjectBuffer<any>(externalArgs, 1024, {
+    const objectBuffer = createObjectBuffer<any>(1024, {
       foo: null,
     });
 
@@ -48,7 +43,7 @@ describe("memory OOM transactions", () => {
   });
 
   test("Array set", () => {
-    const objectBuffer = createObjectBuffer<any>(externalArgs, 512, {
+    const objectBuffer = createObjectBuffer<any>(512, {
       arr: [1],
     });
 
@@ -81,7 +76,7 @@ describe("memory OOM transactions", () => {
   });
 
   test("Array splice", () => {
-    const objectBuffer = createObjectBuffer<any>(externalArgs, 512, {
+    const objectBuffer = createObjectBuffer<any>(512, {
       arr: [1],
     });
 

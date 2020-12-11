@@ -23,9 +23,9 @@ export function lookupsSuite(
     ABCArr.map((_, index) => [`${index}${ABCArr.join("")}`, 1])
   );
 
-  const OB_WITH_ABC_KEYS = createObjectBuffer({}, 2e4, objWithABCKeys);
-  const OB_WITH_NA2Z_KEYS = createObjectBuffer({}, 2e4, objWithNA2ZKeys);
-  const OB_WITH_AK1000RowsMockData = createObjectBuffer({}, 2e6, {
+  const OB_WITH_ABC_KEYS = createObjectBuffer(2e4, objWithABCKeys);
+  const OB_WITH_NA2Z_KEYS = createObjectBuffer(2e4, objWithNA2ZKeys);
+  const OB_WITH_AK1000RowsMockData = createObjectBuffer(2e6, {
     K1000RowsMockData,
   });
 
