@@ -220,7 +220,7 @@ export function memoryStats(objectBuffer: unknown): MemoryStats {
   return { available, used: total - available, total, top };
 }
 
-export { reclaim } from "./reclaim";
+export { reclaim, queueReclaim } from "./reclaim";
 
 /**
  *  Update the settings of the given ObjectBuffer

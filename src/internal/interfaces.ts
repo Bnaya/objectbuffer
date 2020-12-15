@@ -56,5 +56,5 @@ export interface InternalAPI {
   getCarrier(): Readonly<GlobalCarrier>;
   replaceCarrierContent(carrier: GlobalCarrier): void;
   getEntryPointer(): number;
-  destroy(): number;
+  destroy(): void;
 }

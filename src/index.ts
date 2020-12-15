@@ -14,6 +14,7 @@ export {
   memoryStats,
   processQueuedReclaims,
   reclaim,
+  queueReclaim,
   unstable_replaceUnderlyingArrayBuffer,
   unstable_resizeObjectBuffer,
   updateObjectBufferSettings,

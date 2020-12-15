@@ -1,5 +1,5 @@
 import type { ExternalArgs, GlobalCarrier, InternalAPI } from "./interfaces";
-import { incrementRefCount, decrementRefCount } from "./store";
+import { incrementRefCount } from "./store";
 import { WrapperDestroyed } from "./exceptions";
 
 export abstract class BaseProxyTrap implements InternalAPI {
@@ -12,10 +12,7 @@ export abstract class BaseProxyTrap implements InternalAPI {
   }
 
   public destroy() {
-    const newRefCount = decrementRefCount(this.carrier.heap, this.entryPointer);
     this._entryPointer = 0;
-
-    return newRefCount;
   }
 
   public getCarrier() {
