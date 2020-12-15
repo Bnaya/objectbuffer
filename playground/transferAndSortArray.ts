@@ -5,7 +5,7 @@ import * as objectbufferModule from "../src"
 // @ts-ignore
 import Worker from "worker-loader!./transferAndSortArrayWorker.ts";
 
-interface Post {
+export interface Post {
   postId: number;
   id: number;
   name: string;
@@ -21,16 +21,12 @@ async function getData() {
   return data;
 }
 
-const externalArgs: objectbufferModule.ExternalArgs = {
-};
-
 async function main() {
   const data = await getData();
 
   const dataSize = 10 * 10000000
 
   const myObjectBuffer = objectbufferModule.createObjectBuffer(
-    externalArgs,
     dataSize * 1.15,
     {
       posts: data
@@ -49,7 +45,7 @@ async function main() {
   resultChannel.port1.addEventListener("message", messageEvent => {
     if (messageEvent.data instanceof ArrayBuffer) {
       console.log("Got AB", messageEvent.data.byteLength);
-      objectbufferModule.replaceUnderlyingArrayBuffer(
+      objectbufferModule.unstable_replaceUnderlyingArrayBuffer(
         myObjectBuffer,
         messageEvent.data
       );

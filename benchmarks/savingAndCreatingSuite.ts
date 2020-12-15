@@ -26,7 +26,7 @@ export function savingAndCreatingSuite(
     .add(
       `create empty, size: 2e6`,
       () => {
-        createObjectBuffer({}, 2e6, {});
+        createObjectBuffer(2e6, {});
       },
       {
         minSamples: MIN_SAMPLES,
@@ -35,7 +35,7 @@ export function savingAndCreatingSuite(
     .add(
       `create with ${COMMENTS_ARR_SIZE} comments. size: 2e6`,
       () => {
-        createObjectBuffer({}, 2e6, {
+        createObjectBuffer(2e6, {
           arrOfComments,
         });
       },
@@ -63,7 +63,7 @@ export function savingAndCreatingSuite(
           global.testTargets = [];
 
           for (let i = 0; i < EXPECTED_MAX_ITERATIONS; i++) {
-            global.testTargets.push(createObjectBuffer({}, 2e6, {}));
+            global.testTargets.push(createObjectBuffer(2e6, {}));
           }
 
           runGc();
@@ -78,7 +78,7 @@ export function savingAndCreatingSuite(
     .add(
       `create with all mock data rows. size: 2e6`,
       () => {
-        createObjectBuffer<any>({}, 2e6, { K1000RowsMockData });
+        createObjectBuffer<any>(2e6, { K1000RowsMockData });
       },
       {
         minSamples: MIN_SAMPLES,

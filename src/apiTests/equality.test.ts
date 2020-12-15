@@ -2,20 +2,13 @@
 
 import { createObjectBuffer } from "../";
 import { memoryStats } from "../internal/api";
-import { externalArgsApiToExternalArgsApi } from "../internal/utils";
 
 describe("equality.test tests. make sure our cache of proxies works", () => {
-  const externalArgs = externalArgsApiToExternalArgsApi({
-    arrayAdditionalAllocation: 0,
-  });
-
   test("equality.test tests", () => {
-    const objectBuffer = createObjectBuffer<any>(
-      externalArgs,
-      2048,
-      { arr: [1, 2, 3, 4], obj: { a: 1 } },
-      { useSharedArrayBuffer: false }
-    );
+    const objectBuffer = createObjectBuffer<any>(2048, {
+      arr: [1, 2, 3, 4],
+      obj: { a: 1 },
+    });
 
     objectBuffer.arr2 = objectBuffer.arr;
     objectBuffer.obj2 = objectBuffer.obj;

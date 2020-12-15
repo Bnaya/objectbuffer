@@ -1,16 +1,11 @@
 import { createObjectBuffer } from "..";
 import { memoryStats } from "../internal/api";
-import { externalArgsApiToExternalArgsApi } from "../internal/utils";
 
 /* eslint-env jest */
 
 describe.skip("primitivesMemoryReuse", () => {
-  const externalArgs = externalArgsApiToExternalArgsApi({
-    arrayAdditionalAllocation: 0,
-  });
-
   test("test number / bigint reuse", () => {
-    const objectBuffer = createObjectBuffer(externalArgs, 128, {
+    const objectBuffer = createObjectBuffer(128, {
       num: 1 as number | bigint,
     });
 
@@ -45,7 +40,7 @@ describe.skip("primitivesMemoryReuse", () => {
   });
 
   test("test null/undefined reuse", () => {
-    const objectBuffer = createObjectBuffer(externalArgs, 128, {
+    const objectBuffer = createObjectBuffer(128, {
       nullContainer: null as null | undefined,
     });
 
@@ -73,7 +68,7 @@ describe.skip("primitivesMemoryReuse", () => {
   });
 
   test("test boolean reuse", () => {
-    const objectBuffer = createObjectBuffer(externalArgs, 128, {
+    const objectBuffer = createObjectBuffer(128, {
       booleanContainer: false,
     });
 

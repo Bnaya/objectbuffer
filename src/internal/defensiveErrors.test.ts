@@ -9,11 +9,15 @@ describe("defensiveErrors", () => {
   });
 
   test("defensiveErrors Date", () => {
-    const objectBuffer = createObjectBuffer(externalArgs, 1024, {
-      date: new Date(0),
-      array: [1],
-      object: {},
-    });
+    const objectBuffer = createObjectBuffer(
+      1024,
+      {
+        date: new Date(0),
+        array: [1],
+        object: {},
+      },
+      externalArgs
+    );
 
     expect(() => {
       (objectBuffer.date as any)[5] = "a";
@@ -47,11 +51,15 @@ describe("defensiveErrors", () => {
   });
 
   test("defensiveErrors Array", () => {
-    const objectBuffer = createObjectBuffer(externalArgs, 1024, {
-      date: new Date(0),
-      array: [1],
-      object: {},
-    });
+    const objectBuffer = createObjectBuffer(
+      1024,
+      {
+        date: new Date(0),
+        array: [1],
+        object: {},
+      },
+      externalArgs
+    );
 
     expect(() => {
       objectBuffer.array[-5] = 5;
@@ -79,11 +87,15 @@ describe("defensiveErrors", () => {
   });
 
   test("defensiveErrors Object", () => {
-    const objectBuffer = createObjectBuffer(externalArgs, 1024, {
-      date: new Date(0),
-      array: [1],
-      object: {},
-    });
+    const objectBuffer = createObjectBuffer(
+      1024,
+      {
+        date: new Date(0),
+        array: [1],
+        object: {},
+      },
+      externalArgs
+    );
 
     expect(() => {
       Object.defineProperty(objectBuffer.object, "newProp", {

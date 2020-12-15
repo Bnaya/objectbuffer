@@ -2,15 +2,10 @@
 
 import { createObjectBuffer } from "../";
 import { memoryStats } from "../internal/api";
-import { externalArgsApiToExternalArgsApi } from "../internal/utils";
 
 describe("Date test", () => {
-  const externalArgs = externalArgsApiToExternalArgsApi({
-    arrayAdditionalAllocation: 0,
-  });
-
   test("Date object test", () => {
-    const objectBuffer = createObjectBuffer(externalArgs, 1024, {
+    const objectBuffer = createObjectBuffer(1024, {
       // 1/1 2000
       myDate: new Date(946684800000),
     });

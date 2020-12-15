@@ -1,36 +1,42 @@
 /* eslint-env jest */
 
-import { updateExternalArgs, createObjectBuffer } from "..";
-import { readExternalArgs } from "../internal/api";
+import { updateObjectBufferSettings, createObjectBuffer } from "..";
+import { readObjectBufferSettings } from "../internal/api";
 
-test("readExternalArgs", () => {
+test("readObjectBufferSettings", () => {
   const ob = createObjectBuffer(
-    { hashMapLoadFactor: 2, arrayAdditionalAllocation: 5 },
     512,
-    {}
+    {},
+    {
+      hashMapLoadFactor: 2,
+      arrayAdditionalAllocation: 5,
+    }
   );
 
-  expect(readExternalArgs(ob)).toEqual({
+  expect(readObjectBufferSettings(ob)).toEqual({
     hashMapLoadFactor: 2,
     arrayAdditionalAllocation: 5,
     hashMapMinInitialCapacity: 8,
   });
 });
 
-test("updateExternalArgs", () => {
+test("updateObjectBufferSettings", () => {
   const ob = createObjectBuffer(
-    { hashMapLoadFactor: 2, arrayAdditionalAllocation: 7 },
     512,
-    {}
+    {},
+    {
+      hashMapLoadFactor: 2,
+      arrayAdditionalAllocation: 7,
+    }
   );
 
-  updateExternalArgs(ob, {
+  updateObjectBufferSettings(ob, {
     hashMapLoadFactor: 10,
     arrayAdditionalAllocation: 5,
     hashMapMinInitialCapacity: 20,
   });
 
-  expect(readExternalArgs(ob)).toEqual({
+  expect(readObjectBufferSettings(ob)).toEqual({
     hashMapLoadFactor: 10,
     arrayAdditionalAllocation: 5,
     hashMapMinInitialCapacity: 20,

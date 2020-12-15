@@ -9,7 +9,7 @@ import {
 describe("createMemoryGraph. snapshot graph and ensure memory", () => {
   test("basic", () => {
     const sameObject = { t: 6 };
-    const ob = createObjectBuffer({}, 1024 * 10, {
+    const ob = createObjectBuffer(1024 * 10, {
       a: 1,
       b: { t: undefined, t2: null },
       c: true,

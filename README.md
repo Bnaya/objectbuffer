@@ -75,7 +75,7 @@ for some use-cases, it's slow and memory expensive.
 ## Why maybe not [FlatBuffers](https://github.com/google/flatbuffers)
 
 For many cases FlatBuffers is the right tool!  
-FlatBuffers requires full re-serialization when changing values. inside. The api is also more different than javascript objects.
+FlatBuffers have [a limited, in-place mutating capabilities](https://google.github.io/flatbuffers/flatbuffers_guide_tutorial.html#doc-content:~:text=Mutating%20FlatBuffers,-As)
 
 ## Disclaimer / Motivation
 

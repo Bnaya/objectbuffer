@@ -13,12 +13,8 @@ import { externalArgsApiToExternalArgsApi } from "./internal/utils";
 import { ENDIANNESS_FLAG_POINTER, ENDIANNESS } from "./internal/consts";
 
 describe("createObjectBuffer", () => {
-  const externalArgs = externalArgsApiToExternalArgsApi({
-    arrayAdditionalAllocation: 0,
-  });
-
   test("createObjectBuffer simple", () => {
-    const o = createObjectBuffer(externalArgs, 1024, {
+    const o = createObjectBuffer(1024, {
       a: "b",
       b: null,
       c: { t: 5 },
@@ -41,10 +37,14 @@ describe("getUnderlyingArrayBuffer", () => {
     arrayAdditionalAllocation: 0,
   });
   test("getUnderlyingArrayBuffer simple", () => {
-    const o = createObjectBuffer(externalArgs, 1024, {
-      b: null,
-      c: { t: 5 },
-    });
+    const o = createObjectBuffer(
+      1024,
+      {
+        b: null,
+        c: { t: 5 },
+      },
+      externalArgs
+    );
 
     const arrayBuffer = getUnderlyingArrayBuffer(o);
 
@@ -58,12 +58,8 @@ describe("getUnderlyingArrayBuffer", () => {
 });
 
 describe("loadObjectBuffer", () => {
-  const externalArgs = externalArgsApiToExternalArgsApi({
-    arrayAdditionalAllocation: 0,
-  });
-
   test("loadObjectBuffer simple", () => {
-    const o = createObjectBuffer(externalArgs, 1024, {
+    const o = createObjectBuffer(1024, {
       a: "b",
       b: null,
       c: { t: 5 },
@@ -82,12 +78,12 @@ describe("loadObjectBuffer", () => {
     );
 
     expect(() => {
-      return loadObjectBuffer(externalArgs, arrayBuffer);
-    }).toThrowErrorMatchingInlineSnapshot(`"Endianness miss-match"`);
+      return loadObjectBuffer(arrayBuffer);
+    }).toThrowErrorMatchingInlineSnapshot(`"Endianness mismatch"`);
   });
 
   test("Endianness miss match", () => {
-    const o = createObjectBuffer(externalArgs, 1024, {
+    const o = createObjectBuffer(1024, {
       a: "b",
       b: null,
       c: { t: 5 },
@@ -95,7 +91,7 @@ describe("loadObjectBuffer", () => {
 
     const arrayBuffer = getUnderlyingArrayBuffer(o);
 
-    const newOne = loadObjectBuffer(externalArgs, arrayBuffer);
+    const newOne = loadObjectBuffer(arrayBuffer);
 
     expect(o).toMatchInlineSnapshot(`
       Object {

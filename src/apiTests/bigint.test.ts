@@ -6,7 +6,7 @@ import { MAX_64_BIG_INT } from "../internal/consts";
 
 describe("bigint tests", () => {
   test("ok bigint", () => {
-    const ob = createObjectBuffer<any>({}, 1024, {});
+    const ob = createObjectBuffer<any>(1024, {});
     expect(memoryStats(ob).used).toMatchInlineSnapshot(`208`);
 
     ob.bigintNegative = undefined;
@@ -31,7 +31,7 @@ describe("bigint tests", () => {
   });
 
   test("bad bigint", () => {
-    const ob = createObjectBuffer<any>({}, 1024, {});
+    const ob = createObjectBuffer<any>(1024, {});
     expect(memoryStats(ob).used).toMatchInlineSnapshot(`208`);
 
     ob.bigintNegative = undefined;

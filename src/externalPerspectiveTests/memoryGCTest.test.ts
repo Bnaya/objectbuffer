@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-env jest, node */
 import { createObjectBuffer } from "..";
-import { memoryStats, collectGarbage } from "../internal/api";
+import { memoryStats, processQueuedReclaims } from "../internal/api";
 import { sleep } from "../internal/testUtils";
 import { getInternalAPI } from "../internal/utils";
-import { getAddressesNoLongerUsed } from "../internal/stateModule";
+import { getAddressesNoLongerUsedArrayForCarrier } from "../internal/stateModule";
 // @ts-expect-error package have no types
 import runGc from "expose-gc/function";
 
@@ -21,7 +21,7 @@ describe("memory GC related tests", () => {
   }
 
   test("Test FinalizationRegistry kicks in", async function () {
-    const objectBuffer: any = createObjectBuffer({}, 1024, {
+    const objectBuffer: any = createObjectBuffer(1024, {
       foo: { a: "123abc" },
     });
 
@@ -41,7 +41,9 @@ describe("memory GC related tests", () => {
 
     await sleep(1000);
 
-    const addressesNoLongerUsed = getAddressesNoLongerUsed(carrier);
+    const addressesNoLongerUsed = getAddressesNoLongerUsedArrayForCarrier(
+      carrier
+    );
 
     expect(addressesNoLongerUsed).toMatchInlineSnapshot(`
       Array [
@@ -51,7 +53,7 @@ describe("memory GC related tests", () => {
   }, 10000);
 
   test("Test collectGarbage works", async function () {
-    const objectBuffer: any = createObjectBuffer({}, 1024, {
+    const objectBuffer: any = createObjectBuffer(1024, {
       foo: undefined,
     });
 
@@ -79,7 +81,7 @@ describe("memory GC related tests", () => {
 
     await sleep(100);
 
-    collectGarbage(objectBuffer);
+    processQueuedReclaims(objectBuffer);
     const finalMemoryStats = memoryStats(objectBuffer);
 
     expect(finalMemoryStats.available).toBe(initialMemoryStats.available);

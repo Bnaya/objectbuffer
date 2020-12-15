@@ -5,7 +5,7 @@ import { memoryStats } from "../internal/api";
 
 describe("bad values tests", () => {
   test("bad values tests", () => {
-    const ob = createObjectBuffer<any>({}, 512, {});
+    const ob = createObjectBuffer<any>(512, {});
     expect(memoryStats(ob).used).toMatchInlineSnapshot(`208`);
 
     const symbol = Symbol("badsymbolhere");

@@ -1,9 +1,7 @@
 /* eslint-disable */
 
 import * as objectbufferModule from "../src";
-
-const externalArgs: objectbufferModule.ExternalArgs = {
-};
+import { Post } from "./transferAndSortArray"
 
 addEventListener("message", ev => {
   if (ev.data[0] instanceof ArrayBuffer) {
@@ -11,7 +9,6 @@ addEventListener("message", ev => {
     const ab: ArrayBuffer = ev.data[0];
 
     const myObjectBufferInWorker = objectbufferModule.loadObjectBuffer(
-      externalArgs,
       ab
     );
 

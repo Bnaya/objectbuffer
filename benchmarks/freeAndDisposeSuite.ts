@@ -35,7 +35,7 @@ export function freeAndDisposeSuite(
 
           for (let i = 0; i < 300; i++) {
             global.testTargets.push(
-              createObjectBuffer({}, 2e6, { K1000RowsMockData })
+              createObjectBuffer(2e6, { K1000RowsMockData })
             );
           }
 

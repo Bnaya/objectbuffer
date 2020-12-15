@@ -167,8 +167,7 @@ export function saveValueIterative(
             ptrToPtrToSaveTo / Uint32Array.BYTES_PER_ELEMENT
           ] = UNDEFINED_KNOWN_ADDRESS;
           continue;
-          // Maybe don't make undefined but throw, or clamp
-          // throw new Error("MAX_64_BIG_INT");
+          // todo Maybe don't make undefined but throw, or clamp
         }
 
         u32[
@@ -186,25 +185,18 @@ export function saveValueIterative(
         continue;
 
       case "function":
-        // Nope Nope Nope
+        // todo Nope Nope Nope
         u32[
           ptrToPtrToSaveTo / Uint32Array.BYTES_PER_ELEMENT
         ] = UNDEFINED_KNOWN_ADDRESS;
         continue;
 
       case "symbol":
-        // not supported, write undefined
+        // todo not supported, write undefined
         u32[
           ptrToPtrToSaveTo / Uint32Array.BYTES_PER_ELEMENT
         ] = UNDEFINED_KNOWN_ADDRESS;
         continue;
-
-      // // we will never get here
-      // case "undefined":
-      //   continue;
-      // // we will never get here
-      // case "boolean":
-      //   continue;
     }
 
     const maybeOurPointerFromSymbol = getOurPointerIfApplicable(

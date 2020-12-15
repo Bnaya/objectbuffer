@@ -9,14 +9,15 @@
 
 export {
   createObjectBuffer,
-  resizeObjectBuffer,
   getUnderlyingArrayBuffer,
   loadObjectBuffer,
-  replaceUnderlyingArrayBuffer,
   memoryStats,
-  disposeWrapperObject,
-  updateExternalArgs,
+  processQueuedReclaims,
+  reclaim,
+  queueReclaim,
+  unstable_replaceUnderlyingArrayBuffer,
+  unstable_resizeObjectBuffer,
+  updateObjectBufferSettings,
 } from "./internal/api";
+export type { ObjectBufferSettings } from "./internal/interfaces";
 export { acquireLock, acquireLockWait, releaseLock } from "./internal/locks";
-export type ExternalArgs = import("./internal/interfaces").ExternalArgsApi;
-export type CreateObjectBufferOptions = import("./internal/api").CreateObjectBufferOptions;

@@ -12,6 +12,7 @@ import {
 } from "./generatedStructs";
 import type { Heap } from "../structsGenerator/consts";
 import { saveValueIterativeReturnPointer } from "./saveValue";
+import { invariant } from "./utils";
 
 export function arrayGetPointerToIndex(
   carrier: GlobalCarrier,
@@ -19,9 +20,10 @@ export function arrayGetPointerToIndex(
   indexToGet: number
 ) {
   // out of bound
-  if (indexToGet >= array_length_get(carrier.heap, pointerToArrayEntry)) {
-    throw new Error("NOT MAKES SENSE");
-  }
+  invariant(
+    indexToGet <= array_length_get(carrier.heap, pointerToArrayEntry),
+    "must bound check array before calling"
+  );
 
   const pointerToThePointer =
     array_dataspacePointer_get(carrier.heap, pointerToArrayEntry) +

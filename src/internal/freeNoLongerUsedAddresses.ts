@@ -1,13 +1,13 @@
 import { decrementRefCount, decrementRefCountWithNum } from "./store";
 import { getAllLinkedAddresses } from "./getAllLinkedAddresses";
 import { GlobalCarrier } from "./interfaces";
-import { getAddressesNoLongerUsed } from "./stateModule";
+import { getAddressesNoLongerUsedArrayForCarrier } from "./stateModule";
 
 /**
  * Possible optimization: write smarter algo that process all the addresses in one pass
  */
 export function freeNoLongerUsedAddresses(carrier: GlobalCarrier) {
-  const l = getAddressesNoLongerUsed(carrier);
+  const l = getAddressesNoLongerUsedArrayForCarrier(carrier);
 
   let memoryAddress;
   while ((memoryAddress = l.pop()) !== undefined) {

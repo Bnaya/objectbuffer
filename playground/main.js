@@ -7,15 +7,7 @@ import * as objectbufferModules from "../src";
 // @ts-expect-error
 import Worker from "worker-loader!./Worker.js";
 
-/**
- * @type {objectbufferModules.ExternalArgs}
- */
-const externalArgs = {
-  arrayAdditionalAllocation: 0,
-};
-
 const ob = objectbufferModules.createObjectBuffer(
-  externalArgs,
   1024,
   {
     some: {
@@ -26,7 +18,8 @@ const ob = objectbufferModules.createObjectBuffer(
       ],
     },
   },
-  { useSharedArrayBuffer: true }
+  {},
+  "shared"
 );
 
 // o.yetAnother = [234, 234, "asf"];
