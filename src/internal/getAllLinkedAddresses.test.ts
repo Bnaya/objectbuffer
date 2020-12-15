@@ -2,6 +2,7 @@
 
 import { createObjectBuffer, memoryStats } from "./api";
 import { getAllLinkedAddresses } from "./getAllLinkedAddresses";
+import { decrementRefCount } from "./store";
 import { TransactionalAllocator } from "./TransactionalAllocator";
 import { getInternalAPI, externalArgsApiToExternalArgsApi } from "./utils";
 
@@ -42,6 +43,10 @@ describe("getAllLinkedAddresses", () => {
       const carrier = getInternalAPI(objectBuffer).getCarrier();
 
       const entryPointer = getInternalAPI(objectBuffer).getEntryPointer();
+      decrementRefCount(
+        getInternalAPI(objectBuffer).getCarrier().heap,
+        entryPointer
+      );
       getInternalAPI(objectBuffer).destroy();
 
       const leafAddresses = new Set<number>();
@@ -96,6 +101,10 @@ describe("getAllLinkedAddresses", () => {
       const carrier = getInternalAPI(objectBuffer).getCarrier();
 
       const entryPointer = getInternalAPI(objectBuffer).getEntryPointer();
+      decrementRefCount(
+        getInternalAPI(objectBuffer).getCarrier().heap,
+        entryPointer
+      );
       getInternalAPI(objectBuffer).destroy();
 
       const leafAddresses = new Set<number>();
@@ -146,6 +155,10 @@ describe("getAllLinkedAddresses", () => {
       const carrier = getInternalAPI(objectBuffer).getCarrier();
 
       const entryPointer = getInternalAPI(objectBuffer).getEntryPointer();
+      decrementRefCount(
+        getInternalAPI(objectBuffer).getCarrier().heap,
+        entryPointer
+      );
       getInternalAPI(objectBuffer).destroy();
 
       const leafAddresses = new Set<number>();
@@ -207,6 +220,10 @@ describe("getAllLinkedAddresses", () => {
       const entryPointer = getInternalAPI(objectBuffer).getEntryPointer();
       const carrier = getInternalAPI(objectBuffer).getCarrier();
 
+      decrementRefCount(
+        getInternalAPI(objectBuffer).getCarrier().heap,
+        entryPointer
+      );
       getInternalAPI(objectBuffer).destroy();
 
       const leafAddresses = new Set<number>();
