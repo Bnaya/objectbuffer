@@ -1,0 +1,18 @@
+{
+  "name": "objectbuffer-demo-sort-array-on-webworker-no-data-copy",
+  "version": "1.0.0",
+  "description": "objectbuffer is an object like api, that saved into a single arraybuffer.\n\nhttps://github.com/Bnaya/objectbuffer",
+  "scripts": {
+    "start": "webpack serve --entry ./src/index.js --mode development --open --open-page main"
+  },
+  "dependencies": {
+    "@bnaya/objectbuffer": "file:../../"
+  },
+  "devDependencies": {
+    "webpack": "^5.10.3",
+    "webpack-cli": "^4.2.0",
+    "webpack-dev-server": "^3.11.0",
+    "worker-loader": "^3.0.6"
+  },
+  "keywords": []
+}

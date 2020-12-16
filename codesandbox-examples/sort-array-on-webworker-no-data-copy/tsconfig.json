@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "jsx": "preserve",
+    "target": "es6",
+    "esModuleInterop": true,
+    "sourceMap": true,
+    "allowJs": true,
+    "strict": true,
+    "lib": [
+      "es2015.promise",
+      "dom",
+      "dom.iterable",
+      "webworker.importscripts",
+      "esnext"
+    ],
+    "rootDir": "src",
+    "moduleResolution": "node"
+  }
+}

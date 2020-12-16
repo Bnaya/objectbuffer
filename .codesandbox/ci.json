@@ -1,6 +1,5 @@
 {
   "sandboxes": [
-    "objectbuffer-comlink-demo-sort-array-on-webworker-no-data-copy-vkpqp",
-    "objectbuffer-demo-sort-array-on-webworker-no-data-copy-52xiw"
+    "/codesandbox-examples/sort-array-on-webworker-no-data-copy"
   ]
 }
