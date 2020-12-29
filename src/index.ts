@@ -7,7 +7,8 @@
 
  */ /** */
 
-export {
+export 
+{
   createObjectBuffer,
   getUnderlyingArrayBuffer,
   loadObjectBuffer,
@@ -21,3 +22,5 @@ export {
 } from "./internal/api";
 export type { ObjectBufferSettings } from "./internal/interfaces";
 export { acquireLock, acquireLockWait, releaseLock } from "./internal/locks";
+
+let lalaa = 1;
