@@ -23,7 +23,7 @@
     "object-buffer"
   ],
   "scripts": {
-    "lint": "concurrently \"eslint src --ext .js,.jsx,.ts,.tsx\" \"tsc --noEmit --emitDeclarationOnly false\"",
+    "lint": "eslint src --ext .js,.jsx,.ts,.tsx",
     "test": "jest",
     "test-coverage": "jest --coverage",
     "build-declarations": "tsc -p tsconfig.build.json --isolatedModules false --declaration true --declarationMap true --noEmit false --emitDeclarationOnly true",
