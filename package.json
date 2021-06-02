@@ -33,7 +33,7 @@
     "prepack": "yarn build",
     "browser-playground": "webpack-dev-server --mode=development --config playground/webpack.config.js playground/main.js --open",
     "webpack-playground": "webpack-dev-server --mode=development --config playground/webpack.config.js --open",
-    "generate-docs": "rimraf -f docs/generated/ && typedoc --mode library --readme none --out docs/generated/ --excludeNotExported --ignoreCompilerErrors src/index.ts",
+    "generate-docs": "rimraf -f docs/generated/ && typedoc --readme none --out docs/generated/ src/index.ts",
     "generate-structs": "yarn ts-node src/structsGenerator/run.ts",
     "asbuild:untouched": "asc assemblyscript-allocator-experiment/assembly/index.ts --target debug",
     "asbuild:optimized": "asc assemblyscript-allocator-experiment/assembly/index.ts --target release",
