@@ -64,9 +64,8 @@ export function getObjectPropertiesEntries(
     const valuePointer = hashMapNodePointerToValue(iterator);
     const keyPointer = hashMapNodePointerToKey(carrier.heap, iterator);
 
-    const typeOfKeyEntry:
-      | ENTRY_TYPE.NUMBER
-      | ENTRY_TYPE.STRING = typeOnly_type_get(carrier.heap, keyPointer);
+    const typeOfKeyEntry: ENTRY_TYPE.NUMBER | ENTRY_TYPE.STRING =
+      typeOnly_type_get(carrier.heap, keyPointer);
 
     const key =
       typeOfKeyEntry === ENTRY_TYPE.NUMBER

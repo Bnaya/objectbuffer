@@ -30,9 +30,8 @@ export function initializeArrayBuffer(arrayBuffer: ArrayBuffer) {
   const uint32 = new Uint32Array(arrayBuffer);
 
   uint32[0] = 0;
-  uint32[
-    INITIAL_ENTRY_POINTER_TO_POINTER / Uint32Array.BYTES_PER_ELEMENT
-  ] = INITIAL_ENTRY_POINTER_VALUE;
+  uint32[INITIAL_ENTRY_POINTER_TO_POINTER / Uint32Array.BYTES_PER_ELEMENT] =
+    INITIAL_ENTRY_POINTER_VALUE;
 }
 
 export function freeStringOrNumber(
@@ -131,9 +130,8 @@ export function writeValueInPtrToPtrAndHandleMemory(
     handleArcForDeletedValuePointer(carrier, existingEntryPointer);
   } catch (ProbablyOutOfMemoryError) {
     if (ProbablyOutOfMemoryError instanceof OutOfMemoryError) {
-      carrier.heap.u32[
-        ptrToPtr / Uint32Array.BYTES_PER_ELEMENT
-      ] = existingEntryPointer;
+      carrier.heap.u32[ptrToPtr / Uint32Array.BYTES_PER_ELEMENT] =
+        existingEntryPointer;
     }
 
     throw ProbablyOutOfMemoryError;

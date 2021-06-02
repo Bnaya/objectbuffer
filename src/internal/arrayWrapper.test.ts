@@ -313,7 +313,7 @@ describe("arrayWrapper tests", () => {
     }).toThrowErrorMatchingInlineSnapshot(`"Invalid array length"`);
 
     expect(() => {
-      arrayWrapper.length = ("a" as unknown) as number;
+      arrayWrapper.length = "a" as unknown as number;
     }).toThrowErrorMatchingInlineSnapshot(`"Invalid array length"`);
 
     expect(() => {

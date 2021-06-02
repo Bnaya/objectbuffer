@@ -22,7 +22,8 @@ const getOwnPropertyDescriptorHAS = {
 
 export class ObjectWrapper
   extends BaseProxyTrap
-  implements ProxyHandler<Record<string, unknown>> {
+  implements ProxyHandler<Record<string, unknown>>
+{
   public get(target: Record<string, unknown>, p: PropertyKey): any {
     if (p === INTERNAL_API_SYMBOL) {
       return this;
