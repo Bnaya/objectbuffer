@@ -30,7 +30,8 @@ export type Heap = {
   >;
 };
 
-export type PossibleTypedArrays = TypedArrayPropNameToCtorType[keyof TypedArrayPropNameToCtorType];
+export type PossibleTypedArrays =
+  TypedArrayPropNameToCtorType[keyof TypedArrayPropNameToCtorType];
 export type StructManifest = { [x: string]: PossibleTypedArrays };
 
 export function createHeap(sb: ArrayBuffer | SharedArrayBuffer): Heap {

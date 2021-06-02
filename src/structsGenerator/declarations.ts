@@ -26,12 +26,11 @@ export const objectMapSetStructDeclaration = createStructDeclaration({
   pointerToHashMap: Uint32Array,
 });
 
-export const bigIntPositiveOrNegativeStructDeclaration = createStructDeclaration(
-  {
+export const bigIntPositiveOrNegativeStructDeclaration =
+  createStructDeclaration({
     type: Float64Array,
     value: BigUint64Array,
-  }
-);
+  });
 
 export const stringStructDeclaration = createStructDeclaration({
   type: Float64Array,

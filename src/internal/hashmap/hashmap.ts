@@ -166,9 +166,8 @@ export function hashMapInsertUpdateKeyIsPointerReturnNode(
       )
     );
 
-    heap.u32[
-      ptrToPtrToSaveTheNodeTo / Uint32Array.BYTES_PER_ELEMENT
-    ] = memoryForNewNode;
+    heap.u32[ptrToPtrToSaveTheNodeTo / Uint32Array.BYTES_PER_ELEMENT] =
+      memoryForNewNode;
 
     hashmap_LINKED_LIST_SIZE_set(
       heap,
@@ -310,9 +309,8 @@ export function hashMapInsertUpdate(
       )
     );
 
-    heap.u32[
-      ptrToPtrToSaveTheNodeTo / Uint32Array.BYTES_PER_ELEMENT
-    ] = memoryForNewNode;
+    heap.u32[ptrToPtrToSaveTheNodeTo / Uint32Array.BYTES_PER_ELEMENT] =
+      memoryForNewNode;
 
     hashmap_LINKED_LIST_SIZE_set(
       heap,
@@ -421,9 +419,8 @@ export function hashMapDelete(
   );
 
   // remove node from bucket
-  heap.u32[
-    foundNodePtrToPtr / Uint32Array.BYTES_PER_ELEMENT
-  ] = hashmapNode_NEXT_NODE_POINTER_get(heap, nodeToDeletePointer);
+  heap.u32[foundNodePtrToPtr / Uint32Array.BYTES_PER_ELEMENT] =
+    hashmapNode_NEXT_NODE_POINTER_get(heap, nodeToDeletePointer);
 
   if (
     typeOnly_type_get(

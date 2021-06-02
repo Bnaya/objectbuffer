@@ -41,9 +41,8 @@ describe("memory GC related tests", () => {
 
     await sleep(1000);
 
-    const addressesNoLongerUsed = getAddressesNoLongerUsedArrayForCarrier(
-      carrier
-    );
+    const addressesNoLongerUsed =
+      getAddressesNoLongerUsedArrayForCarrier(carrier);
 
     expect(addressesNoLongerUsed).toMatchInlineSnapshot(`
       Array [

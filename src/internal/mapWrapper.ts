@@ -20,7 +20,8 @@ import { object_pointerToHashMap_get } from "./generatedStructs";
 
 export class MapWrapper<K extends string | number, V>
   extends BaseProxyTrap
-  implements Map<K, V> {
+  implements Map<K, V>
+{
   clear(): void {
     mapOrSetClear(this.externalArgs, this.carrier, this.entryPointer);
   }

@@ -112,9 +112,8 @@ export function setValueAtArrayIndex(
     carrier.heap.u32[pointerToThePointer / Uint32Array.BYTES_PER_ELEMENT]
   );
 
-  carrier.heap.u32[
-    pointerToThePointer / Uint32Array.BYTES_PER_ELEMENT
-  ] = newValuePointer;
+  carrier.heap.u32[pointerToThePointer / Uint32Array.BYTES_PER_ELEMENT] =
+    newValuePointer;
 }
 
 /**
