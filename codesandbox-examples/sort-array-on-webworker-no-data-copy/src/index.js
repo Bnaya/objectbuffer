@@ -4,9 +4,10 @@ import {
   createObjectBuffer,
   getUnderlyingArrayBuffer,
   unstable_replaceUnderlyingArrayBuffer,
+  loadObjectBuffer,
 } from "@bnaya/objectbuffer";
 
-function mainThreadSide() {
+async function mainThreadSide() {
   const data = await getData();
 
   const myObjectBuffer = createObjectBuffer(Math.pow(8, 7), {
@@ -41,10 +42,8 @@ function mainThreadSide() {
  * worker side also runs on the main thread in this example
  */
 function workerSide() {
-  import { loadObjectBuffer } from "@bnaya/objectbuffer";
-
   addEventListener("message", (ev) => {
-    if (ev.data[0] instanceof ArrayBuffer) {
+    if (ev.data[1] instanceof MessagePort && ev.data[0] instanceof ArrayBuffer) {
       const port = ev.data[1];
       const ab = ev.data[0];
 
@@ -63,10 +62,9 @@ function workerSide() {
   });
 }
 
-main();
+workerSide();
 
-async function main() {
-  workerSide();
+function main() {
   mainThreadSide();
 }
 
@@ -78,4 +76,7 @@ async function getData() {
   return data;
 }
 
-document.body.append("Open dev tools console to see the results");
+
+document.querySelector('button').addEventListener("click", () => {
+  main();
+});

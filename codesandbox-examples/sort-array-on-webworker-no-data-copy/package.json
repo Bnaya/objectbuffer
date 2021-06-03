@@ -3,10 +3,11 @@
   "version": "0.0.1",
   "description": "objectbuffer is an object like api, that saved into a single arraybuffer.\n\nhttps://github.com/Bnaya/objectbuffer",
   "scripts": {
-    "start": "react-scripts start"
+    "start": "parcel src/index.html"
   },
   "dependencies": {
-    "@bnaya/objectbuffer": "file:../../"
+    "@bnaya/objectbuffer": "file:../../",
+    "parcel": "^2.0.0-beta.2"
   },
   "devDependencies": {
     "react-scripts": "^4.0.3"
