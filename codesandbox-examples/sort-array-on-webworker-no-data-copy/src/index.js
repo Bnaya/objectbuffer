@@ -1,12 +1,39 @@
-/* eslint-disable */
+/* eslint-env browser  */
 
-import DemoWorker from "worker-loader!./worker.js";
-import * as objectbufferModule from "@bnaya/objectbuffer";
-import {} from "@bnaya/objectbuffer";
-
+import {
+  createObjectBuffer,
+  getUnderlyingArrayBuffer,
+  unstable_replaceUnderlyingArrayBuffer,
+} from "@bnaya/objectbuffer";
 
 function mainThreadSide() {
+  const data = await getData();
 
+  const myObjectBuffer = createObjectBuffer(Math.pow(8, 7), {
+    posts: data,
+  });
+
+  console.log("First post before sort", { ...myObjectBuffer.posts[0] });
+
+  const arrayBuffer = getUnderlyingArrayBuffer(myObjectBuffer);
+
+  const resultChannel = new MessageChannel();
+
+  resultChannel.port1.addEventListener("message", (messageEvent) => {
+    if (messageEvent.data instanceof ArrayBuffer) {
+      unstable_replaceUnderlyingArrayBuffer(myObjectBuffer, messageEvent.data);
+
+      console.log("First post after sort", { ...myObjectBuffer.posts[0] });
+    }
+  });
+
+  resultChannel.port1.start();
+
+  // From this point, the arrayBuffer will be detached
+  postMessage([arrayBuffer, resultChannel.port2], "*", [
+    arrayBuffer,
+    resultChannel.port2,
+  ]);
 }
 
 /**
@@ -14,51 +41,41 @@ function mainThreadSide() {
  * worker side also runs on the main thread in this example
  */
 function workerSide() {
+  import { loadObjectBuffer } from "@bnaya/objectbuffer";
 
+  addEventListener("message", (ev) => {
+    if (ev.data[0] instanceof ArrayBuffer) {
+      const port = ev.data[1];
+      const ab = ev.data[0];
+
+      const myObjectBufferInWorker = loadObjectBuffer(ab);
+
+      myObjectBufferInWorker.posts.sort((postA, postB) => {
+        if (postA.body > postB.body) {
+          return 1;
+        } else {
+          return -1;
+        }
+      });
+
+      port.postMessage(ab, [ab]);
+    }
+  });
 }
-
 
 main();
 
 async function main() {
-  const data = await getData();
-  const myWorker = new DemoWorker();
-
-  const myObjectBuffer = objectbufferModule.createObjectBuffer(
-    Math.pow(8, 7),
-    {
-      posts: data
-    }
-  );
-
-  console.log("Before sort first post", { ...myObjectBuffer.posts[0] });
-
-  const ab = objectbufferModule.getUnderlyingArrayBuffer(myObjectBuffer);
-
-  const resultChannel = new MessageChannel();
-
-  resultChannel.port1.addEventListener("message", messageEvent => {
-    if (messageEvent.data instanceof ArrayBuffer) {
-      objectbufferModule.unstable_replaceUnderlyingArrayBuffer(
-        myObjectBuffer,
-        messageEvent.data
-      );
-
-      console.log("After sort first post", { ...myObjectBuffer.posts[0] });
-    }
-  });
-
-  resultChannel.port1.start();
-
-  myWorker.postMessage([ab, resultChannel.port2], [ab, resultChannel.port2]);
+  workerSide();
+  mainThreadSide();
 }
 
 async function getData() {
-  const data = await (await fetch(
-    "https://jsonplaceholder.typicode.com/comments"
-  )).json();
+  const data = await (
+    await fetch("https://jsonplaceholder.typicode.com/comments")
+  ).json();
 
   return data;
 }
 
-document.body.append('Open console to see results')
+document.body.append("Open dev tools console to see the results");
