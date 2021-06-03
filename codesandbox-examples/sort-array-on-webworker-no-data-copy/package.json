@@ -6,11 +6,10 @@
     "start": "parcel src/index.html"
   },
   "dependencies": {
-    "@bnaya/objectbuffer": "file:../../",
-    "parcel": "^2.0.0-beta.2"
+    "@bnaya/objectbuffer": "file:../../"
   },
   "devDependencies": {
-    "react-scripts": "^4.0.3"
+    "parcel": "^2.0.0-beta.2"
   },
   "keywords": []
 }
