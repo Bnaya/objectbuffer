@@ -2,6 +2,20 @@
 
 import DemoWorker from "worker-loader!./worker.js";
 import * as objectbufferModule from "@bnaya/objectbuffer";
+import {} from "@bnaya/objectbuffer";
+
+
+function mainThreadSide() {
+
+}
+
+/**
+ * Due to codesandbox limitations,
+ * worker side also runs on the main thread in this example
+ */
+function workerSide() {
+
+}
 
 
 main();
