@@ -1,6 +1,6 @@
 {
   "name": "objectbuffer-comlink-demo-sort-array-on-webworker-no-data-copy",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "objectbuffer is an object like api, that saved into a single arraybuffer.\n\nhttps://github.com/Bnaya/objectbuffer",
   "main": "index.html",
   "scripts": {
@@ -8,11 +8,11 @@
     "build": "parcel build index.html"
   },
   "dependencies": {
-    "@bnaya/objectbuffer": "0.30.1",
-    "comlink": "4.2.0"
+    "comlink": "4.3.1",
+    "@bnaya/objectbuffer": "file:../../"
   },
   "devDependencies": {
-    "parcel-bundler": "^1.6.1"
+    "parcel": "^2.0.0-beta.2"
   },
   "keywords": []
 }
