@@ -1,30 +1,13 @@
 /* eslint-env browser  */
 
-import {
-  createObjectBuffer,
-  getUnderlyingArrayBuffer,
-  unstable_replaceUnderlyingArrayBuffer,
-  loadObjectBuffer,
-} from "@bnaya/objectbuffer";
-
 async function mainThreadSide() {
-  const data = await getData();
-
-  const myObjectBuffer = createObjectBuffer(Math.pow(8, 7), {
-    posts: data,
-  });
-
-  console.log("First post before sort", { ...myObjectBuffer.posts[0] });
-
-  const arrayBuffer = getUnderlyingArrayBuffer(myObjectBuffer);
+  const arrayBuffer = new ArrayBuffer(Math.pow(8, 7));
 
   const resultChannel = new MessageChannel();
 
   resultChannel.port1.addEventListener("message", (messageEvent) => {
     if (messageEvent.data instanceof ArrayBuffer) {
-      unstable_replaceUnderlyingArrayBuffer(myObjectBuffer, messageEvent.data);
-
-      console.log("First post after sort", { ...myObjectBuffer.posts[0] });
+      console.log("here");
     }
   });
 
@@ -50,16 +33,6 @@ function workerSide() {
       const port = ev.data[1];
       const ab = ev.data[0];
 
-      const myObjectBufferInWorker = loadObjectBuffer(ab);
-
-      myObjectBufferInWorker.posts.sort((postA, postB) => {
-        if (postA.body > postB.body) {
-          return 1;
-        } else {
-          return -1;
-        }
-      });
-
       port.postMessage(ab, [ab]);
     }
   });
@@ -69,14 +42,6 @@ workerSide();
 
 function main() {
   mainThreadSide();
-}
-
-async function getData() {
-  const data = await (
-    await fetch("https://jsonplaceholder.typicode.com/comments")
-  ).json();
-
-  return data;
 }
 
 document.querySelector("button").addEventListener("click", () => {
