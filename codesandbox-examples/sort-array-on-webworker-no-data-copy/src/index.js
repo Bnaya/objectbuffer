@@ -18,9 +18,10 @@ async function mainThreadSide() {
 
   const arrayBuffer = getUnderlyingArrayBuffer(myObjectBuffer);
 
-  const resultChannel = new MessageChannel();
+  const requestChannel = new BroadcastChannel("requestChannel");
+  const resultChannel = new BroadcastChannel("resultChannel");
 
-  resultChannel.port1.addEventListener("message", (messageEvent) => {
+  resultChannel.addEventListener("message", (messageEvent) => {
     if (messageEvent.data instanceof ArrayBuffer) {
       unstable_replaceUnderlyingArrayBuffer(myObjectBuffer, messageEvent.data);
 
@@ -28,13 +29,8 @@ async function mainThreadSide() {
     }
   });
 
-  resultChannel.port1.start();
-
   // From this point, the arrayBuffer will be detached
-  postMessage([arrayBuffer, resultChannel.port2], "*", [
-    arrayBuffer,
-    resultChannel.port2,
-  ]);
+  requestChannel.postMessage([arrayBuffer], "*", [arrayBuffer]);
 }
 
 /**
@@ -42,12 +38,11 @@ async function mainThreadSide() {
  * worker side also runs on the main thread in this example
  */
 function workerSide() {
-  addEventListener("message", (ev) => {
-    if (
-      ev.data[1] instanceof MessagePort &&
-      ev.data[0] instanceof ArrayBuffer
-    ) {
-      const port = ev.data[1];
+  const requestChannel = new BroadcastChannel("requestChannel");
+  const resultChannel = new BroadcastChannel("resultChannel");
+
+  requestChannel.addEventListener("message", (ev) => {
+    if (ev.data[0] instanceof ArrayBuffer) {
       const ab = ev.data[0];
 
       const myObjectBufferInWorker = loadObjectBuffer(ab);
@@ -60,7 +55,7 @@ function workerSide() {
         }
       });
 
-      port.postMessage(ab, [ab]);
+      resultChannel.postMessage(ab, [ab]);
     }
   });
 }
