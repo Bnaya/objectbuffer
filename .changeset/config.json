@@ -4,7 +4,7 @@
   "commit": false,
   "linked": [],
   "access": "public",
-  "baseBranch": "develop",
+  "baseBranch": "origin/develop",
   "updateInternalDependencies": "patch",
   "ignore": []
 }
