@@ -1,5 +1,11 @@
 # @bnaya/objectbuffer
 
+## 0.31.2
+
+### Patch Changes
+
+- cd01421: Fix: Avoid using nullish coalescing
+
 ## 0.31.1
 
 ### Patch Changes
