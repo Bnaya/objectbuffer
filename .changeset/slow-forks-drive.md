@@ -1,5 +1,5 @@
 ---
-"@bnaya/objectbuffer": patch
+"@bnaya/objectbuffer": minor
 ---
 
-Setup changesets try 1
+Setup changesets publishing
