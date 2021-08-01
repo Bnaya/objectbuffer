@@ -29,16 +29,15 @@ const initialValue = {
 };
 // ArrayBuffer is created under the hood
 const myObject = createObjectBuffer(
-  {},
   // size in bytes
   1024,
   initialValue
 );
 
-const arrayBuffer = getUnderlyingArrayBuffer(myObject);
-
 myObject.additionalProp = "new Value";
 myObject.arr.push(2);
+
+const arrayBuffer = getUnderlyingArrayBuffer(myObject);
 
 ```
 
