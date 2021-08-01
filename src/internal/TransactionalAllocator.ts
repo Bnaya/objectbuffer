@@ -40,11 +40,18 @@ export class TransactionalAllocator implements FunctionalAllocatorWrapper {
     if ("u8" in optsOrState) {
       this.allocatorState = optsOrState;
     } else {
+      const end =
+        optsOrState.end !== undefined
+          ? optsOrState.end
+          : optsOrState.size !== undefined
+          ? optsOrState.size
+          : 0x1000;
+
       this.allocatorState = allocatorInit(
         {
           size: 0x1000,
           start: MEM_POOL_START,
-          end: optsOrState.end ?? optsOrState.size ?? 0x1000,
+          end,
           align: 8,
           compact: true,
           split: true,
