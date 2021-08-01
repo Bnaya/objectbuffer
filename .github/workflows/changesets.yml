@@ -3,7 +3,7 @@ name: Changesets PR
 on:
   push:
     branches:
-      - integrate-changesets
+      - develop
 
 jobs:
   release:
