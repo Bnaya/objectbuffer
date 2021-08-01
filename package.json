@@ -31,6 +31,7 @@
     "cleanup": "rimraf dist",
     "build": "yarn cleanup; yarn babel-build; yarn build-declarations; rollup -c; echo `git rev-parse HEAD` > COMMIT",
     "prepack": "yarn build",
+    "release": "yarn changeset publish",
     "browser-playground": "webpack-dev-server --mode=development --config playground/webpack.config.js playground/main.js --open",
     "webpack-playground": "webpack-dev-server --mode=development --config playground/webpack.config.js --open",
     "generate-docs": "rimraf -f docs/generated/ && typedoc --readme none --out docs/generated/ src/index.ts",
