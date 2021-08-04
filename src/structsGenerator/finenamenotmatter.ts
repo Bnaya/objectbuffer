@@ -112,17 +112,16 @@ function setAllTemplate(structName: string, manifest: StructManifest) {
     ["structPointer", "number"],
   ];
 
-  const propsArgs = Object.entries(manifest).map(([prop, ctor]): [
-    string,
-    string
-  ] => {
-    const valueType =
-      ctor.name === "BigInt64Array" || ctor.name === "BigUint64Array"
-        ? "bigint"
-        : "number";
+  const propsArgs = Object.entries(manifest).map(
+    ([prop, ctor]): [string, string] => {
+      const valueType =
+        ctor.name === "BigInt64Array" || ctor.name === "BigUint64Array"
+          ? "bigint"
+          : "number";
 
-    return [prop, valueType];
-  });
+      return [prop, valueType];
+    }
+  );
 
   const allArgs = [...args, ...propsArgs];
   const argsAsString = allArgs.map((a) => a.join(": ")).join(", ");

@@ -76,10 +76,12 @@ export class ArrayWrapper
     throw new Error("unsupported enumerate");
   }
 
-  public ownKeys(): PropertyKey[] {
+  public ownKeys() {
     const length = array_length_get(this.carrier.heap, this.entryPointer);
 
-    return [...new Array(length).keys(), "length"];
+    return [...new Array(length).keys(), "length"].map((i) =>
+      typeof i === "number" ? i.toString() : i
+    );
   }
 
   public getOwnPropertyDescriptor(target: Record<string, unknown>, prop: any) {

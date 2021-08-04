@@ -65,13 +65,13 @@ export class ObjectWrapper
     return gotEntries.map((e) => e.key);
   }
 
-  public ownKeys(): PropertyKey[] {
+  public ownKeys() {
     const gotEntries = getObjectPropertiesEntries(
       this.carrier,
       object_pointerToHashMap_get(this.carrier.heap, this.entryPointer)
     );
 
-    return gotEntries.map((e) => e.key);
+    return gotEntries.map((e) => e.key.toString());
   }
 
   public getOwnPropertyDescriptor(
