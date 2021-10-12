@@ -8,7 +8,7 @@ import * as objectbufferModules from "../src";
 import Worker from "worker-loader!./Worker.js";
 
 const ob = objectbufferModules.createObjectBuffer(
-  1024,
+  2048,
   {
     some: {
       nested: [

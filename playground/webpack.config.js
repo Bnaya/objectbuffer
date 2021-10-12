@@ -19,4 +19,10 @@ module.exports = {
     ],
   },
   plugins: [new HtmlWebpackPlugin()],
+  devServer: {
+    headers: {
+      "Cross-Origin-Opener-Policy": "same-origin",
+      "Cross-Origin-Embedder-Policy": "require-corp",
+    },
+  },
 };

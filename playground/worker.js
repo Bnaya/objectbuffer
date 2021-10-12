@@ -3,18 +3,11 @@
 /* eslint-disable no-undef */
 import * as objectbufferModule from "../src";
 
-/**
- * @type {objectbufferModule.ExternalArgs}
- */
-const externalArgs = {
-  arrayAdditionalAllocation: 0,
-};
-
 addEventListener("message", (ev) => {
   let lastValueToFollow = "IM NOT INTERESTING";
 
   if (ev.data instanceof SharedArrayBuffer) {
-    const ob = objectbufferModule.loadObjectBuffer(externalArgs, ev.data);
+    const ob = objectbufferModule.loadObjectBuffer(ev.data);
 
     const lockStatus = objectbufferModule.acquireLockWait(2, ob, 1000);
 
