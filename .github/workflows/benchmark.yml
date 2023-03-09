@@ -8,8 +8,9 @@ jobs:
     name: Run JavaScript benchmark
     runs-on: ubuntu-20.04
     strategy:
+      fail-fast: false
       matrix:
-        node: [14, 16]
+        node: [14, 16, 18]
     steps:
       - uses: actions/checkout@v1
       - uses: actions/setup-node@v1
@@ -43,7 +44,7 @@ jobs:
           name: benchmarkjs, node ${{ matrix.node }}
           tool: "benchmarkjs"
           output-file-path: benchmarks/output.txt
-          github-token: ${{ secrets.PERSONAL_GITHUB_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           auto-push: true
           # Show alert with commit comment on detecting possible performance regression
           alert-threshold: "110%"

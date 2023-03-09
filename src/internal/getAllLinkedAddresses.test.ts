@@ -188,6 +188,7 @@ describe("getAllLinkedAddresses", () => {
         TransactionalAllocator.prototype[funcName] = function wrappedXlocFunc(
           dataSize: number
         ) {
+          // eslint-disable-next-line @typescript-eslint/no-this-alias
           pool = this;
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-expect-error
