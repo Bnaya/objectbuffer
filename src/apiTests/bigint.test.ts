@@ -23,7 +23,7 @@ describe("bigint tests", () => {
     expect(memoryStats(ob).used).toMatchInlineSnapshot(`528`);
 
     expect(ob).toMatchInlineSnapshot(`
-      Object {
+      {
         "bigintNegative": -18446744073709551615n,
         "bigintPositive": 18446744073709551615n,
       }
@@ -48,7 +48,7 @@ describe("bigint tests", () => {
     expect(memoryStats(ob).used).toBe(usedBefore);
 
     expect(ob).toMatchInlineSnapshot(`
-      Object {
+      {
         "bigintNegative": undefined,
         "bigintPositive": undefined,
       }

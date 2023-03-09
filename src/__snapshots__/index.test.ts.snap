@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`getUnderlyingArrayBuffer getUnderlyingArrayBuffer simple 1`] = `
-Array [
+[
   "0:0x00",
   "1:0x00",
   "2:0x00",

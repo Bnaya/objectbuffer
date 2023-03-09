@@ -11,7 +11,7 @@ describe("Store tests - Misc", () => {
     initializeArrayBuffer(arrayBuffer);
     expect(arrayBuffer2HexArray(arrayBuffer.slice(0, 20), true))
       .toMatchInlineSnapshot(`
-      Array [
+      [
         "0:0x00",
         "1:0x00",
         "2:0x00",

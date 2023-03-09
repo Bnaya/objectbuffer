@@ -27,7 +27,7 @@ describe("replaceArrayBufferFlow", () => {
 
     expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`664`);
     expect(objectBuffer).toMatchInlineSnapshot(`
-      Object {
+      {
         "a": 1,
       }
     `);
@@ -56,7 +56,7 @@ describe("replaceArrayBufferFlow", () => {
     objectBuffer.obj1.b = "new value";
 
     expect(obj1Proxy).toMatchInlineSnapshot(`
-      Object {
+      {
         "a": 2,
         "b": "new value",
       }

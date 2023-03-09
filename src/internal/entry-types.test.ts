@@ -5,7 +5,7 @@ import { ENTRY_TYPE } from "./entry-types";
 describe("Test Entry types", () => {
   test("Freeze Entry types", () => {
     expect(ENTRY_TYPE).toMatchInlineSnapshot(`
-      Object {
+      {
         "11": "MAP",
         "12": "SET",
         "13": "DATE",

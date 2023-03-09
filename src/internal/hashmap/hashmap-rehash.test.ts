@@ -111,7 +111,7 @@ describe("hashmap rehash", () => {
     }
     expect(values.map((v) => readString(carrier.heap, v.keyPointer)))
       .toMatchInlineSnapshot(`
-      Array [
+      [
         "a",
         "b",
         "c",
@@ -158,7 +158,7 @@ describe("hashmap rehash", () => {
     memAvailableAfterEachStep.push(carrier.allocator.stats().top);
 
     expect(memAvailableAfterEachStep).toMatchInlineSnapshot(`
-      Array [
+      [
         152,
         272,
         424,

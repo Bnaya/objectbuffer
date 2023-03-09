@@ -113,7 +113,7 @@ describe("LinkedList", () => {
     }
 
     expect(values).toMatchInlineSnapshot(`
-      Array [
+      [
         7,
         6,
         5,
@@ -163,7 +163,7 @@ describe("LinkedList", () => {
 
     expect(regularSetResults).toEqual(values);
     expect(values).toMatchInlineSnapshot(`
-      Array [
+      [
         7,
         5,
       ]
@@ -274,7 +274,7 @@ describe("LinkedList", () => {
 
     expect(regularSetResults).toEqual(values);
     expect(values).toMatchInlineSnapshot(`
-      Array [
+      [
         7,
         6,
         8,
@@ -320,8 +320,8 @@ describe("LinkedList", () => {
     const r = linkedListGetPointersToFree(carrier.heap, linkedListPointer);
 
     expect(r).toMatchInlineSnapshot(`
-      Object {
-        "pointers": Array [
+      {
+        "pointers": [
           64,
           88,
           112,
@@ -329,7 +329,7 @@ describe("LinkedList", () => {
           160,
           184,
         ],
-        "valuePointers": Array [
+        "valuePointers": [
           11,
           10,
           9,
@@ -362,12 +362,12 @@ describe("LinkedList", () => {
     const r = linkedListGetPointersToFree(carrier.heap, linkedListPointer);
 
     expect(r).toMatchInlineSnapshot(`
-      Object {
-        "pointers": Array [
+      {
+        "pointers": [
           64,
           88,
         ],
-        "valuePointers": Array [],
+        "valuePointers": [],
       }
     `);
 

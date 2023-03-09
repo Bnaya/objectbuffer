@@ -22,7 +22,7 @@ describe("bad values tests", () => {
     expect(memoryStats(ob).used).toMatchInlineSnapshot(`464`);
 
     expect(ob).toMatchInlineSnapshot(`
-      Object {
+      {
         "imabadFunction": undefined,
         "imabadSymbol": undefined,
       }

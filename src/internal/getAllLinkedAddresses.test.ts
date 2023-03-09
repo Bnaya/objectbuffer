@@ -209,7 +209,7 @@ describe("getAllLinkedAddresses", () => {
       );
 
       expect(memoryStats(objectBuffer)).toMatchInlineSnapshot(`
-        Object {
+        {
           "available": 160,
           "top": 1888,
           "total": 2048,
@@ -242,7 +242,7 @@ describe("getAllLinkedAddresses", () => {
       });
 
       expect(memoryStats(objectBuffer)).toMatchInlineSnapshot(`
-        Object {
+        {
           "available": 2000,
           "top": 48,
           "total": 2048,

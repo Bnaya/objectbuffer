@@ -17,7 +17,7 @@ describe("object tests", () => {
     delete objectBuffer.foo;
 
     expect(memoryStats(objectBuffer).available).toBe(sizeBeforeSet);
-    expect(objectBuffer).toMatchInlineSnapshot(`Object {}`);
+    expect(objectBuffer).toMatchInlineSnapshot(`{}`);
   });
 
   test("Basic object with values", () => {
@@ -37,7 +37,7 @@ describe("object tests", () => {
     expect(memoryStats(objectBuffer).available).toMatchInlineSnapshot(`80`);
     expect(input).toEqual(objectBuffer);
     expect(objectBuffer).toMatchInlineSnapshot(`
-      Object {
+      {
         "a": 1,
         "b": true,
         "bigintNegative": -18446744073709551615n,
@@ -45,7 +45,7 @@ describe("object tests", () => {
         "c": false,
         "d": null,
         "e": undefined,
-        "foo": Object {
+        "foo": {
           "a": 1,
           "b": true,
           "c": false,
@@ -80,13 +80,13 @@ describe("object tests", () => {
     objectBuffer.foo.circular = "severe the circularity";
 
     expect(objectBuffer).toMatchInlineSnapshot(`
-      Object {
+      {
         "a": 1,
         "b": true,
         "c": false,
         "d": null,
         "e": undefined,
-        "foo": Object {
+        "foo": {
           "a": 1,
           "b": true,
           "c": false,

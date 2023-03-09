@@ -20,7 +20,7 @@ describe("arraySplice tests", () => {
     const removedFromPlain = plainJSArray.splice(2, 3, "a", "b", "c");
 
     expect(arrayWrapper).toMatchInlineSnapshot(`
-      Array [
+      [
         1,
         2,
         "a",
@@ -34,7 +34,7 @@ describe("arraySplice tests", () => {
       ]
     `);
     expect(plainJSArray).toMatchInlineSnapshot(`
-      Array [
+      [
         1,
         2,
         "a",
@@ -51,14 +51,14 @@ describe("arraySplice tests", () => {
     expect(plainJSArray).toEqual([...arrayWrapper]);
 
     expect(removed).toMatchInlineSnapshot(`
-      Array [
+      [
         3,
         4,
         5,
       ]
     `);
     expect(removedFromPlain).toMatchInlineSnapshot(`
-      Array [
+      [
         3,
         4,
         5,
@@ -84,7 +84,7 @@ describe("arraySplice tests", () => {
     plainJSArray.splice(2, 3);
 
     expect(arrayWrapper).toMatchInlineSnapshot(`
-      Array [
+      [
         1,
         2,
         6,
@@ -95,7 +95,7 @@ describe("arraySplice tests", () => {
       ]
     `);
     expect(plainJSArray).toMatchInlineSnapshot(`
-      Array [
+      [
         1,
         2,
         6,
@@ -125,7 +125,7 @@ describe("arraySplice tests", () => {
     plainJSArray.splice(4, 0, "a", "b");
 
     expect(arrayWrapper).toMatchInlineSnapshot(`
-      Array [
+      [
         1,
         2,
         3,
@@ -141,7 +141,7 @@ describe("arraySplice tests", () => {
       ]
     `);
     expect(plainJSArray).toMatchInlineSnapshot(`
-      Array [
+      [
         1,
         2,
         3,
@@ -178,7 +178,7 @@ describe("arraySplice tests", () => {
     expect(arrayWrapper.length).toMatchInlineSnapshot(`12`);
 
     expect(arrayWrapper).toMatchInlineSnapshot(`
-      Array [
+      [
         1,
         2,
         "a",
@@ -194,7 +194,7 @@ describe("arraySplice tests", () => {
       ]
     `);
     expect(plainJSArray).toMatchInlineSnapshot(`
-      Array [
+      [
         1,
         2,
         "a",
@@ -213,13 +213,13 @@ describe("arraySplice tests", () => {
     expect(plainJSArray).toEqual([...arrayWrapper]);
 
     expect(removed).toMatchInlineSnapshot(`
-      Array [
+      [
         3,
         4,
       ]
     `);
     expect(removedFromPlain).toMatchInlineSnapshot(`
-      Array [
+      [
         3,
         4,
       ]
@@ -249,7 +249,7 @@ describe("arraySplice tests", () => {
     expect(plainJSArray.length).toMatchInlineSnapshot(`8`);
 
     expect(arrayWrapper).toMatchInlineSnapshot(`
-      Array [
+      [
         1,
         2,
         "a",
@@ -261,7 +261,7 @@ describe("arraySplice tests", () => {
       ]
     `);
     expect(plainJSArray).toMatchInlineSnapshot(`
-      Array [
+      [
         1,
         2,
         "a",
@@ -276,7 +276,7 @@ describe("arraySplice tests", () => {
     expect(plainJSArray).toEqual([...arrayWrapper]);
 
     expect(removed).toMatchInlineSnapshot(`
-      Array [
+      [
         3,
         4,
         5,
@@ -286,7 +286,7 @@ describe("arraySplice tests", () => {
       ]
     `);
     expect(removedFromPlain).toMatchInlineSnapshot(`
-      Array [
+      [
         3,
         4,
         5,
@@ -322,7 +322,7 @@ describe("arraySplice tests", () => {
     expect(plainJSArray.length).toMatchInlineSnapshot(`12`);
 
     expect(arrayWrapper).toMatchInlineSnapshot(`
-      Array [
+      [
         1,
         2,
         3,
@@ -338,7 +338,7 @@ describe("arraySplice tests", () => {
       ]
     `);
     expect(plainJSArray).toMatchInlineSnapshot(`
-      Array [
+      [
         1,
         2,
         3,
@@ -356,8 +356,8 @@ describe("arraySplice tests", () => {
 
     expect(plainJSArray).toEqual([...arrayWrapper]);
 
-    expect(removed).toMatchInlineSnapshot(`Array []`);
-    expect(removedFromPlain).toMatchInlineSnapshot(`Array []`);
+    expect(removed).toMatchInlineSnapshot(`[]`);
+    expect(removedFromPlain).toMatchInlineSnapshot(`[]`);
 
     expect(removedFromPlain).toEqual([...removed]);
   });
@@ -381,7 +381,7 @@ describe("arraySplice tests", () => {
     expect(plainJSArray.length).toMatchInlineSnapshot(`4`);
 
     expect(arrayWrapper).toMatchInlineSnapshot(`
-      Array [
+      [
         1,
         2,
         "a",
@@ -389,7 +389,7 @@ describe("arraySplice tests", () => {
       ]
     `);
     expect(plainJSArray).toMatchInlineSnapshot(`
-      Array [
+      [
         1,
         2,
         "a",
@@ -400,7 +400,7 @@ describe("arraySplice tests", () => {
     expect(plainJSArray).toEqual([...arrayWrapper]);
 
     expect(removed).toMatchInlineSnapshot(`
-      Array [
+      [
         3,
         4,
         5,
@@ -412,7 +412,7 @@ describe("arraySplice tests", () => {
       ]
     `);
     expect(removedFromPlain).toMatchInlineSnapshot(`
-      Array [
+      [
         3,
         4,
         5,
@@ -446,7 +446,7 @@ describe("arraySplice tests", () => {
     expect(plainJSArray.length).toMatchInlineSnapshot(`11`);
 
     expect(arrayWrapper).toMatchInlineSnapshot(`
-      Array [
+      [
         1,
         2,
         3,
@@ -461,7 +461,7 @@ describe("arraySplice tests", () => {
       ]
     `);
     expect(plainJSArray).toMatchInlineSnapshot(`
-      Array [
+      [
         1,
         2,
         3,
@@ -479,12 +479,12 @@ describe("arraySplice tests", () => {
     expect(plainJSArray).toEqual([...arrayWrapper]);
 
     expect(removed).toMatchInlineSnapshot(`
-      Array [
+      [
         7,
       ]
     `);
     expect(removedFromPlain).toMatchInlineSnapshot(`
-      Array [
+      [
         7,
       ]
     `);
@@ -511,7 +511,7 @@ describe("arraySplice tests", () => {
     expect(plainJSArray.length).toMatchInlineSnapshot(`12`);
 
     expect(arrayWrapper).toMatchInlineSnapshot(`
-      Array [
+      [
         1,
         2,
         3,
@@ -527,7 +527,7 @@ describe("arraySplice tests", () => {
       ]
     `);
     expect(plainJSArray).toMatchInlineSnapshot(`
-      Array [
+      [
         1,
         2,
         3,
@@ -545,8 +545,8 @@ describe("arraySplice tests", () => {
 
     expect(plainJSArray).toEqual([...arrayWrapper]);
 
-    expect(removed).toMatchInlineSnapshot(`Array []`);
-    expect(removedFromPlain).toMatchInlineSnapshot(`Array []`);
+    expect(removed).toMatchInlineSnapshot(`[]`);
+    expect(removedFromPlain).toMatchInlineSnapshot(`[]`);
 
     expect(removedFromPlain).toEqual([...removed]);
   });
@@ -566,7 +566,7 @@ describe("arraySplice tests", () => {
     expect(removedFromPlain).toEqual([...removed]);
 
     expect(arrayWrapper).toMatchInlineSnapshot(`
-      Array [
+      [
         1,
         2,
         3,
@@ -574,6 +574,6 @@ describe("arraySplice tests", () => {
         "b",
       ]
     `);
-    expect(removed).toMatchInlineSnapshot(`Array []`);
+    expect(removed).toMatchInlineSnapshot(`[]`);
   });
 });

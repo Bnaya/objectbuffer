@@ -15,7 +15,7 @@ describe("SharedArrayBuffer tests", () => {
     objectBuffer.o = undefined;
     expect(memoryStats(objectBuffer).used).toMatchInlineSnapshot(`328`);
     expect(objectBuffer).toMatchInlineSnapshot(`
-      Object {
+      {
         "o": undefined,
       }
     `);
@@ -47,9 +47,9 @@ describe("SharedArrayBuffer tests", () => {
     objectBuffer.arr = [{ bar: 666 }];
 
     expect(objectBuffer).toMatchInlineSnapshot(`
-      Object {
-        "arr": Array [
-          Object {
+      {
+        "arr": [
+          {
             "bar": 666,
           },
         ],
@@ -93,24 +93,24 @@ describe("SharedArrayBuffer tests", () => {
 
     // reclaim(objectBuffer.arr);
     expect(prev2).toMatchInlineSnapshot(`
-      Object {
-        "a": Object {
-          "v": Array [
+      {
+        "a": {
+          "v": [
             1,
           ],
         },
       }
     `);
     expect(prev3).toMatchInlineSnapshot(`
-      Object {
-        "v": Array [
+      {
+        "v": [
           1,
         ],
       }
     `);
 
     expect(objectBuffer).toMatchInlineSnapshot(`
-      Object {
+      {
         "o": undefined,
       }
     `);

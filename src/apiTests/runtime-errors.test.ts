@@ -25,7 +25,7 @@ describe("Runtime errors", () => {
     expect(freeSpaceLeft).toMatchInlineSnapshot(`0`);
 
     expect(objectBuffer).toMatchInlineSnapshot(`
-      Object {
+      {
         "value": "first value 123",
       }
     `);
