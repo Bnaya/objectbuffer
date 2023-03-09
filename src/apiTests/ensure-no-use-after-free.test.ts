@@ -34,24 +34,24 @@ describe("no user after free tests", () => {
 
     // reclaim(objectBuffer.arr);
     expect(prev2).toMatchInlineSnapshot(`
-      Object {
-        "a": Object {
-          "v": Array [
+      {
+        "a": {
+          "v": [
             1,
           ],
         },
       }
     `);
     expect(prev3).toMatchInlineSnapshot(`
-      Object {
-        "v": Array [
+      {
+        "v": [
           1,
         ],
       }
     `);
 
     expect(objectBuffer).toMatchInlineSnapshot(`
-      Object {
+      {
         "o": undefined,
       }
     `);
@@ -78,14 +78,14 @@ describe("no user after free tests", () => {
     ob.o = undefined;
 
     expect(a1).toMatchInlineSnapshot(`
-      Array [
+      [
         1,
         2,
         3,
       ]
     `);
     expect(a2).toMatchInlineSnapshot(`
-      Array [
+      [
         4,
         5,
         6,
@@ -93,7 +93,7 @@ describe("no user after free tests", () => {
     `);
 
     expect(ob).toMatchInlineSnapshot(`
-      Object {
+      {
         "o": undefined,
         "str": "str1",
       }

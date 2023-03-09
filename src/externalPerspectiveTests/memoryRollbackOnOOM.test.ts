@@ -24,7 +24,7 @@ describe("memory OOM transactions", () => {
     expect(memoryStats(objectBuffer).used).toBe(initialSpaceTaken);
 
     expect(objectBuffer).toMatchInlineSnapshot(`
-      Object {
+      {
         "foo": null,
       }
     `);
@@ -32,8 +32,8 @@ describe("memory OOM transactions", () => {
     objectBuffer.bar = [1, "a"];
 
     expect(objectBuffer).toMatchInlineSnapshot(`
-      Object {
-        "bar": Array [
+      {
+        "bar": [
           1,
           "a",
         ],
@@ -58,8 +58,8 @@ describe("memory OOM transactions", () => {
     expect(memoryStats(objectBuffer).available).toBe(initialFreeSpace);
 
     expect(objectBuffer).toMatchInlineSnapshot(`
-      Object {
-        "arr": Array [
+      {
+        "arr": [
           1,
         ],
       }
@@ -67,8 +67,8 @@ describe("memory OOM transactions", () => {
 
     objectBuffer.arr[0] = 2;
     expect(objectBuffer).toMatchInlineSnapshot(`
-      Object {
-        "arr": Array [
+      {
+        "arr": [
           2,
         ],
       }
@@ -105,8 +105,8 @@ describe("memory OOM transactions", () => {
     expect(memoryStats(objectBuffer).available).toBe(initialFreeSpace);
 
     expect(objectBuffer).toMatchInlineSnapshot(`
-      Object {
-        "arr": Array [
+      {
+        "arr": [
           1,
         ],
       }
@@ -114,8 +114,8 @@ describe("memory OOM transactions", () => {
 
     objectBuffer.arr.splice(0, 0, "a");
     expect(objectBuffer).toMatchInlineSnapshot(`
-      Object {
-        "arr": Array [
+      {
+        "arr": [
           "a",
           1,
         ],

@@ -11,7 +11,7 @@ describe("memoryStats test", () => {
     });
 
     expect(memoryStats(objectBuffer)).toMatchInlineSnapshot(`
-      Object {
+      {
         "available": 64,
         "top": 960,
         "total": 1024,
@@ -27,7 +27,7 @@ describe("memoryStats test", () => {
     });
 
     expect(memoryStats(objectBuffer)).toMatchInlineSnapshot(`
-      Object {
+      {
         "available": 1088,
         "top": 960,
         "total": 2048,
@@ -37,7 +37,7 @@ describe("memoryStats test", () => {
 
     unstable_resizeObjectBuffer(objectBuffer, 1024);
     expect(memoryStats(objectBuffer)).toMatchInlineSnapshot(`
-      Object {
+      {
         "available": 64,
         "top": 960,
         "total": 1024,
@@ -47,7 +47,7 @@ describe("memoryStats test", () => {
 
     unstable_resizeObjectBuffer(objectBuffer, 960);
     expect(memoryStats(objectBuffer)).toMatchInlineSnapshot(`
-      Object {
+      {
         "available": 0,
         "top": 960,
         "total": 960,
@@ -57,7 +57,7 @@ describe("memoryStats test", () => {
 
     unstable_resizeObjectBuffer(objectBuffer, 2048);
     expect(memoryStats(objectBuffer)).toMatchInlineSnapshot(`
-      Object {
+      {
         "available": 1088,
         "top": 960,
         "total": 2048,

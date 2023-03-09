@@ -34,8 +34,8 @@ describe("createMemoryGraph. snapshot graph and ensure memory", () => {
     jestExpectNoUseAfterFree(ob);
 
     expect(nodesWithInternalMismatchRefCount(graph)).toMatchInlineSnapshot(`
-      Array [
-        Object {
+      [
+        {
           "pointer": 64,
           "refCount": 2,
           "size": 16,

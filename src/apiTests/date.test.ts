@@ -13,7 +13,7 @@ describe("Date test", () => {
     const usedBefore = memoryStats(objectBuffer).used;
 
     expect(objectBuffer).toMatchInlineSnapshot(`
-      Object {
+      {
         "myDate": "2000-01-01T00:00:00.000Z",
       }
     `);
@@ -21,7 +21,7 @@ describe("Date test", () => {
     objectBuffer.myDate.setDate(10);
 
     expect(objectBuffer).toMatchInlineSnapshot(`
-      Object {
+      {
         "myDate": "2000-01-10T00:00:00.000Z",
       }
     `);
@@ -29,7 +29,7 @@ describe("Date test", () => {
     objectBuffer.myDate.setMonth(3);
 
     expect(objectBuffer).toMatchInlineSnapshot(`
-      Object {
+      {
         "myDate": "2000-04-10T00:00:00.000Z",
       }
     `);

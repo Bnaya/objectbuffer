@@ -14,7 +14,7 @@ describe("arrayWrapper tests", () => {
       ).arrayToSave;
 
       expect(arrayWrapper).toMatchInlineSnapshot(`
-        Array [
+        [
           "a",
           "b",
           1,
@@ -48,16 +48,16 @@ describe("arrayWrapper tests", () => {
       ).arrayToSave;
 
       expect([...arrayWrapper.entries()]).toMatchInlineSnapshot(`
-        Array [
-          Array [
+        [
+          [
             0,
             "a",
           ],
-          Array [
+          [
             1,
             "b",
           ],
-          Array [
+          [
             2,
             1,
           ],
@@ -77,14 +77,14 @@ describe("arrayWrapper tests", () => {
       ).arrayToSave;
 
       expect([...arrayWrapper.values()]).toMatchInlineSnapshot(`
-        Array [
+        [
           "a",
           "b",
           1,
         ]
       `);
       expect([...arrayWrapper]).toMatchInlineSnapshot(`
-        Array [
+        [
           "a",
           "b",
           1,
@@ -106,7 +106,7 @@ describe("arrayWrapper tests", () => {
       arrayWrapper[1] = "new value";
 
       expect(arrayWrapper).toMatchInlineSnapshot(`
-        Array [
+        [
           "a",
           "new value",
           1,
@@ -126,7 +126,7 @@ describe("arrayWrapper tests", () => {
       arrayWrapper[10] = "new value";
 
       expect(arrayWrapper).toMatchInlineSnapshot(`
-        Array [
+        [
           "a",
           "b",
           1,
@@ -154,7 +154,7 @@ describe("arrayWrapper tests", () => {
       arrayWrapper[10] = "new value";
 
       expect(arrayWrapper).toMatchInlineSnapshot(`
-        Array [
+        [
           "a",
           "b",
           1,
@@ -184,7 +184,7 @@ describe("arrayWrapper tests", () => {
     arrayWrapper.sort();
 
     expect(arrayWrapper).toMatchInlineSnapshot(`
-      Array [
+      [
         1,
         10,
         2,
@@ -221,23 +221,23 @@ describe("arrayWrapper tests", () => {
     });
 
     expect(arrayWrapper).toMatchInlineSnapshot(`
-      Array [
-        Object {
+      [
+        {
           "value": 1,
         },
-        Object {
+        {
           "value": 2,
         },
-        Object {
+        {
           "value": 3,
         },
-        Object {
+        {
           "value": 6,
         },
-        Object {
+        {
           "value": 10,
         },
-        Object {
+        {
           "value": 77,
         },
       ]
@@ -262,7 +262,7 @@ describe("arrayWrapper tests", () => {
     expect(r).toBe(arrayWrapper);
 
     expect(arrayWrapper).toMatchInlineSnapshot(`
-      Array [
+      [
         7,
         6,
         5,
@@ -287,7 +287,7 @@ describe("arrayWrapper tests", () => {
 
     arrayWrapper.length = 10;
     expect(arrayWrapper).toMatchInlineSnapshot(`
-      Array [
+      [
         1,
         2,
         3,
@@ -303,7 +303,7 @@ describe("arrayWrapper tests", () => {
 
     arrayWrapper.length = 1;
     expect(arrayWrapper).toMatchInlineSnapshot(`
-      Array [
+      [
         1,
       ]
     `);

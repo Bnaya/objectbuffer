@@ -14,27 +14,27 @@ describe("equality.test tests. make sure our cache of proxies works", () => {
     objectBuffer.obj2 = objectBuffer.obj;
 
     expect(objectBuffer).toMatchInlineSnapshot(`
-          Object {
-            "arr": Array [
-              1,
-              2,
-              3,
-              4,
-            ],
-            "arr2": Array [
-              1,
-              2,
-              3,
-              4,
-            ],
-            "obj": Object {
-              "a": 1,
-            },
-            "obj2": Object {
-              "a": 1,
-            },
-          }
-      `);
+      {
+        "arr": [
+          1,
+          2,
+          3,
+          4,
+        ],
+        "arr2": [
+          1,
+          2,
+          3,
+          4,
+        ],
+        "obj": {
+          "a": 1,
+        },
+        "obj2": {
+          "a": 1,
+        },
+      }
+    `);
 
     expect(objectBuffer.arr2).toBe(objectBuffer.arr2);
     expect(objectBuffer.arr2).toBe(objectBuffer.arr);

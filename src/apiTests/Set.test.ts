@@ -91,18 +91,18 @@ describe("Set tests", () => {
       }
     `);
     expect([...objectBuffer.foo.keys()]).toMatchInlineSnapshot(`
-      Array [
+      [
         "a",
         "b",
       ]
     `);
 
     expect([...objectBuffer.foo.values()]).toMatchInlineSnapshot(`
-        Array [
-          "a",
-          "b",
-        ]
-      `);
+      [
+        "a",
+        "b",
+      ]
+    `);
   });
 
   // bug with deletion during iteration
@@ -140,12 +140,12 @@ describe("Set tests", () => {
     expect(thisArgs.every((v) => v === objectBuffer.foo)).toBe(true);
 
     expect(dump).toMatchInlineSnapshot(`
-      Array [
-        Object {
+      [
+        {
           "key": "a",
           "value": "a",
         },
-        Object {
+        {
           "key": "b",
           "value": "b",
         },

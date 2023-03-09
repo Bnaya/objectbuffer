@@ -25,20 +25,18 @@ describe("next gen", () => {
   });
 
   test("Before any allocation", () => {
-    expect(listFreeBlocks(allocatorState)).toMatchInlineSnapshot(`Array []`);
-    expect(listAllocatedBlocks(allocatorState)).toMatchInlineSnapshot(
-      `Array []`
-    );
+    expect(listFreeBlocks(allocatorState)).toMatchInlineSnapshot(`[]`);
+    expect(listAllocatedBlocks(allocatorState)).toMatchInlineSnapshot(`[]`);
     expect(stats(allocatorState)).toMatchInlineSnapshot(`
-      Object {
+      {
         "available": 480,
-        "free": Object {
+        "free": {
           "count": 0,
           "size": 0,
         },
         "top": 32,
         "total": 512,
-        "used": Object {
+        "used": {
           "count": 0,
           "size": 0,
         },
@@ -50,34 +48,34 @@ describe("next gen", () => {
       const allocatedPointer = malloc(allocatorState, 8);
       expect(allocatedPointer).toMatchInlineSnapshot(`48`);
 
-      expect(listFreeBlocks(allocatorState)).toMatchInlineSnapshot(`Array []`);
+      expect(listFreeBlocks(allocatorState)).toMatchInlineSnapshot(`[]`);
       expect(listAllocatedBlocks(allocatorState)).toMatchInlineSnapshot(`
-      Array [
-        Object {
-          "blockPointer": 32,
-          "dataPointer": 48,
-          "dataSize": 8,
-          "next": 0,
-          "prev": 0,
-          "size": 24,
-        },
-      ]
-    `);
+        [
+          {
+            "blockPointer": 32,
+            "dataPointer": 48,
+            "dataSize": 8,
+            "next": 0,
+            "prev": 0,
+            "size": 24,
+          },
+        ]
+      `);
       expect(stats(allocatorState)).toMatchInlineSnapshot(`
-      Object {
-        "available": 456,
-        "free": Object {
-          "count": 0,
-          "size": 0,
-        },
-        "top": 56,
-        "total": 512,
-        "used": Object {
-          "count": 1,
-          "size": 24,
-        },
-      }
-    `);
+        {
+          "available": 456,
+          "free": {
+            "count": 0,
+            "size": 0,
+          },
+          "top": 56,
+          "total": 512,
+          "used": {
+            "count": 1,
+            "size": 24,
+          },
+        }
+      `);
     });
 
     test("Allocate 2 blocks and free the first one", () => {
@@ -89,25 +87,25 @@ describe("next gen", () => {
       expect(listFreeBlocks(allocatorState)).toHaveLength(0);
       expect(listAllocatedBlocks(allocatorState)).toHaveLength(2);
       expect(listAllocatedBlocks(allocatorState)).toMatchInlineSnapshot(`
-      Array [
-        Object {
-          "blockPointer": 56,
-          "dataPointer": 72,
-          "dataSize": 16,
-          "next": 32,
-          "prev": 0,
-          "size": 32,
-        },
-        Object {
-          "blockPointer": 32,
-          "dataPointer": 48,
-          "dataSize": 8,
-          "next": 0,
-          "prev": 56,
-          "size": 24,
-        },
-      ]
-    `);
+        [
+          {
+            "blockPointer": 56,
+            "dataPointer": 72,
+            "dataSize": 16,
+            "next": 32,
+            "prev": 0,
+            "size": 32,
+          },
+          {
+            "blockPointer": 32,
+            "dataPointer": 48,
+            "dataSize": 8,
+            "next": 0,
+            "prev": 56,
+            "size": 24,
+          },
+        ]
+      `);
       const statsBeforeFree = stats(allocatorState);
       expect(statsBeforeFree);
 
@@ -120,45 +118,45 @@ describe("next gen", () => {
       expect(statsAfterFree.top).toBe(statsBeforeFree.top);
 
       expect(statsAfterFree).toMatchInlineSnapshot(`
-      Object {
-        "available": 448,
-        "free": Object {
-          "count": 1,
-          "size": 24,
-        },
-        "top": 88,
-        "total": 512,
-        "used": Object {
-          "count": 1,
-          "size": 32,
-        },
-      }
-    `);
+        {
+          "available": 448,
+          "free": {
+            "count": 1,
+            "size": 24,
+          },
+          "top": 88,
+          "total": 512,
+          "used": {
+            "count": 1,
+            "size": 32,
+          },
+        }
+      `);
 
       expect(listFreeBlocks(allocatorState)).toMatchInlineSnapshot(`
-      Array [
-        Object {
-          "blockPointer": 32,
-          "dataPointer": 48,
-          "dataSize": 8,
-          "next": 0,
-          "prev": 0,
-          "size": 24,
-        },
-      ]
-    `);
+        [
+          {
+            "blockPointer": 32,
+            "dataPointer": 48,
+            "dataSize": 8,
+            "next": 0,
+            "prev": 0,
+            "size": 24,
+          },
+        ]
+      `);
       expect(listAllocatedBlocks(allocatorState)).toMatchInlineSnapshot(`
-      Array [
-        Object {
-          "blockPointer": 56,
-          "dataPointer": 72,
-          "dataSize": 16,
-          "next": 0,
-          "prev": 0,
-          "size": 32,
-        },
-      ]
-    `);
+        [
+          {
+            "blockPointer": 56,
+            "dataPointer": 72,
+            "dataSize": 16,
+            "next": 0,
+            "prev": 0,
+            "size": 32,
+          },
+        ]
+      `);
     });
 
     test("Allocate 3 blocks, free the 2nd block", () => {
@@ -173,53 +171,53 @@ describe("next gen", () => {
       free(allocatorState, allocatedPointer2);
 
       expect(stats(allocatorState)).toMatchInlineSnapshot(`
-      Object {
-        "available": 432,
-        "free": Object {
-          "count": 1,
-          "size": 24,
-        },
-        "top": 104,
-        "total": 512,
-        "used": Object {
-          "count": 2,
-          "size": 48,
-        },
-      }
-    `);
+        {
+          "available": 432,
+          "free": {
+            "count": 1,
+            "size": 24,
+          },
+          "top": 104,
+          "total": 512,
+          "used": {
+            "count": 2,
+            "size": 48,
+          },
+        }
+      `);
 
       expect(listFreeBlocks(allocatorState)).toMatchInlineSnapshot(`
-      Array [
-        Object {
-          "blockPointer": 56,
-          "dataPointer": 72,
-          "dataSize": 8,
-          "next": 0,
-          "prev": 0,
-          "size": 24,
-        },
-      ]
-    `);
+        [
+          {
+            "blockPointer": 56,
+            "dataPointer": 72,
+            "dataSize": 8,
+            "next": 0,
+            "prev": 0,
+            "size": 24,
+          },
+        ]
+      `);
       expect(listAllocatedBlocks(allocatorState)).toMatchInlineSnapshot(`
-      Array [
-        Object {
-          "blockPointer": 80,
-          "dataPointer": 96,
-          "dataSize": 8,
-          "next": 32,
-          "prev": 0,
-          "size": 24,
-        },
-        Object {
-          "blockPointer": 32,
-          "dataPointer": 48,
-          "dataSize": 8,
-          "next": 0,
-          "prev": 80,
-          "size": 24,
-        },
-      ]
-    `);
+        [
+          {
+            "blockPointer": 80,
+            "dataPointer": 96,
+            "dataSize": 8,
+            "next": 32,
+            "prev": 0,
+            "size": 24,
+          },
+          {
+            "blockPointer": 32,
+            "dataPointer": 48,
+            "dataSize": 8,
+            "next": 0,
+            "prev": 80,
+            "size": 24,
+          },
+        ]
+      `);
     });
 
     test("Allocate 3 blocks, free the 1st block", () => {
@@ -234,53 +232,53 @@ describe("next gen", () => {
       free(allocatorState, allocatedPointer1);
 
       expect(stats(allocatorState)).toMatchInlineSnapshot(`
-      Object {
-        "available": 432,
-        "free": Object {
-          "count": 1,
-          "size": 24,
-        },
-        "top": 104,
-        "total": 512,
-        "used": Object {
-          "count": 2,
-          "size": 48,
-        },
-      }
-    `);
+        {
+          "available": 432,
+          "free": {
+            "count": 1,
+            "size": 24,
+          },
+          "top": 104,
+          "total": 512,
+          "used": {
+            "count": 2,
+            "size": 48,
+          },
+        }
+      `);
 
       expect(listFreeBlocks(allocatorState)).toMatchInlineSnapshot(`
-      Array [
-        Object {
-          "blockPointer": 32,
-          "dataPointer": 48,
-          "dataSize": 8,
-          "next": 0,
-          "prev": 0,
-          "size": 24,
-        },
-      ]
-    `);
+        [
+          {
+            "blockPointer": 32,
+            "dataPointer": 48,
+            "dataSize": 8,
+            "next": 0,
+            "prev": 0,
+            "size": 24,
+          },
+        ]
+      `);
       expect(listAllocatedBlocks(allocatorState)).toMatchInlineSnapshot(`
-      Array [
-        Object {
-          "blockPointer": 80,
-          "dataPointer": 96,
-          "dataSize": 8,
-          "next": 56,
-          "prev": 0,
-          "size": 24,
-        },
-        Object {
-          "blockPointer": 56,
-          "dataPointer": 72,
-          "dataSize": 8,
-          "next": 0,
-          "prev": 80,
-          "size": 24,
-        },
-      ]
-    `);
+        [
+          {
+            "blockPointer": 80,
+            "dataPointer": 96,
+            "dataSize": 8,
+            "next": 56,
+            "prev": 0,
+            "size": 24,
+          },
+          {
+            "blockPointer": 56,
+            "dataPointer": 72,
+            "dataSize": 8,
+            "next": 0,
+            "prev": 80,
+            "size": 24,
+          },
+        ]
+      `);
     });
 
     test("Allocate 3 blocks, free the 3rd block", () => {
@@ -301,41 +299,41 @@ describe("next gen", () => {
       expect(listFreeBlocks(allocatorState)).toHaveLength(0);
 
       expect(stats(allocatorState)).toMatchInlineSnapshot(`
-      Object {
-        "available": 432,
-        "free": Object {
-          "count": 0,
-          "size": 0,
-        },
-        "top": 80,
-        "total": 512,
-        "used": Object {
-          "count": 2,
-          "size": 48,
-        },
-      }
-    `);
+        {
+          "available": 432,
+          "free": {
+            "count": 0,
+            "size": 0,
+          },
+          "top": 80,
+          "total": 512,
+          "used": {
+            "count": 2,
+            "size": 48,
+          },
+        }
+      `);
       expect(listFreeBlocks(allocatorState)).toHaveLength(0);
       expect(listAllocatedBlocks(allocatorState)).toMatchInlineSnapshot(`
-      Array [
-        Object {
-          "blockPointer": 56,
-          "dataPointer": 72,
-          "dataSize": 8,
-          "next": 32,
-          "prev": 0,
-          "size": 24,
-        },
-        Object {
-          "blockPointer": 32,
-          "dataPointer": 48,
-          "dataSize": 8,
-          "next": 0,
-          "prev": 56,
-          "size": 24,
-        },
-      ]
-    `);
+        [
+          {
+            "blockPointer": 56,
+            "dataPointer": 72,
+            "dataSize": 8,
+            "next": 32,
+            "prev": 0,
+            "size": 24,
+          },
+          {
+            "blockPointer": 32,
+            "dataPointer": 48,
+            "dataSize": 8,
+            "next": 0,
+            "prev": 56,
+            "size": 24,
+          },
+        ]
+      `);
     });
   });
 
@@ -358,15 +356,15 @@ describe("next gen", () => {
       expect(statsAfterFree.top).toBe(statsBeforeFree.top);
 
       expect(stats(allocatorState)).toMatchInlineSnapshot(`
-        Object {
+        {
           "available": 432,
-          "free": Object {
+          "free": {
             "count": 1,
             "size": 24,
           },
           "top": 104,
           "total": 512,
-          "used": Object {
+          "used": {
             "count": 2,
             "size": 48,
           },
@@ -377,15 +375,15 @@ describe("next gen", () => {
       expect(blockThatShouldComeFromReuse).toBe(allocatedPointer2);
 
       expect(stats(allocatorState)).toMatchInlineSnapshot(`
-        Object {
+        {
           "available": 408,
-          "free": Object {
+          "free": {
             "count": 0,
             "size": 0,
           },
           "top": 104,
           "total": 512,
-          "used": Object {
+          "used": {
             "count": 3,
             "size": 72,
           },
@@ -419,8 +417,8 @@ describe("next gen", () => {
       expect(listAllocatedBlocks(allocatorState)).toHaveLength(9);
 
       expect(listAllocatedBlocks(allocatorState)).toMatchInlineSnapshot(`
-        Array [
-          Object {
+        [
+          {
             "blockPointer": 128,
             "dataPointer": 144,
             "dataSize": 8,
@@ -428,7 +426,7 @@ describe("next gen", () => {
             "prev": 0,
             "size": 24,
           },
-          Object {
+          {
             "blockPointer": 80,
             "dataPointer": 96,
             "dataSize": 8,
@@ -436,7 +434,7 @@ describe("next gen", () => {
             "prev": 128,
             "size": 24,
           },
-          Object {
+          {
             "blockPointer": 32,
             "dataPointer": 48,
             "dataSize": 8,
@@ -444,7 +442,7 @@ describe("next gen", () => {
             "prev": 80,
             "size": 24,
           },
-          Object {
+          {
             "blockPointer": 248,
             "dataPointer": 264,
             "dataSize": 8,
@@ -452,7 +450,7 @@ describe("next gen", () => {
             "prev": 32,
             "size": 24,
           },
-          Object {
+          {
             "blockPointer": 224,
             "dataPointer": 240,
             "dataSize": 8,
@@ -460,7 +458,7 @@ describe("next gen", () => {
             "prev": 248,
             "size": 24,
           },
-          Object {
+          {
             "blockPointer": 200,
             "dataPointer": 216,
             "dataSize": 8,
@@ -468,7 +466,7 @@ describe("next gen", () => {
             "prev": 224,
             "size": 24,
           },
-          Object {
+          {
             "blockPointer": 152,
             "dataPointer": 168,
             "dataSize": 8,
@@ -476,7 +474,7 @@ describe("next gen", () => {
             "prev": 200,
             "size": 24,
           },
-          Object {
+          {
             "blockPointer": 104,
             "dataPointer": 120,
             "dataSize": 8,
@@ -484,7 +482,7 @@ describe("next gen", () => {
             "prev": 152,
             "size": 24,
           },
-          Object {
+          {
             "blockPointer": 56,
             "dataPointer": 72,
             "dataSize": 8,
@@ -495,8 +493,8 @@ describe("next gen", () => {
         ]
       `);
       expect(listFreeBlocks(allocatorState)).toMatchInlineSnapshot(`
-        Array [
-          Object {
+        [
+          {
             "blockPointer": 176,
             "dataPointer": 192,
             "dataSize": 8,
@@ -514,8 +512,8 @@ describe("next gen", () => {
       const allocated2 = malloc(allocatorState, 8);
 
       expect(listAllocatedBlocks(allocatorState)).toMatchInlineSnapshot(`
-        Array [
-          Object {
+        [
+          {
             "blockPointer": 56,
             "dataPointer": 72,
             "dataSize": 8,
@@ -523,7 +521,7 @@ describe("next gen", () => {
             "prev": 0,
             "size": 24,
           },
-          Object {
+          {
             "blockPointer": 32,
             "dataPointer": 48,
             "dataSize": 8,
@@ -537,8 +535,8 @@ describe("next gen", () => {
       free(allocatorState, allocated2);
 
       expect(listAllocatedBlocks(allocatorState)).toMatchInlineSnapshot(`
-        Array [
-          Object {
+        [
+          {
             "blockPointer": 32,
             "dataPointer": 48,
             "dataSize": 8,
@@ -548,15 +546,15 @@ describe("next gen", () => {
           },
         ]
       `);
-      expect(listFreeBlocks(allocatorState)).toMatchInlineSnapshot(`Array []`);
+      expect(listFreeBlocks(allocatorState)).toMatchInlineSnapshot(`[]`);
 
       const shouldBeReusedBlock = malloc(allocatorState, 16);
 
       expect(shouldBeReusedBlock).toBe(allocated2);
 
       expect(listAllocatedBlocks(allocatorState)).toMatchInlineSnapshot(`
-        Array [
-          Object {
+        [
+          {
             "blockPointer": 56,
             "dataPointer": 72,
             "dataSize": 16,
@@ -564,7 +562,7 @@ describe("next gen", () => {
             "prev": 0,
             "size": 32,
           },
-          Object {
+          {
             "blockPointer": 32,
             "dataPointer": 48,
             "dataSize": 8,
@@ -585,8 +583,8 @@ describe("next gen", () => {
       free(allocatorState, allocated1);
 
       expect(listAllocatedBlocks(allocatorState)).toMatchInlineSnapshot(`
-        Array [
-          Object {
+        [
+          {
             "blockPointer": 128,
             "dataPointer": 144,
             "dataSize": 80,
@@ -597,8 +595,8 @@ describe("next gen", () => {
         ]
       `);
       expect(listFreeBlocks(allocatorState)).toMatchInlineSnapshot(`
-        Array [
-          Object {
+        [
+          {
             "blockPointer": 32,
             "dataPointer": 48,
             "dataSize": 80,
@@ -613,8 +611,8 @@ describe("next gen", () => {
       expect(shouldBeReused).toBe(allocated1);
 
       expect(listAllocatedBlocks(allocatorState)).toMatchInlineSnapshot(`
-        Array [
-          Object {
+        [
+          {
             "blockPointer": 32,
             "dataPointer": 48,
             "dataSize": 8,
@@ -622,7 +620,7 @@ describe("next gen", () => {
             "prev": 0,
             "size": 24,
           },
-          Object {
+          {
             "blockPointer": 128,
             "dataPointer": 144,
             "dataSize": 80,
@@ -633,8 +631,8 @@ describe("next gen", () => {
         ]
       `);
       expect(listFreeBlocks(allocatorState)).toMatchInlineSnapshot(`
-        Array [
-          Object {
+        [
+          {
             "blockPointer": 56,
             "dataPointer": 72,
             "dataSize": 56,
@@ -654,8 +652,8 @@ describe("next gen", () => {
       free(allocatorState, allocated1);
 
       expect(listAllocatedBlocks(allocatorState)).toMatchInlineSnapshot(`
-        Array [
-          Object {
+        [
+          {
             "blockPointer": 128,
             "dataPointer": 144,
             "dataSize": 80,
@@ -666,8 +664,8 @@ describe("next gen", () => {
         ]
       `);
       expect(listFreeBlocks(allocatorState)).toMatchInlineSnapshot(`
-        Array [
-          Object {
+        [
+          {
             "blockPointer": 32,
             "dataPointer": 48,
             "dataSize": 80,
@@ -682,8 +680,8 @@ describe("next gen", () => {
       expect(shouldBeReused).toBe(allocated1);
 
       expect(listAllocatedBlocks(allocatorState)).toMatchInlineSnapshot(`
-        Array [
-          Object {
+        [
+          {
             "blockPointer": 32,
             "dataPointer": 48,
             "dataSize": 80,
@@ -691,7 +689,7 @@ describe("next gen", () => {
             "prev": 0,
             "size": 96,
           },
-          Object {
+          {
             "blockPointer": 128,
             "dataPointer": 144,
             "dataSize": 80,
@@ -721,8 +719,8 @@ describe("next gen", () => {
       free(allocatorState, allocations[2]);
       expect(listFreeBlocks(allocatorState)).toHaveLength(1);
       expect(listFreeBlocks(allocatorState)).toMatchInlineSnapshot(`
-        Array [
-          Object {
+        [
+          {
             "blockPointer": 80,
             "dataPointer": 96,
             "dataSize": 8,
@@ -736,8 +734,8 @@ describe("next gen", () => {
       // merge
       expect(listFreeBlocks(allocatorState)).toHaveLength(1);
       expect(listFreeBlocks(allocatorState)).toMatchInlineSnapshot(`
-        Array [
-          Object {
+        [
+          {
             "blockPointer": 56,
             "dataPointer": 72,
             "dataSize": 32,
@@ -763,8 +761,8 @@ describe("next gen", () => {
       free(allocatorState, allocations[1]);
       expect(listFreeBlocks(allocatorState)).toHaveLength(1);
       expect(listFreeBlocks(allocatorState)).toMatchInlineSnapshot(`
-        Array [
-          Object {
+        [
+          {
             "blockPointer": 56,
             "dataPointer": 72,
             "dataSize": 8,
@@ -777,8 +775,8 @@ describe("next gen", () => {
       free(allocatorState, allocations[2]);
       expect(listFreeBlocks(allocatorState)).toHaveLength(1);
       expect(listFreeBlocks(allocatorState)).toMatchInlineSnapshot(`
-        Array [
-          Object {
+        [
+          {
             "blockPointer": 56,
             "dataPointer": 72,
             "dataSize": 32,
@@ -804,8 +802,8 @@ describe("next gen", () => {
       expect(stats(allocatorState).top).toEqual(152);
       expect(listFreeBlocks(allocatorState)).toHaveLength(2);
       expect(listFreeBlocks(allocatorState)).toMatchInlineSnapshot(`
-        Array [
-          Object {
+        [
+          {
             "blockPointer": 56,
             "dataPointer": 72,
             "dataSize": 8,
@@ -813,7 +811,7 @@ describe("next gen", () => {
             "prev": 0,
             "size": 24,
           },
-          Object {
+          {
             "blockPointer": 104,
             "dataPointer": 120,
             "dataSize": 8,
@@ -828,8 +826,8 @@ describe("next gen", () => {
 
       expect(listFreeBlocks(allocatorState)).toHaveLength(1);
       expect(listFreeBlocks(allocatorState)).toMatchInlineSnapshot(`
-        Array [
-          Object {
+        [
+          {
             "blockPointer": 56,
             "dataPointer": 72,
             "dataSize": 56,
@@ -840,8 +838,8 @@ describe("next gen", () => {
         ]
       `);
       expect(listAllocatedBlocks(allocatorState)).toMatchInlineSnapshot(`
-        Array [
-          Object {
+        [
+          {
             "blockPointer": 128,
             "dataPointer": 144,
             "dataSize": 8,
@@ -849,7 +847,7 @@ describe("next gen", () => {
             "prev": 0,
             "size": 24,
           },
-          Object {
+          {
             "blockPointer": 32,
             "dataPointer": 48,
             "dataSize": 8,

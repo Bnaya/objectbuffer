@@ -21,10 +21,10 @@ describe("createObjectBuffer", () => {
     });
 
     expect(o).toMatchInlineSnapshot(`
-      Object {
+      {
         "a": "b",
         "b": null,
-        "c": Object {
+        "c": {
           "t": 5,
         },
       }
@@ -94,20 +94,20 @@ describe("loadObjectBuffer", () => {
     const newOne = loadObjectBuffer(arrayBuffer);
 
     expect(o).toMatchInlineSnapshot(`
-      Object {
+      {
         "a": "b",
         "b": null,
-        "c": Object {
+        "c": {
           "t": 5,
         },
       }
     `);
 
     expect(newOne).toMatchInlineSnapshot(`
-      Object {
+      {
         "a": "b",
         "b": null,
-        "c": Object {
+        "c": {
           "t": 5,
         },
       }

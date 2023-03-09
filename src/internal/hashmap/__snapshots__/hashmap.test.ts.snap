@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`hashmap createHashMap: simple create empty 1`] = `
-Array [
+[
   "0:0x00",
   "1:0x00",
   "2:0x00",
@@ -182,7 +182,7 @@ Array [
 `;
 
 exports[`hashmap hashMapInsert simple, key is number: after insert 1`] = `
-Array [
+[
   "0:0x00",
   "1:0x00",
   "2:0x00",
@@ -451,7 +451,7 @@ Array [
 `;
 
 exports[`hashmap hashMapInsert simple, key is string: after insert 1`] = `
-Array [
+[
   "0:0x00",
   "1:0x00",
   "2:0x00",

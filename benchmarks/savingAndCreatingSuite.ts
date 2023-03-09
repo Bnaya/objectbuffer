@@ -7,6 +7,13 @@ import K1000RowsMockData from "./fixtures/MOCK_DATA.json";
 // @ts-expect-error arbitrary json
 import oneComment from "./fixtures/oneComment.json";
 
+declare global {
+  // eslint-disable-next-line no-var
+  var testTargetIndex: number;
+  // eslint-disable-next-line no-var
+  var testTargets: any[];
+}
+
 const EXPECTED_MAX_ITERATIONS = 1000;
 const COMMENTS_ARR_SIZE = 2500;
 const MIN_SAMPLES = 5;
@@ -47,9 +54,8 @@ export function savingAndCreatingSuite(
       `save ${COMMENTS_ARR_SIZE} comments into pre-created OB, size: 2e6`,
       () => {
         // use pre created object buffer
-        global.testTargets[
-          global.testTargetIndex
-        ].arrOfComments = arrOfComments;
+        global.testTargets[global.testTargetIndex].arrOfComments =
+          arrOfComments;
 
         global.testTargetIndex += 1;
       },

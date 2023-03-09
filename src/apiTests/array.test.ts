@@ -11,8 +11,8 @@ describe("SharedArrayBuffer tests", () => {
     objectBuffer.arr.unshift("a");
 
     expect(objectBuffer).toMatchInlineSnapshot(`
-      Object {
-        "arr": Array [
+      {
+        "arr": [
           "a",
           1,
           2,
@@ -42,7 +42,7 @@ describe("SharedArrayBuffer tests", () => {
 
     const removedNulls = ob.arr.splice(0, 10, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
     expect(removedNulls).toMatchInlineSnapshot(`
-      Array [
+      [
         null,
         null,
         null,
@@ -63,7 +63,7 @@ describe("SharedArrayBuffer tests", () => {
 
     const removedNumbers = ob.arr.splice(0, 10);
     expect(removedNumbers).toMatchInlineSnapshot(`
-      Array [
+      [
         1,
         2,
         3,
@@ -111,7 +111,7 @@ describe("SharedArrayBuffer tests", () => {
       [10]
     );
     expect(removedNulls).toMatchInlineSnapshot(`
-      Array [
+      [
         null,
         null,
         null,
@@ -132,35 +132,35 @@ describe("SharedArrayBuffer tests", () => {
 
     const removedArrays = ob.arr.splice(0, 10);
     expect(removedArrays).toMatchInlineSnapshot(`
-      Array [
-        Array [
+      [
+        [
           1,
         ],
-        Array [
+        [
           2,
         ],
-        Array [
+        [
           3,
         ],
-        Array [
+        [
           4,
         ],
-        Array [
+        [
           5,
         ],
-        Array [
+        [
           6,
         ],
-        Array [
+        [
           7,
         ],
-        Array [
+        [
           8,
         ],
-        Array [
+        [
           9,
         ],
-        Array [
+        [
           10,
         ],
       ]
@@ -193,17 +193,17 @@ describe("SharedArrayBuffer tests", () => {
     const output = o.arr.flat();
 
     expect(output).toMatchInlineSnapshot(`
-      Array [
-        Object {
+      [
+        {
           "v": 1,
         },
-        Object {
+        {
           "v": 2,
         },
-        Object {
+        {
           "v": 3,
         },
-        Object {
+        {
           "v": 4,
         },
       ]
@@ -220,7 +220,7 @@ describe("SharedArrayBuffer tests", () => {
     const output = o.arr.flatMap((v) => v[0].v + 1);
 
     expect(output).toMatchInlineSnapshot(`
-      Array [
+      [
         2,
         3,
         4,

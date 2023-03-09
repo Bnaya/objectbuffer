@@ -94,18 +94,18 @@ describe("Map", () => {
         }
       `);
     expect([...objectBuffer.foo.keys()]).toMatchInlineSnapshot(`
-        Array [
-          1,
-          "2",
-        ]
-      `);
+      [
+        1,
+        "2",
+      ]
+    `);
 
     expect([...objectBuffer.foo.values()]).toMatchInlineSnapshot(`
-        Array [
-          "a",
-          "b",
-        ]
-      `);
+      [
+        "a",
+        "b",
+      ]
+    `);
   });
 
   // bug with deletion during iteration
@@ -149,16 +149,16 @@ describe("Map", () => {
     expect(thisArgs.every((v) => v === objectBuffer.foo)).toBe(true);
 
     expect(dump).toMatchInlineSnapshot(`
-        Array [
-          Object {
-            "key": 1,
-            "value": "a",
-          },
-          Object {
-            "key": "2",
-            "value": "b",
-          },
-        ]
-      `);
+      [
+        {
+          "key": 1,
+          "value": "a",
+        },
+        {
+          "key": "2",
+          "value": "b",
+        },
+      ]
+    `);
   });
 });

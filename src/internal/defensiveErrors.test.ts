@@ -40,12 +40,12 @@ describe("defensiveErrors", () => {
     }).toThrowErrorMatchingInlineSnapshot(`"UnsupportedOperationError"`);
 
     expect(objectBuffer).toMatchInlineSnapshot(`
-      Object {
-        "array": Array [
+      {
+        "array": [
           1,
         ],
         "date": "1970-01-01T00:00:00.000Z",
-        "object": Object {},
+        "object": {},
       }
     `);
   });
@@ -76,12 +76,12 @@ describe("defensiveErrors", () => {
     }).toThrowErrorMatchingInlineSnapshot(`"UnsupportedOperationError"`);
 
     expect(objectBuffer).toMatchInlineSnapshot(`
-      Object {
-        "array": Array [
+      {
+        "array": [
           1,
         ],
         "date": "1970-01-01T00:00:00.000Z",
-        "object": Object {},
+        "object": {},
       }
     `);
   });
@@ -113,12 +113,12 @@ describe("defensiveErrors", () => {
     }).toThrowErrorMatchingInlineSnapshot(`"UnsupportedOperationError"`);
 
     expect(objectBuffer).toMatchInlineSnapshot(`
-      Object {
-        "array": Array [
+      {
+        "array": [
           1,
         ],
         "date": "1970-01-01T00:00:00.000Z",
-        "object": Object {},
+        "object": {},
       }
     `);
   });

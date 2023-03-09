@@ -188,6 +188,7 @@ describe("getAllLinkedAddresses", () => {
         TransactionalAllocator.prototype[funcName] = function wrappedXlocFunc(
           dataSize: number
         ) {
+          // eslint-disable-next-line @typescript-eslint/no-this-alias
           pool = this;
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-expect-error
@@ -209,7 +210,7 @@ describe("getAllLinkedAddresses", () => {
       );
 
       expect(memoryStats(objectBuffer)).toMatchInlineSnapshot(`
-        Object {
+        {
           "available": 160,
           "top": 1888,
           "total": 2048,
@@ -242,7 +243,7 @@ describe("getAllLinkedAddresses", () => {
       });
 
       expect(memoryStats(objectBuffer)).toMatchInlineSnapshot(`
-        Object {
+        {
           "available": 2000,
           "top": 48,
           "total": 2048,

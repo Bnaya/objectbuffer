@@ -45,7 +45,7 @@ describe("memory GC related tests", () => {
       getAddressesNoLongerUsedArrayForCarrier(carrier);
 
     expect(addressesNoLongerUsed).toMatchInlineSnapshot(`
-      Array [
+      [
         344,
       ]
     `);

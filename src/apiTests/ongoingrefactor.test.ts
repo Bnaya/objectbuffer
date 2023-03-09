@@ -10,7 +10,7 @@ describe("ongoingrefactor", function () {
     ob.a = undefined;
 
     expect(ob).toMatchInlineSnapshot(`
-      Object {
+      {
         "a": undefined,
         "b": "a",
       }
@@ -31,9 +31,9 @@ describe("ongoingrefactor", function () {
       arr3: [{}, ["a", "b", 3], { a: "c" }],
     });
     expect(ob).toMatchInlineSnapshot(`
-      Object {
+      {
         "a": 1,
-        "arr1": Array [
+        "arr1": [
           1,
           2,
           3,
@@ -41,24 +41,24 @@ describe("ongoingrefactor", function () {
           5,
           6,
         ],
-        "arr2": Array [
+        "arr2": [
           "a",
           "b",
           "c",
         ],
-        "arr3": Array [
-          Object {},
-          Array [
+        "arr3": [
+          {},
+          [
             "a",
             "b",
             3,
           ],
-          Object {
+          {
             "a": "c",
           },
         ],
         "b": "some string",
-        "nestedObj": Object {
+        "nestedObj": {
           "thevlaueisnumber": 1,
         },
         "propName123a": undefined,
@@ -84,23 +84,23 @@ describe("ongoingrefactor", function () {
     ob.a.b = 5;
 
     expect(ob).toMatchInlineSnapshot(`
-      Object {
-        "a": Object {
+      {
+        "a": {
           "b": 5,
         },
-        "arr1": Object {
+        "arr1": {
           "b": 5,
         },
-        "b": Object {
+        "b": {
           "b": 5,
         },
-        "nestedObj": Object {
+        "nestedObj": {
           "b": 5,
         },
-        "propName123a": Object {
+        "propName123a": {
           "b": 5,
         },
-        "y": Object {
+        "y": {
           "b": 5,
         },
       }

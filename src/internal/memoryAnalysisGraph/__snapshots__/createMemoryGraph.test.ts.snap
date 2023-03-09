@@ -1,689 +1,689 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`createMemoryGraph. snapshot graph and ensure memory basic: edges 1`] = `
-Array [
-  Object {
+[
+  {
     "from": 64,
     "to": 96,
   },
-  Object {
+  {
     "from": 96,
     "to": 128,
   },
-  Object {
+  {
     "from": 216,
     "to": 240,
   },
-  Object {
+  {
     "from": 288,
     "to": 264,
   },
-  Object {
+  {
     "from": 328,
     "to": 288,
   },
-  Object {
+  {
     "from": 328,
     "to": 240,
   },
-  Object {
+  {
     "from": 328,
     "to": 3480,
   },
-  Object {
+  {
     "from": 240,
     "to": 328,
   },
-  Object {
+  {
     "from": 216,
     "to": 360,
   },
-  Object {
+  {
     "from": 408,
     "to": 384,
   },
-  Object {
+  {
     "from": 448,
     "to": 408,
   },
-  Object {
+  {
     "from": 448,
     "to": 360,
   },
-  Object {
+  {
     "from": 3144,
     "to": 3176,
   },
-  Object {
+  {
     "from": 3176,
     "to": 3208,
   },
-  Object {
+  {
     "from": 3256,
     "to": 3280,
   },
-  Object {
+  {
     "from": 648,
     "to": 624,
   },
-  Object {
+  {
     "from": 3304,
     "to": 648,
   },
-  Object {
+  {
     "from": 3304,
     "to": 3280,
   },
-  Object {
+  {
     "from": 3304,
     "to": 0,
   },
-  Object {
+  {
     "from": 3280,
     "to": 3304,
   },
-  Object {
+  {
     "from": 3256,
     "to": 3336,
   },
-  Object {
+  {
     "from": 3384,
     "to": 3360,
   },
-  Object {
+  {
     "from": 3424,
     "to": 3384,
   },
-  Object {
+  {
     "from": 3424,
     "to": 3336,
   },
-  Object {
+  {
     "from": 3424,
     "to": 1,
   },
-  Object {
+  {
     "from": 3336,
     "to": 3424,
   },
-  Object {
+  {
     "from": 3456,
     "to": 0,
   },
-  Object {
+  {
     "from": 3256,
     "specialLabel": "linkedlist end marker",
     "to": 3456,
   },
-  Object {
+  {
     "from": 3176,
     "to": 3256,
   },
-  Object {
+  {
     "from": 3176,
     "to": 3304,
   },
-  Object {
+  {
     "from": 3176,
     "to": 3424,
   },
-  Object {
+  {
     "from": 448,
     "to": 3144,
   },
-  Object {
+  {
     "from": 360,
     "to": 448,
   },
-  Object {
+  {
     "from": 216,
     "to": 480,
   },
-  Object {
+  {
     "from": 528,
     "to": 504,
   },
-  Object {
+  {
     "from": 568,
     "to": 528,
   },
-  Object {
+  {
     "from": 568,
     "to": 480,
   },
-  Object {
+  {
     "from": 568,
     "to": 2,
   },
-  Object {
+  {
     "from": 480,
     "to": 568,
   },
-  Object {
+  {
     "from": 216,
     "to": 600,
   },
-  Object {
+  {
     "from": 688,
     "to": 648,
   },
-  Object {
+  {
     "from": 688,
     "to": 600,
   },
-  Object {
+  {
     "from": 688,
     "to": 3112,
   },
-  Object {
+  {
     "from": 600,
     "to": 688,
   },
-  Object {
+  {
     "from": 216,
     "to": 720,
   },
-  Object {
+  {
     "from": 768,
     "to": 744,
   },
-  Object {
+  {
     "from": 808,
     "to": 768,
   },
-  Object {
+  {
     "from": 808,
     "to": 720,
   },
-  Object {
+  {
     "from": 2912,
     "to": 2952,
   },
-  Object {
+  {
     "from": 2952,
     "to": 3080,
   },
-  Object {
+  {
     "from": 2952,
     "to": 3048,
   },
-  Object {
+  {
     "from": 2952,
     "to": 3016,
   },
-  Object {
+  {
     "from": 2952,
     "to": 2984,
   },
-  Object {
+  {
     "from": 808,
     "to": 2912,
   },
-  Object {
+  {
     "from": 720,
     "to": 808,
   },
-  Object {
+  {
     "from": 216,
     "to": 840,
   },
-  Object {
+  {
     "from": 888,
     "to": 864,
   },
-  Object {
+  {
     "from": 928,
     "to": 888,
   },
-  Object {
+  {
     "from": 928,
     "to": 840,
   },
-  Object {
+  {
     "from": 2664,
     "to": 2696,
   },
-  Object {
+  {
     "from": 2696,
     "to": 2728,
   },
-  Object {
+  {
     "from": 2776,
     "to": 2800,
   },
-  Object {
+  {
     "from": 2856,
     "to": 2824,
   },
-  Object {
+  {
     "from": 2856,
     "to": 2800,
   },
-  Object {
+  {
     "from": 2856,
     "to": 288,
   },
-  Object {
+  {
     "from": 2800,
     "to": 2856,
   },
-  Object {
+  {
     "from": 2888,
     "to": 0,
   },
-  Object {
+  {
     "from": 2776,
     "specialLabel": "linkedlist end marker",
     "to": 2888,
   },
-  Object {
+  {
     "from": 2696,
     "to": 2776,
   },
-  Object {
+  {
     "from": 2696,
     "to": 2856,
   },
-  Object {
+  {
     "from": 928,
     "to": 2664,
   },
-  Object {
+  {
     "from": 840,
     "to": 928,
   },
-  Object {
+  {
     "from": 216,
     "to": 960,
   },
-  Object {
+  {
     "from": 1008,
     "to": 984,
   },
-  Object {
+  {
     "from": 1048,
     "to": 1008,
   },
-  Object {
+  {
     "from": 1048,
     "to": 960,
   },
-  Object {
+  {
     "from": 2152,
     "to": 2184,
   },
-  Object {
+  {
     "from": 2184,
     "to": 2216,
   },
-  Object {
+  {
     "from": 2264,
     "to": 2288,
   },
-  Object {
+  {
     "from": 2344,
     "to": 2312,
   },
-  Object {
+  {
     "from": 2344,
     "to": 2288,
   },
-  Object {
+  {
     "from": 2344,
     "to": 0,
   },
-  Object {
+  {
     "from": 2288,
     "to": 2344,
   },
-  Object {
+  {
     "from": 2264,
     "to": 2376,
   },
-  Object {
+  {
     "from": 2432,
     "to": 2400,
   },
-  Object {
+  {
     "from": 2432,
     "to": 2376,
   },
-  Object {
+  {
     "from": 2432,
     "to": 0,
   },
-  Object {
+  {
     "from": 2376,
     "to": 2432,
   },
-  Object {
+  {
     "from": 2264,
     "to": 2464,
   },
-  Object {
+  {
     "from": 2520,
     "to": 2488,
   },
-  Object {
+  {
     "from": 2520,
     "to": 2464,
   },
-  Object {
+  {
     "from": 2520,
     "to": 0,
   },
-  Object {
+  {
     "from": 2464,
     "to": 2520,
   },
-  Object {
+  {
     "from": 2264,
     "to": 2552,
   },
-  Object {
+  {
     "from": 2608,
     "to": 2576,
   },
-  Object {
+  {
     "from": 2608,
     "to": 2552,
   },
-  Object {
+  {
     "from": 2608,
     "to": 0,
   },
-  Object {
+  {
     "from": 2552,
     "to": 2608,
   },
-  Object {
+  {
     "from": 2640,
     "to": 0,
   },
-  Object {
+  {
     "from": 2264,
     "specialLabel": "linkedlist end marker",
     "to": 2640,
   },
-  Object {
+  {
     "from": 2184,
     "to": 2264,
   },
-  Object {
+  {
     "from": 2184,
     "to": 2344,
   },
-  Object {
+  {
     "from": 2184,
     "to": 2432,
   },
-  Object {
+  {
     "from": 2184,
     "to": 2520,
   },
-  Object {
+  {
     "from": 2184,
     "to": 2608,
   },
-  Object {
+  {
     "from": 1048,
     "to": 2152,
   },
-  Object {
+  {
     "from": 960,
     "to": 1048,
   },
-  Object {
+  {
     "from": 216,
     "to": 1080,
   },
-  Object {
+  {
     "from": 1128,
     "to": 1104,
   },
-  Object {
+  {
     "from": 1168,
     "to": 1128,
   },
-  Object {
+  {
     "from": 1168,
     "to": 1080,
   },
-  Object {
+  {
     "from": 1168,
     "to": 2112,
   },
-  Object {
+  {
     "from": 1080,
     "to": 1168,
   },
-  Object {
+  {
     "from": 216,
     "to": 1200,
   },
-  Object {
+  {
     "from": 1256,
     "to": 1224,
   },
-  Object {
+  {
     "from": 1296,
     "to": 1256,
   },
-  Object {
+  {
     "from": 1296,
     "to": 1200,
   },
-  Object {
+  {
     "from": 1864,
     "to": 1896,
   },
-  Object {
+  {
     "from": 1896,
     "to": 1928,
   },
-  Object {
+  {
     "from": 1976,
     "to": 2000,
   },
-  Object {
+  {
     "from": 2024,
     "to": 648,
   },
-  Object {
+  {
     "from": 2024,
     "to": 2000,
   },
-  Object {
+  {
     "from": 2024,
     "to": 2080,
   },
-  Object {
+  {
     "from": 2000,
     "to": 2024,
   },
-  Object {
+  {
     "from": 2056,
     "to": 0,
   },
-  Object {
+  {
     "from": 1976,
     "specialLabel": "linkedlist end marker",
     "to": 2056,
   },
-  Object {
+  {
     "from": 1896,
     "to": 1976,
   },
-  Object {
+  {
     "from": 1896,
     "to": 2024,
   },
-  Object {
+  {
     "from": 1296,
     "to": 1864,
   },
-  Object {
+  {
     "from": 1200,
     "to": 1296,
   },
-  Object {
+  {
     "from": 216,
     "to": 1328,
   },
-  Object {
+  {
     "from": 1384,
     "to": 1352,
   },
-  Object {
+  {
     "from": 1424,
     "to": 1384,
   },
-  Object {
+  {
     "from": 1424,
     "to": 1328,
   },
-  Object {
+  {
     "from": 1424,
     "to": 1864,
   },
-  Object {
+  {
     "from": 1328,
     "to": 1424,
   },
-  Object {
+  {
     "from": 216,
     "to": 1456,
   },
-  Object {
+  {
     "from": 1512,
     "to": 1480,
   },
-  Object {
+  {
     "from": 1552,
     "to": 1512,
   },
-  Object {
+  {
     "from": 1552,
     "to": 1456,
   },
-  Object {
+  {
     "from": 1552,
     "to": 1864,
   },
-  Object {
+  {
     "from": 1456,
     "to": 1552,
   },
-  Object {
+  {
     "from": 216,
     "to": 1584,
   },
-  Object {
+  {
     "from": 1640,
     "to": 1608,
   },
-  Object {
+  {
     "from": 1680,
     "to": 1640,
   },
-  Object {
+  {
     "from": 1680,
     "to": 1584,
   },
-  Object {
+  {
     "from": 1680,
     "to": 1864,
   },
-  Object {
+  {
     "from": 1584,
     "to": 1680,
   },
-  Object {
+  {
     "from": 216,
     "to": 1712,
   },
-  Object {
+  {
     "from": 1768,
     "to": 1736,
   },
-  Object {
+  {
     "from": 1808,
     "to": 1768,
   },
-  Object {
+  {
     "from": 1808,
     "to": 1712,
   },
-  Object {
+  {
     "from": 1808,
     "to": 1864,
   },
-  Object {
+  {
     "from": 1712,
     "to": 1808,
   },
-  Object {
+  {
     "from": 1840,
     "to": 0,
   },
-  Object {
+  {
     "from": 216,
     "specialLabel": "linkedlist end marker",
     "to": 1840,
   },
-  Object {
+  {
     "from": 96,
     "to": 216,
   },
-  Object {
+  {
     "from": 96,
     "to": 328,
   },
-  Object {
+  {
     "from": 96,
     "to": 448,
   },
-  Object {
+  {
     "from": 96,
     "to": 568,
   },
-  Object {
+  {
     "from": 96,
     "to": 688,
   },
-  Object {
+  {
     "from": 96,
     "to": 808,
   },
-  Object {
+  {
     "from": 96,
     "to": 928,
   },
-  Object {
+  {
     "from": 96,
     "to": 1048,
   },
-  Object {
+  {
     "from": 96,
     "to": 1168,
   },
-  Object {
+  {
     "from": 96,
     "to": 1296,
   },
-  Object {
+  {
     "from": 96,
     "to": 1424,
   },
-  Object {
+  {
     "from": 96,
     "to": 1552,
   },
-  Object {
+  {
     "from": 96,
     "to": 1680,
   },
-  Object {
+  {
     "from": 96,
     "to": 1808,
   },
@@ -691,662 +691,662 @@ Array [
 `;
 
 exports[`createMemoryGraph. snapshot graph and ensure memory basic: nodes 1`] = `
-Array [
-  Object {
+[
+  {
     "pointer": 64,
     "refCount": 2,
     "size": 16,
     "type": "object",
   },
-  Object {
+  {
     "pointer": 96,
     "refCount": undefined,
     "size": 14,
     "type": "hashmap",
   },
-  Object {
+  {
     "pointer": 128,
     "refCount": undefined,
     "size": 68,
     "type": "hashmapBuckets",
   },
-  Object {
+  {
     "pointer": 216,
     "refCount": undefined,
     "size": 8,
     "type": "linkedList",
   },
-  Object {
+  {
     "pointer": 240,
     "refCount": undefined,
     "size": 8,
     "type": "linkedListItem",
   },
-  Object {
+  {
     "pointer": 328,
     "refCount": undefined,
     "size": 16,
     "type": "hashmapNode",
   },
-  Object {
+  {
     "pointer": 288,
     "refCount": 2,
     "size": 20,
     "type": "string",
   },
-  Object {
+  {
     "pointer": 264,
     "refCount": undefined,
     "size": 1,
     "type": "stringData",
   },
-  Object {
+  {
     "pointer": 3480,
     "refCount": undefined,
     "size": 16,
     "type": "number",
   },
-  Object {
+  {
     "pointer": 360,
     "refCount": undefined,
     "size": 8,
     "type": "linkedListItem",
   },
-  Object {
+  {
     "pointer": 448,
     "refCount": undefined,
     "size": 16,
     "type": "hashmapNode",
   },
-  Object {
+  {
     "pointer": 408,
     "refCount": 1,
     "size": 20,
     "type": "string",
   },
-  Object {
+  {
     "pointer": 384,
     "refCount": undefined,
     "size": 1,
     "type": "stringData",
   },
-  Object {
+  {
     "pointer": 3144,
     "refCount": 1,
     "size": 16,
     "type": "object",
   },
-  Object {
+  {
     "pointer": 3176,
     "refCount": undefined,
     "size": 14,
     "type": "hashmap",
   },
-  Object {
+  {
     "pointer": 3208,
     "refCount": undefined,
     "size": 32,
     "type": "hashmapBuckets",
   },
-  Object {
+  {
     "pointer": 3256,
     "refCount": undefined,
     "size": 8,
     "type": "linkedList",
   },
-  Object {
+  {
     "pointer": 3280,
     "refCount": undefined,
     "size": 8,
     "type": "linkedListItem",
   },
-  Object {
+  {
     "pointer": 3304,
     "refCount": undefined,
     "size": 16,
     "type": "hashmapNode",
   },
-  Object {
+  {
     "pointer": 648,
     "refCount": 3,
     "size": 20,
     "type": "string",
   },
-  Object {
+  {
     "pointer": 624,
     "refCount": undefined,
     "size": 1,
     "type": "stringData",
   },
-  Object {
+  {
     "pointer": 3336,
     "refCount": undefined,
     "size": 8,
     "type": "linkedListItem",
   },
-  Object {
+  {
     "pointer": 3424,
     "refCount": undefined,
     "size": 16,
     "type": "hashmapNode",
   },
-  Object {
+  {
     "pointer": 3384,
     "refCount": 1,
     "size": 20,
     "type": "string",
   },
-  Object {
+  {
     "pointer": 3360,
     "refCount": undefined,
     "size": 2,
     "type": "stringData",
   },
-  Object {
+  {
     "pointer": 3456,
     "refCount": undefined,
     "size": 8,
     "type": "linkedListItem",
   },
-  Object {
+  {
     "pointer": 480,
     "refCount": undefined,
     "size": 8,
     "type": "linkedListItem",
   },
-  Object {
+  {
     "pointer": 568,
     "refCount": undefined,
     "size": 16,
     "type": "hashmapNode",
   },
-  Object {
+  {
     "pointer": 528,
     "refCount": 1,
     "size": 20,
     "type": "string",
   },
-  Object {
+  {
     "pointer": 504,
     "refCount": undefined,
     "size": 1,
     "type": "stringData",
   },
-  Object {
+  {
     "pointer": 600,
     "refCount": undefined,
     "size": 8,
     "type": "linkedListItem",
   },
-  Object {
+  {
     "pointer": 688,
     "refCount": undefined,
     "size": 16,
     "type": "hashmapNode",
   },
-  Object {
+  {
     "pointer": 3112,
     "refCount": undefined,
     "size": 16,
     "type": "bigintNegative",
   },
-  Object {
+  {
     "pointer": 720,
     "refCount": undefined,
     "size": 8,
     "type": "linkedListItem",
   },
-  Object {
+  {
     "pointer": 808,
     "refCount": undefined,
     "size": 16,
     "type": "hashmapNode",
   },
-  Object {
+  {
     "pointer": 768,
     "refCount": 1,
     "size": 20,
     "type": "string",
   },
-  Object {
+  {
     "pointer": 744,
     "refCount": undefined,
     "size": 2,
     "type": "stringData",
   },
-  Object {
+  {
     "pointer": 2912,
     "refCount": 1,
     "size": 24,
     "type": "array",
   },
-  Object {
+  {
     "pointer": 2952,
     "refCount": undefined,
     "size": 16,
     "type": "arrayPointers",
   },
-  Object {
+  {
     "pointer": 3080,
     "refCount": undefined,
     "size": 16,
     "type": "number",
   },
-  Object {
+  {
     "pointer": 3048,
     "refCount": undefined,
     "size": 16,
     "type": "number",
   },
-  Object {
+  {
     "pointer": 3016,
     "refCount": undefined,
     "size": 16,
     "type": "number",
   },
-  Object {
+  {
     "pointer": 2984,
     "refCount": undefined,
     "size": 16,
     "type": "number",
   },
-  Object {
+  {
     "pointer": 840,
     "refCount": undefined,
     "size": 8,
     "type": "linkedListItem",
   },
-  Object {
+  {
     "pointer": 928,
     "refCount": undefined,
     "size": 16,
     "type": "hashmapNode",
   },
-  Object {
+  {
     "pointer": 888,
     "refCount": 1,
     "size": 20,
     "type": "string",
   },
-  Object {
+  {
     "pointer": 864,
     "refCount": undefined,
     "size": 1,
     "type": "stringData",
   },
-  Object {
+  {
     "pointer": 2664,
     "refCount": 1,
     "size": 16,
     "type": "map",
   },
-  Object {
+  {
     "pointer": 2696,
     "refCount": undefined,
     "size": 14,
     "type": "hashmap",
   },
-  Object {
+  {
     "pointer": 2728,
     "refCount": undefined,
     "size": 32,
     "type": "hashmapBuckets",
   },
-  Object {
+  {
     "pointer": 2776,
     "refCount": undefined,
     "size": 8,
     "type": "linkedList",
   },
-  Object {
+  {
     "pointer": 2800,
     "refCount": undefined,
     "size": 8,
     "type": "linkedListItem",
   },
-  Object {
+  {
     "pointer": 2856,
     "refCount": undefined,
     "size": 16,
     "type": "hashmapNode",
   },
-  Object {
+  {
     "pointer": 2824,
     "refCount": undefined,
     "size": 16,
     "type": "number",
   },
-  Object {
+  {
     "pointer": 2888,
     "refCount": undefined,
     "size": 8,
     "type": "linkedListItem",
   },
-  Object {
+  {
     "pointer": 960,
     "refCount": undefined,
     "size": 8,
     "type": "linkedListItem",
   },
-  Object {
+  {
     "pointer": 1048,
     "refCount": undefined,
     "size": 16,
     "type": "hashmapNode",
   },
-  Object {
+  {
     "pointer": 1008,
     "refCount": 1,
     "size": 20,
     "type": "string",
   },
-  Object {
+  {
     "pointer": 984,
     "refCount": undefined,
     "size": 1,
     "type": "stringData",
   },
-  Object {
+  {
     "pointer": 2152,
     "refCount": 1,
     "size": 16,
     "type": "set",
   },
-  Object {
+  {
     "pointer": 2184,
     "refCount": undefined,
     "size": 14,
     "type": "hashmap",
   },
-  Object {
+  {
     "pointer": 2216,
     "refCount": undefined,
     "size": 32,
     "type": "hashmapBuckets",
   },
-  Object {
+  {
     "pointer": 2264,
     "refCount": undefined,
     "size": 8,
     "type": "linkedList",
   },
-  Object {
+  {
     "pointer": 2288,
     "refCount": undefined,
     "size": 8,
     "type": "linkedListItem",
   },
-  Object {
+  {
     "pointer": 2344,
     "refCount": undefined,
     "size": 16,
     "type": "hashmapNode",
   },
-  Object {
+  {
     "pointer": 2312,
     "refCount": undefined,
     "size": 16,
     "type": "number",
   },
-  Object {
+  {
     "pointer": 2376,
     "refCount": undefined,
     "size": 8,
     "type": "linkedListItem",
   },
-  Object {
+  {
     "pointer": 2432,
     "refCount": undefined,
     "size": 16,
     "type": "hashmapNode",
   },
-  Object {
+  {
     "pointer": 2400,
     "refCount": undefined,
     "size": 16,
     "type": "number",
   },
-  Object {
+  {
     "pointer": 2464,
     "refCount": undefined,
     "size": 8,
     "type": "linkedListItem",
   },
-  Object {
+  {
     "pointer": 2520,
     "refCount": undefined,
     "size": 16,
     "type": "hashmapNode",
   },
-  Object {
+  {
     "pointer": 2488,
     "refCount": undefined,
     "size": 16,
     "type": "number",
   },
-  Object {
+  {
     "pointer": 2552,
     "refCount": undefined,
     "size": 8,
     "type": "linkedListItem",
   },
-  Object {
+  {
     "pointer": 2608,
     "refCount": undefined,
     "size": 16,
     "type": "hashmapNode",
   },
-  Object {
+  {
     "pointer": 2576,
     "refCount": undefined,
     "size": 16,
     "type": "number",
   },
-  Object {
+  {
     "pointer": 2640,
     "refCount": undefined,
     "size": 8,
     "type": "linkedListItem",
   },
-  Object {
+  {
     "pointer": 1080,
     "refCount": undefined,
     "size": 8,
     "type": "linkedListItem",
   },
-  Object {
+  {
     "pointer": 1168,
     "refCount": undefined,
     "size": 16,
     "type": "hashmapNode",
   },
-  Object {
+  {
     "pointer": 1128,
     "refCount": 1,
     "size": 20,
     "type": "string",
   },
-  Object {
+  {
     "pointer": 1104,
     "refCount": undefined,
     "size": 4,
     "type": "stringData",
   },
-  Object {
+  {
     "pointer": 2112,
     "refCount": 1,
     "size": 16,
     "type": "date",
   },
-  Object {
+  {
     "pointer": 1200,
     "refCount": undefined,
     "size": 8,
     "type": "linkedListItem",
   },
-  Object {
+  {
     "pointer": 1296,
     "refCount": undefined,
     "size": 16,
     "type": "hashmapNode",
   },
-  Object {
+  {
     "pointer": 1256,
     "refCount": 1,
     "size": 20,
     "type": "string",
   },
-  Object {
+  {
     "pointer": 1224,
     "refCount": undefined,
     "size": 11,
     "type": "stringData",
   },
-  Object {
+  {
     "pointer": 1864,
     "refCount": 5,
     "size": 16,
     "type": "object",
   },
-  Object {
+  {
     "pointer": 1896,
     "refCount": undefined,
     "size": 14,
     "type": "hashmap",
   },
-  Object {
+  {
     "pointer": 1928,
     "refCount": undefined,
     "size": 32,
     "type": "hashmapBuckets",
   },
-  Object {
+  {
     "pointer": 1976,
     "refCount": undefined,
     "size": 8,
     "type": "linkedList",
   },
-  Object {
+  {
     "pointer": 2000,
     "refCount": undefined,
     "size": 8,
     "type": "linkedListItem",
   },
-  Object {
+  {
     "pointer": 2024,
     "refCount": undefined,
     "size": 16,
     "type": "hashmapNode",
   },
-  Object {
+  {
     "pointer": 2080,
     "refCount": undefined,
     "size": 16,
     "type": "number",
   },
-  Object {
+  {
     "pointer": 2056,
     "refCount": undefined,
     "size": 8,
     "type": "linkedListItem",
   },
-  Object {
+  {
     "pointer": 1328,
     "refCount": undefined,
     "size": 8,
     "type": "linkedListItem",
   },
-  Object {
+  {
     "pointer": 1424,
     "refCount": undefined,
     "size": 16,
     "type": "hashmapNode",
   },
-  Object {
+  {
     "pointer": 1384,
     "refCount": 1,
     "size": 20,
     "type": "string",
   },
-  Object {
+  {
     "pointer": 1352,
     "refCount": undefined,
     "size": 11,
     "type": "stringData",
   },
-  Object {
+  {
     "pointer": 1456,
     "refCount": undefined,
     "size": 8,
     "type": "linkedListItem",
   },
-  Object {
+  {
     "pointer": 1552,
     "refCount": undefined,
     "size": 16,
     "type": "hashmapNode",
   },
-  Object {
+  {
     "pointer": 1512,
     "refCount": 1,
     "size": 20,
     "type": "string",
   },
-  Object {
+  {
     "pointer": 1480,
     "refCount": undefined,
     "size": 11,
     "type": "stringData",
   },
-  Object {
+  {
     "pointer": 1584,
     "refCount": undefined,
     "size": 8,
     "type": "linkedListItem",
   },
-  Object {
+  {
     "pointer": 1680,
     "refCount": undefined,
     "size": 16,
     "type": "hashmapNode",
   },
-  Object {
+  {
     "pointer": 1640,
     "refCount": 1,
     "size": 20,
     "type": "string",
   },
-  Object {
+  {
     "pointer": 1608,
     "refCount": undefined,
     "size": 11,
     "type": "stringData",
   },
-  Object {
+  {
     "pointer": 1712,
     "refCount": undefined,
     "size": 8,
     "type": "linkedListItem",
   },
-  Object {
+  {
     "pointer": 1808,
     "refCount": undefined,
     "size": 16,
     "type": "hashmapNode",
   },
-  Object {
+  {
     "pointer": 1768,
     "refCount": 1,
     "size": 20,
     "type": "string",
   },
-  Object {
+  {
     "pointer": 1736,
     "refCount": undefined,
     "size": 11,
     "type": "stringData",
   },
-  Object {
+  {
     "pointer": 1840,
     "refCount": undefined,
     "size": 8,

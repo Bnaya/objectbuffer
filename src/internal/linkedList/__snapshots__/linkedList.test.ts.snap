@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`LinkedList linkedList init & add 1`] = `
-Array [
+[
   "0:0x00",
   "1:0x00",
   "2:0x00",
@@ -102,7 +102,7 @@ Array [
 `;
 
 exports[`LinkedList linkedList init & add 2`] = `
-Array [
+[
   "0:0x00",
   "1:0x00",
   "2:0x00",
