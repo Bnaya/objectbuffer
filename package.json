@@ -93,7 +93,7 @@
     "COMMIT",
     "LICENSE"
   ],
-  "packageManager": "yarn@3.3.1",
+  "packageManager": "yarn@4.0.2",
   "volta": {
     "node": "20.3.0"
   }
