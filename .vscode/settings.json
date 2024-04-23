@@ -65,7 +65,7 @@
     140
   ],
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": true
+    "source.fixAll.eslint": "explicit"
   },
   "debug.javascript.usePreviewAutoAttach": true,
   "debug.javascript.usePreview": true
