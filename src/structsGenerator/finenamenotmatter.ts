@@ -43,7 +43,6 @@ export function generateFunctionsCodeForManifest(
   ];
 
   for (const [propName, TypedArray] of Object.entries(manifest)) {
-
     let retType = "number";
 
     if (TypedArray.name === "BigInt64Array") {
@@ -60,14 +59,14 @@ export function generateFunctionsCodeForManifest(
         propName,
         typedArrayNameToHeapProp[TypedArray.name as any],
         startInStruct,
-        retType,
+        retType
       ),
       setTemplate(
         structName,
         propName,
         typedArrayNameToHeapProp[TypedArray.name as any],
         startInStruct,
-        retType,
+        retType
       ),
       `export const ${structName}_${propName}_place = ${startInStruct};`,
       `export const ${structName}_${propName}_ctor: typeof ${TypedArray.name} = ${TypedArray.name};`
@@ -91,7 +90,7 @@ function getTemplate(
   propName: string,
   typedArrayName: keyof TypedArrayPropNameToCtorType,
   startPointerInsideOfStruct: number,
-  returnTypeAsString: string,
+  returnTypeAsString: string
 ) {
   return `
   export function ${structName}_${propName}_get(heap: Heap, structPointer: number): ${returnTypeAsString} {
@@ -107,7 +106,7 @@ function setTemplate(
   propName: string,
   typedArrayName: keyof TypedArrayPropNameToCtorType,
   startPointerInsideOfStruct: number,
-  returnTypeAsString: string,
+  returnTypeAsString: string
 ) {
   const valueType =
     typedArrayName === "b64" || typedArrayName === "u64" ? "bigint" : "number";

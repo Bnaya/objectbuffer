@@ -10,7 +10,7 @@ export interface TypedArrayPropNameToCtorType {
   readonly f64: Float64ArrayConstructor;
   readonly b64: BigInt64ArrayConstructor;
   readonly u64: BigUint64ArrayConstructor;
-};
+}
 
 export const typedArraysPropNameToCtorMap: TypedArrayPropNameToCtorType = {
   u8: Uint8Array,
