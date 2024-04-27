@@ -27,7 +27,7 @@ for (const bla of a) {
 
 */
 
-export function initLinkedList(carrier: GlobalCarrier) {
+export function initLinkedList(carrier: GlobalCarrier): number {
   const { allocator, heap } = carrier;
   const memoryForLinkedList = allocator.calloc(linkedList_size);
   const memoryForEndMarkerItem = allocator.calloc(linkedListItem_size);
@@ -46,7 +46,7 @@ export function linkedListItemInsert(
   carrier: GlobalCarrier,
   linkedListPointer: number,
   nodeValuePointer: number
-) {
+): number {
   const { allocator, heap } = carrier;
   const newEndMarker = allocator.calloc(linkedListItem_size);
 
@@ -62,7 +62,7 @@ export function linkedListItemInsert(
 export function linkedListItemRemove(
   { heap, allocator }: GlobalCarrier,
   itemPointer: number
-) {
+): void {
   const memoryToFree = linkedListItem_NEXT_POINTER_get(heap, itemPointer);
   linkedListItem_set_all(
     heap,
@@ -110,7 +110,7 @@ export function linkedListLowLevelIterator(
   return iteratedItem;
 }
 
-export function linkedListGetValue(heap: Heap, itemPointer: number) {
+export function linkedListGetValue(heap: Heap, itemPointer: number): number {
   return linkedListItem_VALUE_get(heap, itemPointer);
 }
 

@@ -1,4 +1,18 @@
-export const typedArraysPropNameToCtorMap = {
+export interface TypedArrayPropNameToCtorType {
+  readonly u8: Uint8ArrayConstructor;
+  readonly u8c: Uint8ClampedArrayConstructor;
+  readonly i8: Int8ArrayConstructor;
+  readonly u16: Uint16ArrayConstructor;
+  readonly i16: Int16ArrayConstructor;
+  readonly u32: Uint32ArrayConstructor;
+  readonly i32: Int32ArrayConstructor;
+  readonly f32: Float32ArrayConstructor;
+  readonly f64: Float64ArrayConstructor;
+  readonly b64: BigInt64ArrayConstructor;
+  readonly u64: BigUint64ArrayConstructor;
+};
+
+export const typedArraysPropNameToCtorMap: TypedArrayPropNameToCtorType = {
   u8: Uint8Array,
   u8c: Uint8ClampedArray,
   i8: Int8Array,
@@ -11,8 +25,6 @@ export const typedArraysPropNameToCtorMap = {
   b64: BigInt64Array,
   u64: BigUint64Array,
 } as const;
-
-export type TypedArrayPropNameToCtorType = typeof typedArraysPropNameToCtorMap;
 
 const intermediate1 = Object.entries(typedArraysPropNameToCtorMap).map(
   ([key, value]) => {
