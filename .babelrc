@@ -1,5 +1,20 @@
 {
   "env": {
+    "production": {
+      "presets": [
+        [
+          "@babel/preset-env",
+          {
+            "targets": {
+              "node": "18"
+            },
+            "debug": false,
+            "modules": false
+          }
+        ],
+        "@babel/preset-typescript"
+      ]
+    },
     "development": {
       "presets": [
         [
@@ -8,6 +23,7 @@
             "targets": {
               "node": "current"
             },
+            "debug": false,
             "modules": false
           }
         ],
@@ -24,6 +40,7 @@
             "targets": {
               "node": "current"
             },
+            "debug": false,
             "modules": "cjs"
           }
         ],

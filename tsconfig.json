@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "esnext",
+    "target": "ES2022",
     "module": "commonjs",
     "lib": [
       "ESNext"
@@ -9,7 +9,7 @@
     "checkJs": false,
     "declaration": true,
     "declarationMap": true,
-    "outDir": "./dist",
+    "outDir": "./dist-tsc",
     "rootDir": "./src",
     "emitDeclarationOnly": true,
     "isolatedModules": true,

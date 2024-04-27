@@ -1,5 +1,3 @@
-import { fromEntries } from "../internal/utils";
-
 export const typedArraysPropNameToCtorMap = {
   u8: Uint8Array,
   u8c: Uint8ClampedArray,
@@ -22,7 +20,7 @@ const intermediate1 = Object.entries(typedArraysPropNameToCtorMap).map(
   }
 );
 
-export const typedArrayNameToHeapProp: any = fromEntries(intermediate1);
+export const typedArrayNameToHeapProp: any = Object.fromEntries(intermediate1);
 
 export type Heap = {
   [x in keyof TypedArrayPropNameToCtorType]: InstanceType<
