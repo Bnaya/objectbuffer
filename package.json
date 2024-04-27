@@ -8,7 +8,6 @@
   "types": "./dist/types.d.ts",
   "exports": "./dist/objectbuffer.esm.js",
   "author": "Bnaya Peretz <me@bnaya.net>",
-  "type": "commonjs",
   "repository": {
     "type": "git",
     "url": "git@github.com:Bnaya/objectbuffer.git"
