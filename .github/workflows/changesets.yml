@@ -21,6 +21,8 @@ jobs:
         with:
           node-version: 2.x
 
+      - run: corepack enable
+
       - name: yarn install
         run: yarn --immutable
         shell: bash

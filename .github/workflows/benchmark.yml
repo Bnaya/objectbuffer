@@ -17,6 +17,8 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
 
+      - run: corepack enable
+
       - name: yarn install
         run: yarn --immutable
         shell: bash
