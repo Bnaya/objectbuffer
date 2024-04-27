@@ -10,23 +10,14 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node: [16, 18, 20]
+        node: [18, 20, 22]
     steps:
-      - uses: actions/checkout@v1
-      - uses: actions/setup-node@v1
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node }}
 
-      - name: Cache node modules
-        uses: actions/cache@v2
-        with:
-          path: |
-            node_modules
-            .yarn/cache
-          key: ${{ runner.OS }}-build-${{ hashFiles('**/yarn.lock') }}-${{ hashFiles('.github/workflows/*.yml') }}
-          restore-keys: |
-            ${{ runner.OS }}-build-${{ hashFiles('**/yarn.lock') }}
-            ${{ runner.OS }}-build
+      - run: corepack enable
 
       - name: yarn install
         run: yarn --immutable
@@ -48,7 +39,7 @@ jobs:
           auto-push: true
           # Show alert with commit comment on detecting possible performance regression
           alert-threshold: "110%"
-          comment-always: ${{ matrix.node == 14 }}
+          comment-always: ${{ matrix.node == 30 }}
           comment-on-alert: true
           fail-on-alert: true
           alert-comment-cc-users: "@bnaya"

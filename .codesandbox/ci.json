@@ -3,5 +3,5 @@
     "/codesandbox-examples/sort-array-on-webworker-no-data-copy",
     "/codesandbox-examples/comlink-demo-sort-array-on-webworker-no-data-copy"
   ],
-  "node": "14"
+  "node": "20"
 }
