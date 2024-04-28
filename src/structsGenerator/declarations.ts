@@ -28,7 +28,7 @@ export const objectMapSetStructDeclaration = createStructDeclaration({
 
 export const bigIntPositiveOrNegativeStructDeclaration =
   createStructDeclaration({
-    type: Float64Array,
+    type: BigUint64Array,
     value: BigUint64Array,
   });
 
