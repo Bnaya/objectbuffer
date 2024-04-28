@@ -35,7 +35,7 @@ export function validateAlignment(manifest: StructManifest) {
 export function generateFunctionsCodeForManifest(
   structName: string,
   manifest: StructManifest
-) {
+): string[] {
   let startInStruct = 0;
   const functions: string[] = [
     "\n",
@@ -43,21 +43,33 @@ export function generateFunctionsCodeForManifest(
   ];
 
   for (const [propName, TypedArray] of Object.entries(manifest)) {
+    let retType = "number";
+
+    if (TypedArray.name === "BigInt64Array") {
+      retType = "bigint";
+    }
+
+    if (TypedArray.name === "BigUint64Array") {
+      retType = "bigint";
+    }
+
     functions.push(
       getTemplate(
         structName,
         propName,
         typedArrayNameToHeapProp[TypedArray.name as any],
-        startInStruct
+        startInStruct,
+        retType
       ),
       setTemplate(
         structName,
         propName,
         typedArrayNameToHeapProp[TypedArray.name as any],
-        startInStruct
+        startInStruct,
+        retType
       ),
       `export const ${structName}_${propName}_place = ${startInStruct};`,
-      `export const ${structName}_${propName}_ctor = ${TypedArray.name};`
+      `export const ${structName}_${propName}_ctor: typeof ${TypedArray.name} = ${TypedArray.name};`
     );
     startInStruct += TypedArray.BYTES_PER_ELEMENT;
   }
@@ -77,10 +89,11 @@ function getTemplate(
   structName: string,
   propName: string,
   typedArrayName: keyof TypedArrayPropNameToCtorType,
-  startPointerInsideOfStruct: number
+  startPointerInsideOfStruct: number,
+  returnTypeAsString: string
 ) {
   return `
-  export function ${structName}_${propName}_get(heap: Heap, structPointer: number) {
+  export function ${structName}_${propName}_get(heap: Heap, structPointer: number): ${returnTypeAsString} {
     return heap.${typedArrayName}[(
           structPointer + ${startPointerInsideOfStruct}
           ) / ${typedArraysPropNameToCtorMap[typedArrayName].BYTES_PER_ELEMENT}];
@@ -92,13 +105,14 @@ function setTemplate(
   structName: string,
   propName: string,
   typedArrayName: keyof TypedArrayPropNameToCtorType,
-  startPointerInsideOfStruct: number
+  startPointerInsideOfStruct: number,
+  returnTypeAsString: string
 ) {
   const valueType =
     typedArrayName === "b64" || typedArrayName === "u64" ? "bigint" : "number";
 
   return `
-  export function ${structName}_${propName}_set(heap: Heap, structPointer: number, value: ${valueType}) {
+  export function ${structName}_${propName}_set(heap: Heap, structPointer: number, value: ${valueType}): ${returnTypeAsString} {
     return heap.${typedArrayName}[(
           structPointer + ${startPointerInsideOfStruct}
           ) / ${typedArraysPropNameToCtorMap[typedArrayName].BYTES_PER_ELEMENT}] = value;

@@ -125,11 +125,3 @@ export function isSupportedTopLevelValue(value: unknown) {
     value!.constructor.name !== "Object"
   );
 }
-
-export function fromEntries(iterable: Iterable<unknown>): unknown {
-  // @ts-expect-error we don't care
-  return [...iterable].reduce(function (obj: any, [key, val]) {
-    obj[key] = val;
-    return obj;
-  }, {});
-}

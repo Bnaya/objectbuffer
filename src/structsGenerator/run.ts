@@ -68,7 +68,7 @@ const hashmapNode = generateFunctionsCodeForManifest(
 const all = [
   `/** Generate code. don't try to edit manually **/`,
   `/* istanbul ignore file */`,
-  `import type { Heap } from "../structsGenerator/consts"`,
+  `import type { Heap } from "../structsGenerator/consts";`,
   ...number,
   ...bigint,
   ...date,
