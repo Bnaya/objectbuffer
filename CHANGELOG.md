@@ -1,5 +1,11 @@
 # @bnaya/objectbuffer
 
+## 0.32.1
+
+### Patch Changes
+
+- dbfd111: Remove package exports field
+
 ## 0.32.0
 
 ### Minor Changes
