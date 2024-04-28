@@ -1,5 +1,11 @@
 # @bnaya/objectbuffer
 
+## 0.32.0
+
+### Minor Changes
+
+- 751d61f: Smaller bundle size
+
 ## 0.31.2
 
 ### Patch Changes
