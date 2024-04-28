@@ -6,7 +6,6 @@
   "main": "./dist/objectbuffer.umd.js",
   "module": "./dist/objectbuffer.esm.js",
   "types": "./dist/types.d.ts",
-  "exports": "./dist/objectbuffer.esm.js",
   "author": "Bnaya Peretz <me@bnaya.net>",
   "repository": {
     "type": "git",
