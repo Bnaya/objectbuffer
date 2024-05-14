@@ -120,8 +120,6 @@ export function isSupportedTopLevelValue(value: unknown) {
     value instanceof Map ||
     value instanceof Set ||
     typeof value !== "object" ||
-    typeof value === null ||
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    value!.constructor.name !== "Object"
+    value?.constructor.name !== "Object"
   );
 }
