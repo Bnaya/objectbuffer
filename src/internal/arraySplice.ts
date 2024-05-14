@@ -164,8 +164,8 @@ function calculateSpliceStart(arrayLength: number, startArg: number) {
   return startArg >= arrayLength
     ? arrayLength
     : startArg < 0
-    ? arrayLength + startArg
-    : startArg;
+      ? arrayLength + startArg
+      : startArg;
 }
 
 function calculateDeleteCount(

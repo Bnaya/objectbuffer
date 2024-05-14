@@ -44,8 +44,8 @@ export class TransactionalAllocator implements FunctionalAllocatorWrapper {
         optsOrState.end !== undefined
           ? optsOrState.end
           : optsOrState.size !== undefined
-          ? optsOrState.size
-          : 0x1000;
+            ? optsOrState.size
+            : 0x1000;
 
       this.allocatorState = allocatorInit(
         {
