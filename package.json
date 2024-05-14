@@ -23,6 +23,7 @@
     "object-buffer"
   ],
   "scripts": {
+    "prepare": "husky",
     "lint": "concurrently \"eslint src --ext .js,.jsx,.ts,.tsx\" \"tsc --noEmit --emitDeclarationOnly false\"",
     "test": "jest",
     "test-coverage": "jest --coverage",
