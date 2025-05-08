@@ -15,11 +15,9 @@ jobs:
 
       - name: yarn install
         run: yarn --immutable
-        shell: bash
 
       - name: Static code validation
         run: yarn static-code-validation
-        shell: bash
 
   test:
     runs-on: ubuntu-24.04
@@ -51,7 +49,7 @@ jobs:
 
   build:
     runs-on: ubuntu-24.04
-    needs: [lint, test]
+    needs: [static-code-validation, test]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

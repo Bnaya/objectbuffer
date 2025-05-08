@@ -26,7 +26,7 @@
     "prepare": "husky",
     "lint": "yarn oxlint --deny-warnings src",
     "type-check": "tsc --noEmit --emitDeclarationOnly false",
-    "static-code-validation": "concurrently \"yarn lint\" \"yarn type-check\"",
+    "static-code-validation": "concurrently \"yarn lint\" \"yarn type-check\" \"yarn prettier-check\"",
     "test": "jest",
     "test-coverage": "jest --coverage",
     "build-declarations": "tsc -p tsconfig.build.json --isolatedModules false --declaration true --declarationMap true --noEmit false --emitDeclarationOnly true",
