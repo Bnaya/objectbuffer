@@ -1,0 +1,13 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["oxc", "typescript", "jest"],
+  "env": {
+    "es6": true
+  },
+  "globals": {
+    "SharedArrayBuffer": "readonly",
+    "BigInt": "readonly",
+    "BigInt64Array": "readonly",
+    "BigUint64Array": "readonly"
+  }
+}

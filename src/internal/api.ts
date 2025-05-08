@@ -47,10 +47,7 @@ export function createObjectBuffer<T = any>(
   }
 
   const allocator = new TransactionalAllocator(
-    {
-      start: MEM_POOL_START,
-      size,
-    },
+    { start: MEM_POOL_START, size },
     arrayBufferKind === "shared"
   );
 
@@ -58,10 +55,7 @@ export function createObjectBuffer<T = any>(
 
   initializeArrayBuffer(arrayBuffer);
 
-  const carrier: GlobalCarrier = {
-    allocator,
-    heap: allocator.getHeap(),
-  };
+  const carrier: GlobalCarrier = { allocator, heap: allocator.getHeap() };
 
   const referencedPointers: number[] = [];
 
@@ -149,10 +143,7 @@ export function loadObjectBuffer<T = any>(
 ): T {
   const allocator = TransactionalAllocator.load(arrayBuffer);
 
-  const carrier: GlobalCarrier = {
-    allocator,
-    heap: allocator.getHeap(),
-  };
+  const carrier: GlobalCarrier = { allocator, heap: allocator.getHeap() };
 
   const dv = new DataView(arrayBuffer);
   // endianness flag is always saved in little endian so we can read in every system endianness
@@ -191,10 +182,7 @@ export function unstable_replaceUnderlyingArrayBuffer(
   newArrayBuffer: ArrayBuffer | SharedArrayBuffer
 ) {
   const allocator = TransactionalAllocator.load(newArrayBuffer);
-  const carrier: GlobalCarrier = {
-    allocator,
-    heap: allocator.getHeap(),
-  };
+  const carrier: GlobalCarrier = { allocator, heap: allocator.getHeap() };
 
   const dv = new DataView(newArrayBuffer);
   // endianness flag is always saved in little endian so we can read in every system endianness

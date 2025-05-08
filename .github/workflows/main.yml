@@ -3,8 +3,8 @@ name: General Validity
 on: ["push"]
 
 jobs:
-  lint:
-    runs-on: ubuntu-20.04
+  static-code-validation:
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -17,15 +17,15 @@ jobs:
         run: yarn --immutable
         shell: bash
 
-      - name: Lint
-        run: yarn lint
+      - name: Static code validation
+        run: yarn static-code-validation
         shell: bash
 
   test:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     strategy:
       matrix:
-        node: [18, 20, 22]
+        node: [20, 22, 24]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -50,7 +50,7 @@ jobs:
           github-token: ${{ secrets.github_token }}
 
   build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     needs: [lint, test]
     steps:
       - uses: actions/checkout@v4
