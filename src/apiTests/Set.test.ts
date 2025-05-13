@@ -106,6 +106,7 @@ describe("Set tests", () => {
   });
 
   // bug with deletion during iteration
+  // eslint-disable-next-line no-disabled-tests
   test.skip("iterate + delete compare", () => {
     const nativeMap = new Set(["a", "b"]);
     for (const [key] of nativeMap) {

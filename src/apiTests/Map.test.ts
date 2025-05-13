@@ -109,6 +109,7 @@ describe("Map", () => {
   });
 
   // bug with deletion during iteration
+  // eslint-disable-next-line no-disabled-tests
   test.skip("iterate + delete compare", () => {
     const nativeMap = new Map([
       [1, "a"],

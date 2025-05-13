@@ -107,7 +107,7 @@ describe("next gen", () => {
         ]
       `);
       const statsBeforeFree = stats(allocatorState);
-      expect(statsBeforeFree);
+      expect(statsBeforeFree).toBeDefined();
 
       free(allocatorState, allocatedPointer1);
       expect(listFreeBlocks(allocatorState)).toHaveLength(1);

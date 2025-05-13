@@ -3,8 +3,9 @@ import { memoryStats } from "../internal/api";
 
 /* eslint-env jest */
 
+// eslint-disable-next-line no-disabled-tests
 describe.skip("primitivesMemoryReuse", () => {
-  test("test number / bigint reuse", () => {
+  test("number / bigint reuse", () => {
     const objectBuffer = createObjectBuffer(128, {
       num: 1 as number | bigint,
     });
@@ -39,7 +40,7 @@ describe.skip("primitivesMemoryReuse", () => {
     `);
   });
 
-  test("test null/undefined reuse", () => {
+  test("null/undefined reuse", () => {
     const objectBuffer = createObjectBuffer(128, {
       nullContainer: null as null | undefined,
     });
@@ -67,7 +68,7 @@ describe.skip("primitivesMemoryReuse", () => {
     `);
   });
 
-  test("test boolean reuse", () => {
+  test("boolean reuse", () => {
     const objectBuffer = createObjectBuffer(128, {
       booleanContainer: false,
     });
