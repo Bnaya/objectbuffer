@@ -9,5 +9,13 @@
     "BigInt": "readonly",
     "BigInt64Array": "readonly",
     "BigUint64Array": "readonly"
+  },
+  "rules": {
+    "vitest/expect-expect": [
+      "error",
+      {
+        "assertFunctionNames": ["expect", "assert"]
+      }
+    ]
   }
 }

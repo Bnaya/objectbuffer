@@ -257,6 +257,7 @@ describe("malloc functional", () => {
   });
 
   // We have tests in the other file
+  // eslint-disable-next-line no-disabled-tests
   it.skip("realloc", () => {
     const a = malloc(allocatorState, 8);
     allocatorState.u8.fill(0xff, a, a + 8);
@@ -307,6 +308,7 @@ describe("malloc functional", () => {
   // });
 
   // We now have merge on by default
+  // eslint-disable-next-line no-disabled-tests
   it.skip("no compact", () => {
     allocatorState = allocatorInit({
       size: 0x100,

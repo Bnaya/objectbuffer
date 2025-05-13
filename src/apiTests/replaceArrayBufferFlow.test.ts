@@ -9,7 +9,7 @@ import {
 import { arrayBufferCopyTo } from "../internal/utils";
 
 describe("replaceArrayBufferFlow", () => {
-  test("test unstable_replaceUnderlyingArrayBuffer works", () => {
+  test("unstable_replaceUnderlyingArrayBuffer works", () => {
     const objectBuffer = createObjectBuffer<any>(512, {
       a: 1,
     });
@@ -33,7 +33,7 @@ describe("replaceArrayBufferFlow", () => {
     `);
   });
 
-  test("test unstable_resizeObjectBuffer works", () => {
+  test("unstable_resizeObjectBuffer works", () => {
     const objectBuffer = createObjectBuffer<any>(4096, {
       obj1: { a: 1 },
     });

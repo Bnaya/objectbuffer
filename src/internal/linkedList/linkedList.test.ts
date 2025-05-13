@@ -176,6 +176,7 @@ describe("LinkedList", () => {
     expect(carrier.allocator.stats().top).toMatchInlineSnapshot(`168`);
   });
 
+  // eslint-disable-next-line no-disabled-tests
   test.skip("linkedList linkedListLowLevelIterator - delete while iteration - delete current value", () => {
     const linkedListPointer = initLinkedList(carrier);
 
@@ -308,6 +309,7 @@ describe("LinkedList", () => {
     const { allocations } = recordAllocations(() => {
       linkedListPointer = initLinkedList(carrier);
 
+      // eslint-disable-next-line no-standalone-expect
       expect(carrier.allocator.stats().top).toMatchInlineSnapshot(`96`);
 
       let toAdd: undefined | number = 0;
@@ -350,6 +352,7 @@ describe("LinkedList", () => {
     const { allocations } = recordAllocations(() => {
       linkedListPointer = initLinkedList(carrier);
 
+      // eslint-disable-next-line no-standalone-expect
       expect(carrier.allocator.stats().top).toMatchInlineSnapshot(`96`);
 
       let toAdd: undefined | number = 0;
