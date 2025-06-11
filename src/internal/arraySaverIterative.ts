@@ -8,7 +8,7 @@ export function arraySaverIterative(
   valuesToSave: unknown[],
   pointersToSaveTo: number[],
   arrayToSave: unknown[]
-) {
+): number {
   const arrayLength = arrayToSave.length;
 
   const arrayStructPointer = carrier.allocator.calloc(array_size);

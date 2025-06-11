@@ -20,7 +20,7 @@ export function objectSaverIterative(
   savedValuesToPointer: Map<unknown, number>,
   referencedExistingPointers: number[],
   objectToSave: any
-) {
+): number {
   const { heap, allocator } = carrier;
   const pointerToStruct = allocator.malloc(object_size);
 
@@ -82,7 +82,7 @@ export function mapSaverIterative(
   savedValuesToPointer: Map<unknown, number>,
   referencedExistingPointers: number[],
   mapToSave: Map<unknown, unknown>
-) {
+): number {
   const { heap, allocator } = carrier;
   const pointerToStruct = allocator.malloc(object_size);
 
@@ -139,7 +139,7 @@ export function setSaverIterative(
   savedValuesToPointer: Map<unknown, number>,
   referencedExistingPointers: number[],
   setToSave: Set<unknown>
-) {
+): number {
   const { heap, allocator } = carrier;
 
   const pointerToStruct = allocator.malloc(object_size);

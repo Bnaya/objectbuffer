@@ -6,7 +6,7 @@ import { getAddressesNoLongerUsedArrayForCarrier } from "./stateModule";
 /**
  * Possible optimization: write smarter algo that process all the addresses in one pass
  */
-export function freeNoLongerUsedAddresses(carrier: GlobalCarrier) {
+export function freeNoLongerUsedAddresses(carrier: GlobalCarrier): void {
   const l = getAddressesNoLongerUsedArrayForCarrier(carrier);
 
   let memoryAddress;

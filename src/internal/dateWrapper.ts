@@ -76,7 +76,7 @@ export class DateWrapper extends BaseProxyTrap implements ProxyHandler<Date> {
     this.useMeToGiveNamesToFunctionsAndCacheThem = {};
   }
 
-  get(target: Date, p: PropertyKey) {
+  get(target: Date, p: PropertyKey): any {
     if (p === INTERNAL_API_SYMBOL) {
       return this;
     }

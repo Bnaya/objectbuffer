@@ -11,7 +11,7 @@ const addressesNoLongerUsed = new WeakMap<GlobalCarrier, number[]>();
 
 export function getAddressesNoLongerUsedArrayForCarrier(
   carrier: GlobalCarrier
-) {
+): number[] {
   let l = addressesNoLongerUsed.get(carrier);
 
   if (l === undefined) {
@@ -32,7 +32,7 @@ export function getCacheFor<T extends {}>(
   // eslint-disable-next-line @typescript-eslint/ban-types
   obj: T,
   externalFinalizer?: (carrier: T, key: number) => void
-) {
+): Map<number, any> {
   let map = externalObjectsCache.get(obj);
 
   if (!map) {

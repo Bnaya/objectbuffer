@@ -5,7 +5,7 @@ import {
   string_charsPointer_get,
 } from "./generatedStructs";
 
-export function readString(heap: Heap, stringEntryPointer: number) {
+export function readString(heap: Heap, stringEntryPointer: number): string {
   return stringDecode(
     heap.u8,
     string_charsPointer_get(heap, stringEntryPointer),

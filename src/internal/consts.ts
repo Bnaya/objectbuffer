@@ -1,8 +1,8 @@
 export const GLOBAL_LOCK_OFFSET = 0;
-export const INITIAL_ENTRY_POINTER_TO_POINTER =
+export const INITIAL_ENTRY_POINTER_TO_POINTER: number =
   GLOBAL_LOCK_OFFSET + Uint32Array.BYTES_PER_ELEMENT;
 
-export const ENDIANNESS_FLAG_POINTER =
+export const ENDIANNESS_FLAG_POINTER: number =
   INITIAL_ENTRY_POINTER_TO_POINTER + Uint32Array.BYTES_PER_ELEMENT;
 
 export enum ENDIANNESS {
@@ -10,17 +10,17 @@ export enum ENDIANNESS {
   LITTLE,
 }
 
-export const TEMP_SAVE_POINTER =
+export const TEMP_SAVE_POINTER: number =
   ENDIANNESS_FLAG_POINTER + Uint32Array.BYTES_PER_ELEMENT;
 
-export const INITIAL_ENTRY_POINTER_VALUE =
+export const INITIAL_ENTRY_POINTER_VALUE: number =
   TEMP_SAVE_POINTER + Uint32Array.BYTES_PER_ELEMENT;
 
-export const MEM_POOL_START =
+export const MEM_POOL_START: number =
   INITIAL_ENTRY_POINTER_VALUE + Uint32Array.BYTES_PER_ELEMENT;
 
 export const UNDEFINED_KNOWN_ADDRESS = 0;
 export const NULL_KNOWN_ADDRESS = 1;
 export const TRUE_KNOWN_ADDRESS = 2;
 export const FALSE_KNOWN_ADDRESS = 3;
-export const MAX_64_BIG_INT = BigInt("0xFFFFFFFFFFFFFFFF");
+export const MAX_64_BIG_INT: bigint = BigInt("0xFFFFFFFFFFFFFFFF");

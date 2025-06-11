@@ -144,7 +144,7 @@ export function getObjectOrMapOrSetAddresses(
   internalHashmapPointer: number,
   leafAddresses: Set<number>,
   addressesToProcessQueue: number[]
-) {
+): void {
   hashMapGetPointersToFreeV2(
     heap,
     internalHashmapPointer,

@@ -1,7 +1,7 @@
 /* istanbul ignore file */
 // https://github.com/anonyco/FastestSmallestTextEncoderDecoder/blob/master/EncoderDecoderTogether.src.js
 // https://developer.mozilla.org/en-US/docs/Web/API/TextEncoder#Polyfill
-export function stringLengthV2(str: string) {
+export function stringLengthV2(str: string): number {
   const strLen = str.length;
   let resPos = -1;
 

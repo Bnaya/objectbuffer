@@ -19,7 +19,7 @@ function validateNames(manifest: StructManifest) {
   }
 }
 
-export function validateAlignment(manifest: StructManifest) {
+export function validateAlignment(manifest: StructManifest): void {
   const arr = Object.values(manifest);
 
   let locationInStruct = 0;

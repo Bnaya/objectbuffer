@@ -91,7 +91,11 @@ export function allocatorInit(
 /**
  * For testing purposes
  */
-export function listAllAllocatedPointers(allocatorState: AllocatorState) {
+export function listAllAllocatedPointers(allocatorState: AllocatorState): {
+  blockPointer: number;
+  pointer: number;
+  size: number;
+}[] {
   const pointers: Array<{
     blockPointer: number;
     pointer: number;
@@ -480,7 +484,7 @@ export function stats(
 /**
  * To be used after ArrayBuffer change
  */
-export function setEnd(allocatorState: AllocatorState, newEnd: number) {
+export function setEnd(allocatorState: AllocatorState, newEnd: number): void {
   set_end(allocatorState.state, newEnd);
 }
 

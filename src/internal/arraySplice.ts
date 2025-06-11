@@ -21,7 +21,7 @@ export function arraySplice(
   startArg: number,
   deleteCountArg?: number,
   ...itemsToAddArg: Array<any>
-) {
+): any[] {
   const arrayLength = array_length_get(carrier.heap, pointerToArrayEntry);
 
   const calcedStart = calculateSpliceStart(arrayLength, startArg);

@@ -59,7 +59,7 @@ export function createHashMap(
    * number of buckets
    */
   initialCapacity = 10
-) {
+): number {
   const { heap, allocator } = carrier;
   const hashMapMemory = allocator.calloc(hashmap_size);
   const arrayMemory = allocator.calloc(
@@ -91,7 +91,7 @@ export function hashMapInsertUpdateKeyIsPointerReturnNode(
   carrier: GlobalCarrier,
   mapPointer: number,
   keyPointer: number
-) {
+): number {
   const { heap, allocator } = carrier;
   // allocate all possible needed memory upfront, so we won't oom in the middle of something
   // in case of overwrite, we will not need this memory
@@ -201,7 +201,7 @@ export function hashMapInsertUpdate(
   carrier: GlobalCarrier,
   mapPointer: number,
   externalKeyValue: number | string
-) {
+): number {
   const { heap, allocator } = carrier;
   // allocate all possible needed memory upfront, so we won't oom in the middle of something
   // in case of overwrite, we will not need this memory
@@ -343,7 +343,7 @@ export function hashMapNodeLookup(
   heap: Heap,
   mapPointer: number,
   externalKeyValue: number | string
-) {
+): number {
   const bucket =
     hashCodeExternalValue(externalKeyValue) %
     hashmap_CAPACITY_get(heap, mapPointer);
@@ -377,7 +377,7 @@ export function hashMapValueLookup(
   heap: Heap,
   mapPointer: number,
   externalKeyValue: number | string
-) {
+): number {
   const nodePtrToPtr = hashMapNodeLookup(heap, mapPointer, externalKeyValue);
 
   if (nodePtrToPtr === 0) {
@@ -397,7 +397,7 @@ export function hashMapDelete(
   carrier: GlobalCarrier,
   mapPointer: number,
   externalKeyValue: number | string
-) {
+): number {
   const { heap, allocator } = carrier;
   const foundNodePtrToPtr = hashMapNodeLookup(
     heap,
@@ -456,7 +456,7 @@ export function hashMapLowLevelIterator(
   heap: Heap,
   mapPointer: number,
   nodePointerIteratorToken: number
-) {
+): number {
   let tokenToUseForLinkedListIterator = 0;
 
   if (nodePointerIteratorToken !== 0) {
@@ -479,19 +479,19 @@ export function hashMapLowLevelIterator(
   return linkedListGetValue(heap, pointerToNextLinkedListItem);
 }
 
-export function hashMapNodePointerToValue(nodePointer: number) {
+export function hashMapNodePointerToValue(nodePointer: number): number {
   return nodePointer + hashmapNode_VALUE_POINTER_place;
 }
 
-export function hashMapNodePointerToKey(heap: Heap, nodePointer: number) {
+export function hashMapNodePointerToKey(heap: Heap, nodePointer: number): number {
   return hashmapNode_KEY_POINTER_get(heap, nodePointer);
 }
 
-export function hashMapSize(heap: Heap, mapPointer: number) {
+export function hashMapSize(heap: Heap, mapPointer: number): number {
   return hashmap_LINKED_LIST_SIZE_get(heap, mapPointer);
 }
 
-export function hashMapCapacity(heap: Heap, mapPointer: number) {
+export function hashMapCapacity(heap: Heap, mapPointer: number): number {
   return hashmap_CAPACITY_get(heap, mapPointer);
 }
 
@@ -500,7 +500,7 @@ export function hashMapGetPointersToFreeV2(
   hashmapPointer: number,
   leafAddresses: Set<number>,
   addressesToProcessQueue: number[]
-) {
+): void {
   leafAddresses.add(hashmapPointer);
   leafAddresses.add(hashmap_ARRAY_POINTER_get(heap, hashmapPointer));
   leafAddresses.add(hashmap_LINKED_LIST_POINTER_get(heap, hashmapPointer));
@@ -602,7 +602,7 @@ function shouldRehash(
   return fullBuckets / buckets > loadFactor;
 }
 
-export function* hashmapNodesPointerIterator(heap: Heap, mapPointer: number) {
+export function* hashmapNodesPointerIterator(heap: Heap, mapPointer: number): Generator<number, void, unknown> {
   let iteratorToken = 0;
 
   while (

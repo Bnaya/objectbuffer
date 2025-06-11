@@ -65,7 +65,7 @@ export class ObjectWrapper
     return gotEntries.map((e) => e.key);
   }
 
-  public ownKeys() {
+  public ownKeys(): string[] {
     const gotEntries = getObjectPropertiesEntries(
       this.carrier,
       object_pointerToHashMap_get(this.carrier.heap, this.entryPointer)
@@ -77,7 +77,10 @@ export class ObjectWrapper
   public getOwnPropertyDescriptor(
     target: Record<string, unknown>,
     p: PropertyKey
-  ) {
+  ): {
+    readonly configurable: true;
+    readonly enumerable: true;
+  } | undefined {
     if (this.has(target, p)) {
       return getOwnPropertyDescriptorHAS;
     }
@@ -85,7 +88,7 @@ export class ObjectWrapper
     return undefined;
   }
 
-  public has(target: Record<string, unknown>, p: PropertyKey) {
+  public has(target: Record<string, unknown>, p: PropertyKey): boolean {
     if (p === INTERNAL_API_SYMBOL) {
       return true;
     }

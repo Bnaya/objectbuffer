@@ -11,27 +11,27 @@ export abstract class BaseProxyTrap implements InternalAPI {
     incrementRefCount(this.carrier.heap, this.entryPointer);
   }
 
-  public destroy() {
+  public destroy(): void {
     this._entryPointer = 0;
   }
 
-  public getCarrier() {
+  public getCarrier(): GlobalCarrier {
     return this.carrier;
   }
 
-  public replaceCarrierContent(newCarrierContent: GlobalCarrier) {
+  public replaceCarrierContent(newCarrierContent: GlobalCarrier): void {
     Object.assign(this.carrier, newCarrierContent);
   }
 
-  public getEntryPointer() {
+  public getEntryPointer(): number {
     return this.entryPointer;
   }
 
-  public getExternalArgs() {
+  public getExternalArgs(): ExternalArgs {
     return this.externalArgs;
   }
 
-  protected get entryPointer() {
+  protected get entryPointer(): number {
     if (this._entryPointer === 0) {
       throw new WrapperDestroyed();
     }

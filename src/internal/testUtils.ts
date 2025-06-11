@@ -10,24 +10,25 @@ import {
   TransactionalAllocator,
 } from "./TransactionalAllocator";
 
-export function getArrayBufferOnTopSize(ob: unknown) {
+export function getArrayBufferOnTopSize(ob: unknown): Uint8Array<ArrayBuffer> {
   const stats = memoryStats(ob);
   const carrier = getInternalAPI(ob).getCarrier();
   return carrier.heap.u8.slice(0, stats.top);
 }
 
 export function arrayBuffer2HexArray(
-  buffer: ArrayBuffer,
+  buffer: ArrayBufferLike | Uint8Array,
   withByteNumber = false
-) {
+): unknown[] {
   if (withByteNumber) {
     return Array.prototype.map.call(
-      new Uint8Array(buffer),
+      buffer instanceof Uint8Array ? buffer : new Uint8Array(buffer),
       (x: number, index) => `${index}:${x.toString(16).padStart(4, "0x")}`
     );
   }
-  return Array.prototype.map.call(new Uint8Array(buffer), (x: number) =>
-    x.toString(16).padStart(4, "0x")
+  return Array.prototype.map.call(
+    buffer instanceof Uint8Array ? buffer : new Uint8Array(buffer),
+    (x: number) => x.toString(16).padStart(4, "0x")
   );
 }
 
@@ -35,7 +36,7 @@ export function arrayBuffer2HexArray(
 export function recordAllocations(
   operation: () => void,
   pool: FunctionalAllocatorWrapper
-) {
+): { allocations: number[]; deallocations: number[] } {
   const allocations = new Set<number>();
   const deallocations = new Set<number>();
 
@@ -104,7 +105,7 @@ export function recordAllocations(
   return { allocations: [...allocations], deallocations: [...deallocations] };
 }
 
-export function makeCarrier(size: number) {
+export function makeCarrier(size: number): GlobalCarrier {
   const allocator = new TransactionalAllocator({
     size,
   });
@@ -117,7 +118,7 @@ export function makeCarrier(size: number) {
   return carrier;
 }
 
-export function sleep(ms: number) {
+export function sleep(ms: number): Promise<void> {
   return new Promise((res) => {
     setTimeout(res, ms);
   });

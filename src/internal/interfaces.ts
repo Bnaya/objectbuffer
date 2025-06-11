@@ -58,3 +58,6 @@ export interface InternalAPI {
   getEntryPointer(): number;
   destroy(): void;
 }
+
+// A mode backward compat ArrayBufferLike
+export type OurArrayBuffer = ArrayBuffer | SharedArrayBuffer;

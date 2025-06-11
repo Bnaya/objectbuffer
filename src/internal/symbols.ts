@@ -1,1 +1,1 @@
-export const INTERNAL_API_SYMBOL = Symbol("INTERNAL_API");
+export const INTERNAL_API_SYMBOL: unique symbol = Symbol("INTERNAL_API");

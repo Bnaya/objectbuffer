@@ -12,7 +12,7 @@ export function hashCodeExternalValue(value: string | number): number {
 const helperFloatArray = new Float64Array(1);
 const helperUint8Array = new Uint8Array(helperFloatArray.buffer);
 
-export function hashNumber(num: number) {
+export function hashNumber(num: number): number {
   helperFloatArray[0] = num;
 
   return hashUint8CodeInPlace(helperUint8Array, 0, helperUint8Array.byteLength);
@@ -42,7 +42,7 @@ function hashStep(h: number, v: number) {
   return (Math.imul(31, h) + v) | 0;
 }
 
-export function hashString(str: string) {
+export function hashString(str: string): number {
   const strLen = str.length;
   let h = 0 | 0;
 

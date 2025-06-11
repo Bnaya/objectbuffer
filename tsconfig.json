@@ -13,6 +13,7 @@
     "rootDir": "./src",
     "emitDeclarationOnly": true,
     "isolatedModules": true,
+    "isolatedDeclarations": true,
     "strict": true,
     "types": [
       "jest",

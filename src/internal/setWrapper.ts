@@ -21,6 +21,29 @@ export class SetWrapper<K extends string | number>
   extends BaseProxyTrap
   implements Set<K>
 {
+  union<U>(other: ReadonlySetLike<U>): Set<K | U> {
+    throw new Error("Method not implemented.");
+  }
+  intersection<U>(other: ReadonlySetLike<U>): Set<K & U> {
+    throw new Error("Method not implemented.");
+  }
+  difference<U>(other: ReadonlySetLike<U>): Set<K> {
+    throw new Error("Method not implemented.");
+  }
+  symmetricDifference<U>(other: ReadonlySetLike<U>): Set<K | U> {
+    throw new Error("Method not implemented.");
+  }
+  isSubsetOf(other: ReadonlySetLike<unknown>): boolean {
+    throw new Error("Method not implemented.");
+  }
+  isSupersetOf(other: ReadonlySetLike<unknown>): boolean {
+    throw new Error("Method not implemented.");
+  }
+  isDisjointFrom(other: ReadonlySetLike<unknown>): boolean {
+    throw new Error("Method not implemented.");
+  }
+
+
   clear(): void {
     mapOrSetClear(this.externalArgs, this.carrier, this.entryPointer);
   }
@@ -41,11 +64,11 @@ export class SetWrapper<K extends string | number>
     );
   }
 
-  [Symbol.iterator](): IterableIterator<K> {
+  [Symbol.iterator](): SetIterator<K> {
     return this.keys();
   }
 
-  *entries(): IterableIterator<[K, K]> {
+  *entries(): SetIterator<[K, K]> {
     for (const nodePointer of hashmapNodesPointerIterator(
       this.carrier.heap,
       object_pointerToHashMap_get(this.carrier.heap, this.entryPointer)
@@ -62,7 +85,7 @@ export class SetWrapper<K extends string | number>
     }
   }
 
-  *keys(): IterableIterator<K> {
+  *keys(): SetIterator<K> {
     for (const nodePointer of hashmapNodesPointerIterator(
       this.carrier.heap,
       object_pointerToHashMap_get(this.carrier.heap, this.entryPointer)
@@ -72,7 +95,7 @@ export class SetWrapper<K extends string | number>
       yield entryToFinalJavaScriptValue(this.externalArgs, this.carrier, t);
     }
   }
-  *values(): IterableIterator<K> {
+  *values(): SetIterator<K> {
     for (const nodePointer of hashmapNodesPointerIterator(
       this.carrier.heap,
       object_pointerToHashMap_get(this.carrier.heap, this.entryPointer)
@@ -83,7 +106,7 @@ export class SetWrapper<K extends string | number>
     }
   }
 
-  get [Symbol.toStringTag]() {
+  get [Symbol.toStringTag](): string {
     return Set.prototype[Symbol.toStringTag];
   }
 
@@ -91,11 +114,11 @@ export class SetWrapper<K extends string | number>
     return this;
   }
 
-  static get [Symbol.species]() {
+  static get [Symbol.species](): SetConstructor {
     return Set;
   }
 
-  public has(p: string | number) {
+  public has(p: string | number): boolean {
     if (!(typeof p === "string" || typeof p === "number")) {
       return false;
     }
@@ -109,7 +132,7 @@ export class SetWrapper<K extends string | number>
     );
   }
 
-  public add(p: string | number) {
+  public add(p: string | number): this {
     if (!(typeof p === "string" || typeof p === "number")) {
       return this;
     }
