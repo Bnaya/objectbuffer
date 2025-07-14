@@ -20,25 +20,25 @@ export class SetWrapper<K extends string | number>
   extends BaseProxyTrap
   implements Set<K>
 {
-  union<U>(other: ReadonlySetLike<U>): Set<K | U> {
+  union<U>(_other: ReadonlySetLike<U>): Set<K | U> {
     throw new Error("Method not implemented.");
   }
-  intersection<U>(other: ReadonlySetLike<U>): Set<K & U> {
+  intersection<U>(_other: ReadonlySetLike<U>): Set<K & U> {
     throw new Error("Method not implemented.");
   }
-  difference<U>(other: ReadonlySetLike<U>): Set<K> {
+  difference<U>(_other: ReadonlySetLike<U>): Set<K> {
     throw new Error("Method not implemented.");
   }
-  symmetricDifference<U>(other: ReadonlySetLike<U>): Set<K | U> {
+  symmetricDifference<U>(_other: ReadonlySetLike<U>): Set<K | U> {
     throw new Error("Method not implemented.");
   }
-  isSubsetOf(other: ReadonlySetLike<unknown>): boolean {
+  isSubsetOf(_other: ReadonlySetLike<unknown>): boolean {
     throw new Error("Method not implemented.");
   }
-  isSupersetOf(other: ReadonlySetLike<unknown>): boolean {
+  isSupersetOf(_other: ReadonlySetLike<unknown>): boolean {
     throw new Error("Method not implemented.");
   }
-  isDisjointFrom(other: ReadonlySetLike<unknown>): boolean {
+  isDisjointFrom(_other: ReadonlySetLike<unknown>): boolean {
     throw new Error("Method not implemented.");
   }
 
