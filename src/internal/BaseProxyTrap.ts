@@ -1,6 +1,13 @@
 import type { ExternalArgs, GlobalCarrier, InternalAPI } from "./interfaces";
 import { incrementRefCount } from "./store";
 import { WrapperDestroyed } from "./exceptions";
+import { INTERNAL_API_SYMBOL } from "./symbols";
+
+// See https://github.com/microsoft/TypeScript/issues/61892#issuecomment-2989433469
+// oxlint-disable-next-line no-unsafe-declaration-merging
+export interface BaseProxyTrap {
+  [INTERNAL_API_SYMBOL](): InternalAPI;
+}
 
 export abstract class BaseProxyTrap implements InternalAPI {
   constructor(
@@ -9,6 +16,10 @@ export abstract class BaseProxyTrap implements InternalAPI {
     protected _entryPointer: number
   ) {
     incrementRefCount(this.carrier.heap, this.entryPointer);
+    // See https://github.com/microsoft/TypeScript/issues/61892#issuecomment-2989433469
+    this[INTERNAL_API_SYMBOL] = () => {
+      return this;
+    };
   }
 
   public destroy(): void {

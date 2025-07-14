@@ -1,11 +1,10 @@
-import type { ExternalArgs, GlobalCarrier, InternalAPI } from "./interfaces";
+import type { ExternalArgs, GlobalCarrier } from "./interfaces";
 import {
   deleteObjectPropertyEntryByKey,
   objectSet,
   mapOrSetClear,
 } from "./objectWrapperHelpers";
 
-import { INTERNAL_API_SYMBOL } from "./symbols";
 
 import { BaseProxyTrap } from "./BaseProxyTrap";
 import {
@@ -108,10 +107,6 @@ export class SetWrapper<K extends string | number>
 
   get [Symbol.toStringTag](): string {
     return Set.prototype[Symbol.toStringTag];
-  }
-
-  get [INTERNAL_API_SYMBOL](): InternalAPI {
-    return this;
   }
 
   static get [Symbol.species](): SetConstructor {

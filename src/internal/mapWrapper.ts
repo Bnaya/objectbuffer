@@ -1,4 +1,4 @@
-import type { ExternalArgs, GlobalCarrier, InternalAPI } from "./interfaces";
+import type { ExternalArgs, GlobalCarrier } from "./interfaces";
 import {
   deleteObjectPropertyEntryByKey,
   objectGet,
@@ -6,7 +6,6 @@ import {
   mapOrSetClear,
 } from "./objectWrapperHelpers";
 
-import { INTERNAL_API_SYMBOL } from "./symbols";
 import { BaseProxyTrap } from "./BaseProxyTrap";
 import {
   hashMapNodeLookup,
@@ -100,11 +99,6 @@ export class MapWrapper<K extends string | number, V>
 
   get [Symbol.toStringTag](): string {
     return Map.prototype[Symbol.toStringTag];
-  }
-
-  // https://github.com/microsoft/TypeScript/issues/58800
-  get [INTERNAL_API_SYMBOL](): InternalAPI {
-    return this;
   }
 
   static get [Symbol.species](): MapConstructor {
