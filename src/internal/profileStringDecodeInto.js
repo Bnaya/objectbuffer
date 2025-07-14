@@ -17,7 +17,7 @@ function stringEncodeInto2(uint8, from, str) {
   const resArr = uint8;
 
   for (let point = 0, nextCode = 0, i = 0; i !== strLen; ) {
-    (point = str.charCodeAt(i)), (i += 1);
+    ((point = str.charCodeAt(i)), (i += 1));
     if (point >= 0xd800 && point <= 0xdbff) {
       if (i === strLen) {
         resArr[(resPos += 1)] = 0xef /*0b11101111*/;

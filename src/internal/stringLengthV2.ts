@@ -6,7 +6,7 @@ export function stringLengthV2(str: string): number {
   let resPos = -1;
 
   for (let point = 0, nextCode = 0, i = 0; i !== strLen; ) {
-    (point = str.charCodeAt(i)), (i += 1);
+    ((point = str.charCodeAt(i)), (i += 1));
     if (point >= 0xd800 && point <= 0xdbff) {
       if (i === strLen) {
         resPos += 3;

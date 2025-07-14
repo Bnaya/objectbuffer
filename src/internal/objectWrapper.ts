@@ -77,10 +77,12 @@ export class ObjectWrapper
   public getOwnPropertyDescriptor(
     target: Record<string, unknown>,
     p: PropertyKey
-  ): {
-    readonly configurable: true;
-    readonly enumerable: true;
-  } | undefined {
+  ):
+    | {
+        readonly configurable: true;
+        readonly enumerable: true;
+      }
+    | undefined {
     if (this.has(target, p)) {
       return getOwnPropertyDescriptorHAS;
     }

@@ -867,5 +867,5 @@ function blockSelfAddress(dataAddress: number): number {
  * @param size - alignment value
  */
 export function align(addr: number, size: Pow2): number {
-  return size--, (addr + size) & ~size;
+  return (size--, (addr + size) & ~size);
 }

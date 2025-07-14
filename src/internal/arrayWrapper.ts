@@ -84,14 +84,20 @@ export class ArrayWrapper
     );
   }
 
-  public getOwnPropertyDescriptor(target: Record<string, unknown>, prop: any): {
-    readonly configurable: false;
-    readonly enumerable: false;
-    readonly writable: true;
-  } | {
-    readonly configurable: false;
-    readonly enumerable: true;
-  } | undefined {
+  public getOwnPropertyDescriptor(
+    target: Record<string, unknown>,
+    prop: any
+  ):
+    | {
+        readonly configurable: false;
+        readonly enumerable: false;
+        readonly writable: true;
+      }
+    | {
+        readonly configurable: false;
+        readonly enumerable: true;
+      }
+    | undefined {
     if (prop === "length") {
       return getOwnPropertyDescriptorLENGTH;
     }

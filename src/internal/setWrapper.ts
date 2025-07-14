@@ -5,7 +5,6 @@ import {
   mapOrSetClear,
 } from "./objectWrapperHelpers";
 
-
 import { BaseProxyTrap } from "./BaseProxyTrap";
 import {
   hashMapNodeLookup,
@@ -41,7 +40,6 @@ export class SetWrapper<K extends string | number>
   isDisjointFrom(_other: ReadonlySetLike<unknown>): boolean {
     throw new Error("Method not implemented.");
   }
-
 
   clear(): void {
     mapOrSetClear(this.externalArgs, this.carrier, this.entryPointer);

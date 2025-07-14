@@ -58,7 +58,10 @@ export function saveStringOrNumber(
   }
 }
 
-export function saveString({ heap, allocator }: GlobalCarrier, value: string): number {
+export function saveString(
+  { heap, allocator }: GlobalCarrier,
+  value: string
+): number {
   const stringBytesLength = stringLengthV2(value);
   const stringDataPointer = allocator.calloc(stringBytesLength);
   stringEncodeInto(heap.u8, stringDataPointer, value);
@@ -76,7 +79,10 @@ export function saveString({ heap, allocator }: GlobalCarrier, value: string): n
   return stringPointer;
 }
 
-export function saveNumber({ heap, allocator }: GlobalCarrier, value: number): number {
+export function saveNumber(
+  { heap, allocator }: GlobalCarrier,
+  value: number
+): number {
   const numberPointer = allocator.calloc(number_size);
 
   number_set_all(heap, numberPointer, ENTRY_TYPE.NUMBER, value);
@@ -322,7 +328,10 @@ export function compareStringOrNumberEntriesInPlace(
   );
 }
 
-export function readNumberOrString(heap: Heap, pointer: number): string | number {
+export function readNumberOrString(
+  heap: Heap,
+  pointer: number
+): string | number {
   const type: ENTRY_TYPE.NUMBER | ENTRY_TYPE.STRING = typeOnly_type_get(
     heap,
     pointer

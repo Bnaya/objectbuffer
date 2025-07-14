@@ -108,7 +108,9 @@ export class WeakValueMap<K, V> implements Map<K, V> {
     this.map.clear();
   }
 
-  *[Symbol.iterator](type?: typeof KEYS | typeof VALUES | typeof KEYS_VALUES): MapIterator<[K, V]> {
+  *[Symbol.iterator](
+    type?: typeof KEYS | typeof VALUES | typeof KEYS_VALUES
+  ): MapIterator<[K, V]> {
     for (const [key, weak] of this.map) {
       const v = weak.deref();
       if (v === undefined) {

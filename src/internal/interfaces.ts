@@ -58,7 +58,7 @@ export interface InternalAPI {
   replaceCarrierContent(carrier: GlobalCarrier): void;
   getEntryPointer(): number;
   destroy(): void;
-  [INTERNAL_API_SYMBOL]() : InternalAPI;
+  [INTERNAL_API_SYMBOL](): InternalAPI;
 }
 
 // A mode backward compat ArrayBufferLike

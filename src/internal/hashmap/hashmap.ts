@@ -483,7 +483,10 @@ export function hashMapNodePointerToValue(nodePointer: number): number {
   return nodePointer + hashmapNode_VALUE_POINTER_place;
 }
 
-export function hashMapNodePointerToKey(heap: Heap, nodePointer: number): number {
+export function hashMapNodePointerToKey(
+  heap: Heap,
+  nodePointer: number
+): number {
   return hashmapNode_KEY_POINTER_get(heap, nodePointer);
 }
 
@@ -602,7 +605,10 @@ function shouldRehash(
   return fullBuckets / buckets > loadFactor;
 }
 
-export function* hashmapNodesPointerIterator(heap: Heap, mapPointer: number): Generator<number, void, unknown> {
+export function* hashmapNodesPointerIterator(
+  heap: Heap,
+  mapPointer: number
+): Generator<number, void, unknown> {
   let iteratorToken = 0;
 
   while (
