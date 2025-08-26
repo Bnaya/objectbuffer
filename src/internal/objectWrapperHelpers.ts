@@ -88,7 +88,7 @@ export function objectSet(
   hashMapPointer: number,
   p: string | number,
   value: unknown
-) {
+): void {
   // @todo: avoid closure/function runtime allocation
   carrier.allocator.transaction(() => {
     const ptrToPtr = hashMapInsertUpdate(
@@ -107,7 +107,7 @@ export function objectGet(
   carrier: GlobalCarrier,
   entryPointer: number,
   key: string | number
-) {
+): any {
   const valuePointer = hashMapValueLookup(carrier.heap, entryPointer, key);
 
   return entryToFinalJavaScriptValue(
@@ -146,7 +146,7 @@ export function mapOrSetClear(
   externalArgs: ExternalArgs,
   carrier: GlobalCarrier,
   mapOrSetPtr: number
-) {
+): void {
   // we fake the entry refCount as zero so getAllLinkedAddresses will visit what's needed
   const prevCount = typeAndRc_refsCount_get(carrier.heap, mapOrSetPtr);
   typeAndRc_refsCount_set(carrier.heap, mapOrSetPtr, 0);

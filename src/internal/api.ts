@@ -4,6 +4,7 @@ import type {
   ObjectBufferSettings,
   GlobalCarrier,
   MemoryStats,
+  ExternalArgs,
 } from "./interfaces";
 import {
   arrayBufferCopyTo,
@@ -101,7 +102,7 @@ export function createObjectBuffer<T = any>(
 export function unstable_resizeObjectBuffer(
   objectBuffer: unknown,
   newSize: number
-) {
+): ArrayBuffer {
   if (newSize < memoryStats(objectBuffer).top) {
     throw new OutOfMemoryError();
   }
@@ -180,7 +181,7 @@ export function loadObjectBuffer<T = any>(
 export function unstable_replaceUnderlyingArrayBuffer(
   objectBuffer: unknown,
   newArrayBuffer: ArrayBuffer | SharedArrayBuffer
-) {
+): void {
   const allocator = TransactionalAllocator.load(newArrayBuffer);
   const carrier: GlobalCarrier = { allocator, heap: allocator.getHeap() };
 
@@ -216,11 +217,11 @@ export { reclaim, queueReclaim } from "./reclaim";
 export function updateObjectBufferSettings(
   objectBuffer: unknown,
   options: ObjectBufferSettings
-) {
+): void {
   Object.assign(getInternalAPI(objectBuffer).getExternalArgs(), options);
 }
 
-export function readObjectBufferSettings(objectBuffer: unknown) {
+export function readObjectBufferSettings(objectBuffer: unknown): ExternalArgs {
   return getInternalAPI(objectBuffer).getExternalArgs();
 }
 
@@ -233,6 +234,6 @@ export function readObjectBufferSettings(objectBuffer: unknown) {
  * because It's only safe to call it when you have a lock/similar (As any other operation)
  * And FinalizationRegistry might run when ever
  */
-export function processQueuedReclaims(objectBuffer: unknown) {
+export function processQueuedReclaims(objectBuffer: unknown): void {
   freeNoLongerUsedAddresses(getInternalAPI(objectBuffer).getCarrier());
 }

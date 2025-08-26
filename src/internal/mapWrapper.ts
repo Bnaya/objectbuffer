@@ -1,4 +1,4 @@
-import type { ExternalArgs, GlobalCarrier, InternalAPI } from "./interfaces";
+import type { ExternalArgs, GlobalCarrier } from "./interfaces";
 import {
   deleteObjectPropertyEntryByKey,
   objectGet,
@@ -6,7 +6,6 @@ import {
   mapOrSetClear,
 } from "./objectWrapperHelpers";
 
-import { INTERNAL_API_SYMBOL } from "./symbols";
 import { BaseProxyTrap } from "./BaseProxyTrap";
 import {
   hashMapNodeLookup,
@@ -42,11 +41,11 @@ export class MapWrapper<K extends string | number, V>
     );
   }
 
-  [Symbol.iterator](): IterableIterator<[K, V]> {
+  [Symbol.iterator](): MapIterator<[K, V]> {
     return this.entries();
   }
 
-  *entries(): IterableIterator<[K, V]> {
+  *entries(): MapIterator<[K, V]> {
     for (const nodePointer of hashmapNodesPointerIterator(
       this.carrier.heap,
       object_pointerToHashMap_get(this.carrier.heap, this.entryPointer)
@@ -72,7 +71,7 @@ export class MapWrapper<K extends string | number, V>
     }
   }
 
-  *keys(): IterableIterator<K> {
+  *keys(): MapIterator<K> {
     for (const nodePointer of hashmapNodesPointerIterator(
       this.carrier.heap,
       object_pointerToHashMap_get(this.carrier.heap, this.entryPointer)
@@ -83,7 +82,7 @@ export class MapWrapper<K extends string | number, V>
     }
   }
 
-  *values(): IterableIterator<V> {
+  *values(): MapIterator<V> {
     for (const nodePointer of hashmapNodesPointerIterator(
       this.carrier.heap,
       object_pointerToHashMap_get(this.carrier.heap, this.entryPointer)
@@ -98,19 +97,15 @@ export class MapWrapper<K extends string | number, V>
     }
   }
 
-  get [Symbol.toStringTag]() {
+  get [Symbol.toStringTag](): string {
     return Map.prototype[Symbol.toStringTag];
   }
 
-  get [INTERNAL_API_SYMBOL](): InternalAPI {
-    return this;
-  }
-
-  static get [Symbol.species]() {
+  static get [Symbol.species](): MapConstructor {
     return Map;
   }
 
-  public get(p: string | number) {
+  public get(p: string | number): V | undefined {
     if (!(typeof p === "string" || typeof p === "number")) {
       return undefined;
     }
@@ -135,7 +130,7 @@ export class MapWrapper<K extends string | number, V>
     );
   }
 
-  public has(p: string | number) {
+  public has(p: string | number): boolean {
     if (!(typeof p === "string" || typeof p === "number")) {
       return false;
     }
@@ -149,7 +144,7 @@ export class MapWrapper<K extends string | number, V>
     );
   }
 
-  public set(p: string | number, value: any) {
+  public set(p: string | number, value: any): this {
     if (!(typeof p === "string" || typeof p === "number")) {
       return this;
     }

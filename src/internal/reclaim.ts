@@ -11,7 +11,7 @@ import {
  * immediately reclaiming memory if applicable (arc = 0 etc)
  * To be used on systems that does not support FinalizationRegistry or for immediate and not eventual memory reclaiming
  */
-export function reclaim(objectBufferPart: unknown) {
+export function reclaim(objectBufferPart: unknown): boolean {
   const internalApi = getInternalAPI(objectBufferPart);
   const entryPointer = internalApi.getEntryPointer();
   const carrier = internalApi.getCarrier();
@@ -55,7 +55,7 @@ export function reclaim(objectBufferPart: unknown) {
  *
  * The given part should not be top level ObjectBuffer
  */
-export function queueReclaim(objectBufferPart: unknown) {
+export function queueReclaim(objectBufferPart: unknown): void {
   const internalApi = getInternalAPI(objectBufferPart);
 
   const entryPointer = internalApi.getEntryPointer();

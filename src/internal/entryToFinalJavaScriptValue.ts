@@ -26,7 +26,7 @@ export function entryToFinalJavaScriptValue(
   externalArgs: ExternalArgs,
   carrier: GlobalCarrier,
   pointerToEntry: number
-) {
+): any {
   if (pointerToEntry === UNDEFINED_KNOWN_ADDRESS) {
     return undefined;
   }

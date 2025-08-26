@@ -76,7 +76,7 @@ export class ArrayWrapper
     throw new Error("unsupported enumerate");
   }
 
-  public ownKeys() {
+  public ownKeys(): string[] {
     const length = array_length_get(this.carrier.heap, this.entryPointer);
 
     return [...new Array(length).keys(), "length"].map((i) =>
@@ -84,7 +84,20 @@ export class ArrayWrapper
     );
   }
 
-  public getOwnPropertyDescriptor(target: Record<string, unknown>, prop: any) {
+  public getOwnPropertyDescriptor(
+    target: Record<string, unknown>,
+    prop: any
+  ):
+    | {
+        readonly configurable: false;
+        readonly enumerable: false;
+        readonly writable: true;
+      }
+    | {
+        readonly configurable: false;
+        readonly enumerable: true;
+      }
+    | undefined {
     if (prop === "length") {
       return getOwnPropertyDescriptorLENGTH;
     }
@@ -197,11 +210,11 @@ export class ArrayWrapper
     } while (index < length);
   }
 
-  get [Symbol.iterator]() {
+  get [Symbol.iterator](): () => Iterable<any> {
     return this.values;
   }
 
-  public sort(comparator?: (a: any, b: any) => 1 | -1 | 0) {
+  public sort(comparator?: (a: any, b: any) => 1 | -1 | 0): void {
     arraySort(this.externalArgs, this.carrier, this.entryPointer, comparator);
   }
 
@@ -219,7 +232,7 @@ export class ArrayWrapper
     });
   }
 
-  public reverse() {
+  public reverse(): this {
     arrayReverse(this.carrier, this.entryPointer);
     return this;
   }
@@ -230,11 +243,11 @@ export class ArrayWrapper
 
   // public pop() {}
 
-  public shift() {
+  public shift(): any {
     return this.splice(0, 1)[0];
   }
 
-  public unshift(...elements: any) {
+  public unshift(...elements: any): number {
     this.splice(0, 0, ...elements);
 
     return array_length_get(this.carrier.heap, this.entryPointer);

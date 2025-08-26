@@ -16,7 +16,7 @@ import { GLOBAL_LOCK_OFFSET } from "./consts";
  * @param agentId
  * @param objectBuffer
  */
-export function acquireLock(agentId: number, objectBuffer: any) {
+export function acquireLock(agentId: number, objectBuffer: any): boolean {
   const sab = getUnderlyingArrayBuffer(objectBuffer);
 
   invariant(agentId > 0, "agentId must be more than 0");
@@ -39,7 +39,7 @@ export function acquireLock(agentId: number, objectBuffer: any) {
  * @param agentId
  * @param sab
  */
-export function releaseLock(agentId: number, objectBuffer: any) {
+export function releaseLock(agentId: number, objectBuffer: any): boolean {
   const sab = getUnderlyingArrayBuffer(objectBuffer);
   const int32 = new Int32Array(sab);
 
@@ -77,7 +77,7 @@ export function acquireLockWait(
   agentId: number,
   objectBuffer: any,
   timeout: number
-) {
+): "have-lock" | "miss-lock" | "timed-out" | "no-lock" {
   const sab = getUnderlyingArrayBuffer(objectBuffer);
   const int32 = new Int32Array(sab);
   const oldValue = Atomics.compareExchange(

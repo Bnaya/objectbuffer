@@ -27,7 +27,7 @@ export class TransactionalAllocator implements FunctionalAllocatorWrapper {
   protected transactionAddresses: number[];
   protected allocatorState: AllocatorState;
 
-  static load(ab: ArrayBuffer | SharedArrayBuffer) {
+  static load(ab: ArrayBuffer | SharedArrayBuffer): TransactionalAllocator {
     const state = loadAllocator(ab, MEM_POOL_START);
 
     return new TransactionalAllocator(state);
@@ -140,7 +140,7 @@ export class TransactionalAllocator implements FunctionalAllocatorWrapper {
     return listFreeBlocks(this.allocatorState);
   }
 
-  public setNewEnd(newEnd: number) {
+  public setNewEnd(newEnd: number): void {
     setEnd(this.allocatorState, newEnd);
   }
 
@@ -162,7 +162,7 @@ export class TransactionalAllocator implements FunctionalAllocatorWrapper {
     return address;
   }
 
-  public transaction<T>(cmd: () => T) {
+  public transaction<T>(cmd: () => T): T {
     this.startTransaction();
     try {
       return cmd();
@@ -171,16 +171,16 @@ export class TransactionalAllocator implements FunctionalAllocatorWrapper {
     }
   }
 
-  protected startTransaction() {
+  protected startTransaction(): void {
     this.inTransaction = true;
   }
 
-  protected endTransaction() {
+  protected endTransaction(): void {
     this.inTransaction = false;
     this.transactionAddresses = [];
   }
 
-  protected rollbackTransaction() {
+  protected rollbackTransaction(): void {
     const { transactionAddresses } = this;
     this.transactionAddresses = [];
     this.inTransaction = false;

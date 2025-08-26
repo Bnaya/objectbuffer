@@ -78,7 +78,7 @@ export function linkedListLowLevelIterator(
   heap: Heap,
   linkedListPointer: number,
   itemPointer: number
-) {
+): number {
   let iteratedItem = itemPointer;
 
   // new iteration session
@@ -120,7 +120,10 @@ export function linkedListGetValue(heap: Heap, itemPointer: number): number {
 export function linkedListGetPointersToFree(
   heap: Heap,
   linkedListPointer: number
-) {
+): {
+  pointers: number[];
+  valuePointers: number[];
+} {
   const pointers: number[] = [linkedListPointer];
   const valuePointers: number[] = [];
 

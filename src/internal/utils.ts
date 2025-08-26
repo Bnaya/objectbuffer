@@ -2,6 +2,7 @@ import type {
   ExternalArgs,
   InternalAPI,
   ObjectBufferSettings,
+  OurArrayBuffer,
 } from "./interfaces";
 import { ENTRY_TYPE } from "./entry-types";
 import { INTERNAL_API_SYMBOL } from "./symbols";
@@ -14,7 +15,7 @@ import {
 } from "./consts";
 import { FunctionalAllocatorWrapper } from "./TransactionalAllocator";
 
-export function getEndiannessOfSystem() {
+export function getEndiannessOfSystem(): ENDIANNESS {
   const F64 = new Float64Array(1);
   const U32 = new Uint32Array(F64.buffer);
   F64[0] = 2;
@@ -31,19 +32,19 @@ export function createKnownTypeGuard<T>(arr: ReadonlyArray<T>) {
   };
 }
 
-export function invariant(condition: boolean, message: string) {
+export function invariant(condition: boolean, message: string): void {
   if (!condition) {
     throw new Error(message);
   }
 }
 
 export function arrayBufferCopyTo(
-  origin: ArrayBuffer,
+  origin: OurArrayBuffer,
   startByte: number,
   length: number,
-  target: ArrayBuffer,
+  target: OurArrayBuffer,
   toTargetByte: number
-) {
+): void {
   const copyFrom = new Uint8Array(origin);
   const copyTo = new Uint8Array(target);
 
@@ -53,7 +54,7 @@ export function arrayBufferCopyTo(
 export function getOurPointerIfApplicable(
   value: any,
   ourAllocator: FunctionalAllocatorWrapper
-) {
+): number | undefined {
   if (INTERNAL_API_SYMBOL in value) {
     const api = getInternalAPI(value);
     if (api.getCarrier().allocator === ourAllocator) {
@@ -85,11 +86,13 @@ export function getInternalAPI(value: any): InternalAPI {
   return value[INTERNAL_API_SYMBOL];
 }
 
-export function align(value: number, alignTo = 8) {
+export function align(value: number, alignTo = 8): number {
   return Math.ceil(value / alignTo) * alignTo;
 }
 
-export function isKnownAddressValuePointer(entryPointer: number) {
+export function isKnownAddressValuePointer(
+  entryPointer: number
+): entryPointer is 0 | 1 | 2 | 3 {
   return (
     entryPointer === UNDEFINED_KNOWN_ADDRESS ||
     entryPointer === NULL_KNOWN_ADDRESS ||
@@ -98,7 +101,15 @@ export function isKnownAddressValuePointer(entryPointer: number) {
   );
 }
 
-export function isTypeWithRC(type: ENTRY_TYPE) {
+export function isTypeWithRC(
+  type: ENTRY_TYPE
+): type is
+  | ENTRY_TYPE.STRING
+  | ENTRY_TYPE.OBJECT
+  | ENTRY_TYPE.ARRAY
+  | ENTRY_TYPE.MAP
+  | ENTRY_TYPE.SET
+  | ENTRY_TYPE.DATE {
   return (
     type === ENTRY_TYPE.OBJECT ||
     type === ENTRY_TYPE.ARRAY ||
@@ -113,7 +124,7 @@ export function isTypeWithRC(type: ENTRY_TYPE) {
  *
  * I hope It's reliable
  */
-export function isSupportedTopLevelValue(value: unknown) {
+export function isSupportedTopLevelValue(value: unknown): boolean {
   return !(
     Array.isArray(value) ||
     value instanceof Date ||

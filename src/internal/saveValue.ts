@@ -33,7 +33,7 @@ export function saveValueIterativeReturnPointer(
   carrier: GlobalCarrier,
   referencedExistingPointers: number[],
   initialValue: unknown
-) {
+): number {
   saveValueIterative(
     externalArgs,
     carrier,
@@ -54,7 +54,7 @@ export function saveValueIterative(
   referencedExistingPointers: number[],
   initialValuePtrToPtr: number,
   initialValue: unknown
-) {
+): void {
   const valuesToSave = [initialValue];
   const pointersToSaveTo = [initialValuePtrToPtr];
   const savedValuesToPointer = new Map<unknown, number>();

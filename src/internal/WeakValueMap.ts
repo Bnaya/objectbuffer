@@ -54,7 +54,7 @@ export class WeakValueMap<K, V> implements Map<K, V> {
     );
   }
 
-  set(key: K, value: V) {
+  set(key: K, value: V): this {
     const existingRef = this.map.get(key);
     if (existingRef) this.group.unregister(existingRef);
     const newRef = new WeakRef(value);
@@ -64,7 +64,7 @@ export class WeakValueMap<K, V> implements Map<K, V> {
     return this;
   }
 
-  has(key: K) {
+  has(key: K): boolean {
     const w = this.map.get(key);
     if (w === undefined) {
       return false;
@@ -77,7 +77,7 @@ export class WeakValueMap<K, V> implements Map<K, V> {
     return true;
   }
 
-  get(key: K) {
+  get(key: K): V | undefined {
     const w = this.map.get(key);
     if (w === undefined) {
       return undefined;
@@ -91,7 +91,7 @@ export class WeakValueMap<K, V> implements Map<K, V> {
     return v;
   }
 
-  delete(key: K) {
+  delete(key: K): boolean {
     const w = this.map.get(key);
     if (w) {
       this.map.delete(key);
@@ -101,20 +101,23 @@ export class WeakValueMap<K, V> implements Map<K, V> {
     return false;
   }
 
-  clear() {
+  clear(): void {
     for (const w of this.map.values()) {
       this.group.unregister(w);
     }
     this.map.clear();
   }
 
-  *[Symbol.iterator](type?: typeof KEYS | typeof VALUES | typeof KEYS_VALUES) {
+  *[Symbol.iterator](
+    type?: typeof KEYS | typeof VALUES | typeof KEYS_VALUES
+  ): MapIterator<[K, V]> {
     for (const [key, weak] of this.map) {
       const v = weak.deref();
       if (v === undefined) {
         this.map.delete(key);
         this.group.unregister(weak);
       } else if (type === KEYS) {
+        // @ts-expect-error ts 5.8 migration
         yield key;
       } else if (type === VALUES) {
         yield v;
@@ -124,32 +127,35 @@ export class WeakValueMap<K, V> implements Map<K, V> {
     }
   }
 
-  keys() {
+  keys(): MapIterator<K> {
+    // @ts-expect-error ts 5.8 migration
     return this[Symbol.iterator](KEYS);
   }
 
-  values() {
+  values(): MapIterator<V> {
+    // @ts-expect-error ts 5.8 migration
     return this[Symbol.iterator](VALUES);
   }
 
-  entries() {
+  entries(): MapIterator<[K, V]> {
     return this[Symbol.iterator](KEYS_VALUES);
   }
 
   forEach(
     callbackfn: (value: V, key: K, map: Map<K, V>) => void,
     thisArg?: any
-  ) {
+  ): void {
     for (const [key, value] of this) {
+      // @ts-expect-error ts 5.8 migration
       callbackfn.call(thisArg, key, value, this);
     }
   }
 
-  public get size() {
+  public get size(): number {
     return this.map.size;
   }
 
-  public get [Symbol.toStringTag]() {
+  public get [Symbol.toStringTag](): string {
     return this.map[Symbol.toStringTag];
   }
 }

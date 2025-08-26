@@ -1,4 +1,5 @@
 import type { Heap } from "../structsGenerator/consts";
+import { INTERNAL_API_SYMBOL } from "./symbols";
 import type { TransactionalAllocator } from "./TransactionalAllocator";
 
 export interface MemoryStats {
@@ -57,4 +58,8 @@ export interface InternalAPI {
   replaceCarrierContent(carrier: GlobalCarrier): void;
   getEntryPointer(): number;
   destroy(): void;
+  [INTERNAL_API_SYMBOL](): InternalAPI;
 }
+
+// A mode backward compat ArrayBufferLike
+export type OurArrayBuffer = ArrayBuffer | SharedArrayBuffer;

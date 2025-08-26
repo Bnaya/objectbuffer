@@ -68,5 +68,6 @@
     "source.fixAll.eslint": "explicit"
   },
   "debug.javascript.usePreviewAutoAttach": true,
-  "debug.javascript.usePreview": true
+  "debug.javascript.usePreview": true,
+  "jest.runMode": "on-demand"
 }

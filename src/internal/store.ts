@@ -1,5 +1,5 @@
 import { ENTRY_TYPE } from "./entry-types";
-import { GlobalCarrier } from "./interfaces";
+import { GlobalCarrier, OurArrayBuffer } from "./interfaces";
 import { isKnownAddressValuePointer, isTypeWithRC } from "./utils";
 import { ExternalArgs } from "./interfaces";
 import {
@@ -26,7 +26,7 @@ import { stringEncodeInto } from "./stringEncodeInto";
 import { stringLengthV2 } from "./stringLengthV2";
 import { OutOfMemoryError } from "./exceptions";
 
-export function initializeArrayBuffer(arrayBuffer: ArrayBuffer) {
+export function initializeArrayBuffer(arrayBuffer: OurArrayBuffer): void {
   const uint32 = new Uint32Array(arrayBuffer);
 
   uint32[0] = 0;
@@ -37,7 +37,7 @@ export function initializeArrayBuffer(arrayBuffer: ArrayBuffer) {
 export function freeStringOrNumber(
   { heap, allocator }: GlobalCarrier,
   stringOrNumberStructPointer: number
-) {
+): void {
   if (
     typeOnly_type_get(heap, stringOrNumberStructPointer) == ENTRY_TYPE.STRING
   ) {
@@ -50,7 +50,7 @@ export function freeStringOrNumber(
 export function saveStringOrNumber(
   carrier: GlobalCarrier,
   value: string | number
-) {
+): number {
   if (typeof value === "string") {
     return saveString(carrier, value);
   } else {
@@ -58,7 +58,10 @@ export function saveStringOrNumber(
   }
 }
 
-export function saveString({ heap, allocator }: GlobalCarrier, value: string) {
+export function saveString(
+  { heap, allocator }: GlobalCarrier,
+  value: string
+): number {
   const stringBytesLength = stringLengthV2(value);
   const stringDataPointer = allocator.calloc(stringBytesLength);
   stringEncodeInto(heap.u8, stringDataPointer, value);
@@ -76,7 +79,10 @@ export function saveString({ heap, allocator }: GlobalCarrier, value: string) {
   return stringPointer;
 }
 
-export function saveNumber({ heap, allocator }: GlobalCarrier, value: number) {
+export function saveNumber(
+  { heap, allocator }: GlobalCarrier,
+  value: number
+): number {
   const numberPointer = allocator.calloc(number_size);
 
   number_set_all(heap, numberPointer, ENTRY_TYPE.NUMBER, value);
@@ -89,7 +95,7 @@ export function writeValueInPtrToPtr(
   carrier: GlobalCarrier,
   ptrToPtr: number,
   value: unknown
-) {
+): number[] {
   const referencedPointers: number[] = [];
   // Might oom here
   saveValueIterative(
@@ -108,7 +114,7 @@ export function writeValueInPtrToPtrAndHandleMemory(
   carrier: GlobalCarrier,
   ptrToPtr: number,
   value: unknown
-) {
+): void {
   const existingEntryPointer =
     carrier.heap.u32[ptrToPtr / Uint32Array.BYTES_PER_ELEMENT];
 
@@ -177,7 +183,7 @@ export function handleLeafAddressesAndArcAddresses(
   { heap, allocator }: GlobalCarrier,
   leafAddresses: Set<number>,
   arcAddresses: Map<number, number>
-) {
+): void {
   for (const address of leafAddresses) {
     allocator.free(address);
   }
@@ -219,7 +225,7 @@ export function handleLeafAddressesAndArcAddresses(
 //   );
 // }
 
-export function incrementRefCount(heap: Heap, entryPointer: number) {
+export function incrementRefCount(heap: Heap, entryPointer: number): number {
   typeAndRc_refsCount_set(
     heap,
     entryPointer,
@@ -229,7 +235,7 @@ export function incrementRefCount(heap: Heap, entryPointer: number) {
   return typeAndRc_refsCount_get(heap, entryPointer);
 }
 
-export function decrementRefCount(heap: Heap, entryPointer: number) {
+export function decrementRefCount(heap: Heap, entryPointer: number): number {
   typeAndRc_refsCount_set(
     heap,
     entryPointer,
@@ -243,7 +249,7 @@ export function decrementRefCountWithNum(
   heap: Heap,
   entryPointer: number,
   num: number
-) {
+): number {
   typeAndRc_refsCount_set(
     heap,
     entryPointer,
@@ -253,7 +259,7 @@ export function decrementRefCountWithNum(
   return typeAndRc_refsCount_get(heap, entryPointer);
 }
 
-export function getObjectValuePtrToPtr(pointerToEntry: number) {
+export function getObjectValuePtrToPtr(pointerToEntry: number): number {
   return pointerToEntry + 1 + 1;
 }
 
@@ -262,7 +268,7 @@ export function memComp(
   aStart: number,
   bStart: number,
   length: number
-) {
+): boolean {
   if (
     uint8.byteLength < aStart + length ||
     uint8.byteLength < bStart + length
@@ -283,7 +289,7 @@ export function compareStringOrNumberEntriesInPlace(
   heap: Heap,
   entryAPointer: number,
   entryBPointer: number
-) {
+): boolean {
   typeOnly_type_get(heap, entryAPointer);
   const entryAType: ENTRY_TYPE.STRING | ENTRY_TYPE.NUMBER = typeOnly_type_get(
     heap,
@@ -322,7 +328,10 @@ export function compareStringOrNumberEntriesInPlace(
   );
 }
 
-export function readNumberOrString(heap: Heap, pointer: number) {
+export function readNumberOrString(
+  heap: Heap,
+  pointer: number
+): string | number {
   const type: ENTRY_TYPE.NUMBER | ENTRY_TYPE.STRING = typeOnly_type_get(
     heap,
     pointer

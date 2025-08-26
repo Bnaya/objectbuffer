@@ -39,7 +39,7 @@ export function number_set_all(
   structPointer: number,
   type: number,
   value: number
-) {
+): void {
   heap.f64[(structPointer + 0) / 8] = type;
   heap.f64[(structPointer + 8) / 8] = value;
 }
@@ -85,7 +85,7 @@ export function bigint_set_all(
   structPointer: number,
   type: number,
   value: bigint
-) {
+): void {
   heap.f64[(structPointer + 0) / 8] = type;
   heap.u64[(structPointer + 8) / 8] = value;
 }
@@ -166,7 +166,7 @@ export function date_set_all(
   refsCount: number,
   __padding__: number,
   timestamp: number
-) {
+): void {
   heap.f64[(structPointer + 0) / 8] = type;
   heap.u32[(structPointer + 8) / 4] = refsCount;
   heap.u32[(structPointer + 12) / 4] = __padding__;
@@ -268,7 +268,7 @@ export function array_set_all(
   dataspacePointer: number,
   length: number,
   allocatedLength: number
-) {
+): void {
   heap.f64[(structPointer + 0) / 8] = type;
   heap.u32[(structPointer + 8) / 4] = refsCount;
   heap.u32[(structPointer + 12) / 4] = dataspacePointer;
@@ -339,7 +339,7 @@ export function object_set_all(
   type: number,
   refsCount: number,
   pointerToHashMap: number
-) {
+): void {
   heap.f64[(structPointer + 0) / 8] = type;
   heap.u32[(structPointer + 8) / 4] = refsCount;
   heap.u32[(structPointer + 12) / 4] = pointerToHashMap;
@@ -427,7 +427,7 @@ export function string_set_all(
   refsCount: number,
   bytesLength: number,
   charsPointer: number
-) {
+): void {
   heap.f64[(structPointer + 0) / 8] = type;
   heap.u32[(structPointer + 8) / 4] = refsCount;
   heap.u32[(structPointer + 12) / 4] = bytesLength;
@@ -459,7 +459,7 @@ export function typeOnly_set_all(
   heap: Heap,
   structPointer: number,
   type: number
-) {
+): void {
   heap.f64[(structPointer + 0) / 8] = type;
 }
 
@@ -507,7 +507,7 @@ export function typeAndRc_set_all(
   structPointer: number,
   type: number,
   refsCount: number
-) {
+): void {
   heap.f64[(structPointer + 0) / 8] = type;
   heap.u32[(structPointer + 8) / 4] = refsCount;
 }
@@ -559,7 +559,7 @@ export function linkedList_set_all(
   structPointer: number,
   END_POINTER: number,
   START_POINTER: number
-) {
+): void {
   heap.u32[(structPointer + 0) / 4] = END_POINTER;
   heap.u32[(structPointer + 4) / 4] = START_POINTER;
 }
@@ -611,7 +611,7 @@ export function linkedListItem_set_all(
   structPointer: number,
   NEXT_POINTER: number,
   VALUE: number
-) {
+): void {
   heap.u32[(structPointer + 0) / 4] = NEXT_POINTER;
   heap.u32[(structPointer + 4) / 4] = VALUE;
 }
@@ -720,7 +720,7 @@ export function hashmap_set_all(
   LINKED_LIST_SIZE: number,
   CAPACITY: number,
   USED_CAPACITY: number
-) {
+): void {
   heap.u32[(structPointer + 0) / 4] = ARRAY_POINTER;
   heap.u32[(structPointer + 4) / 4] = LINKED_LIST_POINTER;
   heap.u32[(structPointer + 8) / 4] = LINKED_LIST_SIZE;
@@ -815,7 +815,7 @@ export function hashmapNode_set_all(
   NEXT_NODE_POINTER: number,
   KEY_POINTER: number,
   LINKED_LIST_ITEM_POINTER: number
-) {
+): void {
   heap.u32[(structPointer + 0) / 4] = VALUE_POINTER;
   heap.u32[(structPointer + 4) / 4] = NEXT_NODE_POINTER;
   heap.u32[(structPointer + 8) / 4] = KEY_POINTER;

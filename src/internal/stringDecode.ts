@@ -34,7 +34,7 @@ export function stringDecode(
   uint8: Uint8Array,
   from: number,
   bytesLength: number
-) {
+): string {
   const finalUint8 = uint8.subarray(from, from + bytesLength);
 
   let resultingString = "";

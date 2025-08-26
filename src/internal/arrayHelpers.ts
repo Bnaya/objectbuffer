@@ -18,7 +18,7 @@ export function arrayGetPointerToIndex(
   carrier: GlobalCarrier,
   pointerToArrayEntry: number,
   indexToGet: number
-) {
+): number {
   // out of bound
   invariant(
     indexToGet <= array_length_get(carrier.heap, pointerToArrayEntry),
@@ -36,7 +36,7 @@ export function arrayGetValuePointerInIndex(
   carrier: GlobalCarrier,
   pointerToArrayEntry: number,
   indexToGet: number
-) {
+): number {
   return carrier.heap.u32[
     arrayGetPointerToIndex(carrier, pointerToArrayEntry, indexToGet) /
       Uint32Array.BYTES_PER_ELEMENT
@@ -48,7 +48,7 @@ export function getFinalValueAtArrayIndex(
   globalCarrier: GlobalCarrier,
   pointerToArrayEntry: number,
   indexToGet: number
-) {
+): any {
   const pointer = arrayGetValuePointerInIndex(
     globalCarrier,
     pointerToArrayEntry,
@@ -63,7 +63,7 @@ export function setValuePointerAtArrayIndex(
   pointerToArrayEntry: number,
   indexToSet: number,
   pointerToEntry: number
-) {
+): void {
   const pointer = arrayGetPointerToIndex(
     carrier,
     pointerToArrayEntry,
@@ -79,7 +79,7 @@ export function setValueAtArrayIndex(
   pointerToArrayEntry: number,
   indexToSet: number,
   value: unknown
-) {
+): void {
   const refedPointers: number[] = [];
 
   const newValuePointer = saveValueIterativeReturnPointer(
@@ -124,7 +124,7 @@ export function extendArrayIfNeeded(
   carrier: GlobalCarrier,
   pointerToArrayEntry: number,
   wishedLength: number
-) {
+): void {
   if (wishedLength > array_length_get(carrier.heap, pointerToArrayEntry)) {
     if (
       wishedLength >
@@ -150,7 +150,7 @@ export function shrinkArray(
   heap: Heap,
   pointerToArrayEntry: number,
   wishedLength: number
-) {
+): void {
   array_length_set(heap, pointerToArrayEntry, wishedLength);
 }
 
@@ -192,7 +192,7 @@ export function arraySort(
   carrier: GlobalCarrier,
   pointerToArrayEntry: number,
   sortComparator: (a: any, b: any) => 1 | -1 | 0 = defaultCompareFunction
-) {
+): void {
   const arrayDataSpace = array_dataspacePointer_get(
     carrier.heap,
     pointerToArrayEntry
@@ -265,7 +265,7 @@ function toString(obj: any) {
 export function arrayReverse(
   carrier: GlobalCarrier,
   pointerToArrayEntry: number
-) {
+): void {
   for (
     let i = 0;
     i < Math.floor(array_length_get(carrier.heap, pointerToArrayEntry) / 2);

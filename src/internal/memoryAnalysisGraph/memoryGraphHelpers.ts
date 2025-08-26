@@ -1,4 +1,4 @@
-import { MemoryGraph } from "./types";
+import { MemoryGraph, Node } from "./types";
 import { getInternalAPI } from "../utils";
 import {
   createMemoryGraph,
@@ -6,7 +6,30 @@ import {
 } from "./createMemoryGraph";
 import { MemPoolWithTricks } from "./allocatorHelpers";
 
-export function nodesWithInternalMismatchRefCount(graph: MemoryGraph) {
+export function nodesWithInternalMismatchRefCount(
+  graph: MemoryGraph
+): (
+  | Node<"undefined", undefined>
+  | Node<"null", null>
+  | Node<"true", true>
+  | Node<"true", false>
+  | Node<"number", number>
+  | Node<"string", string>
+  | Node<"stringData", string>
+  | Node<"bigintPositive", bigint>
+  | Node<"bigintNegative", bigint>
+  | Node<"date", Date>
+  | Node<"array", unknown[]>
+  | Node<"arrayPointers", unknown>
+  | Node<"object", unknown>
+  | Node<"map", unknown>
+  | Node<"set", unknown>
+  | Node<"hashmap", unknown>
+  | Node<"hashmapNode", unknown>
+  | Node<"hashmapBuckets", unknown>
+  | Node<"linkedList", unknown>
+  | Node<"linkedListItem", unknown>
+)[] {
   const withRefCount = graph.nodes.filter((n) => n.refCount !== undefined);
 
   const withMismatcRefCount = withRefCount.filter(
@@ -17,7 +40,10 @@ export function nodesWithInternalMismatchRefCount(graph: MemoryGraph) {
   return withMismatcRefCount;
 }
 
-export function getGraphForObjectBuffer(ob: unknown) {
+export function getGraphForObjectBuffer(ob: unknown): {
+  graph: MemoryGraph;
+  visitedPointers: Set<number>;
+} {
   const internalApi = getInternalAPI(ob);
 
   const entryPointer = internalApi.getEntryPointer();
@@ -25,7 +51,7 @@ export function getGraphForObjectBuffer(ob: unknown) {
   return createMemoryGraph(internalApi.getCarrier().heap, entryPointer);
 }
 
-export function jestExpectNoUseAfterFree(ob: unknown) {
+export function jestExpectNoUseAfterFree(ob: unknown): void {
   const { graph } = getGraphForObjectBuffer(ob);
   const dataFromAllocator = getAllAllocatedPointers(ob);
   expect(graph.nodes.map((n) => n.pointer).sort()).toEqual(
@@ -35,7 +61,7 @@ export function jestExpectNoUseAfterFree(ob: unknown) {
   expect(graph.nodes.length).toBe(dataFromAllocator.length);
 }
 
-export function jestExpectNoUseAfterFreeSubset(ob: unknown) {
+export function jestExpectNoUseAfterFreeSubset(ob: unknown): void {
   const { graph } = getGraphForObjectBuffer(ob);
   const dataFromAllocator = getAllAllocatedPointers(ob);
 
@@ -46,7 +72,7 @@ export function jestExpectNoUseAfterFreeSubset(ob: unknown) {
 
 export function jestExpectNoUseAfterFreePartsAreEqulesTheWhole(
   parts: unknown[]
-) {
+): void {
   const graphs = parts.map((p) => getGraphForObjectBuffer(p).graph);
 
   const mergeGraphs = mergeGraphsNoIntersections(graphs);
@@ -58,7 +84,11 @@ export function jestExpectNoUseAfterFreePartsAreEqulesTheWhole(
   );
 }
 
-export function getAllAllocatedPointers(ob: unknown) {
+export function getAllAllocatedPointers(ob: unknown): {
+  blockPointer: number;
+  pointer: number;
+  size: number;
+}[] {
   const internalApi = getInternalAPI(ob);
 
   return MemPoolWithTricks.prototype.listAllAllocatedPointers.apply(
