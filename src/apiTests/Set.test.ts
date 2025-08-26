@@ -157,7 +157,7 @@ describe("Set tests", () => {
 
 describe("new set methods", () => {
   test.failing("union", () => {
-    const objectBuffer = createObjectBuffer<any>(1024, {});
+    const objectBuffer = createObjectBuffer<any>(2048, {});
     objectBuffer.setA = new Set([1, 2, 3]);
     objectBuffer.setB = new Set([3, 4, 5]);
 
@@ -166,7 +166,7 @@ describe("new set methods", () => {
   });
 
   test.failing("intersection", () => {
-    const objectBuffer = createObjectBuffer<any>(1024, {});
+    const objectBuffer = createObjectBuffer<any>(2048, {});
     objectBuffer.setA = new Set([1, 2, 3]);
     objectBuffer.setB = new Set([3, 4, 5]);
 
@@ -175,7 +175,7 @@ describe("new set methods", () => {
   });
 
   test.failing("difference", () => {
-    const objectBuffer = createObjectBuffer<any>(1024, {});
+    const objectBuffer = createObjectBuffer<any>(2048, {});
     objectBuffer.setA = new Set([1, 2, 3]);
     objectBuffer.setB = new Set([3, 4, 5]);
 
@@ -184,7 +184,7 @@ describe("new set methods", () => {
   });
 
   test.failing("symmetricDifference", () => {
-    const objectBuffer = createObjectBuffer<any>(1024, {});
+    const objectBuffer = createObjectBuffer<any>(2048, {});
     objectBuffer.setA = new Set([1, 2, 3]);
     objectBuffer.setB = new Set([3, 4, 5]);
 
@@ -193,7 +193,7 @@ describe("new set methods", () => {
   });
 
   test.failing("isSubsetOf", () => {
-    const objectBuffer = createObjectBuffer<any>(1024, {});
+    const objectBuffer = createObjectBuffer<any>(2048, {});
     objectBuffer.setA = new Set([1, 2]);
     objectBuffer.setB = new Set([1, 2, 3]);
 
@@ -202,7 +202,7 @@ describe("new set methods", () => {
   });
 
   test.failing("isSupersetOf", () => {
-    const objectBuffer = createObjectBuffer<any>(1024, {});
+    const objectBuffer = createObjectBuffer<any>(2048, {});
     objectBuffer.setA = new Set([1, 2, 3]);
     objectBuffer.setB = new Set([1, 2]);
 
